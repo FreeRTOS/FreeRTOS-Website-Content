@@ -1,0 +1,152 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Using vTaskSuspend/vTaskResume - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2005/freertos_Using_vTaskSuspend_vTaskResume_1313626.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Using vTaskSuspend/vTaskResume - FreeRTOS" />
+<meta property="og:description" content="Using vTaskSuspend/vTaskResumePosted by nobody on July 5, 2005Hello&#033; I want to use vTaskSuspend to suspend a task from sampling values. When the task is not suspended I use vTaskDelayUntil in order to get the task to execute every 1000 ticks. BUT, when the task has been suspended for some time and then resumed this delay &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2005/freertos_Using_vTaskSuspend_vTaskResume_1313626.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Using vTaskSuspend/vTaskResumePosted by nobody on July 5, 2005Hello&#033; I want to use vTaskSuspend to suspend a task from sampling values. When the task is not suspended I use vTaskDelayUntil in order to get the task to execute every 1000 ticks. BUT, when the task has been suspended for some time and then resumed this delay [&hellip;]" />
+<meta name="twitter:title" content="Using vTaskSuspend/vTaskResume - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201283' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201283' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201283' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201283' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139480' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2005%2Ffreertos_Using_vTaskSuspend_vTaskResume_1313626.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2005%2Ffreertos_Using_vTaskSuspend_vTaskResume_1313626.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139480">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2005_freertos_support_forum_archive_index.html/">July 2005 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Using vTaskSuspend/vTaskResume</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on July 5, 2005</div><div class="thread-post-content">Hello&#33;
+I want to use vTaskSuspend to suspend a task from sampling values. When the task is not suspended I use vTaskDelayUntil in order to get the task to execute every 1000 ticks. BUT, when the task has been suspended for some time and then resumed this delay does not apply for some reason. The task executes without any delay until it has &quot;caught up&quot; with the time somehow??&#33;&#33; Why is this and how do I fix it??
+Thanks&#33;
+/MB
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using vTaskSuspend/vTaskResume</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 5, 2005</div><div class="thread-post-content">Taking the example:
+void vTaskFunction&#40; void &#42; pvParameters &#41;
+&#123;
+portTickType xLastWakeTime;
+const portTickType xFrequency = 10;
+&#95;&#95;&#95;&#95;// Initialise the xLastWakeTime variable with the
+&#95;&#95;&#95;&#95;current time.
+&#95;&#95;&#95;&#95;xLastWakeTime = xTaskGetTickCount&#40;&#41;;
+&#95;&#95;&#95;&#95;for&#40; ;; &#41;
+&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;// Wait for the next cycle.
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;vTaskDelayUntil&#40; &amp;xLastWakeTime, xFrequency &#41;;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;// Perform action here.
+&#95;&#95;&#95;&#95;&#125;
+&#125;
+xLastWakeTime holds the time in ticks the task was last unblocked from the vTaskDelayUntil&#40;&#41; call.&nbsp; When vTaskDelayUntil&#40;&#41; is called again the block time is added to xLastWakeTime to create the time at which the task should again be unblocked.
+For example, if xLastWakeTime is 1000, the delay period is 100 and 50 ticks have passed since the task last unblocked then:&nbsp;&nbsp;&nbsp;&nbsp; xLastWakeTime is set to 1100, the current time is 1050 and the task will block for 50 ticks &#40;until the actual time reaches the wanted unblock time&#41;.
+Now if the time that has passed between calles is greater than the block time then the value of xLastWakeTime will be less than the current time and the task will not block.
+For example, if xLastWakeTime is 1000, and the delay period is 100, but 200 ticks have passed since the task was last unblocked then:&nbsp;&nbsp;&nbsp;&nbsp; xLastWakeTime will be set to 1100 but the current time will be 1200.&nbsp; If the task wants to unblock at time 1100 but the time is already 1200 then the unblock time has passed and the task never blocks.
+This is what will happen if you suspend the task &#8211; and is the correct behaviour.&nbsp; The tick count continues when the task is suspended so the wanted wake time will be less than the current time and the task will not block.
+To get around this you will need to reinitialise xLastWakeTime when the task is unblocked using:
+xLastWakeTime = xTaskGetTickCount&#40;&#41;;
+This should only be done when the task unblocks, not each cycle of the loop.
+This line will refresh the xLastWakeTime with the current time, so the generated block time is relative to the current time, not the time the task last unblocked.
+Maybe I have made this sound too complex &#40;?&#41; it is not really.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using vTaskSuspend/vTaskResume</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on July 5, 2005</div><div class="thread-post-content">That&#8217;s absolutely fine, I understood&#33; It solved my problem&#33; Thanks
+//MB
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xSemaphoreTake() . Program gets stuck . need help debugging - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2019/freertos_xSemaphoreTake_._Program_gets_stuck_._need_help_debugging_ce0b4950aaj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="xSemaphoreTake() . Program gets stuck . need help debugging - FreeRTOS" />
+<meta property="og:description" content="xSemaphoreTake() . Program gets stuck . need help debuggingPosted by asantos on February 6, 2019Hi, I am using the nordic NRF52832 on a custom board. My program implements a binary semaphore, which is given in the RTC interrupt handler. My send_data task (this is the only task) waits for this semaphore in the beginning of &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2019/freertos_xSemaphoreTake_._Program_gets_stuck_._need_help_debugging_ce0b4950aaj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="xSemaphoreTake() . Program gets stuck . need help debuggingPosted by asantos on February 6, 2019Hi, I am using the nordic NRF52832 on a custom board. My program implements a binary semaphore, which is given in the RTC interrupt handler. My send_data task (this is the only task) waits for this semaphore in the beginning of [&hellip;]" />
+<meta name="twitter:title" content="xSemaphoreTake() . Program gets stuck . need help debugging - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203068' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203068' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203068' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203068' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147569' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2019%2Ffreertos_xSemaphoreTake_._Program_gets_stuck_._need_help_debugging_ce0b4950aaj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2019%2Ffreertos_xSemaphoreTake_._Program_gets_stuck_._need_help_debugging_ce0b4950aaj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147569">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2019_freertos_support_forum_archive_index.html/">February 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">xSemaphoreTake() . Program gets stuck . need help debugging</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/asantos">asantos</a> on February 6, 2019</div><div class="thread-post-content">Hi,
+I am using the nordic NRF52832 on a custom board.
+My program implements a binary semaphore, which is given in the RTC interrupt handler.
+My send_data task (this is the only task) waits for this semaphore in the beginning of the loop.
+I have been trying to debug it but I have not found the problem. 
+The portYIELD<em>WITHIN</em>API(); line inside xQueueSemaphoreTake() is reached and then my program seems to hang. The code inside void vApplicationIdleHook( void ) is not run though, which should be the code run after the context switch.
+I attach the part of the code relative to this issue.  Please let me know how to debug this. 
+Thanks
+Code in main.c
+~~~
+void vApplicationIdleHook( void )
+{
+    while(1)
+    {<br />
+        NRF<em>LOG</em>DEBUG(&#8220;Idle task&#8221;);
+        delay<em>ms(1000);
+     }
+~~~
+~~~
+ /* Create task for send</em>data blinking with priority set to 2 */
+    UNUSED_VARIABLE(xTaskCreate(send_data, &#8220;send_data&#8221;, configMINIMAL_STACK_SIZE + 200, NULL, 2, &amp;send_data_handle));
+~~~
+Code in task.c
+~~~
+// RTC timer
+APP<em>TIMER</em>DEF(m<em>led</em>a<em>timer</em>id);
+/**
+ * @brief RTC instance number 
+ *
+ */
+<h1>define PERIODIC_RTC 2</h1>
+/**
+ * @brief RTC compare channel used
+ *
+ */
+<h1>define PERIODIC<em>RTC</em>CC 0</h1>
+/**
+ * @brief Number of RTC ticks between interrupts
+ */
+<h1>define PERIODIC<em>TIMER</em>US   5000000ULL</h1>
+<h1>define PERIODIC<em>RTC</em>TICKS   (RTC<em>US</em>TO<em>TICKS(PERIODIC</em>TIMER<em>US, RTC</em>DEFAULT<em>CONFIG</em>FREQUENCY))</h1>
+/**
+ * @brief Semaphore set in RTC event
+ */
+static SemaphoreHandle_t send_data_semaphore = NULL;
+/**
+ * @brief RTC configuration
+ */
+static nrf_drv_rtc_config_t const m_rtc_config = NRF_DRV_RTC_DEFAULT_CONFIG;
+/**
+ * @brief RTC instance
+ *
+ * Instance of the RTC used for led blinking
+ */
+static nrf_drv_rtc_t const m_rtc = NRF_DRV_RTC_INSTANCE(PERIODIC_RTC);
+static void periodic<em>rtc</em>handler(nrf<em>drv</em>rtc<em>int</em>type<em>t int</em>type)
+{
+        NRF<em>LOG</em>DEBUG(&#8220;Send data RTC handler&#8221;);
+    BaseType<em>t yield</em>req = pdFALSE;
+    BaseType<em>t ret</em>val;
+    ret<em>code</em>t err<em>code;
+    err</em>code = nrf<em>drv</em>rtc<em>cc</em>set(
+        &amp;m<em>rtc,
+        PERIODIC</em>RTC<em>CC,
+        (nrf</em>rtc<em>cc</em>get(m<em>rtc.p</em>reg, PERIODIC<em>RTC</em>CC) + PERIODIC<em>RTC</em>TICKS) &amp; RTC<em>COUNTER</em>COUNTER<em>Msk,
+        true);
+    APP</em>ERROR<em>CHECK(err</em>code);
+   /* The returned value may be safely ignored, if error is returned it only means that
+    * the semaphore is already given (raised). */
+   UNUSED_VARIABLE(xSemaphoreGiveFromISR(send_data_semaphore, &amp;yield_req));
+   // Request a context switch (switch to other task). Interrupt safe verison of taskYIELD()
+   portYIELD_FROM_ISR(yield_req);
+}
+~~~
+~~~
+/**
+ * @brief send_data task entry function.
+ *
+ * @param[in] pvParameter   Pointer that will be used as the parameter for the task.
+ */
+void send_data(void * pvParameter)
+{<br />
+    NRF_LOG_INFO(&#8220;&#8212;&#8212;&#8212;- SEND DATA TASK &#8212;&#8212;&#8212;-&#8220;);
+<pre><code>// Create rtc instance and compare channel
+NRF_LOG_DEBUG("Init RTC");
+ret_code_t err_code;
+err_code = nrf_drv_rtc_init(&amp;m_rtc, &amp;m_rtc_config, periodic_rtc_handler);
+APP_ERROR_CHECK(err_code);
+err_code = nrf_drv_rtc_cc_set(&amp;m_rtc, PERIODIC_RTC_CC, PERIODIC_RTC_TICKS, true);
+APP_ERROR_CHECK(err_code);
+// Enable RTC instance
+nrf_drv_rtc_enable(&amp;m_rtc);
+// Create semaphore
+send_data_semaphore = xSemaphoreCreateBinary();
+UNUSED_PARAMETER(pvParameter);
+// Begin task loop
+while(1)
+{   
+        NRF_LOG_DEBUG("Waiting for semaphore to begin task");
+    UNUSED_VARIABLE(xSemaphoreTake(send_data_semaphore, portMAX_DELAY));
+        NRF_LOG_INFO("++++++++++++++++task begin++++++++++++++++rn");
+</code></pre>
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake() . Program gets stuck . need help debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on February 6, 2019</div><div class="thread-post-content">Idle task, and thus Idle hook MUST NOT BLOCK, as there must always be a task ready to run.
+Your vApplicationIdleHook() is broken.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake() . Program gets stuck . need help debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/asantos">asantos</a> on February 7, 2019</div><div class="thread-post-content">Hi, 
+Thanks for your support
+I have changed my idle task hook to this, but I still have an issue
+~~~
+void vApplicationIdleHook( void )
+{
+    while(1)
+    {<br />
+        NRF<em>LOG</em>DEBUG(&#8220;Idle task&#8221;);
+     }
+ }
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake() . Program gets stuck . need help debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/asantos">asantos</a> on February 7, 2019</div><div class="thread-post-content">Hi, 
+Thanks for your support
+I have changed my idle task hook to this, but I still have an issue
+~~~
+void vApplicationIdleHook( void )
+{
+    while(1)
+    {<br />
+        NRF<em>LOG</em>DEBUG(&#8220;Idle task&#8221;);
+     }
+ }
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake() . Program gets stuck . need help debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/asantos">asantos</a> on February 7, 2019</div><div class="thread-post-content">Hi Richard,
+I have already fixed it. It turns out that my task usStackDepth was too small.
+Thanks for everything
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake() . Program gets stuck . need help debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on February 7, 2019</div><div class="thread-post-content">Just as a comment, I would not put an infinte loop like you have in the idle hook, as that says that the rest of the Idle task won&#8217;t run, so if any task deletes itself, its resources won&#8217;t be cleared up.
+Also, I would be careful that NRF<em>LOG</em>DEBUG doesn&#8217;t block (it likely doesn&#8217;t, but just spin-waits for the debug port to be ready, but should be checked).
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,865 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS+TCP minor bug-finds - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2014/freertos_FreeRTOS_TCP_minor_bug-finds_5591a1a9j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS+TCP minor bug-finds - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS+TCP minor bug-findsPosted by rwt33 on November 26, 2014I&#8217;ve been enjoying deploying FreeRTOS+TCP (from the labs) on a STM32F103 + enc28j60 and have found a few gotchas along the way. I&#8217;m rating FreeRTOS+TCP a hole-in-one for an IP stack on micros &#8211; a great improvement over the two leading alternatives. Thankfully the findings are all &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2014/freertos_FreeRTOS_TCP_minor_bug-finds_5591a1a9j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS+TCP minor bug-findsPosted by rwt33 on November 26, 2014I&#8217;ve been enjoying deploying FreeRTOS+TCP (from the labs) on a STM32F103 + enc28j60 and have found a few gotchas along the way. I&#8217;m rating FreeRTOS+TCP a hole-in-one for an IP stack on micros &#8211; a great improvement over the two leading alternatives. Thankfully the findings are all [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS+TCP minor bug-finds - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202458' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202458' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202458' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202458' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145274' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2014%2Ffreertos_FreeRTOS_TCP_minor_bug-finds_5591a1a9j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2014%2Ffreertos_FreeRTOS_TCP_minor_bug-finds_5591a1a9j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145274">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2014_freertos_support_forum_archive_index.html/">November 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on November 26, 2014</div><div class="thread-post-content">I&#8217;ve been enjoying deploying FreeRTOS+TCP (from the labs) on a STM32F103 + enc28j60 and have found a few gotchas along the way. I&#8217;m rating FreeRTOS+TCP a hole-in-one for an IP stack on micros &#8211; a great improvement over the two leading alternatives. Thankfully the findings are all relatively minor.
+<ol>
+<li>The docs for BufferManagement_1.c don&#8217;t mention the need to implement vNetworkInterfaceAllocateRAMToBuffers</li>
+<li>The network buffers returned to BufferManagement_1.c must be 8-byte aligned. Which if not leads to next bug:</li>
+<li>If a buffer is not aligned to 8-byte boundary, the DHCP buffer alloc fails (pxUDPPayloadBuffer<em>to</em>NetworkBuffer returns null), but when vReleaseNetworkBufferAndDescriptor is called (from FreeRTOS_ReleaseUDPPayloadBuffer in prvSendDHCPRequest), there is no null check and so vReleaseNetworkBufferAndDescriptor crashes.</li>
+<li>configASSERT_VOID in a couple of files but with no def. </li>
+</ol>
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 26, 2014</div><div class="thread-post-content">Thank you for your valuable feedback.  I would be extremely grateful if you could post your code to the FreeRTOS Interactive site &#8211; I have just created a forum for this, a link to which is below.  If you are unable to post the project then please at least post the driver files.  Thanks.
+http://interactive.freertos.org/forums/21211265-FreeRTOS-TCP
+<blockquote>
+  The docs for BufferManagement_1.c don&#8217;t mention the need to implement 
+  vNetworkInterfaceAllocateRAMToBuffers
+</blockquote>
+I will fix.
+<blockquote>
+  The network buffers returned to BufferManagement_1.c must be 8-byte aligned. 
+</blockquote>
+Hein &#8211; can you please confirm and if so we can add an assert() into the code to catch this, and so bring peoples attention to it immediately without having to debug first.  I will also then add it to the documentation.
+<blockquote>
+  If a buffer is not aligned to 8-byte boundary, the DHCP buffer alloc fails 
+  (pxUDPPayloadBuffer<em>to</em>NetworkBuffer returns null), but when 
+  vReleaseNetworkBufferAndDescriptor is called (from 
+  FreeRTOS_ReleaseUDPPayloadBuffer in prvSendDHCPRequest), there is no null 
+  check and so vReleaseNetworkBufferAndDescriptor crashes.
+</blockquote>
+Again I think there needs to be some documentation on this point, and some asserts will help to.  Sometimes it is necessary to add an offset into the network buffer at the driver level &#8211; that may or may not be related. 
+<blockquote>
+  configASSERT_VOID in a couple of files but with no def.
+</blockquote>
+I think I have that one already.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 26, 2014</div><div class="thread-post-content">Just writing the documentation for vNetworkInterfaceAllocateRAMToBuffers() now, and it occurs to me the function would be better named vNetworkInterfaceAllocateRAMToDescriptors(), as that is what it is doing.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 26, 2014</div><div class="thread-post-content">Hi Robert,
+<blockquote>
+  a great improvement
+</blockquote>
+Thanks. We were all hoping that FreeRTOS+TCP will be simple (to use, to adopt) and at least equally powerful. It has the great advantage that it is build on top of FreeRTOS. This makes the code a lot simpler.
+<blockquote>
+  deploying FreeRTOS+TCP (from the labs) on a STM32F103 + enc28j60
+</blockquote>
+Please share, in return you will get valuable feedback 🙂
+Maybe we should make a check-list for &#8220;Writing a NIC driver for FreeRTOS+TCP&#8221;.
+I&#8217;m thinking of these options, I&#8217;m sure you&#8217;ve seen them all:
+<ul>
+<li>The choice between BufferManagement_1 / 2
+Version 1 is indeed preferred if your system has enough memory
+Provide an allocation function for version 1.</li>
+<li>Optional: ipconfigUSE_LLMNR : add the LLMNR multicast MAC address 01:00:5E:00:00:FC
+to the list of MAC-addresses.
+LLMNR is <strong>very useful</strong> for name resolution on a LAN, especially when using DHCP.
+All browsers use LLMNR as a preferred way to find names (without a dot)</li>
+<li>Optional: ipconfigDRIVER<em>INCLUDED</em>TX<em>IP</em>CHECKSUM</li>
+<li>Optional: ipconfigDRIVER<em>INCLUDED</em>RX<em>IP</em>CHECKSUM
+The NIC driver calculates the TX and/or RX checksum, either automatically within the
+EMAC peripheral, in which case it is called &#8220;checksum offloading&#8221;.
+Or by calling usGenerateChecksum().</li>
+<li>Optional: ipconfigETHERNET<em>DRIVER</em>FILTERS<em>PACKETS
+If you want to filter incoming messages within the NIC driver, enable this option.
+The advantage: you might want to stop many UDP broadcast messages as early as
+possible. W32, discovery protocols, PnP, simple network maintenance and other inventions
+can occupy quite some resources: allocate a buffer, send it to the IP-task, which
+will analyse and drop it.
+See FreeRTOS</em>Sockets.c:</li>
+</ul>
+~~~~~<br />
+        /* Function returns true if there is a UDP socket bound to
+        the given port number. */
+    BaseType_t xPortHasUdpSocket( uint16_t usPortNr )
+~~~~~
+<ul>
+<li>Optional: ipconfigPACKET<em>FILLER</em>SIZE
+This option is a bit tricky: it makes sure that all 32-bit fields in the network
+packets are 32-bit aligned. This means that the 14-byte Ethernet header should
+start at a 16-bit offset. Therefore ipconfigPACKET<em>FILLER</em>SIZE is defined a 2 (bytes).
+I think that most EMAC&#8217;s have an option to set this 2-byte offset for
+both incoming and outgoing packets.</li>
+<li>Optional: ipconfigUSE<em>LINKED</em>RX_MESSAGES
+An optimisation: Collect received packets in a loop and link them through a pointer
+called &#8216;pxNextBuffer&#8217;. Several messages will be forwarded to the IP-stack within
+a single &#8216;eNetworkRxEvent&#8217; message to the IP-stack</li>
+<li>Optional: what I would do is check the Link-Status continuously. As long as the LS is
+low, it doesn&#8217;t make sense to send messages. Check the PHY frequently, to have a quick
+response once it gets connected.
+As long as LS is high, check it e.g. every 15 seconds, unless packets are received,
+which already proves that the Link-Status is high.</li>
+</ul>
+I&#8217;m repeating the word &#8220;Optional&#8221;. All these points aren&#8217;t necessary, but they can all improve the performance.
+I will come back on the &#8220;8-byte alignment&#8221; issue, thanks for reporting that.
+&#8216;configASSERT_VOID&#8217; was my not-so-useful invention, the idea was:
+<pre><code>#define configASSERT_VOID(statement)    if( ( statement ) == pdFALSE ) return
+</code></pre>
+used in functions returning &#8216;void&#8217;.
+Regards,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on November 26, 2014</div><div class="thread-post-content">Hi,
+Thanks for the reply. I will contribute the driver once it&#8217;s done also.
+The buffer alignment issue wasn&#8217;t completely fixed by aligning to 8-byte boundaries, rather the buffer is rejected after the UDP offset is applied (ipUDP<em>PAYLOAD</em>OFFSET) which unfortunately is a non-8-byte size (42) so the buffer is never going to end up 8-byte aligned. 
+Is there a fix for this yet? I&#8217;m wondering why there is even the requirement to align to 8-byte boundaries for the packet? On the CM3 8-byte alignment is only required for stack pointers, no?
+Hein might have found something similar with what he&#8217;s referring to re the ipconfigPACKET<em>FILLER</em>SIZE
+Regards,
+Robert
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on November 26, 2014</div><div class="thread-post-content">Hi guys, I don&#8217;t suppose there&#8217;s a git repo from which I can pull latest updates?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on November 26, 2014</div><div class="thread-post-content">I&#8217;m starting to get a bit suspicious as to why the problem I&#8217;m having hasn&#8217;t been seen before, and assume it&#8217;s due to some combo of settings + Buffer_1 that hasn&#8217;t been tested before. 
+I&#8217;m on a STM32F103, and the crash is happening right during the first time through the prvIPTask, long before any packets are sent/received, during the first sending (attempt) of a DHCP packet.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 26, 2014</div><div class="thread-post-content"><blockquote>
+  Hi guys, I don&#8217;t suppose there&#8217;s a git repo from which I can pull
+  latest updates?
+</blockquote>
+Currently the sources are in a private SVN repository &#8211; although they 
+will be moved into the main FreeRTOS SVN repository at some point.  You 
+have have noticed both the source code directory structure and the web 
+pages are organised to fit with the standard model.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 26, 2014</div><div class="thread-post-content"><blockquote>
+  I&#8217;m starting to get a bit suspicious as to why the problem I&#8217;m having
+   hasn&#8217;t been seen before, and assume it&#8217;s due to some combo of
+  settings + Buffer_1 that hasn&#8217;t been tested before. I&#8217;m on a
+  STM32F103, and the crash is happening right during the first time
+  through the prvIPTask, long before any packets are sent/received,
+  during the first sending (attempt) of a DHCP packet.
+</blockquote>
+You could be right of course, although when Hein and I work on this Hein 
+uses Buffer<em>1 and I use Buffer</em>2.  Likewise Hein uses big endian and I 
+use little endian.  That way we are using both of both options all the time.
+Your comments about this being related to UDP make me suspect your 
+problem could be related to padding bytes that are required at the start 
+of the frame.  I will look through my notes on that, it might take a 
+while to find (I have a lot of notes!).
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 26, 2014</div><div class="thread-post-content">Hi Robert,
+If you like you send what you have now to info at freertos point org. Then we can have a look at it (without revealing any code).
+Or maybe this text will contain a hint:
+The &#8216;ipconfigPACKET<em>FILLER</em>SIZE&#8217; may indeed be a bit confusing. It corresponds to what is named &#8216;ETH<em>PAD</em>SIZE&#8217; in lwIP.
+~~~~~
+    uint8_t *pucBuffer;
+~~~~~
+What is <code>sizeof( pucBuffer )</code> on your platform ? If it is 64-bits then indeed the (internal) function like &#8216;pxUDPPayloadBuffer<em>to</em>NetworkBuffer&#8217; will only work with 8-byte aligned buffers.
+At the other hand, the library is not yet prepared for 64-bit pointers.
+Every network buffer descriptor has this memory:
+~~~~~
+    0x00 4 bytes  pointer to the network buffer descriptor
+    0x04 4 bytes  reserved for flags
+    0x08 2 bytes  Alignment filler (ipconfigPACKET<em>FILLER</em>SIZEbytes)
+    0x0a &#8216;ipTOTAL<em>ETHERNET</em>FRAME_SIZE&#8217; bytes
+                  Here the packet begins with &#8216;xDestinationAddress&#8217;
+<pre><code>#define ipTOTAL_ETHERNET_FRAME_SIZE  ( ipconfigNETWORK_MTU + 
+    ipSIZE_OF_ETH_HEADER + ipSIZE_OF_ETH_CRC_BYTES + 
+    ipSIZE_OF_ETH_OPTIONAL_802_1Q_TAG_BYTES )
+</code></pre>
+~~~~~
+Please note that the packet data:
+~~~~~
+    uint8_t *pucEthernetBuffer
+~~~~~
+points to offset 0x0a (== ipBUFFER_PADDING) in the allocated space.
+In your NetworkInterface.c you should allocate &#8216;ipTOTAL<em>ETHERNET</em>FRAME<em>SIZE + ipBUFFER</em>PADDING&#8217; bytes per network buffer. 
+~~~~~
+    #define UNIT<em>SIZE ( ipTOTAL</em>ETHERNET<em>FRAME</em>SIZE + ipBUFFER<em>PADDING )
+    /* Here the aligned(8) attribute is used because DMA likes it. */
+    static unsigned char network</em>packets[ ipconfigNUM<em>NETWORK</em>BUFFER<em>DESCRIPTORS * UNIT</em>SIZE ] <strong>attribute</strong> ((aligned (8)));
+<pre><code>void vNetworkInterfaceAllocateRAMToBuffers( pxNetworkBuffers[ ] )
+{
+unsigned char *ucRamBuffer = network_packets;
+int x;
+    for (x = 0; x &lt; ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS; x++) {
+        /* Add the 10 bytes */
+        pxNetworkBuffers[ x ].pucEthernetBuffer = ucRamBuffer + ipBUFFER_PADDING;
+        /* Set the pointer to the network buffer descriptor */
+        *((unsigned*)ucRamBuffer) = (unsigned)(&amp;pxNetworkBuffers[x]);
+        /* and point to the next space to assign. */
+        ucRamBuffer += UNIT_SIZE;
+    }
+}
+</code></pre>
+}
+~~~~~
+Regards,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on November 26, 2014</div><div class="thread-post-content">Am I able to have read access to the SVN repo? Of course it it&#8217;s an internal-only repo then no problem 🙂
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 26, 2014</div><div class="thread-post-content"><blockquote>
+  Am I able to have read access to the SVN repo? Of course it it&#8217;s an
+  internal-only repo then no problem 🙂
+</blockquote>
+Unfortunately not at the moment as there are some other new, and as yet 
+confidential, developments in the same repository.  We should aim to 
+expedite moving the TCP code into the public SVN repository, but I&#8217;m 
+somewhat hesitant as having it separate means we can change it rapidly &#8211; 
+rather than just between FreeRTOS releases.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on November 26, 2014</div><div class="thread-post-content">Ahh that buffer allocation looks like it might be promising. What I have at present does not allow for the padding:
+~~~~~~
+static uint8<em>t ucBuffers[ipconfigNUM</em>NETWORK<em>BUFFER</em>DESCRIPTORS][ipTOTAL<em>ETHERNET</em>FRAME_SIZE] <strong>attribute</strong>((aligned(8)));
+void vNetworkInterfaceAllocateRAMToBuffers(xNetworkBufferDescriptor<em>t pxNetworkBuffers[ipconfigNUM</em>NETWORK<em>BUFFER</em>DESCRIPTORS])
+{
+    BaseType_t x;
+<pre><code>for (x = 0; x &lt; ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS; x++)
+{
+    pxNetworkBuffers[x].pucEthernetBuffer = &amp;(ucBuffers[x][0]);
+}
+</code></pre>
+}
+~~~~~~
+After not finding any example of vNetworkInterfaceAllocateRAMToBuffers in FreeRTOS+TCP, I happened to find that snippet in FreeRTOS8.1.2 FreeRTOS-Plus-UDP/portable/NetworkInterface/WinPCap/NetworkInterface.c
+I will try the changes in ~12 hours and reply.
+Thanks for the support guys
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 26, 2014</div><div class="thread-post-content"><blockquote>
+  The &#8216;ipconfigPACKET<em>FILLER</em>SIZE&#8217; may indeed be a bit confusing.
+</blockquote>
+Just checking this page:
+http://www.freertos.org/FreeRTOS-Plus/FreeRTOS<em>Plus</em>TCP/TCP<em>IP</em>Configuration.html
+I find that constant is not even mentioned.  We need to add it in asap 
+and update the buffer_1 documentation pages accordingly.  I updated them 
+today once already following Robert&#8217;s feedback.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 27, 2014</div><div class="thread-post-content">You were still missing some things, like the &#8216;ipBUFFER_PADDING&#8217;:
+~~~~~~
+<h1>define UNIT<em>SIZE ( ipTOTAL</em>ETHERNET<em>FRAME</em>SIZE + ipBUFFER_PADDING )</h1>
+// The 10 bytes of ipBUFFER_PADDING should be added
+// so the declaration becomes:
+static uint8<em>t ucBuffers[ ipconfigNUM</em>NETWORK<em>BUFFER</em>DESCRIPTORS ]
+    [ UNIT_SIZE ] <strong>attribute</strong>((aligned(8)));
+~~~~~~
+It doesn&#8217;t make much sense to align the first buffer only, so let&#8217;s round up the size of each buffer:
+~~~~~~
+<h1>define UNIT<em>SIZE</em>1 ( ipTOTAL<em>ETHERNET</em>FRAME<em>SIZE + ipBUFFER</em>PADDING )</h1>
+<h1>define UNIT<em>SIZE</em>8 ( ( UNIT<em>SIZE</em>1 + 7 ) &amp; ~7 )</h1>
+static uint8<em>t ucBuffers[ ipconfigNUM</em>NETWORK<em>BUFFER</em>DESCRIPTORS ]
+    [ UNIT<em>SIZE</em>8 ] <strong>attribute</strong>((aligned(8)));
+// And finally make the double link, from descriptor to buffer and from
+// buffer to descriptor:
+void vNetworkInterfaceAllocateRAMToBuffers2( xNetworkBufferDescriptor<em>t
+    pxNetworkBuffers[] )
+{
+    BaseType</em>t x;
+<pre><code>for (x = 0; x &lt; ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS; x++)
+{
+    /* Not like this: */
+</code></pre>
+/*      pxNetworkBuffers[ x ].pucEthernetBuffer = &amp;(ucBuffers[ x ][ 0 ] ); <em>/
+        /</em> But like this: <em>/
+        pxNetworkBuffers[ x ].pucEthernetBuffer = &amp;(ucBuffers[ x ][ ipBUFFER_PADDING ] );
+        /</em> And set a pointer back to the descriptor: */
+        *( ( uint32_t * ) &amp;ucBuffers[ x ][ 0 ] ) = ( uint32_t ) &amp;pxNetworkBuffers[x];
+    }
+}
+~~~~~~
+There is no requirement to have the actual buffers 8-byte aligned, 4-byte is enough. But some DMA peripherals do like an 8-byte alignment or higher. A better alignment may lead to a higher throughput.
+Regards,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 27, 2014</div><div class="thread-post-content">Hi Hein &#8211; I think there is scope to make this easier for the end user. 
+For example, setting the pointer back to the descriptor as:
+<blockquote>
+  *(  (  uint32_t  *  )  &amp;ucBuffers[  x  ][  0  ]  )  =  (  uint32_t  ) 
+    &amp;pxNetworkBuffers[x];
+</blockquote>
+could be done inside BufferAllocation<em>1.c (in fact I thought it was!). 
+Ideally we don&#8217;t want the end user to know anything about how the space 
+is used, that should be hidden.  In fact even the use of 
+ipBUFFER</em>PADDING could be hidden by providing a different constant that 
+has the padding already added.  Something like:
+<pre>
+<h1>define ipBUFFER<em>SIZE ( ipTOTAL</em>ETHERNET<em>FRAME</em>SIZE + ipBUFFER_PADDING )</h1>
+<pre>
+except using a more descriptive name than 'BUFFER<em>SIZE', then the user 
+can use the BUFFER</em>SIZE constant without even knowing ipBUFFER_PADDING 
+has been added.
+Lets try and do this before the next labs release.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on November 27, 2014</div><div class="thread-post-content">Bingo, that was it.
+I first sorted the ipBUFFER_PADDING which made satisfied the alignment, but then hit the snag of no reference back to the descriptor. The above post fixed it.
+Definitely let me know when you bundle up the next labs release :-)
+Thanks guys. Will continue code stepping...
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 29, 2014</div><div class="thread-post-content">Hi Robert,
+<blockquote>
+  Bingo, that was it.
+</blockquote>
+I'm glad to hear.
+<blockquote>
+  I first sorted the ipBUFFER_PADDING which made satisfied the alignment,
+  but then hit the snag of no reference back to the descriptor.
+</blockquote>
+This mechanism was already present in the earlier FreeRTOS+UDP. The double pointers are necessary for the ZERO_COPY feature. It allows to pass around a "const char*" whereas in fact it is NetworkBuffer.
+In the next release, the double pointers and also the ipBUFFER<em>PADDING + ipconfigPACKET</em>FILLER_SIZE defines will be totally hidden, i.e. moved to the library.
+The network driver will only supply a pointer to a space big enough to hold all Network Buffers.
+<blockquote>
+  Definitely let me know when you bundle up the next labs release :-)
+</blockquote>
+You will be the first one to hear it :-)
+Note that the current release (141019) is not a first try-out. The development already started more than a year ago and this library has already been applied in commercial applications.
+It will remain in FreeRTOS Labs as long as: "... we are still refining its design, and the source code and documentation do not yet meet Real Time Engineers Ltd's strict quality standards".
+To be expected in the new release:
+<pre><code>- Sockets in listening mode, using the
+  'FREERTOS_SO_REUSE_LISTEN_SOCKET', can now also
+  be used with select() and accept().
+  The reuse option means that the same instance of
+  the listening socket will get connected.
+- The above change: hiding the PADDING and FILLING
+  bytes and setting the double links with pointers.
+- Extending the zero-copy option for TCP: the sending
+  routine may pass all packet buffers directly to the DMA,
+  in stead of first copying it.
+- Adapted documentation
+</code></pre>
+<blockquote>
+  Thanks guys. Will continue code stepping...
+</blockquote>
+Same to you.
+Btw are you still stepping through the code or running it by now?
+Regards,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on November 30, 2014</div><div class="thread-post-content">Hi guys,
+New update: have a polled version of the enc28j60 driver working sweetly. UDP loop tests are showing about 1Mb/s performance before packets start dropping. It's pretty crude in that it currently has to poll the chip (SPI transaction) to check if a received packet is waiting. I'm midst enabling interrupts and DMA. Transferring a 1500 byte packet over 10MHz SPI really is screaming for DMA! The more hardware peripheral features I pull in (SPI, GPIO Interrupt &amp; DMA) the more my frustration rises at keeping things moderately portable. I started out using libmaple with it's plethora of cpp libs and have been slowly FreeRTOS-ing them.
+Just a quick thing I noticed, in the porting examples, the basic packet receiving example doesn't set the xNetworkBufferDescriptor_t.xDataLength with xBytesReceived.
+Cheers guy,
+Robert
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 30, 2014</div><div class="thread-post-content"><blockquote>
+  Just a quick thing I noticed, in the porting 
+  examples, the basic packet receiving example 
+  doesn't set the xNetworkBufferDescriptor_t.xDataLength 
+  with xBytesReceived.
+</blockquote>
+Fixed!
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on December 1, 2014</div><div class="thread-post-content">Another documentation question: Is it ok to call vReleaseNetworkBufferAndDescriptor from an ISR? The documentation page for it only mentions "pxGetNetworkBufferWithDescriptor() must not be called from an interrupt service routine (ISR)", bur doesn't say vReleaseNetworkBufferAndDescriptor can't be. Copy and paste error?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 1, 2014</div><div class="thread-post-content">If you are using BufferAllocation_2.c then this is not same to use from 
+an ISR - although you could modify the memory allocation functions to 
+make it safe I would not recommend it.  It is best instead to defer the 
+processing to a task.  The next FreeRTOS version introduces a new 
+feature that makes that faster and easier (does not require a semaphore).
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on December 1, 2014</div><div class="thread-post-content">Same thoughts: try to defer all buffer processing to a normal task.
+In one of the ports (for Xilinx/Zynq) you will find:
+~~~~~
+<pre><code>/* Three ISR's for TX, RX and error handling: */
+void emac_send_handler(void *arg)
+{
+xemacpsif_s   *xemacpsif;
+long xHigherPriorityTaskWoken = pdFALSE;
+    xemacpsif = (xemacpsif_s *)(arg);
+    /* In this port for FreeRTOS+TCP, the EMAC interrupts
+    will only set a bit in "isr_events". The task in
+    NetworkInterface will wake-up and do the necessary work. */
+    xemacpsif-&gt;isr_events |= EMACPS_TX_EVENT;
+    xemacpsif-&gt;txBusy = pdFALSE;
+    if( xEMACEventSemaphore != NULL )
+    {
+        xSemaphoreGiveFromISR( xEMACEventSemaphore,
+            &amp;xHigherPriorityTaskWoken );
+    }
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+}
+void emac_recv_handler(void *arg)
+{
+    /* Same as above, setting the RX flag */
+    xemacpsif-&gt;isr_events |= EMACPS_RX_EVENT;
+    ...
+}
+void emac_error_handler(void *arg)
+{
+    /* Same as above, setting the ERR flag */
+    xemacpsif-&gt;isr_events |= EMACPS_ERR_EVENT;
+    ...
+}
+</code></pre>
+~~~~~
+The task handling the NIC will do the actual work:
+~~~~~
+for( ; ; )
+{
+    if( ( xemacpsif->isr<em>events &amp; EMACPS</em>ALL_EVENT ) == 0 )
+    {
+        xSemaphoreTake( xEMACEventSemaphore, 100 );
+    }
+<pre><code>if( ( xemacpsif-&gt;isr_events &amp; EMACPS_RX_EVENT ) != 0 )
+{
+    xemacpsif-&gt;isr_events &amp;= ~EMACPS_RX_EVENT;
+    xResult = emacps_check_rx( xemacpsif );
+}
+if( ( xemacpsif-&gt;isr_events &amp; EMACPS_TX_EVENT ) != 0 )
+{
+    xemacpsif-&gt;isr_events &amp;= ~EMACPS_TX_EVENT;
+    emacps_check_tx( xemacpsif );
+}
+if( ( xemacpsif-&gt;isr_events &amp; EMACPS_ERR_EVENT ) != 0 )
+{
+    xemacpsif-&gt;isr_events &amp;= ~EMACPS_ERR_EVENT;
+    emacps_check_errors( xemacpsif );
+}
+check_phy_link_status( );
+</code></pre>
+}
+~~~~~
+Note that sending messages always happens from the IP-task.
+FreeRTOS+TCP is 100% thread-safe, not interrupt-safe. As you most probably know, there is a very small delay between calling xSemaphoreGiveFromISR() and the waking up from xSemaphoreTake().
+The above approach has the advantage that the configured priorities govern the processing, and not the hardware 🙂
+Personally, I tend to give the highest priority to the NIC task. We don't want to miss packets due to an RX overflow. The above routine emacps<em>check</em>rx() will only put received messages in a queue, and free the DMA buffers.
+The second highest priority is for the IP-task, and all other tasks get a lower priority.
+Good luck,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on December 4, 2014</div><div class="thread-post-content">Hi guys,
+When dealing with link up/down events, I call FreeRTOS_NetworkDown[FromISR] and then indicate network back up from xNetworkInterfaceInitialise. Is it recommended to block for long periods in xNetworkInterfaceInitialise while waiting for the link to come up?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 4, 2014</div><div class="thread-post-content">I don't think that should be necessary as the IP task will itself delay in between calls to xNetworkInterfaceInitialise().  Search FreeRTOS<em>IP.c for ipINITIALISATION</em>RETRY_DELAY to see where this is done.  Let us know if that is not what you meant, or think it should be done in some other way.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on December 8, 2014</div><div class="thread-post-content">Sweet, I've got a nicely running stack. DMA &amp; Interrupt driven, it achieves ~3.8Mb which I figure isn't that for a 10Mb NIC on a 9MHz SPI and no IP checksum offloading. 
+Are you guys ready to NIC drivers for FreeRTOS+TCP? 
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 8, 2014</div><div class="thread-post-content">Excellent!  You can have the honour of being the first person to upload 
+a driver (hopefully a build project showing how to use the driver ;o) to 
+the +TCP forum in the Interactive site:
+http://interactive.freertos.org/forums/21211265-FreeRTOS-TCP
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on December 16, 2014</div><div class="thread-post-content">Good call. I'm midst refactoring the code to try decouple hardware peripheral dependencies. I'll then post to the forum
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on December 17, 2014</div><div class="thread-post-content">I'm having a few issues now with the link going up/down. Before I start digging into my driver, have you guys done much testing with links going up &amp; down? Specifically I'm having problems when the link has been up, goes down and then comes back up. 
+If the link is there at startup it's fine, or if the link is missing at startup xNetworkInterfaceInitialise polls until the link comes up. It's only if the link has been up, goes down and then comes back up that I'm having problems.
+Of course there's a very high chance it's my driver also. Just wondering if you've done much exploration in that area.
+Cheers guys
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 17, 2014</div><div class="thread-post-content">Hi Robert,
+There is some reliance on the driver here to inform the stack that the 
+link has gone down.  When the driver tells the stack the link has gone 
+down the stack should then loop, periodically attempting to 
+re-initialise.  Re-initialising should then start the DHCP process 
+again.  We can have a look, but in the mean time if you see anything 
+that needs changing let us know.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on December 17, 2014</div><div class="thread-post-content">Hi Robert,
+If your device runs on a battery and if it is being plugged-in and out, yes I would have it run DHCP again. The new network might be totally different.
+At the other hand, if the device has a fixed place and a fixed power supply, I would just poll the Link Status of the PHY. As long as the LS is high, you rarely poll it, may after not receiving any packet for e.g. 5 seconds.
+While the LS is low, just discard outgoing messages. I would poll the LS status frequently (at least every second) just to see when it comes up again.
+When I get a chance I will try the first option: a reinitialisation including HDCP after the Link Status comes up again.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hmf55">hmf55</a> on February 26, 2015</div><div class="thread-post-content">Hi,
+I'm reading this thread having the same issue. I'm using the download 141019 not knowing
+if this bug is already fixed.
+I'm porting to the RX63N from renesas (Trying to get the zero Copy DMA running).
+The problem I'figurured out is in "FreeRTOS<em>IP.c" in Function 
+'pxUDPPayloadBuffer</em>to_NetworkBuffer' (line 916)
+test for buffer alignment:
+if( ( ( ( uint32<em>t ) pvBuffer ) &amp; portBYTE</em>ALIGNMENT_MASK ) == 0 )
+this could not work since "pvBuffer" is misaligned since "sizeof( xUDPPacket_t )"
+is not 32 bit aligned.
+I've changed that to
+if( ( ( ( uint32<em>t ) (pucBuffer + ipBUFFER</em>PADDING) ) &amp; portBYTE<em>ALIGNMENT</em>MASK ) == 0 )
+wich works for me.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on February 26, 2015</div><div class="thread-post-content">Hi,
+Thanks for letting us know. There was indeed a typo in the mentioned function:
+~~~~~
+-   if( ( ( ( uint32<em>t ) pvBuffer ) &amp; ( sizeof( pucBuffer ) - 1 ) ) == 0 )
++   if( ( ( ( uint32</em>t ) pucBuffer ) &amp; ( sizeof( pucBuffer ) - 1 ) ) == 0 )
+~~~~~
+<blockquote>
+  I'm porting to the RX63N from Renesas
+</blockquote>
+Wow great! +TPC hasn't been ported to that part yet.
+If you like, please share your work (i.e. NetworkInterface.c) with the community.
+In return you may get an "early adopter status".
+Please drop an email to FreeRTOS if you want to know more about this.
+Regards,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hmf55">hmf55</a> on March 3, 2015</div><div class="thread-post-content">Hi,
+I think I found the next bug:
+in "FreeRTOS_Sockets.c" in Line 788 the port is set with out considering the endianess:
+Instead of
+pxNetworkBuffer->usPort = pxDestinationAddress->sin_port;
+I use this
+pxNetworkBuffer->usPort = FreeRTOS<em>htons(pxDestinationAddress->sin</em>port);
+which worked for me.
+How can I share my work? Drop the files here?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 3, 2015</div><div class="thread-post-content">That's interesting - we are testing with both endians so I'm curious how 
+we have missed that.  I would be grateful if you could either attach the 
+effected file to the post, or maybe better still (so there are not too 
+many versions floating around the internet) send the file to me.  I 
+think you have my email address already - otherwise use the "business 
+contact" link on http://www.FreeRTOS.org/contact and just mark it for my 
+attention.
+Regards (Richard).
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 3, 2015</div><div class="thread-post-content">Hi,
+Thanks a lot for reporting, but it doesn't look like a bug.
+This is the function you wrote about:
+~~~~~
+int32<em>t FreeRTOS</em>sendto( xSocket<em>t xSocket, const void *pvBuffer,
+    size</em>t xTotalDataLength, uint32<em>t ulFlags,
+    const struct freertos</em>sockaddr *pxDestinationAddress,
+    socklen_t xDestinationAddressLength )
+{
+    ....
+    pxNetworkBuffer->usPort = pxDestinationAddress->sin_port;
+    ....
+    pxNetworkBuffer->ulIPAddress = pxDestinationAddress->sin_addr;
+    ....
+}
+~~~~~
+The fields of <code>pxDestinationAddress</code> must be set before calling <code>sendto()</code>, for instance as follows:
+~~~~~
+    /* FreeRTOS<em>inet</em>addr() returns an IP address in network-byte-order: */
+    pxDestinationAddress->sin_addr = FreeRTOS_inet_addr( "192.168.1.110" );
+<pre><code>/* This would have the same effect: */
+pxDestinationAddress-&gt;sin_addr = FreeRTOS_htonl( 0xC0A8016E );
+pxDestinationAddress-&gt;sin_port = FreeRTOS_htons( 10000 );
+</code></pre>
+~~~~~
+When BSD sockets were first invented, everyone agreed that all values must be stored internally in the network-byte-order.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hmf55">hmf55</a> on March 4, 2015</div><div class="thread-post-content">oh sorry, one should - RTFM - first.
+Many Thanks.
+Am 03.03.2015 um 19:13 schrieb Hein Tibosch:
+<blockquote>
+  Hi,
+  Thanks a lot for reporting, but it doesn't look like a bug.
+  This is the function you wrote about:
+  int32<em>t  FreeRTOS</em>sendto(  xSocket<em>t  xSocket,  const  void  *pvBuffer,
+       size</em>t  xTotalDataLength,  uint32<em>t  ulFlags,
+       const  struct  freertos</em>sockaddr  *pxDestinationAddress,
+       socklen_t  xDestinationAddressLength  )
+  {
+       ....
+       pxNetworkBuffer->usPort  =  pxDestinationAddress->sin_port;
+       ....
+       pxNetworkBuffer->ulIPAddress  =  pxDestinationAddress->sin_addr;
+       ....
+  }
+  The fields of |pxDestinationAddress| must be set before calling |sendto()|, for instance as follows:
+<pre><code> /* FreeRTOS_inet_addr() returns an IP address in network-byte-order: */
+ pxDestinationAddress-&gt;sin_addr  =  FreeRTOS_inet_addr(  "192.168.1.110"  );
+ /* This would have the same effect: */
+ pxDestinationAddress-&gt;sin_addr  =  FreeRTOS_htonl(  0xC0A8016E  );
+ pxDestinationAddress-&gt;sin_port  =  FreeRTOS_htons(  10000  );
+</code></pre>
+  When BSD sockets were first invented, everyone agreed that all values must be stored internally in the network-byte-order.
+  Regards.
+  <hr />
+  FreeRTOS+TCP minor bug-finds <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/5591a1a9/?limit=25&amp;page=1#3048">https://sourceforge.net/p/freertos/discussion/382005/thread/5591a1a9/?limit=25&amp;page=1#3048</a>
+  <hr />
+  Sent from sourceforge.net because you indicated interest in https://sourceforge.net/p/freertos/discussion/382005/ <a href="https://sourceforge.net/p/freertos/discussion/382005">https://sourceforge.net/p/freertos/discussion/382005</a>
+  To unsubscribe from further messages, please visit https://sourceforge.net/auth/subscriptions/ <a href="https://sourceforge.net/auth/subscriptions">https://sourceforge.net/auth/subscriptions</a>
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 4, 2015</div><div class="thread-post-content"><blockquote>
+  oh sorry, one should - RTFM - first.
+</blockquote>
+Haha, I don't blame you, the forced network byte order is very confusing 🙂
+I have never understood why, on a little-endian machine, port-numbers and IP-addresses must be stored 'the other way around'. The swapping could also have remained hidden, somewhere in the driver.
+E.g. HTTP is at port 80 (0x50), and when you inspect <code>sin_addr</code> you will see port 20480 (0x5000).
+Within the +TCP library you'll see several fields and variables that are in native endianness, such as these socket fields:
+~~~~~
+    uint32<em>t xIPTcpSocket::ulRemoteIP;      /* IP address of remote machine */
+    uint16</em>t xIPTcpSocket::usRemotePort;    /* Port on remote machine <em>/
+    uint16_t xFreeRTOS_Socket_t::usLocPort; /</em> Local port on this machine */
+~~~~~
+The reason was that it made debugging a lot easier.
+Good luck!
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andymcc0">andymcc0</a> on March 4, 2015</div><div class="thread-post-content">Perhaps not a 'bug' as such, but I struggled with DHCP until I cleared the 'BROADCAST' flag from the flags field of the DHCP message.
+i.e. in FreeRTOS_DHCP.C:prvCreatePartDHCPMessage() replace
+<code>pxDHCPMessage-&gt;usFlags = dhcpBROADCAST;</code>
+with
+<code>pxDHCPMessage-&gt;usFlags = 0;</code>
+More detail in section 3.1.1 of RFC1542
+http://tools.ietf.org/html/rfc1542
+which implies that it should only be set exceptionally.
+As an aside, I hope to make available an example project using FreeRTOS+TCP+CLI, built using LPCXpresso/LPCOpen and running on the Embedded Artists LPC4088 OEM + Base board.
+Andy McC
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 5, 2015</div><div class="thread-post-content">Hi Andy,
+Thanks for reporting this.
+I just tried out both settings, with and without the DHCP BROADCAST flag.
+<pre><code>pxDHCPMessage-&gt;usFlags = dhcpBROADCAST;
++TCP : 0.0.0.0      255.255.255.255  ..:ff:ff:ff  DHCP Discover
+DHCP : 192.168.2.3  255.255.255.255  ..:ff:ff:ff  DHCP Offer
++TCP : 0.0.0.0      255.255.255.255  ..:ff:ff:ff  DHCP Request
+DHCP : 192.168.2.3  255.255.255.255  ..:ff:ff:ff  DHCP ACK
+pxDHCPMessage-&gt;usFlags = 0;
++TCP : 0.0.0.0      255.255.255.255  ..:ff:ff:ff  DHCP Discover
+DHCP : 192.168.2.3  192.168.2.125    ..:a3:94:22  DHCP Offer
++TCP : 0.0.0.0      255.255.255.255  ..:ff:ff:ff  DHCP Request
+DHCP : 192.168.2.3  192.168.2.125    ..:a3:94:22  DHCP ACK
+</code></pre>
+The difference is that the DHCP server will 'unicast' the Offer and ACK responses.
+Is your device able to receive broadcast messages?
+<pre><code>Register: RXFILTERCTRL at address 0x2008 4200
+Bit:      1 ABE AcceptBroadcastEn. When set to 1,
+          all broadcast frames are accepted. 0
+</code></pre>
+It might be an idea to use 'unicast' in the first instance, and only if that fails start 'Discover' with the BROADCAST flag.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andymcc0">andymcc0</a> on March 5, 2015</div><div class="thread-post-content">Hi Hein,
+In desperation, I had set my device to accept anything, but nothing was coming in.  It didn't help that I couldn't see <strong>any</strong> BOOTP/DHCP messages with Wireshark.  In the end I went step by step through a working lwip implementation, comparing it with the +TCP (the BOOTP/DHCP packets for this didn't show up in Wireshark either).
+I guess it has something to do with the way the network here is set up.
+Would it be an idea to control the use of the <code>dhcpBROADCAST</code> flag with an <code>ipcofigUSE_BLAHBLAH</code> define, or alternatively build 'fallover' logic into the DHCP implementation?
+Cheers,
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andymcc0">andymcc0</a> on March 5, 2015</div><div class="thread-post-content">I think I have found a possible bug in FreeRTOS_Sockets.c
+In function <code>FreeRTOS_recvfrom()</code>,
+<pre><code>if( pxSourceAddress != NULL )
+{
+    pxSourceAddress-&gt;sin_port = pxNetworkBuffer-&gt;usPort;
+    pxSourceAddress-&gt;sin_addr = pxNetworkBuffer-&gt;ulIPAddress;
+}
+</code></pre>
+occurs <strong>after</strong> the non zero copy option has called
+<code>vReleaseNetworkBufferAndDescriptor( pxNetworkBuffer )</code>
+I see no problem with moving it up to before the
+<pre><code>if( ( ulFlags &amp; FREERTOS_ZERO_COPY ) == 0 )
+</code></pre>
+test
+It is probable that the contents of <code>pxNetworkBuffer-&gt;usPort</code> and <code>pxNetworkBuffer-&gt;ulIPAddress</code> remain valid for long enough for the assignment to work as it is, but I wouldn't want to rely on it.
+Opinions?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 5, 2015</div><div class="thread-post-content"><blockquote>
+  Would it be an idea to control the use of the dhcpBROADCAST
+  flag with an ipcofigUSE_BLAHBLAH define, or alternatively
+  build 'fallover' logic into the DHCP implementation?
+</blockquote>
+Yes sure that is possible.
+I was thinking of :
+<pre><code>#define ipconfigDHCP_USES_UNICAST       1
+</code></pre>
+And maybe this can even become '1' by default. I don't think it will hurt any existing setup as unicast works better than broadcast.
+I will respond to your other message later,
+Thanks,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 5, 2015</div><div class="thread-post-content"><blockquote>
+  Yes sure that is possible.
+  I was thinking of :
+  <h1>define ipconfigDHCP<em>USES</em>UNICAST       1</h1>
+</blockquote>
+Actually - I don't think that is a suitable solution because the 
+firmware in a product would need to change depending on the network it 
+was plugged in to.  Something more adaptive would be more robust - 
+either try uni cast first, then broadcast on the retry, then unicast on 
+the next retry, etc.  Or alternative start by sending both a unicast and 
+a broadcast, if the DHCP server is not upset by such a thing.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 5, 2015</div><div class="thread-post-content">Hi Andy,
+~~~~~
+if( pxSourceAddress != NULL )
+{
+    pxSourceAddress->sin<em>port = pxNetworkBuffer->usPort;
+    pxSourceAddress->sin</em>addr = pxNetworkBuffer->ulIPAddress;
+}
+~~~~~
+<blockquote>
+  occurs after the non zero copy option has called
+</blockquote>
+Well seen, thanks!
+<blockquote>
+  Opinions?
+</blockquote>
+Yes: assign earlier, before deleting the buffers.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andymcc0">andymcc0</a> on March 6, 2015</div><div class="thread-post-content">This may not be a bug, but I think it worth noting:
+My PC is on a different sub-net to the IP address obtained by my development board.  This makes it appear as a "remote" host when <code>vARPRefreshCacheEntry()</code> is called as part of processing a received UDP packet.
+If <code>ipconfigARP_STORES_REMOTE_ADDRESSES</code> is 0 (in my case, it wasn't even defined, so I have since added it to <code>FreeRTOSIPConfig.h</code>), then no entry is made in the ARP table.  When it comes to replying there is an ARP cache miss, so the outgoing UDP packet is turned into an ARP request to the obtained gateway IP address.  A short burst of these appear on the network then my application runs off into the weeds (which might be my failure to handle the problem in my UDP server task; I wasn't able to catch exactly what happened).
+If <code>ipconfigARP_STORES_REMOTE_ADDRESSES</code> is non-zero, the ARP entry is made, and there are 'happy bunnies' all round.
+I now have a working LPC4088<em>GCC version of the 'FreeRTOS</em>Plus<em>TCP</em>and<em>CLI</em>Windows_Simulator' demo.  I have rewritten <code>vTCPNetStat()</code> to take a buffer pointer as a parameter, which it fills with the formatted output.  The call from <code>prvIPTask()</code> now passes <code>xReceivedEvent.pvData</code> as the pointer and <code>FreeRTOS_netstat()</code> sets up the buffer and passes the pointer in the <code>IPStackEvent</code> struct to <code>xSendEventStructToIPTask()</code>.  Why did I do this?  So that the demo <code>prvNetStatCommand()</code> could return the data to the calling CLI client by calling <code>xSendEventStructToIPTask()</code> with the <code>pcWriteBuffer</code> as the <code>.pvData</code> member.
+Everything is a bit messy at the moment, so it's not quite ready for public consumption, but soon, soon.  It will be good discipline for me to tidy up before moving on to Telnet, FTP, etc.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 6, 2015</div><div class="thread-post-content">Hi Andy,
+Appreciate your feedback.
+The classical idea about the netmask is: if an IP address is outside the netmask, it is a strange address and it is assumed to go through a router.
+As you can read somewhere in the documentation, <code>ipconfigARP_STORES_REMOTE_ADDRESSES</code> was introduced to remember the MAC-address of all packets, also from devices that are outside the netmask (maybe from the Internet).
+Modern networks can have many different routers / gateways, not just one.
+Glad to hear that defining <code>ipconfigARP_STORES_REMOTE_ADDRESSES = 1</code> helps to solve your problem.
+Actually I thing we should solve the kind of problem you're facing by adding routing rules.
+Just curious: why isn't your laptop on the same netmask as your embedded devices? Aren't they both using the same DHCP server?
+<blockquote>
+   I have rewritten vTCPNetStat() to take a buffer pointer as a parameter
+</blockquote>
+I'm sure Richard will like that too. It is much more in-line with the listings of tasks (<code>uxTaskGetSystemState</code>), that also works by providing a buffer and a buffer length.
+All of my embedded projects have logging, and also the output of FreeRTOS_printf() will be added to that logging. The logging can be seen by making a telnet connection. Every logging-line is preceded by a time-stamp and a task number.
+Here is an example of the 'netstat' command:
+~~~~~
+    321.682.673 [1]: netstat
+    321.682.773 [5]: Prot Port IP-Remote       : Port  R/T Status       Alive  tmout Child
+    321.682.905 [5]: TCP  8001 0.0.0.0         :    0 0/0 eTCP<em>LISTEN   317646      0 0/12
+    321.683.041 [5]: TCP  8000 0.0.0.0         :    0 0/0 eTCP</em>LISTEN   317646      0 0/12
+    321.683.122 [5]: TCP    21 0.0.0.0         :    0 0/0 eTCP<em>LISTEN   317647      0 3/12
+    321.683.254 [5]: TCP  8021 0.0.0.0         :    0 0/0 eTCP</em>LISTEN   317646      0 0/12
+    321.683.387 [5]: TCP  2402 192.168.2.3     : 2800 1/1 eESTABLISHED       1  20000
+    321.683.515 [5]: TCP    23 0.0.0.0         :    0 0/0 eTCP<em>LISTEN   317642      0 0/3
+    321.683.651 [5]: TCP    80 0.0.0.0         :    0 0/0 eTCP</em>LISTEN   317241      0 13/16
+    321.683.783 [5]: TCP  8080 0.0.0.0         :    0 0/0 eTCP_LISTEN   317241      0 0/16
+    321.683.917 [5]: TCP    80 192.168.2.3     : 2817 1/1 eESTABLISHED    3450  16532
+    321.684.049 [5]: TCP    80 192.168.2.3     : 2820 1/1 eESTABLISHED    4108  15858
+    321.684.124 [5]: TCP    21 192.168.2.3     : 2840 1/1 eESTABLISHED    5350  17058
+    321.684.251 [5]: TCP    21 192.168.2.3     : 2845 1/1 eESTABLISHED    2654  19836
+    321.684.384 [5]: TCP    21 192.168.2.3     : 2846 1/1 eESTABLISHED    2825  19664
+    321.684.511 [5]: TCP    80 192.168.2.3     : 3017 1/1 eESTABLISHED    4232  15732
+    321.684.639 [5]: TCP    80 192.168.2.3     : 3018 1/1 eESTABLISHED    3373  16611
+    321.684.772 [5]: TCP    80 192.168.2.3     : 3019 1/1 eESTABLISHED    3369  16615
+    321.684.898 [5]: TCP    80 192.168.2.3     : 3020 1/1 eESTABLISHED     142     62
+    321.685.123 [5]: TCP    80 192.168.2.3     : 3037 1/1 eESTABLISHED     106     96
+    321.685.250 [5]: TCP    80 192.168.2.3     : 3038 1/1 eESTABLISHED    3498  16585
+    321.685.382 [5]: TCP    80 192.168.2.3     : 3039 1/1 eESTABLISHED    3593  16481
+    321.685.510 [5]: TCP    80 192.168.2.3     : 3040 1/1 eESTABLISHED    4255  15904
+    321.685.643 [5]: TCP    80 192.168.2.3     : 3041 1/1 eESTABLISHED    3428  16755
+    321.685.771 [5]: TCP    80 192.168.2.3     : 3042 1/1 eESTABLISHED    3421  16763
+    321.685.903 [5]: TCP    80 192.168.2.3     : 3043 1/1 eESTABLISHED    3501  16983
+    321.685.938 [5]: UDP Port 30718
+    321.685.969 [5]: UDP Port  2000
+    321.686.005 [5]: UDP Port 30717
+    321.686.026 [5]: UDP Port   123
+~~~~~
+Keep in mind that the resulting string of the 'netstat' command may become quite large.
+Regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andymcc0">andymcc0</a> on March 6, 2015</div><div class="thread-post-content"><blockquote>
+  Glad to hear that defining <code>ipconfigARP_STORES_REMOTE_ADDRESSES = 1</code> helps to solve your problem.
+</blockquote>
+Me too 😉 though I'm still a little concerned that it fell over so badly without it.
+<blockquote>
+  Just curious: why isn't your laptop on the same netmask as your embedded devices? Aren't they both using the same DHCP server?
+</blockquote>
+I'm not sure, they are plugged into the same network: the PC is on the 10.16.255.255 subnet and the dev board on 10.186.0.255
+<blockquote>
+  <blockquote>
+    I have rewritten <code>vTCPNetStat()</code> to take a buffer pointer as a parameter
+  </blockquote>
+  I'm sure Richard will like that too. It is much more in-line with the listings of tasks (<code>uxTaskGetSystemState</code>), that also works by providing a buffer and a buffer length.
+</blockquote>
+I provide the size of the buffer (in the first <code>sizeof(size_t)</code> bytes of the buffer (I should perhaps create a <code>struct</code> with <code>.length</code> and <code>.payload</code> members)) and I check within <code>vTCPNetStat()</code> for potential overflow, returning if a newly <code>snprintf()</code>ed line will not fit in the remaining buffer.  A refinement would be to be able to make multiple calls to get all of a large block of data, or deliberately restrict it to one line at a time.  I'm not sure if that would be in danger of filling up the <code>xNetworkEventQueue</code>; probably not if subsequent calls for data wait for previous ones to finish, which is the likely case.
+I'll include the modified +TCP source when I 'publish' next week.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 6, 2015</div><div class="thread-post-content">This is my favorite way to respect the buffer size:
+~~~~~
+    int iLength = 0;
+<pre><code>pcBuffer[ 0 ] = ' ';
+for( ;; )
+{
+    /* This method assumes that snprintf() will always
+    leave the the buffer null-terminated. */
+    iLength += snprintf( pcBuffer + iLength, iMaxLength - iLength, "xxxn");
+}
+</code></pre>
+~~~~~
+<blockquote>
+  the PC is on the 10.16.255.255 subnet and
+  the dev board on 10.186.0.255
+</blockquote>
+Normally, with a 10.x.x.x address, the netmask should be set at 255.0.0.0.
+Likewise a 192.168.x.x address normally has a netmask of 255.255.255.0
+In your case, both devices should be on a 10.255.255.255 network.
+But, as these IP-ranges are <code>private</code>, you're entirely free to use whatever netmask you like.
+In a meanwhile, I will start thinking about some simple routing rules. In a later stage, the possibility of multiple NIC's should be added to +TCP and that will ask for routing.
+regards,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP minor bug-finds</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andymcc0">andymcc0</a> on March 13, 2015</div><div class="thread-post-content">I wrote:
+<blockquote>
+  As an aside, I hope to make available an example project using FreeRTOS+TCP+CLI, built using LPCXpresso/LPCOpen and running on the Embedded Artists LPC4088 OEM + Base board.
+</blockquote>
+DONE, it can now be found at:
+http://interactive.freertos.org/entries/80118239-FreeRTOS-TCP-Labs-port-and-demo-for-Embedded-Artists-LPC4088-Dev-Kit
+Andy McC
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/RTOS.html" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug in queue.c? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2012/freertos_Bug_in_queue.c_5105829.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Bug in queue.c? - FreeRTOS" />
+<meta property="og:description" content="Bug in queue.c?Posted by axos88 on March 10, 2012Hi&#033; What happens if a queue is deleted when a task is waiting for it? &#040;To write or to receive from?&#041; All I see in queue.c is: void vQueueDelete&#040; xQueueHandle pxQueue &#041; &#123; configASSERT&#040; pxQueue &#041;; traceQUEUE&#095;DELETE&#040; pxQueue &#041;; vQueueUnregisterQueue&#040; pxQueue &#041;; vPortFree&#040; pxQueue-&gt;pcHead &#041;; vPortFree&#040; pxQueue &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2012/freertos_Bug_in_queue.c_5105829.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Bug in queue.c?Posted by axos88 on March 10, 2012Hi&#033; What happens if a queue is deleted when a task is waiting for it? &#040;To write or to receive from?&#041; All I see in queue.c is: void vQueueDelete&#040; xQueueHandle pxQueue &#041; &#123; configASSERT&#040; pxQueue &#041;; traceQUEUE&#095;DELETE&#040; pxQueue &#041;; vQueueUnregisterQueue&#040; pxQueue &#041;; vPortFree&#040; pxQueue-&gt;pcHead &#041;; vPortFree&#040; pxQueue [&hellip;]" />
+<meta name="twitter:title" content="Bug in queue.c? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202097' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202097' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202097' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202097' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141196' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2012%2Ffreertos_Bug_in_queue.c_5105829.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2012%2Ffreertos_Bug_in_queue.c_5105829.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141196">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2012_freertos_support_forum_archive_index.html/">March 2012 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Bug in queue.c?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/axos88">axos88</a> on March 10, 2012</div><div class="thread-post-content">Hi&#33;  
+What happens if a queue is deleted when a task is waiting for it? &#40;To write or to receive from?&#41;  
+All I see in queue.c is:  
+void vQueueDelete&#40; xQueueHandle pxQueue &#41;<br />
+&#123;<br />
+configASSERT&#40; pxQueue &#41;;  
+traceQUEUE&#95;DELETE&#40; pxQueue &#41;;<br />
+vQueueUnregisterQueue&#40; pxQueue &#41;;<br />
+vPortFree&#40; pxQueue-&gt;pcHead &#41;;<br />
+vPortFree&#40; pxQueue &#41;;<br />
+&#125;  
+This does not seem to wake up the tasks waiting for the queue &#40;and telling them to return an error&#41; before freeing it.  
+Regards,<br />
+&nbsp; Ákos Vandra
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in queue.c?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on March 10, 2012</div><div class="thread-post-content">Don&#8217;t delete a queue that is in use. If you do, it is a bug in the application code, not the kernel.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in queue.c?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 10, 2012</div><div class="thread-post-content">FreeRTOS was designed ti handle the typical cases very efficiently, and to achieve that goal has a few basic constraints, including not deleting queue etc that are in use, or deleting tasks that own mutexes. To be honest, I can&#8217;t think of a time where I wanted to be able to delete a queue in my application &#40;I can think of some places&nbsp; you might want to, but I don&#8217;t do that sort of thing.&#41;&nbsp; My first thought is that the issue may be that to get all the tasks waiting to return with an error would require the delaying of the actually deleting of the queue since those tasks are in the middle of queue functions referencing that queue, and delaying the frees might cause overhead in the normal use cases.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in queue.c?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/axos88">axos88</a> on March 16, 2012</div><div class="thread-post-content">Hi Richard,  
+Okay, I understand, however the API documentation lacks this note. Actually I find the API documentation pretty lacking in itself, but that is another issue.  
+Do you think this could be worked around somehow?  
+For the scenario:<br />
+I am writing a connection-based network stack.<br />
+Suppose one task opens a connection to a remote machine, and tries to read data from the socket, however it blocks, as there is no data pending. I am using semaphores here for waiting.<br />
+Now suppose something goes wrong, and the remote closes the connection, or the connection times, out or whatever.<br />
+The socket should now go into the closing state, sending the close connection messgaes, and eventually cleaning up all semaphores, and resources used, even the one that the task is still waiting for for the read.  
+And there might be multiple tasks waiting for the socket, so &#8220;just setting&#8221; the semaphore, and indicating via some variable that the connection is closing is not really an option either, because i have no idea how many time it needs to be set, and also just by setting the semaphore does not guarantee that the waiting task gets scheduled, and gets out of the kernel function.  
+Do you have any idea what I could do in such a situation?  
+Regards,<br />
+&nbsp; Ákos Vandra  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in queue.c?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 16, 2012</div><div class="thread-post-content">One thing to think about is that even if a queue/semaphore handled tasks waiting on the queue/semaphore, how could it handle a task that was just starting a call to the object? In general, it is normally a BAD idea to have resources &#8220;disappear&#8221; asyncronously to a task that is using it. If you look at sockets in most systems they don&#8217;t get deleted at random times, but enter a&nbsp; terminal state that all operations on them just immediately return an error.  
+What I would do to handle this sort of case, &#40;Disclaimer, not tested pseudocode and details not dealt with&#41;, would be to have some additional structure for a socket &#40;which probably includes a handle to a synchronization primitive, in your description a semaphore&#41;, The socket keeps track of ow many times it is currently being used, and a task, once it has &#8220;opened&#8221; a socket, can safely access it knowing it will stay around. When an external event &#8220;closes&#8221; the socket, it doesn&#8217;t disappear, but goes into a terminal state &#40;probably marked with a flag&#41;. When this terminal state is entered, the synchronization primitive is signaled so if a task is waiting it will wake up. As each task wakes up from the wait, it check this flag to see if the socket has closed, and if so, repeats the signal in case there is another task waiting &#40;or heading for a wait&#41;, and returns the error condition to the calling task. Depending on how you want the API set up, either the calling task needs to then call the release function, telling the socket that it knows now that it can no longer use the socket, or the operation that returned the error could include as part of returning the error code that the socket is released automatically, this latter mode has the slight disadvantage the it is harder to look at the code a pair up acquisition and release of the resource. When the last task that had acquired the socket, releases it, then it can do its clean up and delete the primitive, as it KNOWS that it is not in use now. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in queue.c?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 16, 2012</div><div class="thread-post-content">The first thing to consider is, if a task is blocked on a semaphore that is deleted and somehow the deletion unblocks the task, how would the task know the semaphore had been delete, and what should it do about it?&nbsp; Currently the task only knows whether it was successful in obtaining the semaphore or not.  
+When a task unblocks due to a queue/semaphore event, it looks to see if the event that unblocked it is still valid.&nbsp; If the event is not still valid &#40;maybe another task or interrupt got to the queue first&#41;, the task will return to block for whatever is left of its original block time.&nbsp; I could update the code to first check to see if the queue itself had been deleted as a special case before the task checks anything in the queue that may no longer exist &#8211; having an error returned if the queue was no more &#8211; but that would add more code and has the potential to be dangerous &#40;without the use of heavy critical sections&#41; because another queue might have been created in its place in the mean time.  
+Which TCP/IP stack are you using?&nbsp; I think generally it would not be normal, in small embedded systems anyway, to have a semaphore per task/socket pair like this.&nbsp; Instead the select&#40;&#41; call, which may run in a different context, would have a single mechanism for blocking tasks making calls to it itself &#40;by whatever means&#41;, and unblocking tasks when select&#40;&#41; had an event that the task was interested in.&nbsp; In this scenario select&#40;&#41; would unblock the task &#40;maybe just unsuspend it&#41; when an error occurred from its own context, lett the task know there was an error,&nbsp; then clean up the socket, then yield to the task that was just unblocked.  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

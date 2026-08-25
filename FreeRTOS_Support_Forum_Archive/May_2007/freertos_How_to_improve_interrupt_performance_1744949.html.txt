@@ -1,0 +1,202 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to improve interrupt performance - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2007/freertos_How_to_improve_interrupt_performance_1744949.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How to improve interrupt performance - FreeRTOS" />
+<meta property="og:description" content="How to improve interrupt performancePosted by wz2b on May 30, 2007I am looking for some ideas about how to improve interrupt performance, namely by making interrupt service routines much quicker.&nbsp; I wrote a small ISR for the CAN controller&#8217;s receive routine: &nbsp;&nbsp;&nbsp; void can2&#095;rx&#095;irq&#040;&#041; &nbsp;&nbsp;&nbsp; &#123; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portENTER&#095;SWITCHING&#095;ISR&#040;&#041;; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portBASE&#095;TYPE ret; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret = xQueueSendFromISR&#040;rxQ2, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2007/freertos_How_to_improve_interrupt_performance_1744949.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="How to improve interrupt performancePosted by wz2b on May 30, 2007I am looking for some ideas about how to improve interrupt performance, namely by making interrupt service routines much quicker.&nbsp; I wrote a small ISR for the CAN controller&#8217;s receive routine: &nbsp;&nbsp;&nbsp; void can2&#095;rx&#095;irq&#040;&#041; &nbsp;&nbsp;&nbsp; &#123; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portENTER&#095;SWITCHING&#095;ISR&#040;&#041;; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portBASE&#095;TYPE ret; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret = xQueueSendFromISR&#040;rxQ2, [&hellip;]" />
+<meta name="twitter:title" content="How to improve interrupt performance - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201485' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201485' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201485' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201485' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139883' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2007%2Ffreertos_How_to_improve_interrupt_performance_1744949.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2007%2Ffreertos_How_to_improve_interrupt_performance_1744949.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139883">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2007_freertos_support_forum_archive_index.html/">May 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">How to improve interrupt performance</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wz2b">wz2b</a> on May 30, 2007</div><div class="thread-post-content">I am looking for some ideas about how to improve interrupt performance, namely by making interrupt service routines much quicker.&nbsp; I wrote a small ISR for the CAN controller&#8217;s receive routine:
+&nbsp;&nbsp;&nbsp; void can2&#95;rx&#95;irq&#40;&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portENTER&#95;SWITCHING&#95;ISR&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portBASE&#95;TYPE ret;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret = xQueueSendFromISR&#40;rxQ2, &#40;CanMsg &#42;&#41; &amp;CAN2&#95;RFS, pdFALSE&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CAN2&#95;CMR.word = 0x04;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portEXIT&#95;SWITCHING&#95;ISR&#40;ret&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+This generates a whopping 256 instructions.&nbsp; I haven&#8217;t gone through and counted cycles but these interrupts could potentially occur at a rate of 128 microseconds, if a burst of packets arrives in both CAN controllers at once.
+I could instead create a circular buffer of incoming frames and have an assembly language ISR stuff packets into that buffer in a handful of assembly language instructions.&nbsp; The problem is, that wouldn&#8217;t wake up any tasks waiting on incoming messages.&nbsp; Using a semaphore is exactly the same as using a queue, less a little copying &#40;these frames are only 4 words of copying&#41;.
+Does anybody have a suggested architecture that might work better?&nbsp; One idea I had was to make the ISR be an FIQ that just stores the packet then triggers a software interrupt through the VICSoftInt.&nbsp; The FIQ would stuff the packets, the IRQ would pull them from the first level buffer then do as above.&nbsp; In order to help, ordinary IRQs would have to be interruptible by the FIQ.&nbsp; Normally I try to avoid interrupt nesting at all expense, but in this case I think that this will be a problem because the FIQ handler wouldn&#8217;t even need a stack.
+It almost seems like what I need is a REALLY lightweight asynchronous event / signal mechanism.&nbsp; Or, if I had some way for my ISR to easily notify the schedule to wake up a certain task next time the scheduler happens to run.
+I could fake this through the idle task and a global pretty easily but that sounds like poor design, and there&#8217;s no guarantee the idle task will ever get to run.&nbsp; I could make a high level task wake up on a timer and check to see whether or not any new packets have arrived but that&#8217;s either going to have high latency or waste a lot of cycles polling the queue.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to improve interrupt performance</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 30, 2007</div><div class="thread-post-content">&gt; I am looking for some ideas about how to improve interrupt 
+&gt; performance, namely
+&gt; by making interrupt service routines much quicker.&nbsp; I wrote a 
+&gt; small ISR for
+&gt; the CAN controller&#8217;s receive routine:
+&gt; 
+&gt;&nbsp;&nbsp;&nbsp;&nbsp; void can2&#95;rx&#95;irq&#40;&#41;
+&gt;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portENTER&#95;SWITCHING&#95;ISR&#40;&#41;;
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portBASE&#95;TYPE ret;
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret = xQueueSendFromISR&#40;rxQ2, &#40;CanMsg &#42;&#41; &amp;CAN2&#95;RFS, pdFALSE&#41;;
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CAN2&#95;CMR.word = 0x04;
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portEXIT&#95;SWITCHING&#95;ISR&#40;ret&#41;;
+&gt;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+Is this done per message, or per byte?&nbsp; It takes the form of the demo serial drivers which are known &#40;according to the comments in the docs&#41; to be inefficient.
+Can you &#8211; use a DMA to grab all the message in one go?&nbsp; Use a fifo to only generate interrupts when there are &#40;say&#41; 8 bytes of data available at the same time?&nbsp; Obtain more than one set of data within a single ISR?&nbsp; Use the ISR to simply place data in a ring buffer, then use a semaphore to wake the task when there is an entire message available?
+&gt; 
+&gt; This generates a whopping 256 instructions.&nbsp; I haven&#8217;t gone 
+&gt; through and counted
+&gt; cycles but these interrupts could potentially occur at a rate 
+&gt; of 128 microseconds,
+&gt; if a burst of packets arrives in both CAN controllers at once.
+&gt; 
+&gt; I could instead create a circular buffer of incoming frames 
+&gt; and have an assembly
+&gt; language ISR stuff packets into that buffer in a handful of 
+&gt; assembly language
+&gt; instructions.&nbsp; The problem is, that wouldn&#8217;t wake up any 
+&gt; tasks waiting on incoming
+&gt; messages.&nbsp; Using a semaphore is exactly the same as using a 
+&gt; queue, less a little
+&gt; copying &#40;these frames are only 4 words of copying&#41;.
+That answers some of my previous questions.
+&gt; 
+&gt; Does anybody have a suggested architecture that might work 
+&gt; better?&nbsp; One idea
+&gt; I had was to make the ISR be an FIQ that just stores the 
+&gt; packet then triggers
+&gt; a software interrupt through the VICSoftInt.&nbsp; The FIQ would 
+&gt; stuff the packets,
+&gt; the IRQ would pull them from the first level buffer then do 
+&gt; as above.&nbsp; 
+It is a common technique for the portENTER&#95;CRITICAL and portEXIT&#95;CRITICAL macros to only disable interrupts at the kernel level &#8211; in this case only disable the IRQ interrupt.&nbsp; Then have higher priority interrupts that are never held up by the kernel.&nbsp; Note that the higher priority interrupts cannot use the API though otherwise you could get crashes due to race conditions.
+You only need to switch to the task within the interrupt if it is a really high priority task.&nbsp; Otherwise, simply waking the task in the interrupt is sufficient.&nbsp; It will then get processing time in accordance with its priority with respect to the other tasks in the application.&nbsp; If you do this you need not save and restore the context of the task each time.
+Dave.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to improve interrupt performance</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wz2b">wz2b</a> on May 30, 2007</div><div class="thread-post-content">&gt;Is this done per message, or per byte?
+No, it&#8217;s per CAN frame, but the bus rate in my case is 250kbps.&nbsp; &#40;Many CAN networks use 1Mbps&#41;.&nbsp; The minimum CAN frame is about 63 bits, so back-to-back they could occur at a 256 microsecond rate.
+&gt;Can you &#8211; use a DMA to grab all the message in one go?
+Unfortunately it doesn&#8217;t appear so.&nbsp; There is a mode in the LPC2129 CAN implementation that lets it write packets to a dedicated 2KB block of SRAM but it does it in a &quot;mailbox&quot; rather than sequential fashion.
+&gt;You only need to switch to the task within the interrupt if it is a really high priority task.
+Ahh hah&#33;&nbsp; So, how would I do that&#8230; is this acceptable?
+&nbsp;&nbsp;&nbsp; void my&#95;irq&#40;&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portENTER&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40;void&#41; xQueueSendFromISR&#40;rxQ2, &#40;Canmsg &#42;&#41; &amp;CAN2&#95;RFS, pdFALSE&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CAN2&#95;CMR.word = 0x04;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VICVectAddr = portCLEAR&#95;VIC&#95;INTERRUPT;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portEXIT&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+Is the ENTER&#95;CRITICAL&#40;&#41; and EXIT&#95;CRITICAL&#40;&#41; even necessary if no interrupt nesting is allowed?
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to improve interrupt performance</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 30, 2007</div><div class="thread-post-content">Sounds like the 2K mailbox thingy mechanism might be your best bet.
+In your my&#95;irq&#40;&#41; implementation you don&#8217;t need the enter and exit critical &#8211; in fact, definitely don&#8217;t use them.&nbsp; If you are using GCC then you have to declare the interrupt using &#95;&#95;attribute&#95;&#95;&#40;&#40;&quot;IRQ&quot;&#41;&#41; rather than &#95;&#95;attribute&#95;&#95;&#40;&#40;&quot;naked&quot;&#41;&#41; &#8211; I might have the syntax slightly wrong.&nbsp; In any case, just make the function a normal interrupt handler function.
+Dave.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to improve interrupt performance</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wz2b">wz2b</a> on May 30, 2007</div><div class="thread-post-content">&gt;Sounds like the 2K mailbox thingy mechanism might be your best bet. 
+The problem is that if you receive a packet with the same ID twice you&#8217;ll only get one, then the second copy will overwrite the first because it has the same ID and thus maps to the same mailbox.&nbsp; This is very useful if you have a get/set paradigm typical of many CAN protocols, but less useful if you have a streaming protocol like the SAE J1939 multi-packet transport layer.&nbsp; What would have been GREAT would have been if NXP had designed a mode where you could use the 2K as a circular buffer into which it stuffs packets.&nbsp; It doesn&#8217;t do that.
+&gt;If you are using GCC then you have to declare the interrupt
+&gt;using &#95;&#95;attribute&#95;&#95;&#40;&#40;&quot;IRQ&quot;&#41;&#41; rather than &#95;&#95;attribute&#95;&#95;&#40;&#40;&quot;naked&quot;&#41;&#41;
+I&#8217;ll try that and eyeball the generated code.&nbsp; Thanks&#33;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

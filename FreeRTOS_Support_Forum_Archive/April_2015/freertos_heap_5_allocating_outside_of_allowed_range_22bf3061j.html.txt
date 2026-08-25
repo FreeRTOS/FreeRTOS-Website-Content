@@ -1,0 +1,223 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>heap_5 allocating outside of allowed range - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2015/freertos_heap_5_allocating_outside_of_allowed_range_22bf3061j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="heap_5 allocating outside of allowed range - FreeRTOS" />
+<meta property="og:description" content="heap_5 allocating outside of allowed rangePosted by avnimaor on April 26, 2015I&#8217;m using STM32F4 which has 192+64 KB of RAM. To use the 64KB I&#8217;m using heap_5. Currently the heap is initialized for the 64KB plus the upper 64KB of the 192KB. From the linker script file: ~~~~~ define symbol regionHEAP1_start = 0x10000000; define symbol &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2015/freertos_heap_5_allocating_outside_of_allowed_range_22bf3061j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="heap_5 allocating outside of allowed rangePosted by avnimaor on April 26, 2015I&#8217;m using STM32F4 which has 192+64 KB of RAM. To use the 64KB I&#8217;m using heap_5. Currently the heap is initialized for the 64KB plus the upper 64KB of the 192KB. From the linker script file: ~~~~~ define symbol regionHEAP1_start = 0x10000000; define symbol [&hellip;]" />
+<meta name="twitter:title" content="heap_5 allocating outside of allowed range - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202511' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202511' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202511' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202511' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145137' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2015%2Ffreertos_heap_5_allocating_outside_of_allowed_range_22bf3061j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2015%2Ffreertos_heap_5_allocating_outside_of_allowed_range_22bf3061j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145137">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2015_freertos_support_forum_archive_index.html/">April 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">heap_5 allocating outside of allowed range</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/avnimaor">avnimaor</a> on April 26, 2015</div><div class="thread-post-content">I&#8217;m using STM32F4 which has 192+64 KB of RAM. To use the 64KB I&#8217;m using heap_5.
+Currently the heap is initialized for the 64KB plus the upper 64KB of the 192KB.
+From the linker script file: 
+~~~~~
+define symbol <strong>region<em>HEAP</em>1_start</strong> = 0x10000000;
+define symbol <strong>region<em>HEAP</em>1_end</strong>   = 0x1000FFFF;
+define symbol <strong>region<em>HEAP</em>2_start</strong> = 0x20010000;
+define symbol <strong>region<em>HEAP</em>2_end</strong>   = 0x2002FFFF;
+~~~~~
+Heap initialization code:
+~~~~~
+HeapRegion<em>t xHeapRegions[] =
+{
+    {   ( uint8</em>t * ) 0, 0},
+    {   ( uint8_t * ) 0, 0},
+    {   NULL, 0}//&lt;&lt; Terminates the array.
+};
+void fillHeapRegions()
+{
+    xHeapRegions[0].pucStartAddress = &#038;<strong>region<em>HEAP</em>1_start</strong>;
+    xHeapRegions[0].xSizeInBytes = &amp;<strong>region<em>HEAP</em>1_end</strong>-&#038;<strong>region<em>HEAP</em>1_start</strong>;
+    xHeapRegions[1].pucStartAddress = &#038;<strong>region<em>HEAP</em>2_start</strong>;
+    xHeapRegions[1].xSizeInBytes = &amp;<strong>region<em>HEAP</em>2_end</strong>-&#038;<strong>region<em>HEAP</em>2_start</strong>;
+}
+~~~~~~
+I&#8217;m calling fillHeapRegions before calling vPortDefineHeapRegions(xHeapRegions) in main.
+My application works fine with this configuration.
+The problem I&#8217;m witnessing is if I reduce the size of the memory region allocated to the heap:
+~~~~~~
+define symbol <strong>region<em>HEAP</em>1_start</strong> = 0x10000000;
+define symbol <strong>region<em>HEAP</em>1_end</strong>   = 0x1000FFFF;
+define symbol <strong>region<em>HEAP</em>2_start</strong> = 0x20012000;
+define symbol <strong>region<em>HEAP</em>2_end</strong>   = 0x2002FFFF;
+~~~~~~
+I&#8217;m getting sporadic application crashes. When I investigated those crashes I saw a pointer to 0x20030000. Naturally this would cause a hard fault as this address is outside allowed address space.
+Any idea?
+Thanks,
+Maor
+</div></div><div class="thread-post"><h3 class="thread-post-title">heap_5 allocating outside of allowed range</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 26, 2015</div><div class="thread-post-content">Hi Maor,
+<blockquote>
+  I&#8217;m getting sporadic application crashes
+</blockquote>
+I would wonder if all memories given to the HEAP is not used by your program or by some stack?
+You can also set the sizes more dynamically. If your linker file contains symbols like:
+<pre><code>_ebss = . ;
+_edata = . ;
+</code></pre>
+you can obtain the addresses of these variable in your C code:
+<pre><code>extern void _edata;
+extern void _ebss;
+</code></pre>
+and convert them to real addresses:
+<pre><code>uint32_t end_data = ( uint32_t ) &amp;_edata;
+uint32_t end_bss = ( uint32_t ) &amp;_ebss;
+</code></pre>
+A small remark about your code:
+<pre><code>xSizeInBytes = &amp;__region_HEAP_1_end__ - &amp;__region_HEAP_1_start__;
+</code></pre>
+Shouldn&#8217;t it be: <code>size = end - start + 1</code> ?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">heap_5 allocating outside of allowed range</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/avnimaor">avnimaor</a> on April 26, 2015</div><div class="thread-post-content">First, the memory is divided to three segments, one for the statically allocated memories and the other two for the segmented heap.
+As an architectural limit, I can&#8217;t move the static memories to the lower segment as hardware peripherals don&#8217;t work there.
+I started the allocation by giving 64K to the static memories, and 64+64K to the heap. I got a linking error when I needed more statically allocated memory  and I resized the segments accordingly. At this point I started getting the crashes.
+As for the size in bytes, it really doesn&#8217;t matter &#8211; I shouldn&#8217;t be getting allocation addresses outside of the allowed range.
+</div></div><div class="thread-post"><h3 class="thread-post-title">heap_5 allocating outside of allowed range</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on April 27, 2015</div><div class="thread-post-content"><blockquote>
+  define symbol <strong>region<em>HEAP</em>1_start</strong> = 0x10000000;
+  xHeapRegions[0].pucStartAddress = &#038;<strong>region<em>HEAP</em>1_start</strong>;
+</blockquote>
+What compiler is that? Can you check it is doing what you think by looking at the xHeapRegions structure in the debugger? It looks like it is taking the address of <strong>region<em>HEAP</em>1_start</strong> not its value. I would do this
+<h1>define <strong>region<em>HEAP</em>1_start</strong> 0x10000000</h1>
+xHeapRegions[0].pucStartAddress = (unsigned char*) <strong>region_HEAP_1_start</strong>;
+The other thing to do would put some code in heap_5 so you can break when the memory returned is out of bounds:
+if( returned address &lt; min address OR returned address > max address )
+{
+    asm volatile(&#8220;NOP&#8221;); // Line for break point
+}
+when the break point is hit look at the variables in heap_5 to see why it was out of bounds.
+If you define configASSERT() it might trap an invalid vPortFree call, which might be the problem.
+</div></div><div class="thread-post"><h3 class="thread-post-title">heap_5 allocating outside of allowed range</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/avnimaor">avnimaor</a> on May 27, 2015</div><div class="thread-post-content">Still getting these issues.
+The compiler is IAR 7.4. The heap regions are initialized correctly.
+I even reduced the upper limit to account for heap bugs&#8230;
+In the last crash I got I had a hard fault within memcpy. When I the registers I got r0 = 0x10010001. This is outside the range of the heap which the upper limit is 0x1000FF00.
+This behavior is observed randomly after our PC connects to the board and configures the behavior of the application. During this phase tens of small messages are sent to the application, and many memory allocs and deallocs are called. 
+Once the first phase is complete the application is stable, but the instability of the first phase is a critical issue for us.
+BTW, I switched to heap<em>5 from heap</em>4, and never observed these faults before, which leads me to the conclusion that this is specific to heap_5.
+</div></div><div class="thread-post"><h3 class="thread-post-title">heap_5 allocating outside of allowed range</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on May 27, 2015</div><div class="thread-post-content">My reaction would be:
+Make absolutely sure that your application never writes to unallocated memory. If you malloc N bytes, do not use N+1 bytes.
+If you are not sure if memories get overwritten, as a test, malloc() more than you need and see if the extra bytes are still untouched before calling &#8216;vPortFree()&#8217;.
+<code>r0 = 0x10010001</code> ? Beside being outside the memory, it is an unaligned address.
+Sometimes I saw memcpy() crashing because it was replaced (optimised) by &#8216;inline&#8217; instructions performing 32-bit operations on a non-aligned address. I&#8217;m not sure if IAR would do the same.
+In GCC this problem can be avoided by using the compiler flag &#8216;-fno-builtin-memcpy&#8217;. The memcpy() function is always safe to call, also for unaligned addresses.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">heap_5 allocating outside of allowed range</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 27, 2015</div><div class="thread-post-content">That is a good observation, although heap<em>4 and heap</em>5 are almost 
+identical when it comes to allocation and free algorithms.  The main 
+different between the two is their initial state &#8211; before anything has 
+been allocated.
+Do you ever call these functions from an interrupt?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">heap_5 allocating outside of allowed range</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/avnimaor">avnimaor</a> on May 27, 2015</div><div class="thread-post-content">r0=0x10010001 is probably a temporary address that was used by memcpy until it crashed. I think it&#8217;s safe to assume that the allocation routine did not return this address by itself.
+I did saw malloc returning address 0x10010000 and 0x20020000 (which is the other segment top address) several times. That&#8217;s why I lowered the upper limits&#8230;.
+As for use of the mallocs, I&#8217;m 99.999% sure that I don&#8217;t malloc in ISR. I&#8217;ll have to review the code, but I&#8217;m aware this is a huge no-no, and try to statically allocate/preallocate memories used in ISR.
+Secondly my application is 95% C++. I overloaded all required prototypes of the &#8220;new&#8221; operator to use pvPortMalloc and vPortFree. I always access pointers to classes and I never deal directly with pointers to allocated buffer, therefore I find it hard to believe that I overwrite the end of the allocated buffers.
+Again, I never observed these memory overwrites/hard faults/whatever when I used heap_4. 
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main stack pointer reset when starting the scheduler - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2015/freertos_Main_stack_pointer_reset_when_starting_the_scheduler_e5a776c1j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Main stack pointer reset when starting the scheduler - FreeRTOS" />
+<meta property="og:description" content="Main stack pointer reset when starting the schedulerPosted by bschleusner on January 1, 2015Hello, I&#8217;ve been digging through the source of the ARM_CM3 port of FreeRTOS (V8.1.2 and older), and noticed that in the prvPortStartFirstTask function resets the MSR register to the top of the stack. Is there a reason why the MSR needs to &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2015/freertos_Main_stack_pointer_reset_when_starting_the_scheduler_e5a776c1j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Main stack pointer reset when starting the schedulerPosted by bschleusner on January 1, 2015Hello, I&#8217;ve been digging through the source of the ARM_CM3 port of FreeRTOS (V8.1.2 and older), and noticed that in the prvPortStartFirstTask function resets the MSR register to the top of the stack. Is there a reason why the MSR needs to [&hellip;]" />
+<meta name="twitter:title" content="Main stack pointer reset when starting the scheduler - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202467' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202467' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202467' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202467' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145640' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2015%2Ffreertos_Main_stack_pointer_reset_when_starting_the_scheduler_e5a776c1j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2015%2Ffreertos_Main_stack_pointer_reset_when_starting_the_scheduler_e5a776c1j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145640">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2015_freertos_support_forum_archive_index.html/">January 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Main stack pointer reset when starting the scheduler</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bschleusner">bschleusner</a> on January 1, 2015</div><div class="thread-post-content">Hello,
+I&#8217;ve been digging through the source of the ARM_CM3 port of FreeRTOS (V8.1.2 and older), and noticed that in the prvPortStartFirstTask function resets the MSR register to the top of the stack. Is there a reason why the MSR needs to be reset?
+I bring this up because I have been running into issues with variables located on the stack in main() getting corrupted. Looking into the corruption issue I noticed that the prvPortStartFirstTask was reseting MSR, which leads to privlidged code corrupting the main stack.
+Excerpt from FreeRTOS/Source/portable/GCC/ARM_CM3/port.c
+~~~~
+static void prvPortStartFirstTask( void )
+{
+    __asm volatile(
+                    &#8221; ldr r0, =0xE000ED08   n&#8221; /* Use the NVIC offset register to locate the stack. <em>/
+                    &#8221; ldr r0, [r0]          n&#8221;
+                    &#8221; ldr r0, [r0]          n&#8221;
+                    &#8221; msr msp, r0           n&#8221; /</em> Set the msp back to the start of the stack. <em>/
+                    &#8221; cpsie i               n&#8221; /</em> Globally enable interrupts. <em>/
+                    &#8221; cpsie f               n&#8221;
+                    &#8221; dsb                   n&#8221;
+                    &#8221; isb                   n&#8221;
+                    &#8221; svc 0                 n&#8221; /</em> System call to start first task. */
+                    &#8221; nop                   n&#8221;
+                );
+}
+~~~~
+I&#8217;ve disabled the part that resets the MSR and it appears to function just fine. It seams like a bug to be overwriting the stack.
+Thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on January 1, 2015</div><div class="thread-post-content">Some of the ports will reuse the main tasks stack to be used as the ISR stack. Since after starting up the scheduler, main will never be re-entered it was considered safe to reuse this space.
+There really is no reason to be trying to store stuff in the stack of main that needs to be used later, you can just place those in global (or file static) space. 
+What are you keeping an the stack of main that you need?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bschleusner">bschleusner</a> on January 1, 2015</div><div class="thread-post-content"><blockquote>
+  Some of the ports will reuse the main tasks stack to be used as the ISR stack.
+</blockquote>
+Correct. Priviledged code (ISR&#8217;s) will use the main stack.
+<blockquote>
+  There really is no reason to be trying to store stuff in the stack of main that needs to be used later, you can just place those in global (or file static) space. 
+</blockquote>
+Storing things on the stack is useful for composition and ordered construction of classes / structures. Saying there is no reason to store things on the stack may be true for some designs, but that is a dangerous assumption to make.
+I think that the MSP reset is premature optimization. If someone doesn&#8217;t want to store anything on the stack in main, then the main stack will only be containing a few stack frames at most, and reseting it will have minimal gain. If someone has a design pattern that makes good use of the stack for construction of threads, then this optimization will lead to many bugs.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 2, 2015</div><div class="thread-post-content">It has always been done this way, and is especially important on devices which only have a few K of RAM.  I think the original Cortex-M ports were created on devices with 2K or RAM, in which case it was extremely important to re-use all the RAM that was not intended to be used after the scheduler has started.
+Once the scheduler has started main() no longer exists.  There is no way back to it and no way of [directly] referencing memory on its stack [which is a compiler controlled construct], so I would turn your argument around and say it is dangerous to try and use resources that were allocated to it, and wasteful to leave resources allocated to something which is in effect orphaned.  I don&#8217;t see this as being any different to attempting to access something that was on the stack of a task after the task has been deleted.
+After the scheduler has started only the tasks and interrupts exist, and they are allocated stacks by the scheduler.  If you want memory to be globally or file scope accessible please allocate it globally or file scope.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/znatok">znatok</a> on January 2, 2015</div><div class="thread-post-content">In consideration of memory usage, variables in main() stack &#8220;accessed&#8221; from
+a tasks (whis is actually wrong) have no difference compared to the same
+variables being defined and allocated as global. FreeRTOS does it correctly
+being freeing main stack before starting scheduler.
+I wanted to ask about another optimization mechanism. What about stack
+usage in IRQ handlers? As far as I understand in current implementation IRQ
+handlers use stak of the task being interrupted. It means that each task
+has to reserve piece of it&#8217;s stack for IRQ handler.
+What if IRQ handler will switch to main or more correctly kernel stack at
+the beginning !? In this case IRQ stack can be reserved only once and thus
+each task stack could be reduced. Something like:
+void IRQ<em>Handler( void )
+{
+IRQ</em>ENTER()
+&#8230;
+&#8230;
+IRQ_EXIT()
+}
+I&#8217;m aiming Cortex architecture (not sure how it work in other cases).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 2, 2015</div><div class="thread-post-content"><blockquote>
+  As far as I understand in current implementation IRQ
+  handlers use stak of the task being interrupted.
+</blockquote>
+That is not correct.  IRQ handlers use the stack that was being used by main() before the scheduler was started.  There is no need to make any allowance for the stack used by an interrupt when allocating a stack to a task.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/znatok">znatok</a> on January 2, 2015</div><div class="thread-post-content">Is it because of the MSP/PSP usage?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 2, 2015</div><div class="thread-post-content">If I understand your question, then &#8220;yes&#8221;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on January 2, 2015</div><div class="thread-post-content">Ella,
+The key thing is that it depends on the processor and the port. The way ARM processors work, they naturally switch stacks on an interrupt, so there is a dedicated interrupt stack (which FreeRTOS shares space with the main task to save memory). Other processors more naturally use the tasks stack for the interrupt, but in some cases the port layer may automatically switch the stack to a dedicated one to save ram (or it might not). The Pic24 port, for example, doesn&#8217;t switch the stack, so every task needs to have the needed extra room to handle interrupt stacks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 2, 2015</div><div class="thread-post-content">A lot of the decisions on these things depends on whether the port to 
+the MCU supports interrupt nesting.  So the PIC32, which has a full 
+interrupt nesting model, does switch stacks in interrupts &#8211; and in that 
+case it is done is software rather than by the hardware.
+There is always a trade off between the run time overhead of checking 
+for nesting and switching stacks, and just getting in and out of the 
+interrupt as quickly as possible.  Generally if there is no nesting then 
+the stack usage is bounded and determinable, so the port is less likely 
+to switch stacks.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/znatok">znatok</a> on January 2, 2015</div><div class="thread-post-content">Discussion started with CortexM3, I&#8217;ve noticed in my message that I&#8217;m
+talking about Cortex ARM.
+And yes I understand that specific answer depends on architecture.
+On Fri, Jan 2, 2015 at 3:18 PM, Real Time Engineers ltd. <a href="/FreeRTOS_Support_Forum_Archive/January_2015/&#x6d;&#97;&#x69;&#108;&#116;&#x6f;&#58;r&#x74;&#101;&#x6c;&#x40;&#117;&#x73;&#101;r&#x73;&#46;&#x73;&#x66;&#46;&#x6e;&#101;&#116;">r&#x74;&#101;&#x6c;&#x40;&#117;&#x73;&#101;r&#x73;&#46;&#x73;&#x66;&#46;&#x6e;&#101;&#116;</a>
+wrote:
+<blockquote>
+  A lot of the decisions on these things depends on whether the port to
+  the MCU supports interrupt nesting. So the PIC32, which has a full
+  interrupt nesting model, does switch stacks in interrupts &#8211; and in that
+  case it is done is software rather than by the hardware.
+  There is always a trade off between the run time overhead of checking
+  for nesting and switching stacks, and just getting in and out of the
+  interrupt as quickly as possible. Generally if there is no nesting then
+  the stack usage is bounded and determinable, so the port is less likely
+  to switch stacks.
+  <h2>Regards.</h2>
+  Main stack pointer reset when starting the scheduler
+  <h2><a href="http://sourceforge.net/p/freertos/discussion/382005/thread/e5a776c1/?limit=25#8a0c/aa87">http://sourceforge.net/p/freertos/discussion/382005/thread/e5a776c1/?limit=25#8a0c/aa87</a></h2>
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bschleusner">bschleusner</a> on January 2, 2015</div><div class="thread-post-content"><blockquote>
+  It has always been done this way, and is especially important on devices which only have a few K of RAM. I think the original Cortex-M ports were created on devices with 2K or RAM, in which case it was extremely important to re-use all the RAM that was not intended to be used after the scheduler has started.
+</blockquote>
+Memory allocated by the linker for the main stack is fixed. If no variables were stored on the main stack (as you intend them to be), then reseting the main stack will still have minimal gains.
+<blockquote>
+  There is no way back to it and no way of [directly] referencing memory on its stack [which is a compiler controlled construct], so I would turn your argument around and say it is dangerous to try and use resources that were allocated to it, and wasteful to leave resources allocated to something which is in effect orphaned.
+</blockquote>
+Constructing memory on the main stack is not that uncommon of a thing, nor is it wasteful. If it has to exist in memory, then it will take up the same amount regardless of if it is on the stack or in BSS. Allocating on the stack allows for ordered and safe construction or objects. 
+(Simplified example)
+~~~~
+int main()
+{
+    // Construct a task, adds itself to the scheduler, knows of the GPIO driver
+    GPIO led(PORT<em>A, PIN</em>10, OUTPUT<em>OPEN</em>DRAIN);
+    LedTask ledTask(led);
+    // Construct a driver on the stack, knows of the GPIO driver
+    GPIO a2dChipSelect(PORT<em>C, PIN</em>3, OUTPUT);
+    LMP901xxxDriver a2dDriver(a2dChipSelect, SPI<em>PORT</em>1);
+    // Construct a task, adds itself to the scheduler, knows of a2dDriver
+    TemperatureConversionTask(a2dDriver);
+    vTaskStartScheduler();
+}
+~~~~
+If a variable is on the stack, there is nothing in C or C++ stopping it from being passed to a task and used by that task. (pass by pointer or by reference)
+If the programmer choses to store things on the stack, then it is up to the programmer to make sure that there is sufficient room reserved by the linker for it. I think making that decision for the programmer takes away many useful and safe design patterns.
+My vote is that a setting should at least be exposed to allow main stack to be preserved.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on January 2, 2015</div><div class="thread-post-content">Sorry, I&#8217;m with (both) Richard(s) on this one. Stack variables are accessed via compiler generated code. You are right C++ cannot prevent you from attempting to access anything by reference, but it doesnt mean it is good practice to do so. C++ doesnt prevent me from attempting to dereference a null pointer, but I know the consequences of trying to do so. If I call a function, allocate something on the stack inside that function, return back to the calling function, then attempt to access whatever was allocated on the stack when inside the function I know I&#8217;m in for trouble because I am accessing something which no longer has a context, but C++ will of course let me try.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bschleusner">bschleusner</a> on January 2, 2015</div><div class="thread-post-content"><blockquote>
+  You are right C++ cannot prevent you from attempting to access anything by reference, but it doesnt mean it is good practice to do so. 
+</blockquote>
+It is infact very good practice to access by reference in modern languages. Particularily when it comes to things like RAII.
+<blockquote>
+  C++ doesnt prevent me from attempting to dereference a null pointer, but I know the consequences of trying to do so.
+</blockquote>
+Why is that even relevent? Unless of course you mean dereference a void pointer, in which case we can debate type safety in another forum.
+<blockquote>
+  If I call a function, allocate something on the stack inside that function, return back to the calling function, then attempt to access whatever was allocated on the stack when inside the function I know I&#8217;m in for trouble because I am accessing something which no longer has a context, but C++ will of course let me try.
+</blockquote>
+Correct. Doing that is always gauenteed to be unsafe. However, the code that I am complaining about breaks the gaurentee that stack variables will exist for the duration of a function. For example:
+~~~~
+void bar(SomeClass&amp; s)
+{
+   s.something(2);
+}
+int foo(void)
+{
+   SomeClass a;
+   bar(a);
+   // do something else with a
+}
+~~~~
+When foo() calls bar(), it is gaurenteed by the language that SomeClass a will exist until foo() returns. vTaskStartScheduler() breaks the gauentee that variables created in main will exist for the duration of main, regardless of the possibility to return to main.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 2, 2015</div><div class="thread-post-content">I think the discussion is getting a little academic.  The port works the 
+way it does so please work within its constraints.  I&#8217;m not actually 
+aware of anybody raising this topic before, and the port has been around 
+for a very long time, so I&#8217;m afraid it is not going to change.
+<blockquote>
+  However, the code
+  that I am complaining about breaks the gaurentee that stack variables
+  will exist for the duration of a function. For example:
+</blockquote>
+&#8230;.and perhaps that is the route cause of the disagreement.  As far as 
+we are concerned main() no longer exists when the scheduler has started.
+<blockquote>
+  vTaskStartScheduler() breaks the
+  gauentee that variables created in main will exist for the duration of
+  main
+</blockquote>
+Exactly.  In a single threaded application main() is always at the 
+bottom of the stack frame.  In a multi-threaded application it is not, 
+it is in a completely different context before the scheduler is started, 
+and does not have a context after the scheduler has started.  Point of 
+view only &#8211; no need to reply.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bschleusner">bschleusner</a> on January 2, 2015</div><div class="thread-post-content"><blockquote>
+  the port has been around for a very long time, so I&#8217;m afraid it is not going to change.
+</blockquote>
+I appreciate API&#8217;s that don&#8217;t change behavior, but modern microcontrollers and coding practices may merit at least the introduction of a setting to configure the destruction of MSP or not.
+<blockquote>
+  &#8230;.and perhaps that is the route cause of the disagreement. As far as
+  we are concerned main() no longer exists when the scheduler has started.
+</blockquote>
+Correct. If this is the case, then the documentation needs to reflect this. There is no mention of stack destruction in any of the header files. (task.h, portable.h)
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on January 3, 2015</div><div class="thread-post-content">Brad,
+I&#8217;ve used similar constructs as global (or file scoped) variables and never had a problem with initialization order (the order of initialization of globals in a given file is just as strictly controlled as auto variables in a function (like main), and have the added advantage for debugging that they have a known fixed address so the debugger can inspect their values.
+I would need to go back through the documentation, but I do believe that the ARM ports I used did mention that the main stack was reused for the interrupt stack. The documentation would be in a &#8220;port specific&#8221; place, as this IS port specific (as I mentioned, the Pic24 port doesn&#8217;t do this, for example).
+I see it very unlikely that this behavior will change, as it will only cause existing working applications to waste space, while maintaining the current method just requires you to follow the rules you have been informed of. It is hard to imagine a variable that can&#8217;t be moved to file scope, and the few oddball cases can be created when needed an put on the heap.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Main stack pointer reset when starting the scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/theszczur">theszczur</a> on June 30, 2015</div><div class="thread-post-content">&#8220;C/C++ guarantee that stack variables will exist for the duration of a function&#8221; &#8211; and you are braking that standard.
+it would be the best to add configuration option like &#8220;configREUSE<em>MAIN</em>STACK&#8221;
+And it should be very well documented, right now I can&#8217;t find any information on the official API documentation: http://www.freertos.org/a00132.html
+And there is no information in the code&#8230;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xQueueReceive never returns - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/December_2009/freertos_xQueueReceive_never_returns_3489944.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="xQueueReceive never returns - FreeRTOS" />
+<meta property="og:description" content="xQueueReceive never returnsPosted by gmulley on December 15, 2009We have been trying for a while to track down a particularly nasty problem.&nbsp; At some point during execution one of our tasks fails to ever return from a call to xQueueReceive&#040;&#041; in spite of the fact that data has been added to the queue. Specifically, the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/December_2009/freertos_xQueueReceive_never_returns_3489944.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="xQueueReceive never returnsPosted by gmulley on December 15, 2009We have been trying for a while to track down a particularly nasty problem.&nbsp; At some point during execution one of our tasks fails to ever return from a call to xQueueReceive&#040;&#041; in spite of the fact that data has been added to the queue. Specifically, the [&hellip;]" />
+<meta name="twitter:title" content="xQueueReceive never returns - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201837' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201837' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201837' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201837' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141548' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2009%2Ffreertos_xQueueReceive_never_returns_3489944.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2009%2Ffreertos_xQueueReceive_never_returns_3489944.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141548">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/December_2009_freertos_support_forum_archive_index.html/">December 2009 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">xQueueReceive never returns</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmulley">gmulley</a> on December 15, 2009</div><div class="thread-post-content">We have been trying for a while to track down a particularly nasty problem.&nbsp; At some point during execution one of our tasks fails to ever return from a call to xQueueReceive&#40;&#41; in spite of the fact that data has been added to the queue.  
+Specifically, the task executes at priority 10, and spends most of it&#8217;s time just waiting to receive data from the queue.&nbsp; An interrupt occurs periodically and calls xQueueSendFromISR&#40;&#41; to push data into the queue.&nbsp; At this point the task should resume and process the data, but at some point it just never wakes up.  
+It is important to note that we changed the critical section code to mask ALL interrupts during critical sections &#40;not just the OS tick&#41;.&nbsp; We are using the Pic24 port.&nbsp; We changed the following lines:  
+In portasm&#95;PIC24.S line 56:<br />
+&#96; MOV &#35;224, W0 /&#42; changed from 32 to 224 to&#42;/&#96;  
+In portmacro.h line 90:<br />
+&#96;&#35;define portINTERRUPT&#95;BITS &#40; &#40; unsigned portSHORT &#41; 7 &lt;&lt; &#40; unsigned portSHORT &#41; 5 &#41;&#96;  
+Any suggestions/thoughts/help would be greatly appreciated&#33;  
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive never returns</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on December 15, 2009</div><div class="thread-post-content">Are you using the stack overflow checking?&nbsp; Could it be an overflow causing the problem?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive never returns</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mikeycosta">mikeycosta</a> on December 15, 2009</div><div class="thread-post-content">I&#8217;m working with Gabe on the same project.&nbsp; We are checking the stack and it is fine.&nbsp; &#40;we have seen the stack problem before with Queues but that caused an address error&#41;.&nbsp; There is no address error this time and we don&#8217;t hit a breakpoint in the stackcheckhook&#40;&#41;.&nbsp; The OS and all other tasks are still running.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive never returns</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmulley">gmulley</a> on December 15, 2009</div><div class="thread-post-content">I also noticed that if I pause the debugger at this point the OS is in a very bizarre state.&nbsp; Specifically, the task was successfully added to the ready list, but variable uxTopReadyPriority does not equal 10 &#40;even though it should, since that is the highest priority task ready to run&#41;.&nbsp; Has anyone ever seen anything like this before?
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive never returns</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mikeycosta">mikeycosta</a> on December 17, 2009</div><div class="thread-post-content">We found that disabling interrupt nesting fixes the problem.&nbsp; We tracked it down to some interrupt is corrupting the ready task list.&nbsp; But I don&#8217;t see why this would be the case.&nbsp; All our interrupt priorities are set to 1 which is the same priority as the kernel and system tick.&nbsp; I&#8217;m glad we at least know what is going on but it does not seem to make sense.  
+Any ideas?
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive never returns</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmulley">gmulley</a> on December 17, 2009</div><div class="thread-post-content">We finally figured this out.&nbsp; It appears that even if two interrupts share the same priority they &#42;&#42;can&#42;&#42; interrupt each other.&nbsp; This can occur only if the interrupt flag has been cleared for the interrupt that is serviced first.&nbsp; This is what was happening with us:  
+&#45; Timer 3 Interrupt cccurs and the CPU enters the timer 3 ISR<br />
+&#45; Timer 3 interrupt flag cleared<br />
+&#45; OS tick interrupt occurs in the middle of prvAddTaskToReadyQueue after uxTopReadyPriority had been set, but before vListInsertEnd was called.&nbsp; When the OS tick yields it decrements uxTopReadyPriority down to a low priority.<br />
+&#45; When the Timer 3 interrupt is able to run again it adds the high priority task to pxReadyTasksLists<br />
+&#45; Now uxTopReadyPriority and pxReadyTasksLists are out of sync.&nbsp; This meant that the high priority task was never woken up again.  
+All problems were solved by making absolutely sure that all interrupt flags are cleared &#42;&#42;after&#42;&#42; the last OS call in an interrupt &#40;except for the yield&#41;.&nbsp; This ensures that interrupts that use OS functions are never nested.  
+Alternately you can just disable nested interrupts if you don&#8217;t need them.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive never returns</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on December 18, 2009</div><div class="thread-post-content">Thanks for taking the time to post the solution.  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

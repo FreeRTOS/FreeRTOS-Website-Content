@@ -1,0 +1,191 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Callback functions for posting to a queue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2010/freertos_Callback_functions_for_posting_to_a_queue_3590089.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Callback functions for posting to a queue - FreeRTOS" />
+<meta property="og:description" content="Callback functions for posting to a queuePosted by jmaygarden on March 10, 2010I would like to setup a callback system for posting events to a task&#8217;s queue. However, I need to do so from both interrupt handlers &#040;xQueueSendFromISR&#041; and other tasks &#040;xQueueSend&#041;. Is there a way to determine which method should be used at runtime? &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2010/freertos_Callback_functions_for_posting_to_a_queue_3590089.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Callback functions for posting to a queuePosted by jmaygarden on March 10, 2010I would like to setup a callback system for posting events to a task&#8217;s queue. However, I need to do so from both interrupt handlers &#040;xQueueSendFromISR&#041; and other tasks &#040;xQueueSend&#041;. Is there a way to determine which method should be used at runtime? [&hellip;]" />
+<meta name="twitter:title" content="Callback functions for posting to a queue - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201871' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201871' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201871' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201871' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139901' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2010%2Ffreertos_Callback_functions_for_posting_to_a_queue_3590089.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2010%2Ffreertos_Callback_functions_for_posting_to_a_queue_3590089.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139901">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2010_freertos_support_forum_archive_index.html/">March 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Callback functions for posting to a queue</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmaygarden">jmaygarden</a> on March 10, 2010</div><div class="thread-post-content">I would like to setup a callback system for posting events to a task&#8217;s queue. However, I need to do so from both interrupt handlers &#40;xQueueSendFromISR&#41; and other tasks &#40;xQueueSend&#41;. Is there a way to determine which method should be used at runtime? Or should I just provide a different callback function for use in an ISR versus another task?  
+Also, is it acceptable to use xQueueSendFromISR from another task? If so, what is different about it other than the timeout?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 11, 2010</div><div class="thread-post-content">I believe that you can call xQueueSendFromISR at task level, IF you place the call inside a critical section or disable the interrupts. The one thing that you will need to watch out for, is if the call sets the woken flag, you will need to due a yield &#40;probably after you end your critical section&#41;.  
+FreeRTOS doesn&#8217;t provide a built in way to determine if you are in an interrupt or not to allow you to make the decision, and you need a bit more than that. If you are in an interrupt routine, you will need to the FromISR version, and pass it the pointer to the woken flag that the ISR is using.&nbsp; It shouldn&#8217;t be too hard to adopt a standard interrupt entry style that clears the woken flag and sets a flag to let you know you are in an interrupt, and have standard exit code that clears the &#8220;in interrupt&#8221; flag &#40;if your architecture allows nesting of interrupt that interact with FreeRTOS, if there is such a beast, you would need to account for that&#41;, and check the woken flag to do the needed task switch. Either all interrupts can share the same woken flag, or you have a pointer to what is the &#8220;current&#8221; woken flag. You could then write a generic QueueSend that tests the in interrupt flag and call the appropriate function.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 11, 2010</div><div class="thread-post-content">Just to add to what richard&#95;damon said, ports that support interrupt nesting should take care of the critical sections themselves, within the FromISR&#40;&#41; functions.&nbsp; Please check this though.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmaygarden">jmaygarden</a> on March 11, 2010</div><div class="thread-post-content">Well, it does seem more straight forward to have two event posting functions &#40;ISR &amp; task level&#41; and build callbacks according to usage instead of trying to track interrupt status just to reduce it to one function with a branch…  
+I&#8217;m using a Cortex-M3 and the context switch when the woken flag is set just sets the PENDDVSET bit in the NVIC controller. It&#8217;s safe to do this before the end of the interrupt, correct?  
+<pre><code>bool
+event_postfromisr(Event *event)
+{
+    portBASE_TYPE requestContextSwitch;
+    bool ok;
+    requestContextSwitch = pdFALSE;
+    ok = xQueueSendFromISR(event-&gt;queue, event, &amp;requestContextSwitch);
+    if (pdFALSE == ok) {
+        /* Doh! We lost an event. */
+    }
+    if (requestContextSwitch)
+        vPortYieldFromISR();
+    return ok;
+}
+bool
+event_postfromtask(Event *event)
+{
+    return xQueueSend(event-&gt;queue, event, portMAX_DELAY);
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 11, 2010</div><div class="thread-post-content">Yes that looks fine to me &#8211; without studying it in any great detail.  
+On the Cortex M3 all context switches are performed in the PendSV handler, so you are correct to say that all the vPortYieldFromISR&#40;&#41; does is set the pend bit.  
+You don&#8217;t actually need to do that in every ISR &#8211; whether or not it is desirable or not is really dependent of the urgency of handling the event so is application dependent.&nbsp; If writing to the queue unblocks a task and that task has a higher priority than the running task then it will get selected at the next tick interrupt anyway.&nbsp; It is only necessary to context switch immediately if the requirements for how quickly the event must be processed are less than the time between each tick.&nbsp; Of course a really really real time system should run the task if its the highest priority anyway.&nbsp; Hope I&#8217;m not confusing things too much.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmaygarden">jmaygarden</a> on March 11, 2010</div><div class="thread-post-content">No, that&#8217;s not confusing at all. It confirms my assumptions. Thanks.  
+I&#8217;m still getting stuck in <em>vListInsert</em> after running for a while when receiving from one of these event queues. I&#8217;ve ruled out stack overflow &#40;1&#41; and interrupt priorities &#40;2&#41;. I don&#8217;t suspend the scheduler or use any critical sections &#40;3&#41;. And the queue is up and working for a while before it hits this problem &#40;4&#41; . That seems to address items 1 through 4 in the big comment. Looks like I&#8217;m in for some heavy debugging to find out what is causing the list corruption…
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on March 23, 2010</div><div class="thread-post-content">I had the same problem, getting stuck in vListInsert.<br />
+Problem is related to the interrupt priorities.<br />
+The prioity of the interrupt you are calling the function xQueueSendFromISR must be greater than value you choose to use in the configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY configuration option.<br />
+Note that in Cortex-M3 the greater interrupt value means lower priority for that interrupt.  
+For example &#40;Cortex-M3&#41;:<br />
+If you let the default value for configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY &#40;191&#41; you need to put 192 or a gretar value to the priority of any interrupt that uses any function from FreeRTOS API.<br />
+And don&#8217;t forget to use functions …FromISR&#40;&#41; from within interrupt handlers.  
+I hope this can help you in some way.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmaygarden">jmaygarden</a> on March 23, 2010</div><div class="thread-post-content">I though that the priority could be equal to configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY or lower &#40;higher number for Cortex-M3&#41;. That worked just fine for me with an STM32, but the SAM3U is having issue with it. I set configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY to configKERNEL&#95;INTERRUPT&#95;PRIORITY &#40;as shown below&#41; and it alleviated my problem. So, I know it is definitely related to interrupt priorities.   
+<pre><code>#if 0
+#define configKERNEL_INTERRUPT_PRIORITY         (0x0F &lt;&lt; 4) /* Priority 15, or 255 as only the top four bits are implemented.  This is the lowest priority. */
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY    (0x05 &lt;&lt; 4)     /* Priority 5, or 80 as only the top four bits are implemented. */
+#else
+#define configKERNEL_INTERRUPT_PRIORITY         (255)
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY    (255)
+#endif
+</code></pre>
+I&#8217;m pretty sure I even tried using configKERNEL&#95;INTERRUPT&#95;PRIORITY for all of my interrupts and that didn&#8217;t do the trick either.  
+Also, the problem is occurring with a xQueueSendFromISR from the real-time timer &#40;RTT&#41; alarm at 100 Hz. That module is very quirky. You have to poll the alarm status for 2 slow-clock cycles before exiting the interrupt. That makes the ISR take about 60 microseconds. I don&#8217;t like that one bit and perhaps it could mess up the kernel if its interrupts are blocked during that time?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on March 23, 2010</div><div class="thread-post-content">I don&#8217;t know if it is relevant in this case, but remember different M3 suppliers implement a different number of priority bits. Also different libraries expect the priority to be presented in a different way.&nbsp; For example, CMSIS libraries want the priority set in the least significant bits of the byte, while LMI libraries want the priority bits shifted up to the most significant bits of the byte.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmaygarden">jmaygarden</a> on March 23, 2010</div><div class="thread-post-content">I just looked at the NVIC&#95;SetPriority function in the CMSIS header file. It shifts the priority value 4 bits to the left. So, the shift is happening twice when I use &#8220;FreeRTOSConfig.h&#8221; from the SAM3U example. I&#8217;m going to make the change below and give it a try. This should fix the problem.  
+<pre><code>#if 0
+#define configKERNEL_INTERRUPT_PRIORITY         (0x0F &lt;&lt; 4) /* Priority 15, or 255 as only the top four bits are implemented.  This is the lowest priority. */
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY    (0x05 &lt;&lt; 4) /* Priority 5, or 80 as only the top four bits are implemented. */
+#else
+#define configKERNEL_INTERRUPT_PRIORITY         (15)
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY    (5)
+#endif
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 23, 2010</div><div class="thread-post-content">If I understand you correctly I don&#8217;t think that will work.&nbsp; If you look at where these constants are used in port.c you will see that they expect to be correct, that is, shifted to the correct bit position within the 8 bit byte.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Callback functions for posting to a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmaygarden">jmaygarden</a> on March 23, 2010</div><div class="thread-post-content">You are correct. The change above breaks the FreeRTOS usage of those macros. What I actually needed to change was the value passed to NVIC&#95;SetPriority in user code. So, here is the final disposition of the interrupt priority macros that works with Atmel&#8217;s latest CMSIS library for the SAM3U:  
+<pre><code>#define configKERNEL_INTERRUPT_PRIORITY         (0xF &lt;&lt; 4)
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY    (0x5 &lt;&lt; 4)
+#define CMSIS_SYSCALL_INTERRUPT_PRIORITY        (configMAX_SYSCALL_INTERRUPT_PRIORITY &gt;&gt; 4)
+</code></pre>
+I know use CMSIS&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY for all interrupts that make system calls instead of using configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY directly.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to make printf/sprintf/strtod thread safe - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2018/freertos_How_to_make_printf_sprintf_strtod_thread_safe_44d2ceb8j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How to make printf/sprintf/strtod thread safe - FreeRTOS" />
+<meta property="og:description" content="How to make printf/sprintf/strtod thread safePosted by dcrocker on April 3, 2018Since converting my project to run as 3 FreeRTOS tasks I have been getting a few hard faults each hour. The fault address is within the Balloc function in libc.a from the ARM M4 gcc library. I understand that the most likely cause is &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2018/freertos_How_to_make_printf_sprintf_strtod_thread_safe_44d2ceb8j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="How to make printf/sprintf/strtod thread safePosted by dcrocker on April 3, 2018Since converting my project to run as 3 FreeRTOS tasks I have been getting a few hard faults each hour. The fault address is within the Balloc function in libc.a from the ARM M4 gcc library. I understand that the most likely cause is [&hellip;]" />
+<meta name="twitter:title" content="How to make printf/sprintf/strtod thread safe - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202924' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202924' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202924' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202924' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147018' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2018%2Ffreertos_How_to_make_printf_sprintf_strtod_thread_safe_44d2ceb8j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2018%2Ffreertos_How_to_make_printf_sprintf_strtod_thread_safe_44d2ceb8j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147018">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2018_freertos_support_forum_archive_index.html/">April 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dcrocker">dcrocker</a> on April 3, 2018</div><div class="thread-post-content">Since converting my project to run as 3 FreeRTOS tasks I have been getting a few hard faults each hour. The fault address is within the <em>Balloc function</em> in libc.a from the ARM M4 gcc library. I understand that the most likely cause is that even though my own code does not use dynamic memory allocation after the initialisation phase, library functions printf, sprintf, strtod etc. (all of which two of my application tasks call regularly) call malloc/free, and the standard library memory management functions are not thread safe by default. What is the recommended way of making the memory allocation performed by these library functions thread safe? Is there a library version of libc for ARM M4 that is already compatible with FreeRTOS?
+I read that newlib&#8217;s malloc and free call __malloc<em>lock and __malloc</em>unlock functions to allow them to be made thread safe. So I implememted those functions using a recursive mutex, and verified that they are present in the linker map instead of the original versions. However, although the problem may be less frequent after doing that, I still had a crash after about 90 minutes &#8211; in _Balloc again.
+Thanks &#8211; David
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 3, 2018</div><div class="thread-post-content">Is it an option for you to not use the malloc() and free() functions at 
+all?  I think GCC has options to direct these calls elsewhere, but if 
+not you can implement them yourself to just call pvPortMalloc() and 
+vPortFree(), as per:
+void *malloc( size_t xSize )
+{
+     return pvPortMalloc( xSize );
+}
+and likewise for free().
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 4, 2018</div><div class="thread-post-content">In addition to Richard&#8217;s remark about replacing <code>malloc()</code> and <code>free()</code>, I have a question: what version of <code>heap_x.c</code> are you using? <a href="https://www.freertos.org/a00111.html">Here you&#8217;ll find</a> a good explanation about the options that are available.
+<blockquote>
+  How to make printf/sprintf/strtod thread safe
+</blockquote>
+Are you sure that mentioned functions allocate memory? I thought that they are thread-safe because they store all temporary data on stack ( but I&#8217;m not a GCC-expert ).
+As the stack usage of <code>printf()</code> functions can be quite high, an alternative implementation is being used in some FreeRTOS demo applications, which you can download <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/8fbac97d/45ce/attachment/printf-stdarg.c">from here</a>
+Those functions are all thread- and ISR-safe ( although it is not recommended to use these functions from within an ISR ).
+In these posts you will find more information about <code>printf-stdarg.c</code>:
+<a href="https://sourceforge.net/p/freertos/discussion/382005/thread/8fbac97d">sprintf %f corrupts stack </a>
+<a href="https://sourceforge.net/p/freertos/discussion/382005/thread/a9094bfc">hardfault with sprintf/snprintf/vsprintf/vsnprintf, newlib, newlibnano, tinyprintf </a>
+You&#8217;re not the only person having problems with the <code>[v][s][n]printf</code> functions.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 4, 2018</div><div class="thread-post-content">One thing to check is what options newlib was built with, as the use of malloc<em>lock/mallooc</em>unlock is configured at library build time. One test is if you DON&#8217;T define those functions, do they show up in the link map? If not, then malloc/free isn&#8217;t calling them.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dcrocker">dcrocker</a> on April 4, 2018</div><div class="thread-post-content">Thanks for the replies.
+<ul>
+<li>I am not using any of the heap#.c implementations, because I am using static allocation of tasks, mutexes, stacks etc. and the corresponding FreeRTOS calls CreateStatic calls.</li>
+<li>I verified that my linker address map originally contained labels __malloc<em>lock and __malloc</em>free supplied by libc, and that after I replaced them, those were gone and only my own versons were present. So I conclude that newlib does refer to them.</li>
+<li>I need to print floats, and I understand that the FreeRTOS version of printf etc. doesn&#8217;t support them. Perhaps I should add support for floating point formats to it.</li>
+<li>I understand that strtod also allocates dynamic memory under some circumstances, so I need to handle that function too.</li>
+<li>Replacing malloc/free by one of the FreeRTOS versions may be an option, but I am puzzled that adding the semaphore didn&#8217;t fix the problem.</li>
+<li>Thanks for the links, I previously found some but not all of them.</li>
+</ul>
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dcrocker">dcrocker</a> on April 4, 2018</div><div class="thread-post-content">I did some more digging and found:
+<ul>
+<li><code>_Balloc</code> is used by strtod, not printf</li>
+<li>Although my code does use strtod, it should never be called when the system is idle (which is when it was crashing with a hard fault eventually). Which leaves me puzzled.</li>
+<li>I didn&#8217;t have configUSE<em>NEWLIB</em>REENTRANT set in my config. This would explain the problem I think, because strtod uses big-number structures that need to be per-task</li>
+<li>Unfortunately, when I set configUSE<em>NEWLIB</em>REENTRANT and rebuild, I can get the system to run but the diagnostics indicate that RAM usage has increased by many kB and there is no longer any free memory. I think this is because of all the stuff in<code>_struct reent</code> that I dont need, such as the stdin/stdout/stderr stuff.</li>
+</ul>
+I think this leaves me a few options:
+<ul>
+<li>Try to save RAM  elsewhere in the project &#8211; but I&#8217;ve already done this several times, and I want to add a lot more tasks so I can&#8217;t really afford a <code>_reent</code> struct for each one anyway</li>
+<li>Compile my own version of newlb without the stdio stuff and other stuff that I don&#8217;t need in <code>_reeent</code></li>
+<li>Wrap calls to strtod in a mutex. This will work for strtod, but I may hit similar problems with other functions in newlib</li>
+<li>Write my own version of strtod. I only need to parse floats, not doubles, so with luck I can skip the big number stuff and not need to use any heap.</li>
+</ul>
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 4, 2018</div><div class="thread-post-content">Using the Launchpad version of GCC with newlib nano might help.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hs2sf">hs2sf</a> on April 4, 2018</div><div class="thread-post-content">I&#8217;m using  <a href="https://developer.arm.com/open-source/gnu-toolchain/gnu-rm">this</a> ARM toolchains.
+There newlib malloc locking hook support was added last year with GCC6 based release 6-2017-q2.
+Just my 2ct
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dcrocker">dcrocker</a> on April 4, 2018</div><div class="thread-post-content">@HS2, I am using that same version of the ARM GCC toolchain. I see that there is a more recent version now.
+@Richard Barry, I wasn&#8217;t aware of the Launchpad version of GCC. The page about it says &#8220;As previously announced all new binary and source packages will not be released on Launchpad henceforth, they can be found on:
+https://developer.arm.com/open-source/gnu-toolchain/gnu-rm.&#8221; That page is where I downloaded the GCC tool chain from. However, I am not explicitly using the nano version of newlib, so I will look into that.
+I have written a strtod replacement and that seems to have resolved the problem. I had to define <code>_strtod_r</code> too to call my function because that is called internally &#8211; probably from sscanf which I am also using.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dcrocker">dcrocker</a> on April 5, 2018</div><div class="thread-post-content">Although I solved the crash by providing my own version of strtod and friends, I still had an occasional problem with printf producing the wrong output for floating point values. It turns out when when printing floating point formats, printf uses a buffer in the <code>_reent</code> struct. As I cannot afford the large amount of storage associated with having a reeent struct for each task, I&#8217;ll have to find another solution. I&#8217;ve switched to newlib-nano and in that version, the floating point bits that use the reent struct are in a separate file, vfprintf_float.c. So it looks like I can just take that file, hack it it to use the stack instead and include those functions in my project. Or maybe just disable scheduling around it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 5, 2018</div><div class="thread-post-content">Normally, if the problem is only with floating point values, the root 
+cause is a misaligned buffer.  Floating point requires 8-byte alignment. 
+  The stack MUST be 8-byte aligned, but if if this is inside a FreeRTOS 
+task then it should already be &#8211; but maybe there are other buffers that 
+must also be?
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dcrocker">dcrocker</a> on April 5, 2018</div><div class="thread-post-content">Thanks, Richard. I don&#8217;t think that&#8217;s the problem, because the issue only occurs when 2 tasks are calling vsnprintf to print floats several times a second. The symptom is most obvious when one of the floats that was supposed to be printed just gets left out, because that causes a parsing error at the PC that receives the data. I&#8217;m fairly sure it is because both tasks are using the buffer in the same reent struct to convert the float.
+In the short term I&#8217;ll replace calls to vsnprinf by a wrapper that disables the scheduler. In the longer term I&#8217;ll use a cut-down vsnprintf replacement,
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dcrocker">dcrocker</a> on April 7, 2018</div><div class="thread-post-content">I can confirm that replacing calls to vsnprintf in my application by calls to a wrapper that suspends/enables the scheduler around the actual call to vsnprintf fixed the problem.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dcrocker">dcrocker</a> on April 12, 2018</div><div class="thread-post-content">In case anyone else has a need for  a threadsafe printf with floating point support, I converted the FreeRTOS printf to C++, added support for %e and %f formats, and committed it at https://github.com/dc42/RepRapFirmware/tree/v2-dev/src/Libraries/General. I haven&#8217;t tested that the padding always works properly because this application doesn&#8217;t use padding. My threadsafe version of strtod is there too.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on June 4, 2018</div><div class="thread-post-content">Perhaps these notes on newlib will be helpful:
+http://www.nadler.com/embedded/newlibAndFreeRTOS.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to  make printf/sprintf/strtod thread safe</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dcrocker">dcrocker</a> on June 5, 2018</div><div class="thread-post-content">Thanks Dave, your notes would have been really useful had I found them earlier (or maybe you only just wrote them).
+I found your recommended solution (#define configUSE<em>NEWLIB</em>REENTRANT 1) too expensive in RAM because the reent structure is so large. So I wrote my own strtod replacement (which doesn&#8217;t handle rounding of very large numbers correctly, but that doesn&#8217;t matter for this application), and added basic floating point support to the FreeRTOS implementation of printf. Having read your notes, I&#8217;ll take care to avoid using strtok too.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

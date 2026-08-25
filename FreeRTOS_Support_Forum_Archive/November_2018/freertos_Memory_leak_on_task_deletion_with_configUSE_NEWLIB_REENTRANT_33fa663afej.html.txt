@@ -1,0 +1,233 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory leak on task deletion with configUSE_NEWLIB_REENTRANT - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2018/freertos_Memory_leak_on_task_deletion_with_configUSE_NEWLIB_REENTRANT_33fa663afej.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Memory leak on task deletion with configUSE_NEWLIB_REENTRANT - FreeRTOS" />
+<meta property="og:description" content="Memory leak on task deletion with configUSE_NEWLIB_REENTRANTPosted by n1vg on November 3, 2018I&#8217;ve got a problem that has me going in too many directions at once and I&#8217;m hoping someone here might be able to give me some direction. All of my tasks save one are started once and are never terminated. The one exception &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2018/freertos_Memory_leak_on_task_deletion_with_configUSE_NEWLIB_REENTRANT_33fa663afej.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Memory leak on task deletion with configUSE_NEWLIB_REENTRANTPosted by n1vg on November 3, 2018I&#8217;ve got a problem that has me going in too many directions at once and I&#8217;m hoping someone here might be able to give me some direction. All of my tasks save one are started once and are never terminated. The one exception [&hellip;]" />
+<meta name="twitter:title" content="Memory leak on task deletion with configUSE_NEWLIB_REENTRANT - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203028' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203028' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203028' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203028' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147412' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2018%2Ffreertos_Memory_leak_on_task_deletion_with_configUSE_NEWLIB_REENTRANT_33fa663afej.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2018%2Ffreertos_Memory_leak_on_task_deletion_with_configUSE_NEWLIB_REENTRANT_33fa663afej.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147412">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2018_freertos_support_forum_archive_index.html/">November 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on November 3, 2018</div><div class="thread-post-content">I&#8217;ve got a problem that has me going in too many directions at once and I&#8217;m hoping someone here might be able to give me some direction.
+All of my tasks save one are started once and are never terminated.  The one exception is a network update downloader that of course only needs to run occasionally.  It&#8217;s started, checks for updates, and ends &#8211; and it takes a chunk of heap with it, even if no explicit dynamic allocation is used in the task itself.
+The leak is 1468 bytes, or 436 if stdout buffering is disabled.  Assuming 8 bytes of overhead per allocation, that matches perfectly with the size of the reent structure and the default 1024 byte stdout buffer.
+Presumably Newlib expects the OS to clean up after it.  Or is there some way to tell it to free what it&#8217;s using?
+I&#8217;m using Newlib&#8217;s own malloc for the kernel (configUSE<em>HEAP</em>SCHEME==6) &#8211; this comes from <a href="http://www.nadler.com/embedded/newlibAndFreeRTOS.html">Dave Nadler</a> by way of <a href="https://mcuoneclipse.com/2017/07/02/using-freertos-with-newlib-and-newlib-nano/">mcuoneclipse.com</a>.
+How does one normally deal with this?  This can&#8217;t be an unusual requirement, to shut down a task without leaking memory.  I&#8217;m trying to recall the reasons I switched heap schemes in the first place &#8211; I think initially I was using the CodeWarrior EWL library, which had a heap implementation that didn&#8217;t match the documentation, didn&#8217;t behave as expected, and has apparently been abandoned.
+What I want is a setup that will let me use standard libraries in a thread-safe manner and either not have a separate heap for the RTOS and standard libaries, or at least have a heap that goes where the documentation says it will and plays nice with everything else.  (This is all on a Cortex M4, BTW.)
+What am I missing?  This seems like it should be a really basic thing and I must be overlooking something obvious, but it&#8217;s Friday night and I&#8217;m already sleep-deprived and 80 hours into my work week and I&#8217;d just like to hear how everyone else deals with this.
+Thanks,
+Scott
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 3, 2018</div><div class="thread-post-content">In addition &#8211; which version of FreeRTOS are you using?  I think there 
+was something added to do with the reent struct when deleting a task 
+within the last year or two.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on November 4, 2018</div><div class="thread-post-content">I&#8217;m running 10.0.1.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/xz8987f">xz8987f</a> on November 4, 2018</div><div class="thread-post-content">I tried to replicate this (usually I never delete a task in my applications, so I might not have noticed things). So I created a task and killed it. It mallocs() the stack plus the TCB which includes the reentrant structure provided configUSE<em>NEWLIB</em>REENTRANT is set.
+And after killing the task the IDLE task (should not be starved with killing tasks) properly frees the two memory blocks. So I don&#8217;t see for now a memory leak on my side? But I&#8217;m not calling other newlib functions, maybe the leak is caused by such functions (which ones?). What I see is that the newlib heap gets fragmented, but thats kind of expected?
+If the newlib other library calls (printf()?) do allocate more memory chunks and do not free it, I don&#8217;t know how FreeRTOS would be able to deal with it?
+I hope this helps,
+Erich
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on November 4, 2018</div><div class="thread-post-content">Hi Erich,
+I&#8217;ve been struggling to get this project to let me debug with the newlib sources so I can walk through it (as covered in my comment on your blog post) but it&#8217;s just not cooperating today.
+I&#8217;ve been stepping through the first printf() call on a project that <em>does</em> let me see the newlib sources, but it&#8217;s not a FreeRTOS project.  What I&#8217;m seeing there is that the stdio file handles get set up in findfp.c.  I&#8217;m assuming that FreeRTOS is doing its thing properly and allocating and deallocating the TCB and stack and that it&#8217;s newlib that&#8217;s allocating memory, so it&#8217;s probably not strictly a FreeRTOS issue but I posted here because it looks like something that any FreeRTOS user using newlib would run into and there has to be a way to avoid this.
+Scott
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on November 4, 2018</div><div class="thread-post-content">Hi Richard,
+What&#8217;s the expected way for this to be dealt with?  Is it an anomaly that newlib is allocating memory on its first buffered I/O call?  Is there something I need to configure to avoid that?  Or does FreeRTOS have exit hooks that the libc implementation would normally use to deallocate memory on shutdown?
+Thanks,
+Scott
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on November 4, 2018</div><div class="thread-post-content">I should also mention that I&#8217;ve got <code>_REENT_SMALL</code> enabled.  It looks like Newlib doesn&#8217;t support global stdio streams with that option and most things are allocated on first use.  I&#8217;m thinking that maybe that&#8217;s not the normal usage with FreeRTOS and that it expects the reent struct to be static and allocated as part of the TCB.  I checked that my Newlib config matches Erich&#8217;s but it sounds like he doesn&#8217;t ever kill tasks so it&#8217;s possible that part wasn&#8217;t tested.
+I see that prvDeleteTCB() calls <code>_reclaim_reent()</code> and that looks to me like it <em>should</em> be where it&#8217;d be freed again&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 4, 2018</div><div class="thread-post-content">V10.0.1 has the addition I was thinking of, as can be seen on line line 3687 of https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.0.1/FreeRTOS/Source/tasks.c
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 4, 2018</div><div class="thread-post-content">Personally, I just avoid using newlib, so don&#8217;t have much experience with it (as noted on the web page I linked to before).  If it is allocating memory on a first call to some function or other then I presume it is best to leave the memory allocated as that is, presumably, what the library expects (some kind of singleton implementation where the memory is only allocated on the first call) &#8211; or are you seeing the memory not being freed on every task delete, so the leak increases over timer?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on November 5, 2018</div><div class="thread-post-content"><blockquote>
+  (as noted on the web page I linked to before)
+</blockquote>
+What web page is that?   The only link you&#8217;ve posted in this thread goes to tasks.c.  There <em>is</em> a comment around line 313 that mentions it being added by popular demand.  Is that the one?  Or did I miss a message?  Your first post starts &#8216;in addition&#8217; but I thought you were just starting by asking for clarification.
+From what I can see, Newlib with <code>_REENT_SMALL</code> seems to have pointers to the file structures in the reent struct that are allocated on first use, so once the TCB is freed the pointers are lost.  Every time the task is started the buffer is allocated anew and it runs out of memory after several iterations.
+I think part of the reason I rebuilt Newlib in the first place was to reduce the per-task reent memory usage.  The full size struct takes up a lot of RAM and is the main reason I&#8217;m reluctant to create any more tasks even where it would simplify other things.  If you&#8217;ve got a preferred library setup that has a reliable malloc scheme that isn&#8217;t memory hungry, I&#8217;d be happy to stick with whatever is tested and proven.
+Thanks,
+Scott
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 5, 2018</div><div class="thread-post-content"><blockquote>
+  All of my tasks save one are started once and are never terminated. The 
+  one exception is a network update downloader that of course only needs 
+  to run occasionally. It&#8217;s started, checks for updates, and ends &#8211; and it 
+  takes a chunk of heap with it, even if no explicit dynamic allocation is 
+  used in the task itself.
+</blockquote>
+Is all the code yours?  If not, are you sure the library you are using 
+is not allocating memory internally?
+<blockquote>
+  The leak is 1468 bytes
+</blockquote>
+Sounds like the size of an Ethernet packet.
+, or 436 if stdout buffering is disabled. Assuming
+<blockquote>
+  8 bytes of overhead per allocation, that matches perfectly with the size 
+  of the reent structure and the default 1024 byte stdout buffer.
+</blockquote>
+Ah, right.
+<blockquote>
+  Presumably Newlib expects the OS to clean up after it. Or is there some 
+  way to tell it to free what it&#8217;s using?
+  How does one normally deal with this? 
+</blockquote>
+Do you have configUSE<em>NEWLIB</em>REENT define? 
+https://www.freertos.org/a00110.html#configUSE<em>NEWLIB</em>REENTRANT
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on November 5, 2018</div><div class="thread-post-content">Hi Richard,
+For testing, I reduced the offending task to this:
+~~~
+static portTASK<em>FUNCTION(TaskUpdate, pvParameters)
+{
+    uint32</em>t f1 = (uint32_t)xPortGetFreeHeapSize();
+<pre><code>setvbuf(stdout, NULL, _IONBF, 0);
+printf("rBefore: %lu After: %lurn", f1, (uint32_t)xPortGetFreeHeapSize());
+update_taskhandle = NULL;
+vTaskDelete(NULL);
+return;
+</code></pre>
+}
+~~~
+The output is:
+<blockquote>
+  cmd:update
+  Before: 9456 After: 9020
+  update
+  Before: 9020 After: 9020
+  update
+  Before: 9020 After: 8584
+  update
+  Before: 8584 After: 8148
+  update
+  Before: 8148 After: 7712
+</blockquote>
+I was just working on a related project that&#8217;s not using FreeRTOS but has the same Newlib configuration and I&#8217;ve confirmed that it also takes 436 bytes after the first printf().
+This doesn&#8217;t seem like a rare sort of thing to be doing and it&#8217;s not a small memory leak.  What am I doing wrong?
+And what&#8217;s your preferred C runtime?  NXP keeps pushing Redlib but it&#8217;s not thread safe.  Here&#8217;s NXP&#8217;s statement:
+<blockquote>
+  Redlib was always designed as a simple, Embedded C library. And at present we have no plans to make it thread safe &#8211; we have seen little or no demand for this (in the 10 years or so that we have been supplying Redlib). 
+   Our recommendation if you want thread safe is to use Newlib (which you can switch your project to use very easily), wrap the Redlib functions yourself, or else provide equivalent functions yourself as source within your project (e.g. from other open source projects).
+</blockquote>
+I think that was what got me started on this path in the first place &#8211; by NXP&#8217;s own admission, their solution isn&#8217;t safe with FreeRTOS.  So what <em>is</em>?  What does everyone else use?
+Thanks,
+Scott
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 5, 2018</div><div class="thread-post-content">My preference is to use the simplest library possible, then ensure 
+thread safety myself, as per the implementation of heap_3.c which makes 
+malloc() thread safe.  I have found inclusion of newlib to massively 
+bloat the code size, especially if you can&#8217;t stop it bringing in all the 
+floating point support (which may not be required).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 5, 2018</div><div class="thread-post-content">In this case could it be you are only supposed to call setvbuf() once, not each time the task is created?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on November 5, 2018</div><div class="thread-post-content">How would that work?  setvbuf() is allocating memory referenced by pointers in the reent struct in the TCB &#8211; I don&#8217;t see how you could have it get them back when the task is recreated.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on November 5, 2018</div><div class="thread-post-content">When you say heap<em>3.c makes malloc() thread safe, do you mean it makes them safe for its own calls, or does it actually wrap the standard malloc() call so things like printf() can use it?  I know that can be done with the linker but I didn&#8217;t think that was what heap</em>3 was doing, and I read that it doesn&#8217;t implement realloc(), which is used by at least some printf() implementations.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 5, 2018</div><div class="thread-post-content">heap_3 just wraps the malloc calls with scheduler suspend/resume calls, 
+so calls to pvPortMalloc() which call malloc() cannot be interrupted.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory leak on task deletion with configUSE_NEWLIB_REENTRANT</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on November 5, 2018</div><div class="thread-post-content">So that still leaves me in the position that two library functions using malloc() on their own can still interfere, right?  How do you normally deal with that?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task priority, interrupt, semaphore problem - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2012/freertos_Task_priority_interrupt_semaphore_problem_5508563.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Task priority, interrupt, semaphore problem - FreeRTOS" />
+<meta property="og:description" content="Task priority, interrupt, semaphore problemPosted by eriksage on August 8, 2012Dear support forum, I have a problem regarding tha task priority, interrupt priority and the use of semaphores. At initialization, a startupThread is created and the scheduler is started. If the task priority of the startupThread is lower than 9, the code is working. If &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2012/freertos_Task_priority_interrupt_semaphore_problem_5508563.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Task priority, interrupt, semaphore problemPosted by eriksage on August 8, 2012Dear support forum, I have a problem regarding tha task priority, interrupt priority and the use of semaphores. At initialization, a startupThread is created and the scheduler is started. If the task priority of the startupThread is lower than 9, the code is working. If [&hellip;]" />
+<meta name="twitter:title" content="Task priority, interrupt, semaphore problem - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202156' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202156' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202156' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202156' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144458' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2012%2Ffreertos_Task_priority_interrupt_semaphore_problem_5508563.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2012%2Ffreertos_Task_priority_interrupt_semaphore_problem_5508563.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144458">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2012_freertos_support_forum_archive_index.html/">August 2012 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Task priority, interrupt, semaphore problem</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eriksage">eriksage</a> on August 8, 2012</div><div class="thread-post-content">Dear support forum,<br />
+I have a problem regarding tha task priority, interrupt priority and the use of semaphores.  
+At initialization, a startupThread is created and the scheduler is started.<br />
+If the task priority of the startupThread is lower than 9, the code is working. If it is higher than 9, the code only works if I put a breakpoint in the xPortPendSVHandler and steps through the code.  
+The problem occurs when the startupThread is waiting for a semaphore that is released in an I2C interrupt. When the semaphore is released, the StartupThread does not continue to run. Neither because of a semaphore timeout or because of the release. I can see that the semaphore is released and that portEND&#95;SWITCHING&#95;ISR &#40; xHigherPriorityTaskWoken &#41; is called with xHigherPriorityTaskWoken == 1. However the startupThread is never continued. Since the semaphore also have a timeout I find this very strange.  
+I suspect that there might be an issue regarding the setup of the interrupt priorities or task priorities. Any ideas? Can the increased size of the taskList cause more delay and trigger a problem with a race-condition?<br />
+Is there a limit for the task priority other than configMAX&#95;PRIORITIES?  
+Info:<br />
+FreeRTOS V7.0.1<br />
+MCU: Freescale Kinetis K10.<br />
+Compiler: IAR 6.21  
+&#35;define configMAX&#95;PRIORITIES &#40; &#40; unsigned portBASE&#95;TYPE &#41; 12 &#41;<br />
+&#35;define configLIBRARY&#95;LOWEST&#95;INTERRUPT&#95;PRIORITY 0xf<br />
+&#35;define configLIBRARY&#95;MAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY 5  
+Best regards,<br />
+Erik Agerup  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task priority, interrupt, semaphore problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 8, 2012</div><div class="thread-post-content">Have you followed all the instructions on this page?<br />
+<a href="http://www.freertos.org/RTOS-Cortex-M3-M4.html">http://www.freertos.org/RTOS-Cortex-M3-M4.html</a>  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task priority, interrupt, semaphore problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eriksage">eriksage</a> on August 9, 2012</div><div class="thread-post-content">Yes, I have followed the instructions, and I can see that the BASEPRI register is set to 0x50 during the first xTaskCreate&#40;&#41;.<br />
+However, after calling vTaskStartScheduler&#40;&#41; and starting the first task, the BASEPRI register is reset to 0. This is also the case in the FreeRTOS blinky demo. Is this correct?  
+Regards  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task priority, interrupt, semaphore problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eriksage">eriksage</a> on August 9, 2012</div><div class="thread-post-content">Forget my previous post, I now understand the BASEPRI register, and I also found the error:&#41;  
+In xPortPendSVHandler the interupts are disabled, vTaskSwitchContext is run and the interrupts are enabled again.  
+stmdb sp&#33;, &#123;r3, r14&#125;<br />
+mov r0, &#35;configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY<br />
+msr basepri, r0<br />
+bl vTaskSwitchContext<br />
+mov r0, &#35;0<br />
+msr basepri, r0<br />
+ldmia sp&#33;, &#123;r3, r14&#125;  
+But in vTaskSwitchContext, the function portGET&#95;RUN&#95;TIME&#95;COUNTER&#95;VALUE is run when configGENERATE&#95;RUN&#95;TIME&#95;STATS is enabled, and that function calls xTaskGetTickCountFromISR&#40;&#41;;  
+xTaskGetTickCountFromISR&#40;&#41; disables interrupts, and enables them again.<br />
+The remaining code of vTaskSwitchContext is now run with interrupts enabled.  
+portTickType xTaskGetTickCountFromISR&#40; void &#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portTickType xReturn;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unsigned portBASE&#95;TYPE uxSavedInterruptStatus;<br />
+uxSavedInterruptStatus = portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;;<br />
+xReturn = xTickCount;<br />
+portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40; uxSavedInterruptStatus &#41;;<br />
+return xReturn;<br />
+&#125;<br />
+I am sure the intension is to store the previous state of the interrupt in uxSavedInterruptStatus, but that does not work, it is always 0.  
+I think these defines need to be changed in portmacro.h:<br />
+&#35;define portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; 0;vPortSetInterruptMask&#40;&#41;<br />
+&#35;define portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;x&#41; vPortClearInterruptMask&#40;&#41;;&#40;void&#41;x  
+If 0 always is returned from portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;, interrupts will be enabled when they are not supposed to.  
+How can I update these macros such that the BASEPRI register is read instead of 0?  
+Regards  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task priority, interrupt, semaphore problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 9, 2012</div><div class="thread-post-content"><blockquote>
+  In xPortPendSVHandler the interupts are disabled, vTaskSwitchContext is run and the interrupts are enabled again.
+</blockquote>
+No they are not.&nbsp; The intelligent Cortex-M NVIC &#40;nested interrupt controller&#41; will not accept an interrupt at a priority above the currently running interrupt.&nbsp; As BASE&#95;PRI is set to 0 the code effectively sets the interrupt mask to the priority of the existing interrupt.&nbsp;   
+<blockquote>
+  I think these defines need to be changed in portmacro.h:<br />
+  &#35;define portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; 0;vPortSetInterruptMask&#40;&#41;<br />
+  &#35;define portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;x&#41; vPortClearInterruptMask&#40;&#41;;&#40;void&#41;x  
+</blockquote>
+It is set to zero because saving the old interrupt state and then restoring the old interrupt state would cause the compiler to generate more assembly code with no difference being made to the effective state of the compiler or the execution of your code.&nbsp; As it is, turning the optimiser on in the compiler settings will just remove the code all together as it does nothing.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task priority, interrupt, semaphore problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eriksage">eriksage</a> on August 9, 2012</div><div class="thread-post-content">Ok, I understand, and thank you for your reply.<br />
+That was strange, because changing the code solved my problem.  
+The strange thing is that if I either disable configGENERATE&#95;RUN&#95;TIME&#95;STATS or uncomment as shown below, the code is working.<br />
+If I don&#8217;t do this, it depends on the value of the highest task priority if it works or not. I suspect that a higher task priority value will make it take a longer time to go through the task list in vTaskSwitchContext and therefore it is more likely that the I2C interrupt is occurring here. I can see that the I2C interrupt is run while vTaskSwitchContext is running.  
+//uxSavedInterruptStatus = portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;;<br />
+xReturn = xTickCount;<br />
+//portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40; uxSavedInterruptStatus &#41;;  
+So, it is OK that the BASEPRI is changed from 0x50 to 0x00 during vTaskSwitchContext if and only if configGENERATE&#95;RUN&#95;TIME&#95;STATS is enabled?  
+Can you think of something else causing my problem, when changing this makes my problem disappear.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task priority, interrupt, semaphore problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on August 10, 2012</div><div class="thread-post-content">When configGENERATE&#95;RUN&#95;TIME&#95;STATS&nbsp; is set to 1, the kernel will try an call user defined functions to first initialize the run time stats gathering, and then obtain the run time stats pointers. How are your run time stats functions implemented?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task priority, interrupt, semaphore problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 16, 2012</div><div class="thread-post-content">Update &#8211;   
+This is probably the cause of the issue.&nbsp; The run time stats function is called from within a critical section, and exiting the critical section from the run time stats implementation would be a problem on a Cortex-M.&nbsp; I have just looked at the run time stats implementation in the FreeRTOS/Demo projects, and see that it specifically accounts for this potential issue be re-entering the critical section in the code.&nbsp; See the call to portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; in the snipped below, which is taken from the official Kinetis K60 demo.  
+<pre><code>    /* The SysTick is a down counter.  How many clocks have passed since it was
+    last reloaded? */
+    ulSysTickCounts = ulSysTickReloadValue - *pulCurrentSysTickCount;
+    /* How many times has it overflowed? */
+    ulTickCount = xTaskGetTickCountFromISR();
+    /* This is called from the context switch, so will be called from a
+    critical section.  xTaskGetTickCountFromISR() contains its own critical
+    section, and the ISR safe critical sections are not designed to nest,
+    so reset the critical section. */
+    portSET_INTERRUPT_MASK_FROM_ISR();
+    /* Is there a SysTick interrupt pending? */
+    if( ( *pulInterruptCTRLState &amp; ulSysTickPendingBit ) != 0UL )
+    {
+        /* There is a SysTick interrupt pending, so the SysTick has overflowed
+        but the tick count not yet incremented. */
+        ulTickCount++;
+        /* Read the SysTick again, as the overflow might have occurred since
+        it was read last. */
+        ulSysTickCounts = ulSysTickReloadValue - *pulCurrentSysTickCount;
+    }   
+    /* Convert the tick count into tenths of a millisecond.  THIS ASSUMES
+    configTICK_RATE_HZ is 1000! */
+    ulReturn = ( ulTickCount * 10UL ) ;
+    /* Add on the number of tenths of a millisecond that have passed since the
+    tick count last got updated. */
+    ulReturn += ( ulSysTickCounts / ulClocksPer10thOfAMilliSecond );
+    return ulReturn;    
+</code></pre>
+I might put something into the core code to guard against this, as I can see it is an area that could cause users an issue.  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

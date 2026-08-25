@@ -1,0 +1,202 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS+TCP data loss - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2015/freertos_FreeRTOS_TCP_data_loss_cf3b8f81j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS+TCP data loss - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS+TCP data lossPosted by rwt33 on June 11, 2015Hi guys, I&#8217;ve recently finished developing a STM32F zero-copy driver port and have been doing some performance tests but are hitting an issue with TCP transfers. I&#8217;ve been using the iperf (tested ver 2 &amp; 3) for first loop-back bandwidth tests. In UDP loop-back tests it comfortably &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2015/freertos_FreeRTOS_TCP_data_loss_cf3b8f81j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS+TCP data lossPosted by rwt33 on June 11, 2015Hi guys, I&#8217;ve recently finished developing a STM32F zero-copy driver port and have been doing some performance tests but are hitting an issue with TCP transfers. I&#8217;ve been using the iperf (tested ver 2 &amp; 3) for first loop-back bandwidth tests. In UDP loop-back tests it comfortably [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS+TCP data loss - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202527' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202527' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202527' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202527' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145596' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2015%2Ffreertos_FreeRTOS_TCP_data_loss_cf3b8f81j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2015%2Ffreertos_FreeRTOS_TCP_data_loss_cf3b8f81j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145596">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2015_freertos_support_forum_archive_index.html/">June 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS+TCP data loss</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on June 11, 2015</div><div class="thread-post-content">Hi guys,
+I&#8217;ve recently finished developing a STM32F zero-copy driver port and have been doing some performance tests but are hitting an issue with TCP transfers. I&#8217;ve been using the iperf (tested ver 2 &amp; 3) for first loop-back bandwidth tests. In UDP loop-back tests it comfortably achieves 100mb/s full duplex with zero packet loss running for minutes on end. 
+I&#8217;m having problems with TCP transfers though. In basic text (eg CLI) TCP connections it all works fine, but when I try an iperf loop-back Wireshark shows it connects ok, but after several PSH transfers it stops. After a few seconds iperf (or more likely Windows&#8217; IP stack) retries again but after a few SYN &amp; RST ping-pongs it stops again for a few seconds before the next retry. Given the lack of packet loss with UDP transfers it suggests a TCP handshaking sensitivity.
+That above explanation may not be enough for you to go by, but would it be possible for you to test a very simple iperf TCP loopback on your known working ports? I ask mainly because it&#8217;s actually quite a good standard example that you could use.
+Also, if people are interested in the driver port I could package it up and post it.
+FYI, on a side note, a heads up on a few tiny website API documentation discrepancies:
+&#8211; FreeRTOS<em>createsocketset is now FreeRTOS</em>CreateSocketSet in the code
+&#8211; FreeRTOS<em>shutdown links to &#8220;FreeRTOS</em>revc()&#8221; (sic) typo. The href itself is correct though.
+&#8211; The code example in FreeRTOS_recvfrom doesn&#8217;t pass pxSourceAddressLength as a pointer.
+Thanks for the support guys.
+Rob
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP data loss</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 11, 2015</div><div class="thread-post-content">Hi Rob, I am preparing a small iperf module that should work for both TCP and UDP.
+Does your IPerf code echo the data? If so, that might cause troubles.
+The example will soon be ready.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP data loss</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rwt33">rwt33</a> on June 11, 2015</div><div class="thread-post-content">I&#8217;ve tried both. UDP echo is straight forward:
+~~~~~~
+int lReturned = FreeRTOS<em>recvfrom(xSocket, (void *)&amp;pucUDPPayloadBuffer, 0, FREERTOS</em>ZERO<em>COPY, &amp;xEchoServerAddress, &amp;xAddressLength);
+if (lReturned > 0)
+{
+    int lSent = FreeRTOS</em>sendto(xSocket, (void *)pucUDPPayloadBuffer, lReturned, FREERTOS_ZERO_COPY, &amp;xEchoServerAddress, sizeof(xEchoServerAddress));
+    if (lSent &lt;= 0)
+    {
+        FreeRTOS_ReleaseUDPPayloadBuffer(pucUDPPayloadBuffer);
+    }
+}
+~~~~~~
+Both TCP sink-only and TCP echo (separate server &amp; client connections) are causing the iperf client to stop. 
+Echo (server &amp; client connections) example:
+~~~~~~
+for (;;)
+{
+    int rxLen = FreeRTOS<em>recv(xServerSocket, tcpEchoBuff, sizeof(tcpEchoBuff), 0);
+    if (rxLen >= 0)
+    {
+        if (rxLen > 0)
+        {
+            int num = 0;
+            do
+            {
+                int numSent = FreeRTOS</em>send(xConnectionBackSocket, tcpEchoBuff, rxLen, 0);
+                if (numSent &lt;= 0)
+                    break;
+                num += numSent;
+            } while (num &lt; rxLen);
+        }
+    }
+    else
+        break;
+}
+FreeRTOS<em>shutdown(xConnectionBackSocket, FREERTOS</em>SHUT<em>RDWR);
+while (FreeRTOS</em>recv(xConnectionBackSocket, tcpEchoBuff, sizeof(tcpEchoBuff), 0) >= 0) { }
+FreeRTOS_closesocket(xConnectionBackSocket);
+FreeRTOS<em>shutdown(xServerSocket, FREERTOS</em>SHUT<em>RDWR);
+while (FreeRTOS</em>recv(xServerSocket, tcpEchoBuff, sizeof(tcpEchoBuff), 0) >= 0) { }
+FreeRTOS_closesocket(xServerSocket);
+~~~~~~
+Regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP data loss</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 13, 2015</div><div class="thread-post-content">Thanks for the documentation corrections &#8211; they have been made and will get uploaded to the website shortly.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP data loss</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 15, 2015</div><div class="thread-post-content">Hi Robert,
+Thanks for testing the iperf module that I sent you last week. I attach it here (see &#8220;iperf<em>task</em>v1_0.c&#8221;), so that other users can also have a look at it.
+&#8220;iperf<em>task</em>v1_0.c&#8221; is a module that can be used on any platform with +TCP. It implements a simple iperf server for both TCP and UDP. When using TCP, it is also able to actively connect to its iperf client and echo back all data received.
+When using this double connection, there is no flow control yet. The iperf client may be sending aggressively and thus preventing +TCP from forwarding all data back to the remote client.
+Why is that possible? That happens because the reception of data always has priority above transmission. Now suppose that the RX stream already uses 60% of the bandwidth and also a high percentage of the CPU time, the TX stream buffer may run full and data will get dropped.  With a bit of extra code this can be prevented.
+The loss of data can be seen in the following logging. 32MB was sent and 21.8 MB was received back:
+  C:temp>iperf -c 192.168.2.106 &#8211;dualtest &#8211;port 5001 &#8211;num 32M
+<hr />
+  Server listening on TCP port 5001
+  TCP window size: 64.0 KByte (default)
+<hr />
+<hr />
+  Client connecting to 192.168.2.106, TCP port 5001
+  TCP window size: 64.0 KByte (default)
+<hr />
+  [  4] local 192.168.2.3 port 2411 connected with 192.168.2.106 port 5001
+  [  5] local 192.168.2.3 port 5001 connected with 192.168.2.106 port 55328
+  [ ID] Interval       Transfer     Bandwidth
+  [  4]  0.0- 4.6 sec  32.0 MBytes  58.8 Mbits/sec
+  [  5]  0.0- 4.6 sec  21.8 MBytes  40.1 Mbits/sec
+Note that TCP flow control is fully automatic: if you stop to call FreeRTOS<em>recv() on a receiving socket, the TCP sliding window will run full, and the remote instance of iperf will temporarily stop sending data. As soon as RX data are popped (by calling FreeRTOS</em>recv()), a window-change message is sent and the communication will resume.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

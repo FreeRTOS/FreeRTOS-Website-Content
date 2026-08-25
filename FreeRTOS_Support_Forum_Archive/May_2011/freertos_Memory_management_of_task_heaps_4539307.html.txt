@@ -1,0 +1,137 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory management of task heaps - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2011/freertos_Memory_management_of_task_heaps_4539307.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Memory management of task heaps - FreeRTOS" />
+<meta property="og:description" content="Memory management of task heapsPosted by *anonymous on May 20, 2011Hi everyone, I&#8217;m working on a system using FreeRTOS as the base platform. In it, I create several tasks that perform various operations. Nothing new here. On top of this, I am trying to implement a Task Watchdog. Basically, the watchdog pings every task running &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2011/freertos_Memory_management_of_task_heaps_4539307.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Memory management of task heapsPosted by *anonymous on May 20, 2011Hi everyone, I&#8217;m working on a system using FreeRTOS as the base platform. In it, I create several tasks that perform various operations. Nothing new here. On top of this, I am trying to implement a Task Watchdog. Basically, the watchdog pings every task running [&hellip;]" />
+<meta name="twitter:title" content="Memory management of task heaps - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201993' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201993' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201993' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201993' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138261' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2011%2Ffreertos_Memory_management_of_task_heaps_4539307.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2011%2Ffreertos_Memory_management_of_task_heaps_4539307.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138261">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2011_freertos_support_forum_archive_index.html/">May 2011 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Memory management of task heaps</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on May 20, 2011</div><div class="thread-post-content">Hi everyone,  
+I&#8217;m working on a system using FreeRTOS as the base platform. In it, I create several tasks that perform various operations. Nothing new here. On top of this, I am trying to implement a Task Watchdog. Basically, the watchdog pings every task running in the system to make sure that it is running and responsive. In the case that a task becomes unresponsive, I want to reset that task and free any memory it has allocated for itself. In FreeRTOS, I can do most of this using vTaskDelete&#40;&#41; and xTaskCreate&#40;&#41; and wait for the idle task to free memory in the task&#8217;s stacl that is being reset. This works fine except for one thing. The memory that is freed is just the task stack which is managed by the RTOS &#40;this is documented&#41;. This includes return addresses pushed to the stack by calls from the task and any local variables. All other memory allocated &#40;namely from the heap via malloc&#40;&#41; or new&#41; is not freed by the RTOS. The problem is that in a multitasking environment, any task can allocate memory from the global heap provided by the compiler/linker. So, when I delete a task, I have to pick out all the individual memory blocks I allocated in the task in order to free it. Freeing the entire heap would wipe out memory for all tasks &#40;something that would be catastrophic&#41;. Instead, I&#8217;d like to allocate a memory block &#40;local heap&#41; for a task when it is created. If I have to kill a task and free any memory that was allocated in that task, I simply free that task&#8217;s local heap. That feature is not provided in the official release of FreeRTOS.  
+Has anyone come across this problem? Do you have a solution or can you point me in the right direction?  
+Thanks for your help.  
+beethoven62
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory management of task heaps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 21, 2011</div><div class="thread-post-content">Allocating a heap to every task will require a lot of RAM. Most microcontrollers don&#8217;t have that much RAM, but assuming your system does…  
+The memory allocation is part of the portable layer. By default you get three options, see heap&#95;1.c, heap&#95;2.c and heap&#95;3.c. You could easily add your own heap&#95;x.c to use a thread heap instead of a global heap. You then need to allocate RAM from the global heap each time a task is created. Implementing the traceTASK&#95;CREATE&#40;&#41; macro might be the easiest way of doing that. traceTASK&#95;CREATE&#40;&#41; is called each time a task is created, and the macro parameter is a pointer to the task control block of the created task, so it has all the information you need.  
+That are also more basic ways of doing it. For example a task could manually add a pointer to each block it allocates to a linked list, and the traceTASK&#95;DELETE macro implemented to walk the list and free&#40;&#41; all the blocks it contains.  
+Also consider if you really want your tasks using dynamic memory allocation. If the system is big enough, fast enough, has enough memory, and does not care about the non deterministic behavior of malloc&#40;&#41; then it would be ok.  
+Hope that helps.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory management of task heaps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/beethoven62">beethoven62</a> on May 22, 2011</div><div class="thread-post-content">Thanks for the quick reply. I was wondering why you say that allocating task heaps requires a lot of RAM. Other than a little bit of overhead, it should not require much more than if I allocate memory from a global heap. For argument&#8217;s sake, let&#8217;s say that I do have a lot of memory and my system is quite fast. I&#8217;m interested in two of your points. I&#8217;ll look into using the heap&#95;2.c code to see if I can use the macro you mentioned &#40;I presently use heap&#95;2.c in my system&#41;. Thanks for giving me that tip. The other point is if I need to allocate heap space at all. Basically, I&#8217;ve implemented the C++ STL string type. I had to do this because my compiler does not support templates and that&#8217;s what the STL string type uses in the standard implementation. My string type does, however, dynamically allocate and deallocate memory because a C++ STL grows and shrinks in size at will &#40;you probably already know that&#41;. Any suggestions on how could I implement this string type without a heap?  
+Another thing I was thinking of was hijacking the global heap pointer provided by the compiler/linker and allocating chunks of memory to tasks using this heap pointer via the &#8220;new&#8221; operator by overriding it.  
+Thanks again for your help.  
+beethoven62
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory management of task heaps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 22, 2011</div><div class="thread-post-content">DaveDoors said &#8220;allocating a heap to every task&#8221;, presumably implying that each task would have its own memory area from which it allocated RAM, and that the size of all these separate heaps added together would be greater than having a single global heap.&nbsp; It could be inefficient if some tasks only used a bit of their allocated heap while others used most of it.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Memory management of task heaps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/beethoven62">beethoven62</a> on May 23, 2011</div><div class="thread-post-content">OK guys. I basically know how much heap space I need since I&#8217;ve characterized my system. The question is how to manage it better than just using a global heap. Most of my tasks will not allocate any heap space because it doesn&#8217;t use any. Others will allocate a certain amount. All of this can be characterized and controlled. The only aspect is when a task stops functioning. I need to kill that task and resurrect it exactly as before.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

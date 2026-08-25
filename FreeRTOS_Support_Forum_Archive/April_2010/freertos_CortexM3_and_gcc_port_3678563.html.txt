@@ -1,0 +1,379 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CortexM3 and gcc port - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2010/freertos_CortexM3_and_gcc_port_3678563.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="CortexM3 and gcc port - FreeRTOS" />
+<meta property="og:description" content="CortexM3 and gcc portPosted by kolodko1 on April 16, 2010I am using Cortex-M3 port for STM32 and GCC. I found that macros: portCLEAR&#095;INTERRUPT&#095;MASK&#095;FROM&#095;ISR and portCLEAR&#095;INTERRUPT&#095;MASK&#040;&#041; are not fully implemented. It is shame because I need such macros to create function what call FreeRTOS API and could be used from interrupts and tasks. In my example: &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2010/freertos_CortexM3_and_gcc_port_3678563.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="CortexM3 and gcc portPosted by kolodko1 on April 16, 2010I am using Cortex-M3 port for STM32 and GCC. I found that macros: portCLEAR&#095;INTERRUPT&#095;MASK&#095;FROM&#095;ISR and portCLEAR&#095;INTERRUPT&#095;MASK&#040;&#041; are not fully implemented. It is shame because I need such macros to create function what call FreeRTOS API and could be used from interrupts and tasks. In my example: [&hellip;]" />
+<meta name="twitter:title" content="CortexM3 and gcc port - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201886' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201886' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201886' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201886' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139006' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2010%2Ffreertos_CortexM3_and_gcc_port_3678563.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2010%2Ffreertos_CortexM3_and_gcc_port_3678563.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139006">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2010_freertos_support_forum_archive_index.html/">April 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">CortexM3 and gcc port</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kolodko1">kolodko1</a> on April 16, 2010</div><div class="thread-post-content">I am using Cortex-M3 port for STM32 and GCC.<br />
+I found that macros:  
+portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR<br />
+and<br />
+portCLEAR&#95;INTERRUPT&#95;MASK&#40;&#41;  
+are not fully implemented. It is shame because I need such macros to create function what call FreeRTOS API and could be used from interrupts and tasks. In my example:  
+===========================================================<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uxSavedInterrup = portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &lt;&#45; proper BASE priority<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; queueSendStatus = xQueueSendFromISR&#40;xQue&#95;PRINT&#95;SERVER,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;print&#95;mes, &amp;pxTaskWoken&#41;;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // UNSAFE LINE HERE and below<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //&lt;&#45; due not fully implemented portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; base priority back to 0<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40; pdTRUE == queueSendStatus &#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40;print&#95;mes-&gt;something&#41;++;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; queueSendStatus = xQueueSendFromISR&#40;xQue&#95;PRINT&#95;SERVER,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;print&#95;mes, &amp;pxTaskWoken&#41;;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;uxSavedInterrup&#41;; // in fact not needed, xQueueSendFromISR&#40;&#41;  
+<h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // clear base priority to 0&#33;</h1>
+See line with comment: UNSAFE LINE HERE. Interrupts back to zero, not to configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY.<br />
+But there is no big issue to implement such macros. What I did: based on core&#95;cm3.c and core&#95;cm3.h &#40;CMSIS 1.20&#41; from <a href="http://www.onarm.com/download/download389.asp">http://www.onarm.com/download/download389.asp</a> created functions to put in to portmacro.h  
+===============================================================================<br />
+static inline void &#95;&#95;cortexM3&#95;&#95;enable&#95;irq&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123; &#95;&#95;asm volatile &#40;&#8221;cpsie i&#8221;&#41;; &#125;<br />
+static inline void &#95;&#95;cortexM3&#95;&#95;disable&#95;irq&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123; &#95;&#95;asm volatile &#40;&#8221;cpsid i&#8221;&#41;; &#125;  
+static inline void &#95;&#95;cortexM3&#95;&#95;set&#95;BASEPRI&#40;unsigned portBASE&#95;TYPE value&#41;<br />
+&#123;<br />
+&nbsp; &#95;&#95;asm volatile &#40;&#8221;MSR basepri, %0&#8243; : : &#8220;r&#8221; &#40;value&#41; &#41;;<br />
+&#125;//  
+static inline unsigned portBASE&#95;TYPE &#95;&#95;cortexM3&#95;&#95;get&#95;BASEPRI&#40;void&#41;<br />
+&#123;<br />
+&nbsp; unsigned portBASE&#95;TYPE result = 0U;  
+&nbsp; &#95;&#95;asm volatile &#40;&#8221;MRS %0, basepri&#95;max&#8221; : &#8220;=r&#8221; &#40;result&#41; &#41;;<br />
+&nbsp; return&#40;result&#41;;<br />
+&#125;//  
+static inline unsigned portBASE&#95;TYPE portSET&#95;INTERRUPT&#95;MASK&#40;void&#41;<br />
+&#123;<br />
+&nbsp; unsigned portBASE&#95;TYPE uxSavedInterruptStatus;<br />
+&nbsp; &#95;&#95;cortexM3&#95;&#95;disable&#95;irq&#40;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; need atomic execution &#33;&#42;/<br />
+&nbsp; &#123;<br />
+&nbsp;&nbsp;&nbsp; uxSavedInterruptStatus = &#95;&#95;cortexM3&#95;&#95;get&#95;BASEPRI&#40;&#41;;<br />
+&nbsp;&nbsp;&nbsp; &#95;&#95;cortexM3&#95;&#95;set&#95;BASEPRI&#40;configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY&#41;;<br />
+&nbsp; &#125;<br />
+&nbsp; &#95;&#95;cortexM3&#95;&#95;enable&#95;irq&#40;&#41;;<br />
+&nbsp; return uxSavedInterruptStatus;<br />
+&#125;//  
+static inline void portCLEAR&#95;INTERRUPT&#95;MASK&#40;unsigned portBASE&#95;TYPE uxSavedStatus&#41;<br />
+&#123;<br />
+&nbsp; &#95;&#95;cortexM3&#95;&#95;set&#95;BASEPRI&#40;uxSavedStatus&#41;;<br />
+&#125;//  
+&#35;define portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp; portSET&#95;INTERRUPT&#95;MASK&#40;&#41;<br />
+&#35;define portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;x&#41;&nbsp; portCLEAR&#95;INTERRUPT&#95;MASK&#40;x&#41;  
+&#35;define portDISABLE&#95;INTERRUPTS&#40;&#41; portSET&#95;INTERRUPT&#95;MASK&#40;&#41;  
+<h1>&#35;define portENABLE&#95;INTERRUPTS&#40;&#41; portCLEAR&#95;INTERRUPT&#95;MASK&#40;0U&#41;</h1>
+GCC 4.4.1<br />
+With flag -O1 portSET&#95;INTERRUPT&#95;MASK&#40;&#41; evaluate to only 5 instructions:  
+================================================================<br />
+0x080002bc &lt;print&#95;server&#95;Message+164&gt;: cpsid i<br />
+0x080002be &lt;print&#95;server&#95;Message+166&gt;: mrs&nbsp;&nbsp; r4, BASEPRI&#95;MASK<br />
+0x080002c2 &lt;print&#95;server&#95;Message+170&gt;: mov.w r3, &#35;191 ; 0xbf<br />
+0x080002c6 &lt;print&#95;server&#95;Message+174&gt;: msr&nbsp;&nbsp; BASEPRI, r3  
+<h1>0x080002ca &lt;print&#95;server&#95;Message+178&gt;: cpsie i</h1>
+With flag -O1 portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; only one instruction  
+0x080002f0 &lt;print&#95;server&#95;Message+216&gt;: msr&nbsp;&nbsp; BASEPRI, r4  
+Obviously optimization O1 or higher need to be used.<br />
+1&#46; Is it correct?<br />
+2&#46; Any chance to implement this or similar solution for this macros?  
+Regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 and gcc port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 16, 2010</div><div class="thread-post-content">I&#8217;m having difficulty reading this, maybe you could repost using the 
+<pre><code> tags.
+However - the portCLEAR_INTERRUPT_MASK_FROM_ISR and portCLEAR_INTERRUPT_MASK() *are*, as far as I am aware, fully implemented.  The code has also be reviewed in tiny detail by an ARM Cortex M3 expert.
+When you enter an interrupt the priority level is held in the NVIC itself, and putting the BASEPRI value down below the priority of the currently executing interrupt will not allow the CPU to accept interrupts that are below the priority of the currently executing interrupt.  Therefore the fastest/most efficient thing to do is simply set it down to zero.  The effect on the running system is the same as if you had set it back to its previous value.
+Or am I missing your point?
+Regards.
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 and gcc port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 16, 2010</div><div class="thread-post-content">Try again:  
+I&#8217;m having difficulty reading this, maybe you could repost using the code tags.   
+However &#8211; the portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR and portCLEAR&#95;INTERRUPT&#95;MASK&#40;&#41; &#42;are&#42;, as far as I am aware, fully implemented. The code has also be reviewed in tiny detail by an ARM Cortex M3 expert.   
+When you enter an interrupt the priority level is held in the NVIC itself, and putting the BASEPRI value down below the priority of the currently executing interrupt will not allow the CPU to accept interrupts that are below the priority of the currently executing interrupt. Therefore the fastest/most efficient thing to do is simply set it down to zero. The effect on the running system is the same as if you had set it back to its previous value.   
+Or am I missing your point?   
+Regards  
+p.s. also, there is no point where interrupts are globally disabled, as would be the case in your code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 and gcc port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kolodko1">kolodko1</a> on April 16, 2010</div><div class="thread-post-content">Hi  
+Yes, I think you are missing my point.<br />
+First I am not claiming that current FreeRTOS implementation is wrong from technically point of view. It is just not full &#40;not full for me&#41;.<br />
+Sorry for not clear post, Once again, I hope now will be clear. just pseudocode  
+Lets image function what is used from ISR and task routine and use FreeRTOS API. In order to secure reentrancy I use<br />
+portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; macros, &#40;is any other way to do this?? &#41;.  
+=========================================================  
+<pre><code>/* FUN used from ISR and task routine*/
+void FUN()
+{
+                unsigned uxSavedInterrup = portSET_INTERRUPT_MASK_FROM_ISR();
+                {
+                 xQueueSendFromISR();
+                }
+                portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterrup);
+}
+</code></pre>
+=========================================================  
+Is it correct model? If not than I missed something and my post not make sense, if yes please read below.  
+Now, last statement before return from xQueueSendFromISR&#40;&#41; is:  
+<pre><code>portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedInterruptStatus ); /* line 814 in queue.c */
+</code></pre>
+This macro discard actually uxSavedInterruptStatus value and set BASEPRI to 0, what is not what I intend to get. My assumption is &#8220;push&#8221; and &#8220;pop&#8221; priority. What current implementation of macros are doing is set priority to configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY and then set to 0 as you mention. I know it is easy and simply.   
+<h1>But if my function looks like this:</h1>
+<pre><code>/* FUN2 used from ISR and task routine*/
+void FUN2()
+{
+                unsigned uxSavedInterrup = portSET_INTERRUPT_MASK_FROM_ISR();
+                { 
+                 /* assums no preemptuion in inner block*/
+                 xQueueReceiveFromISR(&amp;data);                  
+                  data = global_data +1; /* could preempt here */
+                  xQueueSendFromISR(&amp;data);                 
+                }
+                portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterrup);
+}
+</code></pre>
+=========================================================  
+Apart of sense of FUN2&#40;&#41;, because xQueueReceiveFromISR&#40;&#41; set BASEPRI to 0 just before return, now<br />
+line: data = global&#95;data+1;<br />
+is not safe because could be pre-empted if used from task routine.<br />
+Assumption is no preemption inside inner block.  
+However my implementation do not introduce big overhead, it probably need to map to assembler macro due to not depend on compiler optimalization.  
+What you think?  
+Regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 and gcc port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kolodko1">kolodko1</a> on April 16, 2010</div><div class="thread-post-content">&#40;once again, I do not have preview before I post&#41;  
+Hi  
+Yes, I think you are missing my point.<br />
+First I am not claiming that current FreeRTOS implementation is wrong from technically point of view. It is just not full &#40;not full for me&#41;.<br />
+Sorry for not clear post, Once again, I hope now will be clear. just pseudocode  
+Lets image function what is used from ISR and task routine and use FreeRTOS API. In order to secure reentrancy I use<br />
+portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; macros, &#40;is any other way to do this?? &#41;.  
+=========================================================  
+<pre><code>/* FUN used from ISR and task routine*/
+void FUN()
+ {
+                          unsigned uxSavedInterrup = portSET_INTERRUPT_MASK_FROM_ISR();
+                          {
+                            xQueueSendFromISR(); 
+                          } 
+                          portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterrup); 
+}
+</code></pre>
+=========================================================  
+Is it correct model? If not than I missed something and my post not make sense, if yes please read below.  
+Now, last statement before return from xQueueSendFromISR&#40;&#41; is:<br />
+Code:<br />
+portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40; uxSavedInterruptStatus &#41;; /&#42; line 814 in queue.c &#42;/  
+This macro discard actually uxSavedInterruptStatus value and set BASEPRI to 0, what is not what I intend to get. My assumption is &#8220;push&#8221; and &#8220;pop&#8221; priority. What current implementation of macros are doing is set priority to configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY and then set to 0 as you mention. I know it is easy and simply.  
+<h1>But if my function looks like this:</h1>
+/&#42; FUN2 used from ISR and task routine&#42;/ void FUN2&#40;&#41; &#123; unsigned uxSavedInterrup = portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;; &#123; /&#42; assums no preemptuion in inner block&#42;/ xQueueReceiveFromISR&#40;&amp;data&#41;; data = global&#95;data +1; /&#42; could preempt here &#42;/ xQueueSendFromISR&#40;&amp;data&#41;; &#125; 
+<pre><code>/* FUN2 used from ISR and task routine*/
+void FUN2()
+{
+unsigned uxSavedInterrup = portSET_INTERRUPT_MASK_FROM_ISR();
+{
+/* assums no preemptuion in inner block*/
+xQueueReceiveFromISR(&amp;data);
+data = global_data +1; /* could preempt here */
+xQueueSendFromISR(&amp;data);
+}
+portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterrup);
+}
+</code></pre>
+=========================================================  
+Apart of sense of FUN2&#40;&#41;, because xQueueReceiveFromISR&#40;&#41; set BASEPRI to 0 just before return, now<br />
+line: data = global&#95;data+1;<br />
+is not safe because could be pre-empted if used from task routine.<br />
+Assumption is no preemption inside inner block.  
+However my implementation do not introduce big overhead, it probably need to map to assembler macro due to not depend on compiler optimalization.  
+What you think?  
+Regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 and gcc port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kolodko1">kolodko1</a> on April 16, 2010</div><div class="thread-post-content">&#40;Apologise&#33;&#41;  
+Hi  
+Yes, I think you are missing my point.<br />
+First I am not claiming that current FreeRTOS implementation is wrong from technically point of view. It is just not full &#40;not full for me&#41;.<br />
+Sorry for not clear post, Once again, I hope now will be clear. just pseudocode  
+Lets image function what is used from ISR and task routine and use FreeRTOS API. In order to secure reentrancy I use<br />
+portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; macros, &#40;is any other way to do this?? &#41;.  
+=========================================================  
+<pre><code>/* FUN used from ISR and task routine*/
+void FUN() {
+                     unsigned uxSavedInterrup = portSET_INTERRUPT_MASK_FROM_ISR(); 
+                     {
+                        xQueueSendFromISR(); 
+                      } portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterrup); 
+}
+</code></pre>
+=========================================================  
+Is it correct model? If not than I missed something and my post not make sense, if yes please read below.  
+Now, last statement before return from xQueueSendFromISR&#40;&#41; is:  
+<pre><code>portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedInterruptStatus ); /* line 814 in queue.c */
+</code></pre>
+This macro discard actually uxSavedInterruptStatus value and set BASEPRI to 0, what is not what I intend to get. My assumption is &#8220;push&#8221; and &#8220;pop&#8221; priority. What current implementation of macros are doing is set priority to configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY and then set to 0 as you mention. I know it is easy and simply.  
+<h1>But if my function looks like this:</h1>
+<pre><code>/* FUN2 used from ISR and task routine*/
+void FUN2()
+{
+unsigned uxSavedInterrup = portSET_INTERRUPT_MASK_FROM_ISR();
+{
+/* assums no preemptuion in inner block*/
+xQueueReceiveFromISR(&amp;data);
+data = global_data +1; /* could preempt here */
+xQueueSendFromISR(&amp;data);
+}
+portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterrup);
+}
+</code></pre>
+=========================================================  
+Apart of sense of FUN2&#40;&#41;, because xQueueReceiveFromISR&#40;&#41; set BASEPRI to 0 just before return, now<br />
+line: data = global&#95;data+1;<br />
+is not safe because could be pre-empted if used from task routine.<br />
+Assumption is no preemption inside inner block.  
+However my implementation do not introduce big overhead, it probably need to map to assembler macro due to not depend on compiler optimalization.  
+What you think?  
+Regards 
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 and gcc port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kolodko1">kolodko1</a> on April 16, 2010</div><div class="thread-post-content">Just addition if still not clear, see comments in code:  
+<pre><code>/* FUN2 used from ISR and task routine*/
+void FUN2(void)
+{
+  /* assuming current priority if called from task is 0
+   * and configMAX_SYSCALL_INTERRUPT_PRIORITY 11
+   */
+  // PRI 0
+   unsigned uxSavedInterrup = portSET_INTERRUPT_MASK_FROM_ISR();
+   //PRI 11 correct
+   { /* Assume no preemptuion in inner block*/
+     xQueueReceiveFromISR(&amp;data);
+     //PRI 0 !!! not correct
+    data = global_data +1;
+    /* could preempt here */
+    xQueueSendFromISR(&amp;data);
+    //PRI 0 not correct
+  } portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterrup);
+  //PRI 0
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 and gcc port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 16, 2010</div><div class="thread-post-content">The macros portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; and portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; are only designed for use from and ISR &#8211; for the reason already stated.&nbsp; They are not intended for use at the task level, although this &#42;might&#42; work if the calls did not nest.&nbsp;   
+In the example you give you use the macros around a call to xQueueSendFromISR&#40;&#41;.&nbsp; As xQueueSendFromISR&#40;&#41; also uses the macros internally then   
+&#43; first the outer critical section is not necessary, and   
+&#43; second you are going to have problems for the reasons you are pointing out yourself.&nbsp;   
+You are simply using the macros out of scope.&nbsp; Stick to using them how they are supposed to be used and you will be ok.  
+Functions called from the task level should use taskENTER&#95;CRITICAL&#40;&#41; and taskEXIT&#95;CRITICAL&#40;&#41;.&nbsp; Functions called from an interrupt should used portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; and portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;.&nbsp; If you want to call a function from both, and it is necessary that the function uses a critical section, then you are going to either have to modify the code or provide your own critical section implementation.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 and gcc port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kolodko1">kolodko1</a> on April 19, 2010</div><div class="thread-post-content"><blockquote>
+  &#43; first the outer critical section is not necessary, and
+</blockquote>
+I am not sure what you mean, probably you mean that is not necessary because it&#8217;s not make sense in current implementation of macros. Because in my example it is crucial since switch context can not occurs between xQueueReceiveFromISR&#40;&#41; and xQueueSendFromISR&#40;&#41;.<br />
+However I understand prom your last post this is not supported officially, due of implementation of macros.  
+<blockquote>
+  Functions called from the task level should use taskENTER&#95;CRITICAL&#40;&#41; and taskEXIT&#95;CRITICAL&#40;&#41;. Functions called from an interrupt should used portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; and portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;. If you want to call a function from both, and it is necessary that the function uses a critical section, then you are going to either have to modify the code or provide your own critical section implementation.
+</blockquote>
+Thanks.<br />
+This is what I am doing, I provide my own implementation of portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; and portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;.  
+Regards  
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

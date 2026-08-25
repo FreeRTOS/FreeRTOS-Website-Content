@@ -1,0 +1,386 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2017/freertos_FreeRTOS_UDP_end-of-buffer_padding_to_support_store-and-forward_hardware_checksumming_df5a6c2aj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksummingPosted by zbrozek on April 23, 2017I&#8217;m writing a from-scratch (not using stm32f7xxhaletc.{c,h}) STM32F7 zero-copy Ethernet driver for FreeRTOS+UDP 9.0.0. It mostly works (and the bugs in my driver aren&#8217;t what I&#8217;m hoping to address in this post), but I have some concern about a hack I seem &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2017/freertos_FreeRTOS_UDP_end-of-buffer_padding_to_support_store-and-forward_hardware_checksumming_df5a6c2aj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksummingPosted by zbrozek on April 23, 2017I&#8217;m writing a from-scratch (not using stm32f7xxhaletc.{c,h}) STM32F7 zero-copy Ethernet driver for FreeRTOS+UDP 9.0.0. It mostly works (and the bugs in my driver aren&#8217;t what I&#8217;m hoping to address in this post), but I have some concern about a hack I seem [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202802' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202802' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202802' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202802' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146433' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2017%2Ffreertos_FreeRTOS_UDP_end-of-buffer_padding_to_support_store-and-forward_hardware_checksumming_df5a6c2aj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2017%2Ffreertos_FreeRTOS_UDP_end-of-buffer_padding_to_support_store-and-forward_hardware_checksumming_df5a6c2aj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146433">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2017_freertos_support_forum_archive_index.html/">April 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zbrozek">zbrozek</a> on April 23, 2017</div><div class="thread-post-content">I&#8217;m writing a from-scratch (not using stm32f7xx<em>hal</em>etc.{c,h}) STM32F7 zero-copy Ethernet driver for FreeRTOS+UDP 9.0.0. It mostly works (and the bugs in my driver aren&#8217;t what I&#8217;m hoping to address in this post), but I have some concern about a hack I seem to have to do.
+In particular, the <a href="http://www.st.com/content/ccc/resource/technical/document/reference_manual/c5/cf/ef/52/c0/f1/4b/fa/DM00124865.pdf/files/DM00124865.pdf/jcr:content/translations/en.DM00124865.pdf">reference manual</a> in the &#8220;Transmit checksum offload&#8221; section states:
+<blockquote>
+  You must make sure the Transmit FIFO is deep enough to store a complete frame before that frame is transferred to the MAC Core transmitter.
+</blockquote>
+and it also says:
+<blockquote>
+  Note that: for ICMP-over-IPv4 packets, the checksum field in the ICMP packet must always be 0x0000 in both modes, because pseudo-headers are not defined for such packets. If it does not equal 0x0000, an incorrect checksum may be inserted into the packet.
+</blockquote>
+But it doesn&#8217;t appear like FreeRTOS+UDP provides four unused bytes at the end of an Ethernet buffer. In order to get the checksum to be automatically inserted, I must tell the DMA peripheral that the frame is four bytes bigger than what FreeRTOS+UDP suggests, and I also have to set the last four bytes to zeros. This of course is extremely dangerous and I shouldn&#8217;t do it.
+Have I missed something about the buffer allocation size that makes this OK? Or is there a way to specify end-of-buffer padding somewhere? I&#8217;ve noticed that <a href="http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_UDP/UDP_IP_Configuration.shtml">this page</a> is missing some details.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 23, 2017</div><div class="thread-post-content">Hi Sasha,
+<blockquote>
+  I&#8217;m writing a from-scratch STM32F7 zero-copy Ethernet driver for FreeRTOS+UDP 9.0.0.
+</blockquote>
+Congratulations !
+Do you really mean +UDP, or +TCP?
+FreeRTOS+TCP started in the <a href="http://www.freertos.org/FreeRTOS-Labs/index.shtml">/Labs section</a>. It is the successor of +UDP. It is more complete, and more often used. If you want to use it UDP-only, that is still possible:
+~~~
+    #define ipconfigUSE_TCP    0
+~~~
+Moving from +UDP to +TCP shouldn&#8217;t be hard. The principles are all the same.
+The drivers for both releases are 99% the same. FreeRTOS+TCP has an extra parameter when calling <code>xNetworkInterfaceOutput()</code>:
+~~~
+    BaseType<em>t xNetworkInterfaceOutput( NetworkBufferDescriptor</em>t * const pxDescriptor, BaseType_t bReleaseAfterSend );
+~~~
+When <code>bReleaseAfterSend</code> is true, the driver ( <code>NetworkInterface</code> ) is responsible for releasing <code>pxDescriptor</code>. When you have zero-copy transmissions:
+~~~
+    #define ipconfigZERO<em>COPY</em>TX_DRIVER    1
+~~~
+&#8230; then <code>bReleaseAfterSend</code> will always be true, so it is safe to pass the memory to a DMA descriptor. Once the transfer is ready, the original Network Buffer must be released.
+I like to work with a counting semaphore that keeps track of the number of available DMA descriptors for transmission (<code>TX</code>).
+In the current STM32F4 driver, it looks like this:
+~~~
+    /* As soon as the EMAC has sent a frame, the original Network Buffer must be released. */
+    ucPayLoad = ( uint8_t * )DMATxDescToClear->Buffer1Addr;
+<pre><code>/* Look-up the Network buffer that owns a certain payload. */
+pxNetworkBuffer = pxPacketBuffer_to_NetworkBuffer( ucPayLoad );
+/* Release the Network buffer. */
+vReleaseNetworkBufferAndDescriptor( pxNetworkBuffer ) ;
+/* Mark that it has been released already, just to be sure. */
+DMATxDescToClear-&gt;Buffer1Addr = ( uint32_t )0u;
+/* Tell the counting semaphore that one more TX descriptor is available. */
+xSemaphoreGive( xTXDescriptorSemaphore );
+</code></pre>
+~~~
+<blockquote>
+  for ICMP-over-IPv4 packets, the checksum field in the ICMP packet must always be 0x0000 in both modes
+</blockquote>
+I also encountered this &#8216;feature&#8217; on STM32F4&#8217;s EMAC :
+~~~
+    if( pxPacket->xICMPPacket.xIPHeader.ucProtocol == ipPROTOCOL<em>ICMP )
+    {
+        pxPacket->xICMPPacket.xICMPHeader.usChecksum = ( uint16</em>t )0u;
+    }
+~~~
+Just to summarise, for IPv4, the following check-sums exist:
+1) IP-header has a checksum over a so-called pseudo header (16-bits)
+2) Protocol-checksum (16-bits)
+3) A 4-byte Frame Check Sequence (FCS) that we do not get to see in the library.
+Checksums 1) and 2) can either be set and checked by the EMAC, or by the library.
+The last checksum can only be added by the EMAC.
+Now when a packet has 100 bytes, we send 100 bytes to the EMAC, and the EMAC will secretly add 4-byte frame-check.
+But there is a minimum frame length of 60 + 4 bytes. That is needed for a proper collision detection on the LAN.
+In FreeRTOS+TCP, you can define the following:
+~~~
+    #define ipconfigETHERNET<em>MINIMUM</em>PACKET_BYTES        ( 60 )
+~~~
+ARP and ICMP messages can be as short as 42 bytes. The 18 extra bytes will be set to zero. So 60 bytes will be sent to the EMAC.
+<blockquote>
+  But it doesn&#8217;t appear like FreeRTOS+UDP provides four unused bytes at the end of an Ethernet buffer.
+</blockquote>
+True because the EMAC adds 4 bytes on its own.
+<blockquote>
+  In order to get the checksum to be automatically inserted,
+  I must tell the DMA peripheral that the frame is four bytes
+  bigger than what FreeRTOS+UDP suggests
+</blockquote>
+That is new for me, I haven&#8217;t encountered that yet. But I haven&#8217;t used an STM32F7 either.
+<blockquote>
+  Have I missed something about the buffer allocation size that makes this OK?
+</blockquote>
+FreeRTOS+TCP will guarantee that all network buffers have a minimum size of <code>ipconfigETHERNET_MINIMUM_PACKET_BYTES</code>. That is particularly important when using <code>BufferAllocation_2.c</code>, which allocates just enough bytes for <code>pucEthernetBuffer</code>.
+~~~
+/* Adding pad bytes. */
+<h1>if defined( ipconfigETHERNET<em>MINIMUM</em>PACKET_BYTES )</h1>
+{
+    if( pxNetworkBuffer->xDataLength &lt; ( size<em>t ) ipconfigETHERNET</em>MINIMUM<em>PACKET</em>BYTES )
+    {
+    BaseType_t xIndex;
+<pre><code>    for( xIndex = ( BaseType_t ) pxNetworkBuffer-&gt;xDataLength;
+         xIndex &lt; ( BaseType_t ) ipconfigETHERNET_MINIMUM_PACKET_BYTES;
+         xIndex++ )
+    {
+        /* FreeRTOS+TCP guarantees that pucEthernetBuffer is long enough. */
+        pxNetworkBuffer-&gt;pucEthernetBuffer[ xIndex ] = 0u;
+    }
+    pxNetworkBuffer-&gt;xDataLength = ( size_t ) ipconfigETHERNET_MINIMUM_PACKET_BYTES;
+}
+</code></pre>
+}
+<h1>endif</h1>
+~~~
+<blockquote>
+  Or is there a way to specify end-of-buffer padding somewhere? I&#8217;ve noticed that this page is missing some details.
+</blockquote>
+An EMAC will understand the trailing zero&#8217;s at the end. They will be transmitted, followed by an FCS.
+<a href="https://sourceforge.net/p/freertos/discussion/382005/thread/39bcfcfb/">Here</a> you find the latest <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/39bcfcfb/3ee0/attachment/STM32Fxx_networkInterface_and_iperf.zip">NetworkInterface.c</a> for the STM32F4.
+This and other drivers will (hopefully) soon appear in the official FreeRTOS+TCP release. Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zbrozek">zbrozek</a> on April 24, 2017</div><div class="thread-post-content">I had written a much longer response, but sourceforge ate it. In short:
+Yes, I&#8217;m using +UDP because it seemed like the intended IP stack (mainlined, as opposed in a Lab). As I&#8217;ve been doing research it&#8217;s been getting more and more clear that I really should be using +TCP. Hopefully it plays nice with the 9.0.0 release. Right now I&#8217;m having some difficulty getting it to compile since IAR 7.80.1 seems to be ignoring the semicolon in pack<em>struct</em>end.h. I&#8217;ll fuss with it and see where I get.
+Thank you so very much for your long and detailed response. The pointer to your F4 driver makes it clear that I was never getting hardware checksumming at all, and in fact my size error was due to the checksumming not adding the bytes at all. One of the bugs in the driver was that the FCS was always wrong. Now I understand that it was garbage data.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 24, 2017</div><div class="thread-post-content">Hi Sasha,
+<blockquote>
+  it [+UDP] seemed like the intended IP stack (mainlined, as opposed in a Lab).
+</blockquote>
+FreeRTOS+TCP should have moved to mainline already. +TCP has been out and stable for a couple of years. The last stable release was 160919. A new version with some new features is due to be released soon.
+<blockquote>
+  As I&#8217;ve been doing research it&#8217;s been getting more and more clear that I really should be using +TCP.
+</blockquote>
+I also think so.
+<blockquote>
+  Hopefully it plays nice with the 9.0.0 release.
+</blockquote>
+It works well with any kernel from 8.1.1 up to the latest. I use 9.0.0 for all platforms that I have. It needs <code>event_groups.c</code>, it does not make use of <code>timers.c</code>.
+<blockquote>
+  Right now I&#8217;m having some difficulty getting it to compile since
+  IAR 7.80.1 seems to be ignoring the semicolon in pack<em>struct</em>end.h.
+  I&#8217;ll fuss with it and see where I get.
+</blockquote>
+That is a known issue. Have you found <a href="http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_UDP/Embedded_Compiler_Porting.shtml">this</a> and <a href="http://www.freertos.org/FreeRTOS_Support_Forum_Archive/July_2015/freertos_pack_struct_end.h_and_Eclipse_77c5b47bj.html">this post</a> already?
++UDP didn&#8217;t have <code>portableCompilerIAR</code> directory yet, how did you compile it?
+Would it help if we add a macro <code>ipconfigPACK_END</code>, which will be placed as follows:
+~~~
+<h1>include &#8220;pack<em>struct</em>start.h&#8221;</h1>
+/* contains &#8216;__packed&#8217; */
+struct xETH<em>HEADER
+{
+    MACAddress</em>t xDestinationAddress; /*  0 + 6 = 6  <em>/
+    MACAddress_t xSourceAddress;      /</em>  6 + 6 = 12 <em>/
+    uint16_t usFrameType;             /</em> 12 + 2 = 14 */
+}
+<h1>include &#8220;pack<em>struct</em>end.h&#8221;</h1>
+/* for IAR, an empty header file. */
+ipconfigPACK_END
+/* for IAR, defined as a semicolon. */
+~~~
+Could you try that? Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 24, 2017</div><div class="thread-post-content">There are 21 occurrence of
+~~~
+<h1>include &#8220;pack<em>struct</em>end.h&#8221;</h1>
+~~~
+which should all be replaced by :
+~~~
+<h1>include &#8220;pack<em>struct</em>end.h&#8221;</h1>
+ipconfigPACK_END
+~~~
+And add a few lines in <code>FreeRTOSIPConfigDefaults.h</code>:
+~~~
+<h1>ifndef ipconfigPACK_END</h1>
+<pre><code>#define ipconfigPACK_END
+</code></pre>
+<h1>endif</h1>
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zbrozek">zbrozek</a> on April 24, 2017</div><div class="thread-post-content">I tried doing what +UDP does and added <code>__attribute__( (packed) );</code> into the pack<em>struct</em>end.h file. It works. As far as I can tell, IAR ignored the GCC-style attribute, but the additional text was enough to get around the preprocessor bug.
+I also tried your workaround. No dice, including when trying to actually define ipconfigPACK_END as a semicolon. Preprocessor output looked the same as before &#8211; no semicolons at the end of struct definitions.
+FreeRTOS<em>IP.h needed to be #include in FreeRTOS</em>TCP<em>IP.h and FreeRTOS</em>Stream_Buffer.h.
+The compiler emits a warning about FreeRTOS<em>Sockets.c having a implicit call to FreeRTOS</em>min<em>BaseType unless ipconfigHAS</em>INLINE_FUNCTIONS set to 1. I set it to 1 and all seems well, but it seems like that shouldn&#8217;t happen when using options.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 25, 2017</div><div class="thread-post-content">Glad to hear that it is OK to write it as <code>__attribute__( (packed) );</code>, and thanks for reporting back.
+I must admit that I can not test the code with IAR at this moment ( haven&#8217;t installed it yet on my new laptop ).
+The trick with <code>ipconfigPACK_END</code> did work properly with GCC, but that doesn&#8217;t help the IAR projects.
+Thanks for pointing-out that defining <code>ipconfigHAS_INLINE_FUNCTIONS = 0</code> leads to compiler warnings. In fact some defines were missing. Here they are:
+~~~
+    #define FreeRTOS<em>max</em>BaseType(a, b)  ( ( ( BaseType<em>t  ) ( a ) ) >= ( ( BaseType</em>t  ) ( b ) ) ? ( ( BaseType<em>t  ) ( a ) ) : ( ( BaseType</em>t  ) ( b ) ) )
+    #define FreeRTOS<em>max</em>UBaseType(a, b) ( ( ( UBaseType<em>t ) ( a ) ) >= ( ( UBaseType</em>t ) ( b ) ) ? ( ( UBaseType<em>t ) ( a ) ) : ( ( UBaseType</em>t ) ( b ) ) )
+    #define FreeRTOS<em>min</em>BaseType(a, b)  ( ( ( BaseType<em>t  ) ( a ) ) &lt;= ( ( BaseType</em>t  ) ( b ) ) ? ( ( BaseType<em>t  ) ( a ) ) : ( ( BaseType</em>t  ) ( b ) ) )
+    #define FreeRTOS<em>min</em>UBaseType(a, b) ( ( ( UBaseType<em>t ) ( a ) ) &lt;= ( ( UBaseType</em>t ) ( b ) ) ? ( ( UBaseType<em>t ) ( a ) ) : ( ( UBaseType</em>t ) ( b ) ) )
+~~~
+( the casts are necessary just in case these macro&#8217;s are being called with constant values ).
+Something about &#8220;static inline&#8221;:
+The FreeRTOS kernel has never used <code>static __inline</code> functions. The reason is that some compilers wouldn&#8217;t understand it.
+When developing FreeRTOS+TCP, the need for static inline functions increased, The have several advantages compared to macro&#8217;s:
+● they allow proper type-checking of the parameters
+● the compiler will decide whether the functions will either be inlined or linked, depending on the generated code-size
+● they avoid a possible multiple evaluation of it&#8217;s parameters
+● The use of function-like macro&#8217;s can lead to hard-to-detect errors
+An example of the last :
+~~~
+/* What if &#8216;ptr&#8217; is a number, in stead of a pointer? */
+<h1>define  STORE<em>BYTE( ptr, value )    ( ( ( uint8</em>t *) ptr ) = ( value ) )</h1>
+~~~
+Note that an older compiler for TI parts did generate erroneous ( crashing ) code in case <code>static inline</code> functions were used in FreeRTOS+FAT, by defining <code>ffconfigINLINE_MEMORY_ACCESS = 1</code>.
+TI solved that in a newer release of the compiler.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zbrozek">zbrozek</a> on April 25, 2017</div><div class="thread-post-content">Added those in and it&#8217;s clean both with and without the definition &#8211; thanks!
+I&#8217;m rewriting my driver for <code>BufferAllocation_2.c</code> and the deferred processing task it requires. I&#8217;ve got a couple of questions:
+<ul>
+<li>Why is it recommended not to release buffers to the stack on confirmation of transmission, but rather on the attempt to transmit again? It seems like that&#8217;ll leave a lot of orphaned buffers, up to the high water mark during a transmit burst.</li>
+<li>How does FreeRTOS work on processors with a data cache and DMA? With BufferAllocation<em>1.c I can configure the MPU to force write-through in the appropriate directions, or to manually invalidate the cache as necessary. There doesn&#8217;t seem like quite as elegant a way to do that with BufferAllocation</em>2.c. Until I&#8217;ve figured out how I want to deal with it, I&#8217;m just not enabling the data cache.</li>
+</ul>
+Thanks again!
+-Sasha
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 25, 2017</div><div class="thread-post-content">Hi Sasha,
+<blockquote>
+  Added those in and it&#8217;s clean both with and without the definition &#8211; thanks!
+</blockquote>
+Now added to mainline, thanks to you.
+( some users encounter imperfections, correct them, but do not bother about reporting them on a forum )
+<blockquote>
+  I&#8217;m rewriting my driver for BufferAllocation_2.c and the deferred processing task it requires.
+</blockquote>
+Rewriting? Does it need a different approach?
+I think that for a driver, the only difference is that you do not need <code>vNetworkInterfaceAllocateRAMToBuffers()</code> any more. Or do you have more changes?
+There has been a driver using <code>BufferAllocation_2.c</code>, that would pass the <code>pucEthernetBuffer</code> field of a Network Buffer to DMA, assign NULL to it, and release the Network Buffer. That is OK, as long as <code>BufferAllocation_2.c</code> is used, and therefore I would not recommend that method.
+I prefer to hand over the Network Buffer to DMA (only for a few µS or 1 mS), and when transmission is ready, call <code>pxPacketBuffer_to_NetworkBuffer()</code> to get the pointer to the owning Network buffer. That method works for both <code>BufferAllocation_1</code> and <code>BufferAllocation_2</code>.
+<blockquote>
+  BufferAllocation_2.c and the deferred processing task it requires
+</blockquote>
+Why wouldn&#8217;t <code>BufferAllocation_1.c</code> need a deferred processing task? I think it&#8217;s all the same? Except for the trick described here above?
+<blockquote>
+  Why is it recommended not to release buffers to the stack on confirmation,
+  of transmission but rather on the attempt to transmit again?
+  It seems like that&#8217;ll leave a lot of orphaned buffers,
+  up to the high water mark during a transmit burst.
+</blockquote>
+( it is not recommended, it was caused by laziness&#8230; or lack of time to write it better )
+I think that you found this in an older driver ( indeed maybe from the latest release ). What you see there was not intentional. 
+In e.g. this recent driver:
+https://sourceforge.net/p/freertos/discussion/382005/thread/39bcfcfb/3ee0/attachment/STM32Fxx<em>networkInterface</em>and_iperf.zip
+( I did add a link here above ) you will see that the Network Buffer is being released immediately after the EMAC confirms the (success or failure of a) transmission.
+<blockquote>
+  How does FreeRTOS work on processors with a data cache and DMA?
+</blockquote>
+Good question !
+<blockquote>
+  With BufferAllocation<em>1.c I can configure the MPU to force write-through in the appropriate directions,
+  or to manually invalidate the cache as necessary. There doesn&#8217;t seem like quite as elegant a way to do
+  that with BufferAllocation</em>2.c. Until I&#8217;ve figured out how I want to deal with it, I&#8217;m just not enabling
+  the data cache.
+</blockquote>
+( the following text is based on my experience with Xilinx Zynq, which has a zero-copy driver, and a lot of cached DRAM )
+With <code>BufferAllocation_2.c</code>, memory will be obtained by calling <code>pvPortMalloc()</code>, which is normally cached memory. When using <code>BufferAllocation_1.c</code>, indeed you can choose where to allocate the memory, cached or uncached.
+When using cached memory, before passing it to DMA, it must be flushed. And after receiving data, the memory area must be refreshed before it is up-to-date.
+The mistake that I made ( I&#8217;ve had headaches about this ), was to flush or refresh parts of memory which had an overlap with other objects!
+Lesson: you have to make sure that the starting offset and the length of the memory blocks occupied by <code>pucEthernet</code> are properly aligned with boundaries of the caching.
+Using a length of 1536 ( 0x600 ) bytes worked wonderfully.
+Later I decided to dedicate 1 MB of <strong>uncached</strong> DRAM to DMA, both for the MMC driver as well as ETH. Since then, the driver doesn&#8217;t worry about flushing and refreshing any more.  Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on April 25, 2017</div><div class="thread-post-content">For others reading this
+required reading &#8220;Cortex M7 programming manual ST doc PM0253
+Sections 2.3  , 4.8, 4.9
+http://www.st.com/content/ccc/resource/technical/document/programming_manual/group0/78/47/33/dd/30/37/4c/66/DM00237416/files/DM00237416.pdf/jcr:content/translations/en.DM00237416.pdf
+It&#8217;s updated quite regularly.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zbrozek">zbrozek</a> on April 27, 2017</div><div class="thread-post-content"><blockquote>
+  Rewriting? Does it need a different approach?
+  I think that for a driver, the only difference is that you do not need vNetworkInterfaceAllocateRAMToBuffers() any more. Or do you have more changes?
+</blockquote>
+Well, I had originally used <code>BufferAllocation_1.c</code> because it would allow me to do all of the buffer swapping in the ISR, thus not needing the deferred processing task at all. So beyond removing that call, I also have to reduce the scope of the ISR and move that functionality into a task. No big deal, just something that needs doing. I&#8217;m most-active on weekends (this is a hobby project), so I&#8217;m a bit behind on implementing everything.
+Right now I&#8217;m still wrapping my head around the padding prior to the Ethernet buffers and when I want to make calls to <code>pucGetNetworkBuffer()</code> versus <code>pxGetNetworkBufferWithDescriptor()</code>. <a href="http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/Embedded_Ethernet_Porting.html#network_buffers_and_Ethernet_buffers">This section</a> suggests the former, but at the bottom of <a href="http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/Embedded_Ethernet_Porting.html#creating_a_zero_copy_network_port_layer">this section</a> the example uses the latter. I assume that&#8217;s because when I populated the RX DMA descriptors, that I used <code>pucGetNetworkBuffer()</code> and the IP stack needs a populated descriptor to be able to parse the packet.
+I&#8217;m especially confused by this:
+~~~
+*( ( NetworkBufferDescriptor_t ** )
+       ( pxDMARxDescriptor->pucEthernetBuffer &#8211; ipBUFFER_PADDING ) ) = pxDMARxDescriptor;
+~~~
+But I haven&#8217;t spent much time on it; it&#8217;ll probably become clear when I get to studying it more closely.
+I started looking in to how to forcibly clean and forcibly invalidate ranges of addresses from the D-cache. Looks like <code>core_cm7.h</code> defines <code>SCB_InvalidateDCache_by_Addr</code> and <code>SCB_CleanDCache_by_Addr</code> which should do just what I need. Yay!
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+UDP end-of-buffer padding to support store-and-forward hardware checksumming</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zbrozek">zbrozek</a> on April 29, 2017</div><div class="thread-post-content">OK; I&#8217;m now mostly operational with +TCP. My demo board (STM32F746 Discovery) is requesting, receiving, and ACKing a DHCP lease. I implemented your ICMP checksum workaround in my driver. It doesn&#8217;t keel over and die when I ping flood the board. Success?!
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

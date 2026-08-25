@@ -1,0 +1,225 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CortexM3 FreeRTOS Oddity - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2013/freertos_CortexM3_FreeRTOS_Oddity_6928192.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="CortexM3 FreeRTOS Oddity - FreeRTOS" />
+<meta property="og:description" content="CortexM3 FreeRTOS OddityPosted by sniperears on March 7, 2013As I had the pleasure of fighting this recently, I thought I&#8217;d post it in case it might help someone else: The CM3 port implementation for Yield&#040;FromISR&#041; is as follows: void vPortYieldFromISR( void ) { /* Set a PendSV to request a context switch. */ *(portNVIC_INT_CTRL) = &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2013/freertos_CortexM3_FreeRTOS_Oddity_6928192.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta property="og:image" content="http://www.alternate-audio.com/alternate-audio/scott/screencap.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="CortexM3 FreeRTOS OddityPosted by sniperears on March 7, 2013As I had the pleasure of fighting this recently, I thought I&#8217;d post it in case it might help someone else: The CM3 port implementation for Yield&#040;FromISR&#041; is as follows: void vPortYieldFromISR( void ) { /* Set a PendSV to request a context switch. */ *(portNVIC_INT_CTRL) = [&hellip;]" />
+<meta name="twitter:title" content="CortexM3 FreeRTOS Oddity - FreeRTOS" />
+<meta name="twitter:image" content="http://www.alternate-audio.com/alternate-audio/scott/screencap.jpg" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202242' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202242' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202242' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202242' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145004' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2013%2Ffreertos_CortexM3_FreeRTOS_Oddity_6928192.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2013%2Ffreertos_CortexM3_FreeRTOS_Oddity_6928192.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145004">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2013_freertos_support_forum_archive_index.html/">March 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">CortexM3 FreeRTOS Oddity</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sniperears">sniperears</a> on March 7, 2013</div><div class="thread-post-content">As I had the pleasure of fighting this recently, I thought I&#8217;d post it in case it might help someone else:  
+The CM3 port implementation for Yield&#40;FromISR&#41; is as follows:  
+<pre><code>void vPortYieldFromISR( void )
+{
+    /* Set a PendSV to request a context switch. */
+    *(portNVIC_INT_CTRL) = portNVIC_PENDSVSET;
+}
+</code></pre>
+The danger here is that let&#8217;s say you have a task that is only run once &#40;init or something&#41; and then deletes itself.&nbsp; That task might look something like:  
+<pre><code>static void initTask( void * pvParameters )
+{
+   // Do important work
+   ...
+   // work is all done, so time to go away
+   vTaskDelete(NULL);
+}
+</code></pre>
+If your compiler has optimizations turned on, it would probably call vTaskDelete with the <strong>Branch</strong> instruction instead of the <strong>BranchAndLink</strong> instruction &#40;because in that stack frame there is nothing to return to &#8211; BTW this happens in IAR with optimizations set to medium or higher&#41;.&nbsp;<br />
+Since the task is being deleted, the scheduler needs to do a context switch instead of return and therefore uses the vPortYieldFromISR Macro.&nbsp; This is all well and good except for the fact that setting the PendSV bit doesn&#8217;t actually cause the interrupt, it just pends it and the NVIC decides when it&#8217;s appropriate.&nbsp; This means that a few more instructions could get executed before the context switch happens.&nbsp; Well, the next instruction after setting the PendSV bit is to return &#40;branch to link register&#41; &#8211; but the link register wasn&#8217;t set in this case, because the optimizer knew there was nowhere to return to.&nbsp; This causes a fault.&nbsp; If there were just one more instruction after the vTaskDelete, the BL instruction is used, and the fault is avoided even though the code is never executed. Also, if optimizations are set to low or none &#40;at least in IAR&#41; the BL instruction is used regardless.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 8, 2013</div><div class="thread-post-content">Thanks for posting this, it is very interesting, and I am surprised this could happen.&nbsp; I would have to check how many instructions could execute after a PendSV was implemented, I would not have thought there would be any over and above completing any atomic instructions used in the code generated by the compiler to set the PendSV bit.  
+In the case you highlight, is the vPortYieldFromISR&#40;&#41; function being inlined?&nbsp; Otherwise there would be instructions to return from vPortYieldFromISR&#40;&#41; between the PendSV bit being set and vTaskDelete&#40;&#41; reaching the end of its function.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sniperears">sniperears</a> on March 8, 2013</div><div class="thread-post-content">Thanks for the reply Richard,<br />
+I too was surprised &#40;and quite baffled for a while&#41; by this.&nbsp; To answer your question, Yes.&nbsp; This is what the end of vTaskDelete looks like:  
+<pre><code>        ...
+        taskEXIT_CRITICAL();
+        /* Force a reschedule if we have just deleted the current task. */
+        if( xSchedulerRunning != pdFALSE )
+        {
+            if( ( void * ) xTaskToDelete == NULL )
+            {
+                portYIELD_WITHIN_API();
+            }
+        }
+    }
+</code></pre>
+Here is the chain of defines &#40;aggregated for ease of readability&#41;:  
+<pre><code>#define portYIELD_WITHIN_API   portYIELD      // Scheduler layer
+#define portYIELD()   vPortYieldFromISR()         // Port layer
+</code></pre>
+So in the end it vTaskDelete&#40;&#41; looks like this:  
+<pre><code>        ...
+        taskEXIT_CRITICAL();
+        /* Force a reschedule if we have just deleted the current task. */
+        if( xSchedulerRunning != pdFALSE )
+        {
+            if( ( void * ) xTaskToDelete == NULL )
+            {
+                portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+            }
+        }
+    }
+</code></pre>
+And so after the PendSV bit is set &#8211; Branch to Link with link register being 0 is attempted &#40;and faults&#41;.  
+Cheers
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on March 8, 2013</div><div class="thread-post-content">Putting to one side for a minute whether something in FreeRTOS needs to change if the setting of pendSV is inlined, does this example not also show a compiler bug? You say the compiler changes the branch instruction because it is not going to return, but then evidently it does try and return. Either the branch without link should jump to code that is completely self contained and never try to get back to where it jumped from or the branch with link should be used. The compiler does not know about any changes in execution paths that are brought about by FreeRTOS &#40;context switches to other tasks&#41;, it only knows about execution paths expected by single threading C code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sniperears">sniperears</a> on March 8, 2013</div><div class="thread-post-content">After re-reading my response I realize I was quite unclear.&nbsp; <strong>No</strong>, vPortYieldFromISR&#40;&#41; is <strong>not **inlined &#8211;&nbsp; it is implemented in port.c, but **yes</strong>, the compiler is smart enough to call it with Branch instead of BranchAndLink.&nbsp;<br />
+Hope that&#8217;s more clear.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sniperears">sniperears</a> on March 8, 2013</div><div class="thread-post-content">Good point Dave.&nbsp; I agree.&nbsp; Nevertheless, the optimizations really do produce this phenomenon &#8211; maybe it just does a blind jump hoping that execution path will change and expects a fault if it does not?&nbsp; Isn&#8217;t it good when the compilers have hope? :&#41;  
+Just for the fun of it I did a screen capture of the disassembly &#40;mixed with C&#41; where this problem exists.<br />
+<img src="http://www.alternate-audio.com/alternate-audio/scott/screencap.jpg" alt="" /><br />
+The block of code that follows the vTaskDelete is a vApplicationIdleHook which increments a count and calls SysCtlSleep&#40;&#41;.&nbsp; Notice the instruction used to call SysCtlSleep&#40;&#41;.&nbsp; A blind Branch.&nbsp; And yet the implementation of SysCtlSleep is an assembly instruction WFI followed by a &#125; which is a BX&nbsp; LR.  
+<pre><code>SysCtlSleep:
+       0xce46: 0xf004 0xbdbd  B.W       CPUwfi                  ; 0x119c4
+CPUwfi:
+      0x119c4: 0xbf30         WFI
+}
+      0x119c6: 0x4770         BX        LR
+</code></pre>
+So apparently this happens everywhere.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sniperears">sniperears</a> on March 8, 2013</div><div class="thread-post-content">Image is here &#8211; how come you can&#8217;t edit here?<br />
+<img src="http://i49.tinypic.com/1zbyzr4.png" alt="" />  
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 8, 2013</div><div class="thread-post-content">What the compiler is doing is a form of &#8220;Tail-Recursion&#8221; optimization where you can convert a call followed by a return with a jump &#40;so when the function called does its return, it returns to the caller of the 1st function&#41;.  
+The problem here is that task function do not have a proper stack frame set up for returning, so when the vTaskDelete function executes its return, it&nbsp; heads the processor into invalid space.  
+What is probably the best option would be to protect against this in vTaskDelete by putting some non-optimizable away operation after the Yield to make sure this doesn&#8217;t happen. Another would be to add a nop in the Yield operation in the port layer, but this adds a cycle to all yields. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 8, 2013</div><div class="thread-post-content">Thank you for your insights richard&#95;damen.&nbsp; In other ports, where it is known that a software interrupt takes a few instructions to execute, or where branch delay slots are required &#40;because the CPU executes the next instruction that is already loaded into the pipeline&#41;, I have added NOPs after the yield, or more recently read back from the software interrupt register to force the microcontroller to stall until the value is first written.  
+I will review this further in the documentation, and if necessary contact some of the ARM guys for their opinion, before deciding what to do, as I&#8217;m surprised it is necessary in this case.&nbsp; I will let you know…  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 8, 2013</div><div class="thread-post-content">If there is only 1 instruction of delay, I would think that guarding vTaskDelete would make more sense, as executing the return instruction should normally be harmless. If the processor might execute farther than that, then the Yield definitely needs to handle the delay.  
+The cause of the problem is that multiple levels of code have preformed tail optimization, so that the Yield is attempting to directly return to the caller of the task function. The stack frame for the task function was not set up to handle a return, so executing the return cause a fault. This is where adding some code after the Yield in vTaskDelete would help, as then VTaskDelete could not use tail optimization, and Yield would have a valid stack frame to return from.  
+This is NOT a compiler bug, as the compiler expects that ALL user functions have proper stack frames to return from, so tail optimization is valid. The other solution would be to initialize the stack frame for a task so that doing a return would be valid, perhaps going to a stub that calls vTaskDelete&#40;0&#41;. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 9, 2013</div><div class="thread-post-content">Its seems that worst case up to two instructions past the PendSV setting can be set &#40;depending on lots of things including wait states, etc.&#41;, and that adding a memory barrier after writing to the PendSV bit would fix this particular case.&nbsp; The question then is, is it better to take the hit of a memory barrier instruction on every yield to fix a corner case when deleting a task.&nbsp; I&#8217;m still researching this and haven&#8217;t concluded anything yet.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mahavir">mahavir</a> on March 10, 2013</div><div class="thread-post-content">Interesting discussion&#33;  
+I think, I had seen this issue previously but was not aware &#40;or reached to conclusion&#41; that it was &#8220;tail call&#8221; optimization. Interestingly this was not reproducible with all gcc &#40;Codesourcery arm-none-eabi-gcc&#41; versions and hence was difficult to chase down. Neverthless, as Richard already mentioned we ended up fixing like below,  
+<hr />
+void vPortYieldFromISR&#40; void &#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Set a PendSV to request a context switch. &#42;/<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;&#40;portNVIC&#95;INT&#95;CTRL&#41; = portNVIC&#95;PENDSVSET;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;asm volatile &#40;&#8221;dsb&#8221;&#41;;  
+<h2>&#125;</h2>
+But I have couple of questions:  
+1&#46; Is above fix the correct one, or rather optimum one?<br />
+2&#46; What would be worst case impact &#40;if any&#41; on performance of system?  
+Thanks.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 11, 2013</div><div class="thread-post-content"><blockquote>
+  1&#46; Is above fix the correct one, or rather optimum one?
+</blockquote>
+Yes &#8211; that will fix the issue reported &#8211; but I&#8217;m not sure yet whether just adding two NOPs in place of the dsb would actually prove more optimal.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3 FreeRTOS Oddity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 12, 2013</div><div class="thread-post-content">I will probably add a DSB followed by an ISB into the yield function.&nbsp; This is apparently very much overkill, but necessary to be within the specification for the Cortex-M architecture for all current and future parts &#40;as some of the characteristics that dictate these things are implementation defined&#41;.  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

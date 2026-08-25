@@ -1,0 +1,154 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finding a bug in uxTaskGetSystemState - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2015/freertos_Finding_a_bug_in_uxTaskGetSystemState_3a4b830aj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Finding a bug in uxTaskGetSystemState - FreeRTOS" />
+<meta property="og:description" content="Finding a bug in uxTaskGetSystemStatePosted by ammaree on January 6, 2015I am having a problem getting the above function to work correctly. Some background: I am using FreeRTOS 8.1.2 on a TI CC3200 LaunchPad I am creating 3 different timers with intervals of 10ms, 1s, and 30s to do various things. The application is running &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2015/freertos_Finding_a_bug_in_uxTaskGetSystemState_3a4b830aj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Finding a bug in uxTaskGetSystemStatePosted by ammaree on January 6, 2015I am having a problem getting the above function to work correctly. Some background: I am using FreeRTOS 8.1.2 on a TI CC3200 LaunchPad I am creating 3 different timers with intervals of 10ms, 1s, and 30s to do various things. The application is running [&hellip;]" />
+<meta name="twitter:title" content="Finding a bug in uxTaskGetSystemState - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202468' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202468' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202468' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202468' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145186' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2015%2Ffreertos_Finding_a_bug_in_uxTaskGetSystemState_3a4b830aj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2015%2Ffreertos_Finding_a_bug_in_uxTaskGetSystemState_3a4b830aj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145186">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2015_freertos_support_forum_archive_index.html/">January 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Finding a bug in uxTaskGetSystemState</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ammaree">ammaree</a> on January 6, 2015</div><div class="thread-post-content">I am having a problem getting the above function to work correctly.
+Some background:
+I am using FreeRTOS 8.1.2 on a TI CC3200 LaunchPad
+I am creating 3 different timers with intervals of 10ms, 1s, and 30s to do various things.
+ The application is running rock solid in various configs on a number of devices but a number of things I am finding wrong being:
+A: Missing &#8220;Tmr Svc&#8221; task from the task list. See output below
+[    27.621] +-+&#8212;&#8212;&#8212;-+&#8212;&#8212;+&#8212;+&#8212;&#8212;+&#8212;&#8212;&#8211;+&#8212;&#8212;&#8212;+
+[    27.621]  0   (null) |  0/ 0 | 0 |    0 |  0.00% |        0
+[    27.621]  1  Console |  2/ 2 | 1 |  328 |  0.03% |       93
+[    27.621]  2  SLSpawn |  4/ 4 | 2 |  184 |  0.00% |       12
+[    27.621]  3   SmpLnk |  4/ 4 | 2 |  400 |  4.56% |    12430
+[    27.621]  4  Receive |  2/ 2 | 2 |  856 | 15.22% |    41482
+[    27.621]  5 Transmit |  2/ 2 | 2 |  920 | 15.14% |    41243
+[    27.621]  6   Engine |  3/ 3 | 2 |  120 |  0.00% |        6
+[    27.621]  7  Sensors |  1/ 1 | 2 |  360 |  0.01% |       41
+[    27.621]  8     IDLE |  0/ 0 | 1 |  352 | 64.68% |   176207
+B: if I perform a specific set of console instructions I succeed in corrupting the xTaskNumber and pcTaskName variables for the xTaskNumber=0  and pcTaskName=(null) entries.
+My questions are:
+A: Why the missing details (ALL of it) for the &#8220;Tmr Svc&#8221; task, even though it is there and running perfectly ?
+B: How do I pinpoint where the task table entries get corrupted?
+All help appreciated.
+Andre
+</div></div><div class="thread-post"><h3 class="thread-post-title">Finding a bug in uxTaskGetSystemState</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 7, 2015</div><div class="thread-post-content">I have tried a few experiments and in all cases the timer service task is showing up in the list &#8211; so I can&#8217;t replicate your issue there.
+However, the 0 (null) in the list would seem to indicate you already have a data corruption, so would guess that to also be the cause of the missing timer service task.
+Do you have <a href="http://www.freertos.org/Stacks-and-stack-overflow-checking.html">stack overflow detection</a> turned on?  In V8.1.2 to task control block will be corrupted by an overflow.  In version 8.2.0 (currently available for download as a release candidate) the TCB of the offending task will not be corrupted to facilitate debugging &#8211; at the cost of the TCB of a different task potentially being corrupted.
+Do you have <a href="http://www.freertos.org/FAQHelp.html">configASSERT()</a> defined?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Finding a bug in uxTaskGetSystemState</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ammaree">ammaree</a> on January 7, 2015</div><div class="thread-post-content">Thanks for the quick response, but hopefully I can claim back some remnants of respectability by saying I found the bug a couple of hours ago. It was related to&#8230;
+a) wanting to display the tasks always in task number numeric sequence; and
+b) assuming task numbers start from zero, based on the earlier 0/(null) displayed; and
+c) hence matching/sorting incorrectly.
+I have downloaded V8.2.0 and had a look but not tried yet, have enough bugs of my own to create then squash, without muddling my thoughts with suspicions of bugs in what has been a superb and stable product to work with (FreeRTOS)
+Thanks again,
+Andre
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

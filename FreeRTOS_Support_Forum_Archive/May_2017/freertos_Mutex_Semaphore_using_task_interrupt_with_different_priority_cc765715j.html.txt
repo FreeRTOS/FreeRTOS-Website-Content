@@ -1,0 +1,212 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mutex/Semaphore using task/interrupt with different priority - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2017/freertos_Mutex_Semaphore_using_task_interrupt_with_different_priority_cc765715j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Mutex/Semaphore using task/interrupt with different priority - FreeRTOS" />
+<meta property="og:description" content="Mutex/Semaphore using task/interrupt with different priorityPosted by il-mix on May 10, 2017Hi, everyone! I have several task running and some ISR from GPIO. All these task/isr will use a printf function, and it is quite likely that output will be messed up by concurrent call to it (output of merged strings from different tasks). To &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2017/freertos_Mutex_Semaphore_using_task_interrupt_with_different_priority_cc765715j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Mutex/Semaphore using task/interrupt with different priorityPosted by il-mix on May 10, 2017Hi, everyone! I have several task running and some ISR from GPIO. All these task/isr will use a printf function, and it is quite likely that output will be messed up by concurrent call to it (output of merged strings from different tasks). To [&hellip;]" />
+<meta name="twitter:title" content="Mutex/Semaphore using task/interrupt with different priority - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202808' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202808' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202808' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202808' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146490' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2017%2Ffreertos_Mutex_Semaphore_using_task_interrupt_with_different_priority_cc765715j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2017%2Ffreertos_Mutex_Semaphore_using_task_interrupt_with_different_priority_cc765715j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146490">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2017_freertos_support_forum_archive_index.html/">May 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/il-mix">il-mix</a> on May 10, 2017</div><div class="thread-post-content">Hi, everyone!
+I have several task running and some ISR from GPIO. All these task/isr will use a printf function, and it is quite likely that output will be messed up by concurrent call to it (output of merged strings from different tasks).
+To prevent this behavior, I tried using mutex/semaphore/critical sections, awfully without luck. Or better, with some luck (no more merged strings), but when an ISR kicks in, everything locks; the ISR hangs waiting for the mutex.
+I think I have to better understand how things are heandled by FreeRTOS.
+Here is an example of the code/flow:
+~~~
+int main()
+{
+  gPrintfSemaphore = xSemaphoreCreteBinary(); // or xSemaphoreCreteMutex()
+  xTaskCreate(myTask, &#8220;my<em>task1&#8243;, DEFAULT</em>STACK<em>SIZE, 1, NULL);
+  xTaskCreate(myTask, &#8220;my</em>task2&#8243;, DEFAULT<em>STACK</em>SIZE, 2, NULL);
+  [&#8230;]
+  [enable some interrupts]
+}
+void myTask(void* handle)
+{
+  for(;;)
+  {
+    myPrintf(&#8220;hellon&#8221;);
+    vTaskDelay(rand()%100);
+  }
+}
+void GPIO_ISR()
+{
+  myPrintf(&#8220;GPIO ISRn&#8221;);
+}
+void myPrintf(const char* msg)
+{
+  xSemaphoreTake(gPrintfSemaphore, portMAX<em>DELAY(); // or taskENTER</em>CRITICAL()
+  [call actual printf]
+  // without semaphore/mutex control, it is likely that printf outputs something like &#8220;helhellolonn&#8221;
+  xSemaphoreGive(gPrintfSemaphore);
+  // tried taskYIELD() here, but no luck (actually, locks at first printf&#8230;)
+}
+~~~
+Thanks for your support!
+MIX
+EDIT:
+Actually, I&#8217;m not really using printf, but I send couple of serial message data, that needs to be correctly decode on the other side (if two messages got merged, it becomes garbage). This is also an example of a more generic critical section that need to be accessed by a single task/ISR at a time.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 10, 2017</div><div class="thread-post-content">Using printf in an ISR is a VERY bad idea, it is bg and slow which is exactly what you don&#8217;t want in an ISR. Printf likely uses polling to output the data, which is awful in an ISR.
+I use something sort of similar, it is more of a putstr than printf which is a lot lighter weight, and queues the data to my own serial driver. To allow it to be used from an ISR, I have a &#8230;FromISR version. There is still the possibility of the ISR breaking up the task level print, but tasks can&#8217;t interrupt each other.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/il-mix">il-mix</a> on May 10, 2017</div><div class="thread-post-content">Hi Richard,
+thanks for your answer. I&#8217;ve just edited my question. The &#8220;printf&#8221; is not the real scenario (altought quite similar, since I send some bytes (putc()) via serial port). Still, the lock problem is real.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 10, 2017</div><div class="thread-post-content">You can&#8217;t use mutexes from an ISR.  That is because mutexes priority 
+inheritance mechanism associates a mutex with a task (the holding task, 
+and tasks attempting to take a mutex that is not available).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/il-mix">il-mix</a> on May 10, 2017</div><div class="thread-post-content">I&#8217;ve read the mutex priority inheritance feature in xSemaphoreCreateBinary() documentation. That&#8217;s why I&#8217;ve tested with binary semaphores, too. Still the lock happens when ISR tries to take the semaphore.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 10, 2017</div><div class="thread-post-content">Are you using the &#8216;FromISR&#8217; version of the semaphore take function?  If 
+not you are probably halting in a configASSERT().
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 11, 2017</div><div class="thread-post-content">You just CAN&#8217;T use a semaphore/mutex to fully syncronize an ISR access. The fundamental issue is that if the resourse is in use when the ISR is entered, there is no way for the ISR to &#8220;block&#8221; to wait for it to be free. The best you could do is have the ISR check if it could take the semaphore (check the return value), and then you have the big decision of what to in the ISR if the resource you want to use is busy.
+For simple, quick to access resources, like a variable, you can use a critical section to block out the ISR from getting in while you are updating things, this doesn&#8217;t work so well for a slow operation (which likely needs the interrupts) like serial I/O.
+You basic problem is you are trying to do something in the ISR that really doesn&#8217;t belong there, so you really need to figurre out what you really want to do.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on May 11, 2017</div><div class="thread-post-content">Hi Massimo
+I think you are going about this the wrong way.
+ISRs should be used to do only things that MUST be done immediately, or as a method of unblocking threads on IO events. 
+If you MUST read or write a buffer in a hurry, then fire off a YIELDfromISR() and the very next thing that will execute will be the thread that reads or writes a buffer from IO .
+be sure to read
+http://www.freertos.org/deferred<em>interrupt</em>processing.html
+I try and keep ISRs to five or six sequential lines of code.
+If you need to write a string to a serial port based on a, say a GPIO interrupt trigger,
+&#8211; write an ISR to service the GPIO interrupt (reset flags etc as required) .
+&#8211; notisfy the task to unblock
+&#8211; &#8211; http://www.freertos.org/xTaskNotifyFromISR.html
+~~~
+<h2>&#8211; and have it go to the task on returning from interrupt</h2>
+<h2>&#8211;</h2>
+~~~
+http://www.freertos.org/FreeRTOS<em>Support</em>Forum<em>Archive/June</em>2007/freertos<em>portYIELD</em>FROM<em>ISR</em>1752080.html
+Then, the task can WAIT on the task notification, and then go about its business without holding up anyone else. if it must hold up, you can use an ISR notification from the serial port that it wants another char etc etc etc etc or you can Yield on a timer and come back later and poll.
+this method is about as fast as it gets.
+(Richard BTW portYieldfromISR() it is not easily found or indexed in the standard FreeRTOS doco) 
+if you need to guard multi accessed global variables , in the TASKS you can use critical sections / disable interrupts etc.
+But never do this inside interrupts. The Critical Sections are in the tasks so the interrupts (if they touch those global variables like incrementing a counter or setting a flag) are clean.
+sometimes you do not need a critical section- it depends how atomic the global variable access is, but in that case you better know what you are doing&#8230;. (cache, instruction order, whether an instruction will complete before interrupt service etc) .
+there is also
+http://www.freertos.org/taskENTER<em>CRITICAL</em>FROM<em>ISR</em>taskEXIT<em>CRITICAL</em>FROM_ISR.html
+but I have never used it,
+while you are there , read
+http://www.freertos.org/Pend-on-multiple-rtos-objects.html
+it&#8217;s just like waitformultiple objects()
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/il-mix">il-mix</a> on May 12, 2017</div><div class="thread-post-content">Thanks to everyone for the useful hints and tech explaination.
+I think I&#8217;ve placed too much emphasis in the ISR vs. mutex issue. I used the ISR example since it was the one that will lead to a predictable/repeatable lock. My bad. 
+Actually, most of my ISR drive a semaphore that wake up a task. And now I can confirm that this is the right (maybe not best, since TaskNotify will be lighter) way to do it, given your answers.
+Getting back to the (real) topic, how to correctly &#8220;protect&#8221; access of a critical section from concurrent access by 2 tasks with different priority?
+Using an example similar to the one in my first post, let&#8217;s say that Task1 (high priority) and Task2 (low priority) want to printf something, what happens when Task2 acquire the mutex, then Task1 tries to acquire it before release?
+I&#8217;ve noticed a couple of lock in my system in such scenario. Actually, I can confirm 100% that the problem was really due to mutex management. Happened a while ago, and now that I reproduced it with the ISR, I thought the problem source was the same (that&#8217;s why I put emphasis in the ISR vs. mutex issue).
+Thanks!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 12, 2017</div><div class="thread-post-content">A mutex is exactly the thing that should handle this. When task1 attempts to aquire the mutex when it is already held by task2, iit will block until task 2 releases it. If task1 has a higher priority than task2 using a mutex instead of a semaphore says that task2 will be given a temporary boost in priority to avoid priorrity inversion (a task in priority between task1 and task2 holding up task2 by using a lot of CPU time).
+One thing you do need to watch out for is if you have two mutexes, and task1 first takes mutex1, then task2 takes mutex2, then task1 tries too take mutex2 (and blocks), and then task2 tries to take mutex1, it will block and you will be in a deadlock. To avoid this, you either need to put tiimeouts on the takes and abort the operation to kill the deadlock, or there needs to be an order to your mutexs. If multiple tasks end up taking two mutexe concurrently, they all must take them in the same order).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex/Semaphore using task/interrupt with different priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/il-mix">il-mix</a> on May 12, 2017</div><div class="thread-post-content">Hi Richard,
+thanks for your answer.
+So I&#8217;ll go for mutex, again. I don&#8217;t have multiple mutexes that can cause deadlock (or so it seems&#8230;). If I got stuck again I&#8217;ll go deep and see if it really is a lock/unlock problem. Will report in a while on the status of the issue.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

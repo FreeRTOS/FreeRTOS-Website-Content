@@ -1,0 +1,191 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[Cortex] using ISRs before starting scheduler - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2008/freertos_Cortex_using_ISRs_before_starting_scheduler_2589860.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="[Cortex] using ISRs before starting scheduler - FreeRTOS" />
+<meta property="og:description" content="[Cortex] using ISRs before starting schedulerPosted by bodev on November 21, 2008Hi all, &nbsp;&nbsp; in the Main&#040;&#041;, i need to initialize some low level components and their FreeRTOS drivers. Drivers are implemented through queues, semaphores and/or tasks. in some components i need to insert a precise DELAY, so i am using internally a timer. the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2008/freertos_Cortex_using_ISRs_before_starting_scheduler_2589860.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="[Cortex] using ISRs before starting schedulerPosted by bodev on November 21, 2008Hi all, &nbsp;&nbsp; in the Main&#040;&#041;, i need to initialize some low level components and their FreeRTOS drivers. Drivers are implemented through queues, semaphores and/or tasks. in some components i need to insert a precise DELAY, so i am using internally a timer. the [&hellip;]" />
+<meta name="twitter:title" content="[Cortex] using ISRs before starting scheduler - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201682' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201682' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201682' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201682' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138434' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2008%2Ffreertos_Cortex_using_ISRs_before_starting_scheduler_2589860.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2008%2Ffreertos_Cortex_using_ISRs_before_starting_scheduler_2589860.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138434">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2008_freertos_support_forum_archive_index.html/">November 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bodev">bodev</a> on November 21, 2008</div><div class="thread-post-content">Hi all,
+&nbsp;&nbsp; in the Main&#40;&#41;, i need to initialize some low level components and their FreeRTOS drivers.
+Drivers are implemented through queues, semaphores and/or tasks.
+in some components i need to insert a precise DELAY, so i am using internally a timer.
+the function Delay&#40;ms&#41; set up the timer and then poll on a variable. The Timer handler is finally called and the loop will stop.
+NB: i am doing this because the scheduler is not started yet.
+the problem i am experiencing is that if i use such Delay&#40;ms&#41; &#95;after&#95; i created even one queue/semaphore/task &#40;whatever it is&#41;, then the delay works iff the timer priority level is lower than 11 &#40;&#8211;&gt;it is high priority&#41;
+any suggestions or hints on why is this happening?
+Regards
+Bo
+</div></div><div class="thread-post"><h3 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on November 21, 2008</div><div class="thread-post-content">The kernel will leave interrupts up to the configKERNEL&#95;INTERRUPT&#95;PRIORITY disabled following most API calls that are made before the scheduler is started. I think this is to ensure that interrupts don&#8217;t attempt to cause a context switch before the scheduler has been configured and started. You could probably call taskENABLE&#95;INTERRUPTS&#40;&#41; after an API call to set the interrupt mask level back to zero.
+</div></div><div class="thread-post"><h3 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bodev">bodev</a> on November 21, 2008</div><div class="thread-post-content">Hi Dave and thank you very much for the reply. 
+In fact, i tried using your suggestion after API calls and all works perfect&#33;
+However, according to the documentation, 
+taskDISABLE&#95;INTERRUPTS &#40;&#8211;&gt;portDISABLE&#95;INTERRUPTS&#8211;&gt;portSET&#95;INTERRUPT&#95;MASK&#8211;&gt;configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY&#41;
+use configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY and not configKERNEL&#95;INTERRUPT&#95;PRIORITY as you mentioned. correct?
+in this case, configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY is set to 191 &#40;and the comment says it is equal to Cortex level = 5&#41; while my timer worked with isr level &lt; 10.
+can you or someone here shed some light on this &quot;priority&quot; topic? i am totally confused&#8230;
+Thanks a lot,
+Bo
+</div></div><div class="thread-post"><h3 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bodev">bodev</a> on November 21, 2008</div><div class="thread-post-content">Hi Dave and thank you very much for the reply. 
+In fact, i tried using your suggestion after API calls and all works perfect&#33;
+However, according to the documentation, 
+taskDISABLE&#95;INTERRUPTS &#40;&#8211;&gt;portDISABLE&#95;INTERRUPTS&#8211;&gt;portSET&#95;INTERRUPT&#95;MASK&#8211;&gt;configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY&#41;
+use configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY and not configKERNEL&#95;INTERRUPT&#95;PRIORITY as you mentioned. correct?
+in this case, configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY is set to 191 &#40;and the comment says it is equal to Cortex level = 5&#41; while my timer worked with isr level &lt; 10.
+can you or someone here shed some light on this &quot;priority&quot; topic? i am totally confused&#8230;
+Thanks a lot,
+Bo
+</div></div><div class="thread-post"><h3 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 21, 2008</div><div class="thread-post-content">Did you see this page: http://www.freertos.org/a00110.html&#35;kernel&#95;priority ?
+Be very careful enabling interrupts again after installing an interrupt handler IF that interrupt handler makes any API calls that could cause a context switch to be attempted.&nbsp; Any attempt to context switch before the scheduler is started will be hazardous for your application.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bodev">bodev</a> on November 21, 2008</div><div class="thread-post-content">Hi Richard,
+&nbsp;&nbsp;&nbsp; yes i have read that page and my ISR is neither calling&nbsp; any API nor causing any context switch.
+However, as i mentioned, i think that could be a &quot;problem&quot; at least is the comment of the FreeRTOSConfig.h for the CortexM3.
+In fact, FreeRTOS APIs call taskDISABLE&#95;INTERRUPTS with configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY = 191 
+&#40;changing basepri register&#41;.
+According to the comment, 191 is equal to priority 5 for STM32. I am not sure of this, because
+my ISR work at priority&#95;level &lt; 11 and not priority&#95;level &lt; 5 as you comment suggests. 
+Am i missing something?
+Regards &amp; Thanks,
+Bo
+</div></div><div class="thread-post"><h3 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bodev">bodev</a> on November 21, 2008</div><div class="thread-post-content">I have found some more info.
+STM32 implements only the 4 MSB bits of the PRIMASK.
+&#40;i.e. see http://www.st.com/mcu/forums-cat-6944-23.html&#41;
+So the line 
+&#35;define configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY&nbsp;&nbsp;&nbsp;&nbsp; 191 /&#42; equivalent to 0xa0, or priority 5. &#42;/
+i think should be
+&#35;define configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY&nbsp;&nbsp;&nbsp;&nbsp; 191 /&#42; equivalent to 0x0A, or priority 11. &#42;/
+I am not sure if the assumption &#40;191 map to 5&#41; caused other indesired bahaviors in FreeRTOS
+Furthermore, NVIC controller can be set up with the 4 bits splitted in two groups: priority and subpriority.
+I think FreeRTOS consider all 4 bits as priority and no bits for sub priority.
+I am not sure what can happen if someone use different schemes.
+Bo
+</div></div><div class="thread-post"><h3 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 21, 2008</div><div class="thread-post-content">Yes &#8211; the STM32 implements 4 bits of priority, these four bits being the top 4 bits of an 8 bit number.&nbsp; So 0xff &#40;255, 0xf0, or &#40;0x0f&lt;&lt;4&#41; are all equivalent as the bottom 4 bits are ignored&#41; is the lowest priority and 0x0f &#40;31, or 0, or &#40;0&lt;&lt;4&#41;&#41; the highest priority.
+191 is &#40;0x0b&lt;&lt;4&#41;, which as you point out is effectively 11, not 5.
+This is a cut and paste error from the Luminary Micro ports, where only 3 bits are implemented, so 5 is the correct value.
+Sorry for any confusion caused and thanks for pointing it out.&nbsp; I have corrected the comments in the SVN repository to ensure they get included in the next release.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ntfreak">ntfreak</a> on April 15, 2009</div><div class="thread-post-content">Hi Richard,
+Just a small typo, should the comment actually be 0xbf rather than 0xb0:
+&#35;define configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY&nbsp;&nbsp;&nbsp;&nbsp; 191 /&#42; equivalent to 0xbf, or priority 11. &#42;/
+Cheers
+Spencer Oliver
+</div></div><div class="thread-post"><h3 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 15, 2009</div><div class="thread-post-content">Hi Spenser,
+It could really be either I think, because the bottom 4 bits are not used by the STM32 the two are equivalent.&nbsp; The bottom four bits are set to 0x0f in the macro for future compatibility &#40;should the code be used on a part with more priority bits defined&#41; but the priority is really 11 relative to the range of priorities available.
+I agree this should be explained more clearly in the comment.&nbsp; Really its priority &#40;0x0b &lt;&lt; 4&#41;.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">[Cortex] using ISRs before starting scheduler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ntfreak">ntfreak</a> on April 15, 2009</div><div class="thread-post-content">I just mentioned it as the comment did not match the code, in the case of the stm32 the lower 4 bits can be any value as this is ignored by the nvic anyway.
+Cheers
+Spen
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

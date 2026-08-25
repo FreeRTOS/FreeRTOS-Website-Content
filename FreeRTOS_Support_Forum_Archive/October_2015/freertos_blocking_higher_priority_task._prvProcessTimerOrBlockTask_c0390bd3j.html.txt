@@ -1,0 +1,221 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>blocking higher priority task. prvProcessTimerOrBlockTask() - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2015/freertos_blocking_higher_priority_task._prvProcessTimerOrBlockTask_c0390bd3j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="blocking higher priority task. prvProcessTimerOrBlockTask() - FreeRTOS" />
+<meta property="og:description" content="blocking higher priority task. prvProcessTimerOrBlockTask()Posted by niksp on October 22, 2015Tell me please Inside the function &#8220;prvProcessTimerOrBlockTask ()&#8221;, after the function &#8220;vTaskSuspendAll()&#8221;, called &#8220;prvSampleTimeNow()&#8221;. Inside it can happen the function callback &#8220;pxTimer-&gt;pxCallbackFunction((TimerHandle_t) pxTimer)&#8221;. It turns out that the callback function can block higher priority tasks. I understand correctly? blocking higher priority task. prvProcessTimerOrBlockTask()Posted by rtel &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2015/freertos_blocking_higher_priority_task._prvProcessTimerOrBlockTask_c0390bd3j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="blocking higher priority task. prvProcessTimerOrBlockTask()Posted by niksp on October 22, 2015Tell me please Inside the function &#8220;prvProcessTimerOrBlockTask ()&#8221;, after the function &#8220;vTaskSuspendAll()&#8221;, called &#8220;prvSampleTimeNow()&#8221;. Inside it can happen the function callback &#8220;pxTimer-&gt;pxCallbackFunction((TimerHandle_t) pxTimer)&#8221;. It turns out that the callback function can block higher priority tasks. I understand correctly? blocking higher priority task. prvProcessTimerOrBlockTask()Posted by rtel [&hellip;]" />
+<meta name="twitter:title" content="blocking higher priority task. prvProcessTimerOrBlockTask() - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202570' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202570' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202570' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202570' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145562' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2015%2Ffreertos_blocking_higher_priority_task._prvProcessTimerOrBlockTask_c0390bd3j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2015%2Ffreertos_blocking_higher_priority_task._prvProcessTimerOrBlockTask_c0390bd3j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145562">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2015_freertos_support_forum_archive_index.html/">October 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/niksp">niksp</a> on October 22, 2015</div><div class="thread-post-content">Tell me please
+Inside the function &#8220;prvProcessTimerOrBlockTask ()&#8221;,
+after the function &#8220;vTaskSuspendAll()&#8221;,
+called &#8220;prvSampleTimeNow()&#8221;.
+Inside it can happen the function callback &#8220;pxTimer->pxCallbackFunction((TimerHandle_t) pxTimer)&#8221;.
+It turns out that the callback function can block higher priority tasks.
+I understand correctly?
+</div></div><div class="thread-post"><h3 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 22, 2015</div><div class="thread-post-content">Your question is not completely clear, but I will try and answer it.
+pxCallbackFunction() is the software timer callback function &#8211; but it is just a C function being called from an RTOS task (in this case the Timer task http://www.freertos.org/RTOS-software-timer.html) so it can do the same as any other C function being called from a task.  Generally, it can unblock a higher priority task, but it can&#8217;t really block a higher priority task.  It can <em>suspend</em> a higher priority task, but that is a different thing.
+</div></div><div class="thread-post"><h3 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 22, 2015</div><div class="thread-post-content">Timer call back functions are called in the contex of the Timer task, which is high priority (I think the highest allowed), not the task that setup the time. Thus timer call backs will have higher priority than your moderate to sort of high priority tasks.
+Does this answer your question?
+</div></div><div class="thread-post"><h3 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/niksp">niksp</a> on October 22, 2015</div><div class="thread-post-content">Function call &#8220;pxTimer->pxCallbackFunction((TimerHandle t) pxTimer)&#8221; stands between vTaskSuspendAll() and xTaskResumeAll().
+If inside ISR will be called xTaskResumeFromISR () for more priority than the &#8220;Timer task&#8221;,
+a context switch is blocked (vTaskSuspendAll()) while there is a execution the callback function. additional delay of switching.
+it turns out you can not make the task more priority than &#8220;Timer task&#8221;?
+</div></div><div class="thread-post"><h3 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 22, 2015</div><div class="thread-post-content">You can make a task have a higher priority by changing the definition of configTIMER<em>TASK</em>PRIORITY which lives in FreeRTOSConfig.h
+What you can&#8217;t do is force a task switch during a vTaskSuspendAll() block.
+TImer call backs should be fairly quick though.
+</div></div><div class="thread-post"><h3 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 22, 2015</div><div class="thread-post-content">Looking at the code know, I see a
+vTaskSuspendAll() call,
+a test to see if we need to call the timer call back
+vTaskResumeAll() call, then
+prvPrcessExpiredTimer() call which will call pxTimer->psCallbackFunction()
+so I don&#8217;t see the call back in the context of a SuspendAll() (it may be this is a recent change)
+</div></div><div class="thread-post"><h3 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/niksp">niksp</a> on October 22, 2015</div><div class="thread-post-content">call sequence, which I see ( freertos 8.2.3, file timers.c)
+//line 437 in prvTimerTask()
+prvProcessTimerOrBlockTask( xNextExpireTime, xListWasEmpty );
+{
+    vTaskSuspendAll();
+    {
+        //line 457
+        xTimeNow = prvSampleTimeNow( &amp;xTimerListsWereSwitched );<br />
+            //line 540 in prvSampleTimeNow()
+            prvSwitchTimerLists();<br />
+                //line 744 in prvSwitchTimerLists()
+                pxTimer->pxCallbackFunction( ( TimerHandle_t ) pxTimer );
+<pre><code>    //and only after that the execution xTaskResumeAll in lines 463, 483, 499
+}
+</code></pre>
+}
+</div></div><div class="thread-post"><h3 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 22, 2015</div><div class="thread-post-content">I think the path you are highlighting is a corner case that, although we 
+have tests to go through it, is very unlikely to be hit in a real 
+application.  To execute that line you need to be in a situation whereby 
+the tick count has overflowed &amp;&amp; for some reason there are timers in the 
+&#8216;current&#8217; timer list that have not been processed (maybe could occur if 
+there was a timer that expired as the tick count overflowed)
+Even if that line was executed I don&#8217;t think it should cause a problem 
+as callback functions should not attempt to block, and if the callback 
+function resulted in a context switch then the context switch would just 
+be held pending and then performed when the scheduler was resumed.
+Or am I missing something?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/niksp">niksp</a> on October 23, 2015</div><div class="thread-post-content">Yes, this situation I had in mind.
+unlikely, but possible. especially when using configUSE<em>16</em>BIT_TICKS &#8211; often overflows tickcount. it forces to take into account the execution of a callback function to meet real-time.
+Why not put &#8220;xTimeNow = prvSampleTimeNow (&amp; xTimerListsWereSwitched); (line 457)&#8221; before vTaskSuspendAll () (line 450)? It seems that it solves the problem.
+</div></div><div class="thread-post"><h3 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 23, 2015</div><div class="thread-post-content">It has to be called with the scheduler suspended to ensure the task 
+lists don&#8217;t change during the operation.
+Why is it causing an issue for you?
+</div></div><div class="thread-post"><h3 class="thread-post-title">blocking higher priority task. prvProcessTimerOrBlockTask()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/niksp">niksp</a> on October 23, 2015</div><div class="thread-post-content">Sorry for the many questions,
+What if the disable list to switch when the scheduler is suspended,
+and repeat the test and switch lists, after resuming the scheduler?
+~~~~
+//modified function
+prvProcessTimerOrBlockTask(&#8230;)
+{
+    &#8230;
+    vTaskSuspendAll();
+    {
+        xTimeNow = prvSampleTimeNow( &amp;xTimerListsWereSwitched );
+        if( xTimerListsWereSwitched == pdFALSE )
+        {
+            &#8230;
+        }
+        else
+        {
+            //line 499
+            ( void ) xTaskResumeAll();
+            //add new line 500: switch lists without vTaskSuspendAll
+            prvSampleTimeNow( &amp;xTimerListsWereSwitched );
+        }
+    }
+}
+//modified function
+prvSampleTimeNow( BaseType<em>t * const pxTimerListsWereSwitched )
+{
+    &#8230;
+    xTimeNow = xTaskGetTickCount();
+    if( xTimeNow &lt; xLastTime )
+    {
+        //add new line 539: not switch the lists within vTaskSuspendAll
+        if (xTaskGetSchedulerState() == taskSCHEDULER</em>SUSPENDED)
+        {
+            *pxTimerListsWereSwitched = pdTRUE;
+            return 0;
+        }
+        &#8230;
+    }
+    &#8230;
+}
+~~~~
+I just have a callback function is longer than the required response time to an interrupt and need 100% Satisfaction Guarantee
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tickless mode timer problem - never sleeps - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2014/freertos_tickless_mode_timer_problem_-_never_sleeps_e63b8ef0j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="tickless mode timer problem - never sleeps - FreeRTOS" />
+<meta property="og:description" content="tickless mode timer problem &#8211; never sleepsPosted by gmenhennitt on September 3, 2014I&#8217;m using FreeRTOS 8.0.1 on an MSP430 F5335 (the IAR MSP430X port). I&#8217;m attempting to use tickless idle mode but am having a problem with FreeRTOS timers. My application spends most of its time asleep. Every 15 seconds it wakes up, stays awake &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2014/freertos_tickless_mode_timer_problem_-_never_sleeps_e63b8ef0j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="tickless mode timer problem &#8211; never sleepsPosted by gmenhennitt on September 3, 2014I&#8217;m using FreeRTOS 8.0.1 on an MSP430 F5335 (the IAR MSP430X port). I&#8217;m attempting to use tickless idle mode but am having a problem with FreeRTOS timers. My application spends most of its time asleep. Every 15 seconds it wakes up, stays awake [&hellip;]" />
+<meta name="twitter:title" content="tickless mode timer problem - never sleeps - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202429' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202429' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202429' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202429' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144015' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2014%2Ffreertos_tickless_mode_timer_problem_-_never_sleeps_e63b8ef0j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2014%2Ffreertos_tickless_mode_timer_problem_-_never_sleeps_e63b8ef0j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144015">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2014_freertos_support_forum_archive_index.html/">September 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmenhennitt">gmenhennitt</a> on September 3, 2014</div><div class="thread-post-content">I&#8217;m using FreeRTOS 8.0.1 on an MSP430 F5335 (the IAR MSP430X port). I&#8217;m attempting to use tickless idle mode but am having a problem with FreeRTOS timers.
+My application spends most of its time asleep. Every 15 seconds it wakes up, stays awake for about 200ms, and then goes back to sleep. During the wake period, I want to use a couple of timers.
+So, I have three timers &#8211; one with a period of 15s and another two with shorter periods. The 15s timer runs always. The other two get started by the 15s timer callback. They get stopped by the callback of one of them once a particular condition is met.
+What I see happen is that the system starts up correctly. It then correctly goes to sleep as FreeRTOS calls vPortSuppressTicksAndSleep() with a parameter corresponding to just less then 15s. I wake up, do my stuff, and then stop the two other timers. But I never get called to go back to sleep again.
+I&#8217;ve spent a bit of time debugging this and it looks like there&#8217;s some kind of race in the timer handling code. It looks like prvGetExpectedIdleTime() always return 1.
+I&#8217;m sure that the other two timers are stopped. Also, the period of my other timers are greater than one tick, so I don&#8217;t think that&#8217;s the problem.
+In the mean time, I&#8217;ve worked around it by setting the period of the two other times to > 15s. That seems to work but is pretty ugly. It also shows that my sleep/wake stuff is working correctly.
+I&#8217;ll spend more time coming up with a program that demonstrates it. But before I do, I&#8217;d like to check whether anybody else has seen this before.
+Thanks,
+    Graham
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 3, 2014</div><div class="thread-post-content">I&#8217;ve never noticed this behaviour, but have some questions.
+What other tasks are in your system?  Or more specifically, what is the priority of the timer service task relative to the other tasks in your system &#8211; have you tried with the timer service task being the highest priority task?
+Looking at the prvGetExpectedIdleTime() function I see the only way it can return a non-zero value is if it goes through the else{} part, where the value returned is (xNextTaskUnblockTime &#8211; xTickCount), so your issue is related to the value of xNextTaskUnblockTime.  That in turn is set by xNextTaskUnblockTime(), which in turn gets the next unblock time from the list of delayed tasks called &#8211; pxDelayedTaskList.  Are you familiar enough with the FreeRTOS code to look in the pxDelayedTaskList structure using the debugger to see which task is at its head?  That will tell you which task the kernel thinks needs to run again in 1 tick.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmenhennitt">gmenhennitt</a> on September 3, 2014</div><div class="thread-post-content">Thanks for replying.
+There are three tasks in the system (other than IDLE and TmrSvc). All have higher priorities than TmrSvc. But I&#8217;ve also tried with all priorities the same (including TmrSvc). I haven&#8217;t tried TmrSvc having a higher priority.
+But I don&#8217;t think that&#8217;s relevant. At the time when this happens, all my tasks are blocked on queues.
+Yes, it&#8217;s always xNextTaskUnblockTime equals xTickCount + 1. I haven&#8217;t looked at the delayed task list yet. That was about as far as I got before I posted this forum topic.
+I set a breakpoint in prvGetExpectedIdleTime() and see that it returns 1 as above. I then disable the breakpoint and run for a bit. When I re-enable the breakpoint, both xNextTaskUnblockTime and xTickCount have increased, but still xNextTaskUnblockTime equals xTickCount + 1.
+I&#8217;ll try looking at pxDelayedTaskList. I&#8217;m almost certain that it will be TmrSvc at the head.
+Thanks again,
+  Graham
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmenhennitt">gmenhennitt</a> on September 3, 2014</div><div class="thread-post-content">Ok, a quick bit of debugging later&#8230;
+At the breakpoint in prvGetExpectedIdleTime():
+&#8211; xTickCount == 0x34d
+&#8211; xNextTaskUnblockTime == 0x34e
+&#8211; pxDelayedTaskList->uxNumberOfItems == 1
+&#8211; pxDelayedTaskList->pxNext->xItemValue == 0x34e
+&#8211; ((TCB_t*)(pxDelayedTaskList->pxIndex->pxNext->pvOwner))->pcTaskName == &#8220;Tmr Svc&#8221;
+I&#8217;m not sure what else you might need. I&#8217;ll try to come up with a simple program that demonstrates the problem (but it might not be easy!).
+Thanks,
+Graham
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 4, 2014</div><div class="thread-post-content">Yes, if you can come up with a simple example that would be very useful for determining why this is the case.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmenhennitt">gmenhennitt</a> on September 10, 2014</div><div class="thread-post-content">After trying to come up with a demo program for a while, I investigated a bit further. I now know what my problem is and I have a partial solution for it. What I was trying to do was to start my timers from inside vPortSuppressTicksAndSleep() after it had woken. That seems not to work &#8211; I don&#8217;t think that I can make FreeRTOS calls from inside that callback. So, I moved starting them to inside the 15s timer callback (yes, I know that&#8217;s what I said I already did!). That bit now works correctly.
+However, I have another, related, problem. I can also get woken by an external interrupt. I want to start the timers when this occurs. What will happen if I call   xTimerStartFromISR() from my ISR while FreeRTOS is asleep in vPortSuppressTicksAndSleep()? What would be nice is if there was a callback from FreeRTOS to say that it had just been woken from sleep, where it was allowable to start the timers.
+I&#8217;ll do some more investigating.
+Thanks,
+  Graham
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 10, 2014</div><div class="thread-post-content"><blockquote>
+  xTimerStartFromISR() from my ISR while FreeRTOS is asleep in
+  vPortSuppressTicksAndSleep()? 
+</blockquote>
+I think that should be ok, but note the scheduler is suspended while inside the vPortSuppressTicksAndSleep() function (to prevent race conditions while the time is adjusted) so the call will not have an effect until you return from vPortSuppressTicksAndSleep().
+<blockquote>
+  What would be nice is if there was a callback from FreeRTOS to say 
+  that it had just been woken from sleep, where it was allowable to 
+  start the timers.
+</blockquote>
+I think there is a &#8216;post sleep&#8217; macro for this already?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmenhennitt">gmenhennitt</a> on September 10, 2014</div><div class="thread-post-content">Thanks (again) for your reply.
+There is indeed configPOST<em>SLEEP</em>PROCESSING() (and the complementary configPRE<em>SLEEP</em>PROCESSING()), but it isn&#8217;t called anywhere.
+Graham
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 11, 2014</div><div class="thread-post-content">The macros are normally called from the portable part of the tickless code, so not in the core FreeRTOS code.  As you are not using your own tickless implementation (or at least, not one we provided) they probably have just not been added in, so you can add them in.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmenhennitt">gmenhennitt</a> on October 3, 2014</div><div class="thread-post-content">I got a bit sidetracked, but I finally got back to this. Attached is a stripped down version of my program which demonstrates the problem. I drive a few output bits (Port 8, bits 4, 5,&amp; 6) to indicate the state. P8.4 is driven to show when I&#8217;m in sleep mode. I attach a logic analyser to those pins to see it more easily.
+If you build and run the project, you can see that it spends half its time asleep and the other half awake. It should sleep almost all the time. It seems that stopping the timer from inside the timer callback alternately allows sleeping or prevents it.
+Thanks for your assistance.
+Regards,
+Graham
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmenhennitt">gmenhennitt</a> on October 7, 2014</div><div class="thread-post-content">Well I think I&#8217;ve solved this particular problem myself. I was calling xTimerStart() from an ISR. When I don&#8217;t do that, it sleeps correctly. It looks like portASSERT<em>IF</em>INTERRUPT<em>PRIORITY</em>INVALID() is a NoOp for the MSP430, otherwise this would have been caught (I presume).
+Sorry to trouble you.
+Graham
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmenhennitt">gmenhennitt</a> on November 19, 2014</div><div class="thread-post-content">Sorry to keep coming back to this, but I&#8217;m still having some problems.
+Could you please clarify which FreeRTOS functions can be called from within the sleep function. For example, can I call xQueueSend() from inside vPortSuppressTicksAndSleep()?
+What about xQueueSendFromISR()? And, if I called that, would the xHigherPriorityTaskWoken parameter to it ever be returned as true (since the scheduler is stopped)?
+If it can be returned as true, can I call portYIELD<em>FROM</em>ISR(true) from inside vPortSuppressTicksAndSleep(). If so, what would be the effect? I suspect that the answer is that the vTaskStepTick() at the bottom of vPortSuppressTicksAndSleep() would cause a context switch. Is that right?
+Thanks again for your assistance,
+  Graham
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 19, 2014</div><div class="thread-post-content"><blockquote>
+  Could you please clarify which FreeRTOS functions can be called from
+   within the sleep function. For example, can I call xQueueSend() from
+   inside vPortSuppressTicksAndSleep()?
+</blockquote>
+Remember vPortSuppressTicksAndSleep() is [necessarily, to prevent race 
+conditions when sleep mode is exited] called with the scheduler 
+suspended.  There is a general rule in FreeRTOS that says don&#8217;t call API 
+functions with the scheduler suspended or from within a critical 
+section.  That is a general rule &#8211; to which there are exceptions &#8211; but 
+listing the exceptions would require very detailed knowledge of the 
+internal workings.  Consider however what would happen if you wrote to a 
+queue and the write operation attempted to switch to another task &#8211; the 
+switch would not occur because the scheduler was suspended, which could 
+lead to logic errors.  Also consider the effect of waking a task when 
+the scheduler had already told you you could idle for &#8216;n&#8217; ticks because 
+there were no tasks wanting to run, another logic error would ensue.
+So there is no easy answer &#8211; if you have a block time of 0, and don&#8217;t 
+wake a task it would probably be ok, otherwise it may well not be ok.
+<blockquote>
+  What about xQueueSendFromISR()? And, if I called that, would the
+  xHigherPriorityTaskWoken parameter to it ever be returned as true
+  (since the scheduler is stopped)?
+</blockquote>
+If it was called from an interrupt (as intended) then that should be 
+fine as the interrupt will have brought the system out of sleep mode 
+already.  If you follow the standard tickless template then interrupt 
+are prevented from happening at critical times when it would cause a 
+problem anyhow.
+If the interrupt brought a task out of the Blocked state the context 
+switch would be held pending (by the kernel) until the scheduler was 
+unsuspended &#8211; which will happen automatically when the &#8216;suppress ticks 
+and sleep&#8217; function exits.
+>
+<blockquote>
+  If it can be returned as true, can I call portYIELD<em>FROM</em>ISR(true)
+  from inside vPortSuppressTicksAndSleep(). If so, what would be the
+  effect? I suspect that the answer is that the vTaskStepTick() at the
+  bottom of vPortSuppressTicksAndSleep() would cause a context switch.
+  Is that right?
+</blockquote>
+Almost &#8211; as just mentioned the context switch would happen after that, 
+when the suppress ticks function itself exits.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tickless mode timer problem &#8211; never sleeps</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gmenhennitt">gmenhennitt</a> on November 21, 2014</div><div class="thread-post-content">Thanks. Pretty much as I expected.
+Graham
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

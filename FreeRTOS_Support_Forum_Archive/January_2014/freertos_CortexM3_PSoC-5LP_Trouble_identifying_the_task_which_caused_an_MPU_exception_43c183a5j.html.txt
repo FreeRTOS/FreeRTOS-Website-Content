@@ -1,0 +1,450 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CortexM3/PSoC-5LP : Trouble identifying the task which caused an MPU exception - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2014/freertos_CortexM3_PSoC-5LP_Trouble_identifying_the_task_which_caused_an_MPU_exception_43c183a5j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="CortexM3/PSoC-5LP : Trouble identifying the task which caused an MPU exception - FreeRTOS" />
+<meta property="og:description" content="CortexM3/PSoC-5LP : Trouble identifying the task which caused an MPU exceptionPosted by mbh-ashcroft on January 9, 2014Hello, I&#8217;m implementing a &#8220;blue screen of death&#8221; for a PSoC-5LP (ARM Cortex M3 core) based product, and I&#8217;ve encountered a problem identifying which task was the offender that caused the stack overflow or other memory protection exception that &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2014/freertos_CortexM3_PSoC-5LP_Trouble_identifying_the_task_which_caused_an_MPU_exception_43c183a5j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="CortexM3/PSoC-5LP : Trouble identifying the task which caused an MPU exceptionPosted by mbh-ashcroft on January 9, 2014Hello, I&#8217;m implementing a &#8220;blue screen of death&#8221; for a PSoC-5LP (ARM Cortex M3 core) based product, and I&#8217;ve encountered a problem identifying which task was the offender that caused the stack overflow or other memory protection exception that [&hellip;]" />
+<meta name="twitter:title" content="CortexM3/PSoC-5LP : Trouble identifying the task which caused an MPU exception - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202340' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202340' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202340' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202340' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143674' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2014%2Ffreertos_CortexM3_PSoC-5LP_Trouble_identifying_the_task_which_caused_an_MPU_exception_43c183a5j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2014%2Ffreertos_CortexM3_PSoC-5LP_Trouble_identifying_the_task_which_caused_an_MPU_exception_43c183a5j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143674">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/a00104.html" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/FAQ.html" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2014_freertos_support_forum_archive_index.html/">January 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">CortexM3/PSoC-5LP : Trouble identifying the task which caused an MPU exception</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mbh-ashcroft">mbh-ashcroft</a> on January 9, 2014</div><div class="thread-post-content">Hello,
+I&#8217;m implementing a &#8220;blue screen of death&#8221; for a PSoC-5LP (ARM Cortex M3 core) based product, and I&#8217;ve encountered a problem identifying which task was the offender that caused the stack overflow or other memory protection exception that I&#8217;m reporting in my BSoD.  I&#8217;m using FreeRTOS v7.2.0 .
+Right now, I&#8217;m catching stack overflows and other memory errors based on a two-tiered approach: I have a vApplicationStackOverflowHook() function implemented (with configCHECK<em>FOR</em>STACK_OVERFLOW set to 2 in FreeRTOSConfig.h) so that the RTOS can do its stack size and stack canary checks when each task is swapped out, and I have an interrupt handler set up for the MPU exception interrupt (position 3 in the interrupt vector) to catch MPU exceptions (&#8220;hard faults&#8221;).
+The MPU exception interrupt handler triggers reliably, but I can&#8217;t get it to identify the offending task properly.  I&#8217;m using xTaskGetCurrentTaskHandle() and pcGetTaskName() to spit the task name to the display, and manually triggering faults for testing purposes by reducing the task stack of a selected task to something tiny (eg. 10 words for a task whose stack usage is around 320 words) which is sure to cause a fault.  The problem is the task name I get never matches the task that I intentionally made to overflow its stack, and sometimes is gibberish (which I assume means either that xTaskGetCurrentTaskHandle returned the handle for the idle task, which doesn&#8217;t have a valid task name string pointer in its tcb, or that the tcb for the task which overflowed its stack has been corrupted).  Nb. the vApplicationStackOverflowHook function never seems to be called at all, even when I purposefully trigger a much smaller stack overflow (eg 4 bytes) which &#8220;shouldn&#8217;t&#8221; make the MPU angry &#8211; it&#8217;s always the interrupt handler triggered by an MPU exception that gets called.
+I&#8217;ve got a few speculative ideas as to what might be going on (along the lines of &#8220;the mis-sized stack for TaskA is really causing TaskB to access memory in a region it can&#8217;t&#8221;), but I haven&#8217;t dug into the guts of the RTOS to the point where I&#8217;m confident my mental model of what&#8217;s going on is right in this case, and the debugger that Cypress ships with the IDE is nearly worthless.  Does anyone have an idea as to what else might be causing my problem?  Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3/PSoC-5LP : Trouble identifying the task which caused an MPU exception</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dumarjo">dumarjo</a> on January 9, 2014</div><div class="thread-post-content">Hi,
+I working on M4 MPU (the same apply to the M3) and I wrote some fonction 
+to help me. I use GDB so the debugging is probably better than cypress I 
+don&#8217;t know.
+My function was inspired from others and my reading on the hardfault to 
+get an I dea of what is going on when we hit the fault.
+//// code here /////
+void printErrorMsg(const char * errMsg);
+void printUsageErrorMsg(uint32<em>t CFSRValue);
+void printBusFaultErrorMsg(uint32</em>t CFSRValue);
+void printMemoryManagementErrorMsg(uint32<em>t CFSRValue);
+void stackDump(uint32</em>t stack[]);
+void HardFault<em>mpu</em>dump(void)
+{
+     static char msg[200];
+     int i = 0;
+     uint32<em>t *mpu</em>rnr = (uint32<em>t *) 0xE000ED98;
+     uint32</em>t *mpu_base = (uint32_t *) 0xE000ED9C;
+     uint32_t *mpu_attr = (uint32_t *) 0xE000EDA0;
+<pre><code> //First disable the UART interrupt
+ printErrorMsg("-------MPU------rn");
+ printErrorMsg("Privileged default memory map is ");
+ if(MPU-&gt;CTRL &amp; 0x01 == 0x01)
+     printErrorMsg("Enabledrn");
+ else
+     printErrorMsg("Disabledrn");
+ for (i = 0; i &lt; 8; i++)
+ {
+     *mpu_rnr = i;
+     if (*mpu_attr &amp; 0x1) //If region is activated
+     {
+         sprintk(msg,"b:0x%08p - 0x%08p, sz:2**%d (%d), attr",    
+</code></pre>
+<em>mpu_base &amp; 0xFFFFFFE0,
+     (</em>mpu<em>base &amp; 0xFFFFFFE0) + (1 &lt;&lt; ((*mpu</em>attr &amp; 0x3E) >> 1) + 1),
+     ((<em>mpu_attr &amp; 0x3E) >> 1) + 1, 1 &lt;&lt; ((</em>mpu<em>attr &amp; 0x3E) >> 1) + 1);
+             printErrorMsg(msg);
+             if(((*mpu</em>attr) &amp; 0x07000000)== portMPU<em>REGION</em>READ<em>WRITE)
+             {
+                 printErrorMsg(&#8220;: P-RW, U-RW&#8221;);
+             }
+             else if(((*mpu</em>attr) &amp; 0x07000000)== 
+portMPU<em>REGION</em>PRIVILEGED<em>READ</em>WRITE<em>USER</em>READ<em>ONLY)
+             {
+                 printErrorMsg(&#8220;: P-RW, U-RO&#8221;);
+             }
+             else if(((*mpu</em>attr) &amp; 0x07000000) == 
+portMPU<em>REGION</em>PRIVILEGED<em>READ</em>ONLY)
+             {
+                 printErrorMsg(&#8220;: P+RO&#8221;);
+             }
+             else if(((<em>mpu_attr) &amp; 0x07000000) == portMPU_REGION_READ_ONLY)
+             {
+                 printErrorMsg(&#8220;: P-RO, U-RO&#8221;);
+             }
+             else if(((</em>mpu<em>attr) &amp; 0x07000000) == 
+portMPU</em>REGION<em>PRIVILEGED</em>READ_WRITE)
+             {
+                 printErrorMsg(&#8220;: P-RW&#8221;);
+             }
+             printErrorMsg(&#8220;rn&#8221;);
+         }
+     }
+}
+void Hard<em>Fault</em>Handler(uint32_t stack[])
+{
+     static char msg[80];
+     printErrorMsg(&#8220;x1B[2J&#8221;);
+<pre><code> printErrorMsg("In Hard Fault Handlerrn");
+ sprintk(msg, "SCB-&gt;HFSR = 0x%08xrn", SCB-&gt;HFSR);
+ printErrorMsg(msg);
+ if ((SCB-&gt;HFSR &amp; (1 &lt;&lt; 30)) != 0)
+ {
+  printErrorMsg("Forced Hard Faultrn");
+ }
+  sprintf(msg, "SCB-&gt;CFSR = 0x%08xrn", SCB-&gt;CFSR );
+  printErrorMsg(msg);
+  if((SCB-&gt;CFSR &amp; 0xFFFF0000) != 0) {
+     printUsageErrorMsg(SCB-&gt;CFSR);
+  }
+  if((SCB-&gt;CFSR &amp; 0xFF00) != 0) {
+     printBusFaultErrorMsg(SCB-&gt;CFSR);
+  }
+  if((SCB-&gt;CFSR &amp; 0xFF) != 0) {
+     printMemoryManagementErrorMsg(SCB-&gt;CFSR);
+  }
+  stackDump(stack);
+  HardFault_mpu_dump();
+  __asm("BKPT #0rn") ; // Break into the debugger
+  while(1);
+</code></pre>
+}
+void printErrorMsg(const char * errMsg)
+{
+     while(<em>errMsg != &#8216; &#8217;)
+     {
+        while (!(COM2_PERIPHERAL->SR &amp; USART_SR_TXE));
+        COM2_PERIPHERAL->DR = (</em>errMsg &amp; 0x1FF);
+        ++errMsg;
+     }
+}
+void printUsageErrorMsg(uint32_t CFSRValue)
+{
+     printErrorMsg(&#8220;Usage fault: &#8220;);
+     CFSRValue >>= 16; // right shift to lsb
+<pre><code> if((CFSRValue &amp; (1&lt;&lt;9)) != 0)
+ {
+   printErrorMsg("Divide by zerorn");
+ }
+</code></pre>
+}
+void printBusFaultErrorMsg(uint32_t CFSRValue)
+{
+     static char buf[200];
+     printErrorMsg(&#8220;Bus fault: rn&#8221;);
+     if((CFSRValue &amp; (1 &lt;&lt; 0)) == (1 &lt;&lt; 0)) //IACCVIOL
+        printErrorMsg(&#8220;&#8211;>Instruction access violationrn&#8221;);
+     if((CFSRValue &amp; (1 &lt;&lt; 1)) == (1 &lt;&lt; 1)) //DACCVIOL
+        printErrorMsg(&#8220;&#8211;>Data access violationrn&#8221;);
+     if((CFSRValue &amp; (1 &lt;&lt; 8)) == (1 &lt;&lt; 8)) //IBUSERR
+        printErrorMsg(&#8220;&#8211;>Instruction bus errorrn&#8221;);
+     if((CFSRValue &amp; (1 &lt;&lt; 9)) == (1 &lt;&lt; 9)) //PRECISERR
+        printErrorMsg(&#8220;&#8211;>Precise data bus errorrn&#8221;);
+     if((CFSRValue &amp; (1 &lt;&lt; 10)) == (1 &lt;&lt; 10)) //PRECISERR
+        printErrorMsg(&#8220;&#8211;>Imprecise data bus errorrn&#8221;);
+     if((CFSRValue &amp; (1 &lt;&lt; 11)) == (1 &lt;&lt; 11)) //UNSTKERR
+        printErrorMsg(&#8220;&#8211;>Bus fault on unstacking for a return from 
+exceptionrn&#8221;);
+     if((CFSRValue &amp; (1 &lt;&lt; 12)) == (1 &lt;&lt; 12)) //STKERR
+        printErrorMsg(&#8220;&#8211;>Bus fault on stacking for exception entryrn&#8221;);
+     if((CFSRValue &amp; (1 &lt;&lt; 13)) == (1 &lt;&lt; 13)) //LSPERR
+        printErrorMsg(&#8220;&#8211;>Bus fault on floating-point lazy state 
+preservationrn&#8221;);
+     if((CFSRValue &amp; (1 &lt;&lt; 15)) == (1 &lt;&lt; 15)) //BFARVALID
+     {
+         printErrorMsg(&#8220;&#8211;>Bus fault adress register validrn&#8221;);
+         sprintk(buf, &#8220;&#8212;-> 0x%08X &lt;&#8212;&#8212; Fault addressrn&#8221;, SCB->BFAR);
+         printErrorMsg(buf);
+     }
+     printErrorMsg(    &#8220;Bus faults occur when an error response is 
+received on the AHB bus. The common causes are as follows:nr&#8221;
+                     &#8220;Attempts to access an invalid memory region (for 
+example, a memory location with no memory attached)nr&#8221;
+                     &#8220;The device is not ready to accept a transfer (for 
+example, trying to access SDRAM without initializing thenr&#8221;
+                     &#8220;SDRAM controller)nr&#8221;
+                     &#8220;Attempts to carry out a transfer with a transfer 
+size not supported by the target device (for example, doing anr&#8221;
+                     &#8220;byte access to a peripheral register that must be 
+accessed as a word)nr&#8221;
+                     &#8220;The device does not accept the transfer for 
+various reasons (for example, a peripheral that can only benr&#8221;
+                     &#8220;programmed at the privileged access level)nr&#8221;);
+  }
+void printMemoryManagementErrorMsg(uint32_t CFSRValue)
+{
+     static char buf[200];
+     printErrorMsg(&#8220;Memory Management fault: rn&#8221;);
+     CFSRValue &amp;= 0x000000FF; // mask just mem faults
+     if((CFSRValue &amp; 0x01) == 0x01)    //IACCVIOL
+        printErrorMsg(&#8220;&#8211;>Instruction access violationrn&#8221;);
+     if((CFSRValue &amp; 0x02) == 0x02)    //DACCVIOL
+        printErrorMsg(&#8220;&#8211;>Data access violationrn&#8221;);
+     if((CFSRValue &amp; 0x08) == 0x08)    //MUNSTKERR
+        printErrorMsg(&#8220;&#8211;>Memory manager fault on unstacking for a 
+return from exceptionrn&#8221;);
+     if((CFSRValue &amp; 0x10) == 0x10)    //MSTKERR
+        printErrorMsg(&#8220;tMemory manager fault on stacking for exception 
+entryrn&#8221;);
+     if((CFSRValue &amp; 0x20) == 0x20)    //MLSPERR
+        printErrorMsg(&#8220;&#8211;>Memory manager fault on floating point lazy 
+state preservationrn&#8221;);
+     if((CFSRValue &amp; 0x80) == 0x80)    //MMARVALID
+     {
+         printErrorMsg(&#8220;&#8211;>Memory manager fault adress register validrn&#8221;);
+         sprintk(buf, &#8220;&#8212;-> 0x%08X &lt;&#8212;&#8212; Fault addressrn&#8221;, SCB->MMFAR);
+         printErrorMsg(buf);
+     }
+}
+enum { r0, r1, r2, r3, r12, lr, pc, psr};
+void stackDump(uint32_t stack[])
+{
+     static char msg[200];
+     sprintk(msg, &#8220;r0  = 0x%08xrn&#8221;, stack[r0]);
+     printErrorMsg(msg);
+     sprintk(msg, &#8220;r1  = 0x%08xrn&#8221;, stack[r1]);
+     printErrorMsg(msg);
+     sprintk(msg, &#8220;r2  = 0x%08xrn&#8221;, stack[r2]);
+     printErrorMsg(msg);
+     sprintk(msg, &#8220;r3  = 0x%08xrn&#8221;, stack[r3]);
+     printErrorMsg(msg);
+     sprintk(msg, &#8220;r12 = 0x%08xrn&#8221;, stack[r12]);
+     printErrorMsg(msg);
+     sprintk(msg, &#8220;lr  = 0x%08x &lt;&#8211; In gdb &#8220;list *0x%08x&#8221; to get the 
+source code rn&#8221;, stack[lr], stack[lr]);
+     printErrorMsg(msg);
+     sprintk(msg, &#8220;pc  = 0x%08x &lt;&#8211; In gdb &#8220;list *0x%08x&#8221; to get the 
+source code rn&#8221;, stack[pc], stack[pc]);
+     printErrorMsg(msg);
+     sprintk(msg, &#8220;psr = 0x%08xrn&#8221;, stack[psr]);
+     printErrorMsg(msg);
+}
+// Use the &#8216;naked&#8217; attribute so that C stacking is not used.
+<strong>attribute</strong>((naked))
+void HardFault_Handler(void){
+         /*
+          * Get the appropriate stack pointer, depending on our mode,
+          * and use it as the parameter to the C handler. This function
+          * will never return
+          */
+         __asm(  &#8220;TST lr, #4             rn&#8221;
+                 &#8220;ITE EQ                 rn&#8221;
+                 &#8220;MRSEQ r0, MSP             rn&#8221;
+                 &#8220;MRSNE r0, PSP             rn&#8221;
+                 &#8220;B Hard_Fault_Handler     rn&#8221;);
+}
+<strong>attribute</strong>((naked))
+void MemManage_Handler(void){
+         /*
+          * Get the appropriate stack pointer, depending on our mode,
+          * and use it as the parameter to the C handler. This function
+          * will never return
+          */
+         __asm(  &#8220;TST lr, #4             rn&#8221;
+                 &#8220;ITE EQ                 rn&#8221;
+                 &#8220;MRSEQ r0, MSP             rn&#8221;
+                 &#8220;MRSNE r0, PSP             rn&#8221;
+                 &#8220;B Hard_Fault_Handler     rn&#8221;);
+}
+void BusFault_Handler(void)
+{
+         /*
+          * Get the appropriate stack pointer, depending on our mode,
+          * and use it as the parameter to the C handler. This function
+          * will never return
+          */
+         __asm(  &#8220;TST lr, #4             rn&#8221;
+                 &#8220;ITE EQ                 rn&#8221;
+                 &#8220;MRSEQ r0, MSP             rn&#8221;
+                 &#8220;MRSNE r0, PSP             rn&#8221;
+                 &#8220;B Hard_Fault_Handler     rn&#8221;);
+}
+void BusFault_Handler(void)
+{
+         /*
+          * Get the appropriate stack pointer, depending on our mode,
+          * and use it as the parameter to the C handler. This function
+          * will never return
+          */
+         __asm(  &#8220;TST lr, #4             rn&#8221;
+                 &#8220;ITE EQ                 rn&#8221;
+                 &#8220;MRSEQ r0, MSP             rn&#8221;
+                 &#8220;MRSNE r0, PSP             rn&#8221;
+                 &#8220;B Hard_Fault_Handler     rn&#8221;);
+}
+//// end of code //////
+This should help you a little bit. You will need to adapt it to your env 
+though.
+Hope this will help !
+Jonathan
+Le 2014-01-09 10:23, Mike Heise a écrit :
+>
+<blockquote>
+  Hello,
+  I&#8217;m implementing a &#8220;blue screen of death&#8221; for a PSoC-5LP (ARM Cortex 
+  M3 core) based product, and I&#8217;ve encountered a problem identifying 
+  which task was the offender that caused the stack overflow or other 
+  memory protection exception that I&#8217;m reporting in my BSoD. I&#8217;m using 
+  FreeRTOS v7.2.0 .
+  Right now, I&#8217;m catching stack overflows and other memory errors based 
+  on a two-tiered approach: I have a vApplicationStackOverflowHook() 
+  function implemented (with configCHECK<em>FOR</em>STACK_OVERFLOW set to 2 in 
+  FreeRTOSConfig.h) so that the RTOS can do its stack size and stack 
+  canary checks when each task is swapped out, and I have an interrupt 
+  handler set up for the MPU exception interrupt (position 3 in the 
+  interrupt vector) to catch MPU exceptions (&#8220;hard faults&#8221;).
+  The MPU exception interrupt handler triggers reliably, but I can&#8217;t get 
+  it to identify the offending task properly. I&#8217;m using 
+  xTaskGetCurrentTaskHandle() and pcGetTaskName() to spit the task name 
+  to the display, and manually triggering faults for testing purposes by 
+  reducing the task stack of a selected task to something tiny (eg. 10 
+  words for a task whose stack usage is around 320 words) which is sure 
+  to cause a fault. The problem is the task name I get never matches the 
+  task that I intentionally made to overflow its stack, and sometimes is 
+  gibberish (which I assume means either that xTaskGetCurrentTaskHandle 
+  returned the handle for the idle task, which doesn&#8217;t have a valid task 
+  name string pointer in its tcb, or that the tcb for the task which 
+  overflowed its stack has been corrupted). Nb. the 
+  vApplicationStackOverflowHook function never seems to be called at 
+  all, even when I purposefully trigger a much smaller stack overflow 
+  (eg 4 bytes) which &#8220;shouldn&#8217;t&#8221; make the MPU angry &#8211; it&#8217;s always the 
+  interrupt handler triggered by an MPU exception that gets called.
+  I&#8217;ve got a few speculative ideas as to what might be going on (along 
+  the lines of &#8220;the mis-sized stack for TaskA is really causing TaskB to 
+  access memory in a region it can&#8217;t&#8221;), but I haven&#8217;t dug into the guts 
+  of the RTOS to the point where I&#8217;m confident my mental model of what&#8217;s 
+  going on is right in this case, and the debugger that Cypress ships 
+  with the IDE is nearly worthless. Does anyone have an idea as to what 
+  else might be causing my problem? Thanks.
+  <hr />
+  CortexM3/PSoC-5LP : Trouble identifying the task which caused an MPU 
+  exception 
+  <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/43c183a5/?limit=25#383f">https://sourceforge.net/p/freertos/discussion/382005/thread/43c183a5/?limit=25#383f</a>
+  <hr />
+  Sent from sourceforge.net because you indicated interest in 
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit 
+  https://sourceforge.net/auth/subscriptions/
+  &#8212; 
+  This message has been scanned for viruses and
+  dangerous content by <em>MailScanner</em> <a href="http://www.mailscanner.info/">http://www.mailscanner.info/</a>, and is
+  believed to be clean. 
+</blockquote>
+<hr />
+Ce courrier électronique ne contient aucun virus ou logiciel malveillant parce que la protection avast! Antivirus est active.
+http://www.avast.com
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3/PSoC-5LP : Trouble identifying the task which caused an MPU exception</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mbh-ashcroft">mbh-ashcroft</a> on January 10, 2014</div><div class="thread-post-content">Thanks for the reply, jonathan.  I didn&#8217;t wind up doing as comprehensive of an info dump as you did in my MPU exception handler(my output destination for the BSoD of the device in question is a rather small LCD), but seeing your implementation was helpful.
+I&#8217;m still curious why the task handle that the API function returned when called from the ISR doesn&#8217;t match the task that I expect caused the fault, but I&#8217;ve kind of punted on the issue under time pressure from $BOSS, and now I&#8217;m working on adding stack high water marks to vTaskGetRunTimeStats() such that I can allocate task stacks a little more intelligently and (hopefully) avoid BSoDs &#8220;in the wild&#8221; altogether.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CortexM3/PSoC-5LP : Trouble identifying the task which caused an MPU exception</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 10, 2014</div><div class="thread-post-content">Ref why the task name can be corrupted:
+Depending on the direction of stack growth, that can occur when the stack overflow hits the task control block (in which the task name is stored).  It is a good point, ideally the order in which the stack and stack control block are allocated should depend on the direction of stack growth to ensure that never happens.  You can always get the handle of the offending task by inspecting the pxCurrentTCB variable &#8211; which can be externed as a void * outside of the tasks.c file.
+Ref why a different task handle would be returned:
+No idea I&#8217;m afraid.
+Ref why the memory fault exception occurs before stack overflow detection:
+The fault is a hardware trap that occurs <strong>before</strong> the stack overflow occurs, and because of that, can technically be recovered from.  The software stack overflow occurs <strong>after</strong> the stack has already overflowed (or at least come extremely close to overflowing), so can&#8217;t really be recovered from as you may not know what was corrupted by the overflow.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/RTOS.html" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

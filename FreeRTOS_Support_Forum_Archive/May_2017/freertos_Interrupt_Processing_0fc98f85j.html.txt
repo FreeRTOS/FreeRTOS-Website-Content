@@ -1,0 +1,196 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interrupt Processing - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2017/freertos_Interrupt_Processing_0fc98f85j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Interrupt Processing - FreeRTOS" />
+<meta property="og:description" content="Interrupt ProcessingPosted by leesp on May 24, 2017I am reading Section 3.2 &#8220;Deferred Interrupt Processing&#8221; of FreeRTOS book Assuming the tick is 10ms (configTICKRATEHZ = 100) According to the book, when an external event happens, the ISR &#8220;gives&#8221; semaphor to the handler task in order to unblock it (I suppose ISR can accomplish this within &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2017/freertos_Interrupt_Processing_0fc98f85j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Interrupt ProcessingPosted by leesp on May 24, 2017I am reading Section 3.2 &#8220;Deferred Interrupt Processing&#8221; of FreeRTOS book Assuming the tick is 10ms (configTICKRATEHZ = 100) According to the book, when an external event happens, the ISR &#8220;gives&#8221; semaphor to the handler task in order to unblock it (I suppose ISR can accomplish this within [&hellip;]" />
+<meta name="twitter:title" content="Interrupt Processing - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202813' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202813' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202813' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202813' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146508' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2017%2Ffreertos_Interrupt_Processing_0fc98f85j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2017%2Ffreertos_Interrupt_Processing_0fc98f85j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146508">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2017_freertos_support_forum_archive_index.html/">May 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Interrupt Processing</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/leesp">leesp</a> on May 24, 2017</div><div class="thread-post-content">I am reading Section 3.2 &#8220;Deferred Interrupt Processing&#8221; of FreeRTOS book
+Assuming the tick is 10ms (configTICK<em>RATE</em>HZ = 100)
+According to the book, when an external event happens, the ISR &#8220;gives&#8221; semaphor to the handler task in order to unblock it (I suppose ISR can accomplish this within sub-millisec)
+Now the questions is: would the handler task gets unblocked immediately, or it is only unblocked when the next tick interrupt (which is 10ms) happens?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 24, 2017</div><div class="thread-post-content">If Pre-emption is turn on, the unblocked task is now the highest priority ready task, and the ISR is written correctly (it activates the scheduler due to seeing the higher task woken flag), then the handler task will start immediately.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/leesp">leesp</a> on May 24, 2017</div><div class="thread-post-content">Ok.. which means the task handler will not wait for the tick interrupt to trigger it?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hs2sf">hs2sf</a> on May 24, 2017</div><div class="thread-post-content">Exactly
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/leesp">leesp</a> on May 24, 2017</div><div class="thread-post-content">Now I&#8217;m confused. Refer to below scenario, assuming configTICK<em>RATE</em>Hz = 100 (or tick interrupt of 10ms)
+Assuming task_1&#8217;s 5000ms expires and it wakes up, but then is almost immediately Blocked because of waiting for the mutex
+Then now task_2 gives the mutex
+Will (a) task_1 get the mutex *immediately* and goes into Running, or (b) it will *wait* until the current tick (10ms) period is up and the scheduler select it to run?
+I would suppose the answer is (b), because the Scheduler only executes at the end of each tick interrupt. Am I right?
+If I am right, then this scenario is in contrary with the scenario in my previos message, where the task handler gets Unblocked <strong>immediately</strong>, and start executing** immediately**
+~~~
+static void task<em>1(void *p) //Priority: 2
+{
+    (void)p;
+    for (;;) {
+        if (disp</em>mutex<em>take()) {
+            &#8230;
+            disp</em>mutex<em>give();
+        }
+        os</em>sleep(5000);
+    }
+}
+~~~
+~~~
+static void task<em>2(void *p) //Priority: 1
+{
+    (void)p;
+    for (;;) {
+        &#8230;
+        if (disp</em>mutex<em>take()) {
+            &#8230;
+            disp</em>mutex_give();
+        }
+    }
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hs2sf">hs2sf</a> on May 24, 2017</div><div class="thread-post-content">Also in this scenario task<em>2 goes into running state as soon as higher prio task</em>1 falls asleep. Provided that your os_sleep is not a busy wait 😉
+The scheduler is and obviously should be invoked on each task state transition.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on May 24, 2017</div><div class="thread-post-content">You incorrect assumption was that the scheduler only runs on the tick interrupt. On part of releasing a mutex is to see if any higher priority tasks were made ready, and if so, the scheduler is run, causing a context switch.
+The scheduler is run anytime the current task blocks, something happens that makes a higher priority task become ready, or (if time slicing is enabled) on a tick interrupt (to cause time slicing).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/leesp">leesp</a> on May 25, 2017</div><div class="thread-post-content">@Richard: thanks for pointing out! I total missed the points
+Question: so time-slicing is used only when there are tasks with same priority?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on May 25, 2017</div><div class="thread-post-content">The system alway tries to run a highest priority ready task. Thus, you will only time slice between tasks of the same priority. Low priority in a RTOS sense doesn&#8217;t mean give it less time, it means give it time only if nothing higher is ready.
+As far as I know, the only case where a highest priority ready task would not be running is if Pre-emption is turn off, then the current task will continue to run, even if some interrupt makes another task ready, until the current task makes a call to a FreeRTOS function that can perform a context switch, the the switch will occur.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hs2sf">hs2sf</a> on May 25, 2017</div><div class="thread-post-content">Yes. I&#8217;d also recommend to have a look at the (free !) <a href="http://www.freertos.org/Documentation">books</a>
+e.g. <em>Mastering the FreeRTOS Real Time Kernel</em> chapter 3.12 Scheduling Algorithm
+s
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/leesp">leesp</a> on May 27, 2017</div><div class="thread-post-content">In this example time-slicing is enabled. Task1 &amp; Task2 are continuos processing tasks with same priority (1). Another periodic task which uses vTaskDelayUntil(), is of higher priority (2). It was explained in the book that &#8220;At time t5 the** tick interrupt finds that the Periodic task block period has expired **so it moves the Periodic task into the Ready state&#8221;
+Q. Why is it that, the Periodic task enters Ready state only when the tick interrupt expires? It is of higher priority, and isn&#8217;t it supposed to be &#8220;event-driven&#8221; by the its own &#8220;periodic timer&#8221;, rather than the tick interrupt timer (I thought tick interrupt is only for tasks with same priority)? Or am I wrong altogether?
+Another question not related to this example: if configUSE<em>TIME</em>SLICING = 0, would the tick interrupt still happens?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 27, 2017</div><div class="thread-post-content">All ttime periods are measured in &#8216;Ticks&#8217;, by the tick interrupt. vTaskDelay/vTaskDelayyUntil establish what count of the tick iinterrupt will put the task in a ready state. Many machines don&#8217;t have enough hardware timers to give tasks their own hardware timer, so FreeRTOS uses the Tick interrupt using the one timer that it needs to perform ALL its time base services.
+You should note that all delays/timeouts in FreeRTOS are specified in &#8216;Ticks&#8217;, which is the time period of the Tick Interrupt. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/leesp">leesp</a> on May 27, 2017</div><div class="thread-post-content">Ok.. but what happen if the tick interrupt period is for example 10ms. And there is a event-driven task which must be put into Ready state within 1ms when the event arrives?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/leesp">leesp</a> on May 27, 2017</div><div class="thread-post-content">..or put it another way. The tick is 10ms. So the interrupt happens at t=0, 10ms, 20ms, &#8230;
+Task1 (Priority 1) is periodic with period 2ms, Task2 (Priority 2) is event-driven by external event
+vTaskScheduler() is started at t=0
+Q1. Would Task1 be in Running state at t=2ms, 4ms, 6ms&#8230;?
+Q2. Would Task2 be in Running state at, for example t=21ms, when the external event happens?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 27, 2017</div><div class="thread-post-content">You need something to happen for it to be an event. If you really need a task to run at a periodic rate of 2ms, and there isn&#8217;t some hardware interrupt about that event that happens at that rate, then youu better have the system tick be at 500 Hz (or some multiple thereof). 
+YOU define the tick rate via FreeRTOSConfig,h, so it is part of your system definition, and need to be set appropriate for youur system needs, Not to fast to spend too much time processing the tick interupt and checking for periodic task scheduling, but also not to slow to not have a time base accurate enough to meet your needs. 
+Myy experiance is that 10ms is fine to deal wiith Human Interactions, and tends to give good enough resolution for error timeouts, and that many things that need to be faster have interrupts that can trigger the operations. The one case where I find I need a faster tick would be a process control loop, to start sampling the system and updating the control, but even then, often there is a way to program the measurement to automatically kick itself off at the desired rate, and then I can use the conversion complete interrupt to kick off that process (which removes the jitter in the sampling time, which tends to reduce noise issues).
+So the question goes back to, your 2ms periodic task, is it purely a time based process, in which case you need a 500Hz tick rate, or is it tied to some hardware that can be told to run at 500Hz, and generatte interrupts to tthe processor, in which case your task isn&#8217;t really a &#8216;periodic&#8217; task, but an event driven task. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/leesp">leesp</a> on May 27, 2017</div><div class="thread-post-content">Ok so my understanding is:
+<ul>
+<li>To have a 2ms period software time-based task, I need to configure the tick to be at least 500Hz. This will make 2ms the smallest time unit for any other time-based tasks. All time-based tasks thereof must have period which is multiple COUNT of ticks (1x, 2x..)</li>
+<li>Context switching can always happen between the ticks (eg.  t = 3.1ms) when, i) a periodic task (with period 2ms) gets Blocked after running for 1.1ms, and a lower priority continuous process task gets switched in* immediately*, ii) an external interrupt happens at t = 3.1ms, and make another higher priority task Ready, and thus it gets switched in immediately, iii) a higher priority task which is currently Blocked, gets unblocked when it receives a mutex at t = 3.1ms, and thus it gets switched in immediately
+All the above 3 cases, the scheduler selects the new task to Run immediatly even before the next tick happens (ie. t = 3.1ms). Am I right?</li>
+</ul>
+Another question on the mechanism of taking and giving a semaphore:
+When Task1 calls xSemaphoreGive, Task2 (which calls xSemaphoreTake) gets &#8220;notified&#8221; immediately, right? How is this implemented? Does xSemaphoreGive() invokes an interrupt or something like that?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 27, 2017</div><div class="thread-post-content">Yes, All time delays are specified in Ticks, so any period needs to be based on a multiple of ticks. 
+Assuming you have pre-emption enabled, then a context switch can be triggered by an interrupt, or a system call. For instance, calling a Delay function will always invoke a context switch. Giving a semaphore or mutex or putting or taking an item from a queue might also cause a context switch if the action makes ready a higher priority task. Depending on the processor and the port, this MIGHT be done by triggering an software interrupt, or it might not. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Processing</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hs2sf">hs2sf</a> on May 27, 2017</div><div class="thread-post-content">or just use the source the see what&#8217;s going on 🙂 That&#8217;s another good thing about FreeRTOS besides that it&#8217;s free &#8211; you get the complete (high quality) code !
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

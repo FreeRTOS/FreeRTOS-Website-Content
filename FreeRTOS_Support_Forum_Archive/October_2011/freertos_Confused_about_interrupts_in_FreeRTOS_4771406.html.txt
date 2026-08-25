@@ -1,0 +1,359 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confused about interrupts in FreeRTOS - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2011/freertos_Confused_about_interrupts_in_FreeRTOS_4771406.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Confused about interrupts in FreeRTOS - FreeRTOS" />
+<meta property="og:description" content="Confused about interrupts in FreeRTOSPosted by erupter on October 21, 2011After extensive testing and reading I&#8217;m still a bit confused. Say I have the kernel running and I implement an ISR manually. For example a fast ADC ISR: what happens to the context? The ISR would surely interrupt some task&#040;s&#041; but since the interrupt is &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2011/freertos_Confused_about_interrupts_in_FreeRTOS_4771406.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Confused about interrupts in FreeRTOSPosted by erupter on October 21, 2011After extensive testing and reading I&#8217;m still a bit confused. Say I have the kernel running and I implement an ISR manually. For example a fast ADC ISR: what happens to the context? The ISR would surely interrupt some task&#040;s&#041; but since the interrupt is [&hellip;]" />
+<meta name="twitter:title" content="Confused about interrupts in FreeRTOS - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202044' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202044' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202044' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202044' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140149' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2011%2Ffreertos_Confused_about_interrupts_in_FreeRTOS_4771406.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2011%2Ffreertos_Confused_about_interrupts_in_FreeRTOS_4771406.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140149">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2011_freertos_support_forum_archive_index.html/">October 2011 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Confused about interrupts in FreeRTOS</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/erupter">erupter</a> on October 21, 2011</div><div class="thread-post-content">After extensive testing and reading I&#8217;m still a bit confused.  
+Say I have the kernel running and I implement an ISR manually.<br />
+For example a fast ADC ISR: what happens to the context?<br />
+The ISR would surely interrupt some task&#40;s&#41; but since the interrupt is outside the scheduler, nothing gets saved.<br />
+Should I do something about this? Apart from carefully setting the priorities.  
+What are the cases in which the standard ISR return would modify the interrupted task context?<br />
+Should I worry about them?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 21, 2011</div><div class="thread-post-content">An ISR almost always needs to save context, as it can&#8217;t disturb the code that it interrupted &#40;some processors instead of saving the context, have an alternate context that the interrupt runs in&#41;.   
+While there are a few situations where an ISR might want to alter the context of the interrupt program, these are very specialized and very machine dependent.   
+If your ISR doesn&#8217;t interact with FreeRTOS, then it can normally be built just like any ISR that your compiler generates. if your ISR will interact with FreeRTOS, then it needs to follow the instructions of the port, so that it saves the interrupt context in a manner compatible with the Scheduler &#40;if needed&#41;, as well as needing to be at an interrupt priority compatible with that port.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/erupter">erupter</a> on October 23, 2011</div><div class="thread-post-content">What do you mean exactly by &#8220;interact with FreeRTOS&#8221;?  
+Is calling vTaskSuspendFromISR or xQueueSendFromISR an interaction?  
+If not &#40;I guess these functions exist just for being used by ISRs external to the main OS tasks&#41;, then would you mind presenting a case in which the ISR should take steps to actively save the context in an OS-compatible manner?  
+Also concurrence eludes my comprehension:<br />
+what happens if an ISR is started in the middle of a context switch?<br />
+Is this possible? Is this accounted for?  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 23, 2011</div><div class="thread-post-content">If you call any of the …FromISR routines, you are interacting with FreeRTOS, so that interrupt needs to meet the requirements to do so, the most important of which is having an allowed priority. These are detailed in the instructions for that port, as they vary in different ports.  
+If you want to be able to cause an immediate task switch due to the interrupt, there are additional rules in the port for how to invoke the task scheduler, and in some ports, this includes the preamble for the ISR to be compatible.   
+As to concurrence issues, the Scheduler will use a combination of Critical Sections &#40;which disable interrupts that interact with the kernel&#41; and internal software flags, to take into account for any concurrency issues for this, provided you follow the rules of the port &#40;this is one of the major reason for many of the rules&#41;. You need to use similar tools if you have resources that you need to guard from concurrent access.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/erupter">erupter</a> on October 24, 2011</div><div class="thread-post-content">Hi Richard,<br />
+<a href="http://www.freertos.org/port_PIC32_MIPS_MK4.html">This</a> is the PIC32 official port page.  
+In the interrupt section there are instructions about nestable and non-nestable interrupts.<br />
+What does nestable means exactly?<br />
+That an interrupt can be interrupted by another and so the second is effectively nested inside the first?  
+From the UART interrupt example I understand the following:<br />
+in some cases it&#8217;s best to save the context by using an OS-aware INT wrapper.<br />
+The prototype is shown in the page, and it clearly saves and then reloads the context before executing.<br />
+But when should I do this?  
+Then there is this:  
+<pre><code>/* If sending or receiving necessitates a context switch, then switch now. */
+            portEND_SWITCHING_ISR( xYieldRequired );
+</code></pre>
+What does this mean?<br />
+What would happen if the function were to be called with TRUE as parameter?  
+The explanation says that the parameter should be non zero if a context switch is required, but the calling function &#40;the interrupt wrapper&#41; DOES a switch before and after calling the handler, so in theory the context switch is required.<br />
+Then why false?  
+I feel awfully confused about all this :&#40;  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 24, 2011</div><div class="thread-post-content">Yes, nested interrupts, when supported by the port, allow one interrupt routine to nest within another &#40;except for with certain critical regions in the interrupt&#41;  
+A call to portEND&#95;SWITCING&#95;ISR with a TRUE&nbsp; parameter changes which context the ISR will return to, i.e. which task will be running afterwards. I am not familiar with the PIC32 port, but some ports switch to a special interrupt context for processing interrupts to save user task stack space &#40;otherwise every task need to have enough extra stack for the biggest stack that any ISR might need. Others just save the current context on the current task stack. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jandle">jandle</a> on October 24, 2011</div><div class="thread-post-content">Richard,   
+I am using v.7.0.1 ported to a dsPIC33 with two serial ports running ISR&#8217;s and a CAN ISR.&nbsp; Commands come in on the serial ports and I must enforce detecting line breaks as packet delimiters &#40;think MODBUS, but there are also other protocols where this is needed.&#41;.&nbsp;&nbsp; I place packets on a queue &#40;fromISR&#41; and the tasks process that through, sending commands out the CAN to a coprocessor when needed, parsing the responses and replying as appropriate.  
+In order to enforce the line breaks I had each RX character GiveSemaphore&#40;&#41; to a PortMonitorTask.&nbsp; If that task was unable to take a semaphore within the linebreak time, it detected a break, otherwise if it succeeded then it tried again.&nbsp; This seemed to work but occasionally commands were ignored.&nbsp;   
+Upon deeper examination, the system was perceiving breaks in the line because the serial ISR was being delayed.&nbsp; I switched to hardware timers that the RXISR would &#40;re&#41;start and set to zero and that were shut off when the message was posted.&nbsp; I still &#8220;detected&#8221; line breaks in the packets.&nbsp; So, I broke out an oscilloscope and there are no line breaks &#40;the PC program feeding it has breaks but not big enough to cause the problem.&nbsp; The threshold was 2 ms and the longest gaps were 200 us.  
+So, I realized that enter/exit critical section would pause the interrupt.&nbsp; I added code in the port function to toggle a line and found I was never in a critical section more than 50 us.&nbsp; I then looked at the 1 ms tick timer:  
+void &#95;&#95;attribute&#95;&#95;&#40;&#40;&#95;&#95;interrupt&#95;&#95;, auto&#95;psv&#41;&#41; &#95;T1Interrupt&#40; void &#41;<br />
+&#123;<br />
+/&#42; Clear the timer interrupt. &#42;/<br />
+IFS0bits.T1IF = 0;<br />
+//LATA |= 0x0200;  
+vTaskIncrementTick&#40;&#41;;  
+&#35;if configUSE&#95;PREEMPTION == 1<br />
+portYIELD&#40;&#41;;<br />
+&#35;endif<br />
+//LATA &amp;= 0xFDFF;<br />
+&#125;  
+Usually this was under 50 us but occasionally it hit 500us and occasionally a full 1ms tick showed a high pulse.  
+&#40;a&#41; is there an event that occurs sporadically that would take 1ms to execute vTaskIncrementTick&#40;&#41; and portYield&#40;&#41;??  
+&#40;b&#41; I can tolerate a delayed post to queue but I cannot tolerate a false line break.&nbsp; If I make the RX ISR the highest priority, then I cannot call …FromISR&#40;&#41;.&nbsp; I can throw a software interrupt that calls the …FromISR&#40;&#41; functions and also diable the line break timer from the high priority interrupt.&nbsp; As long as I call no API, I should be OK, right?  
+(C) … but this brings another problem.&nbsp; I share globals &#40;like the RX buffer, it&#8217;s length, etc.&#41; and I need to manipulate them.&nbsp; If my code had it&#8217;s own version of a critical section &#40;or maybe the port already does&#41; that prevented even the RX ISR from executing long enough to manipulate them, will this impact the RTOS &#40;other than delaying a tick timer a few us&#41;?  
+Thanks  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/erupter">erupter</a> on October 24, 2011</div><div class="thread-post-content">I would also like to know from &#42;the other&#42; Richard: is any part of this explained in the official book?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jandle">jandle</a> on October 24, 2011</div><div class="thread-post-content">The PIC32 book is excellent &#8211; you should buy it&nbsp; &#45; but PIC32 port allows a couple things &#40;like this&#41; that dsPIC port does not…
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 25, 2011</div><div class="thread-post-content">Are you saying that sometimes you measure a 1 ms time in portYIELD&#40;&#41;? that sounds very long. My first question is do you have your interrupt priorities set right. If I remember right, the dsPIC port wants all interrupts that interact with FreeRTOS to be at interrupt level 1, if you have an interrupt higher than that interact and it does a task switch, it can cause problems like this. You also may have a higher priority interrupt taking a lot of time.  
+If done right, you should NOT have significant delays in getting in and out of interrupts, so you shouldn&#8217;t have this problem, and you should be able to keep the serial ISR interfacing with FreeRTOS.  
+If you really want to move the interrupt out of FreeRTOS, you could use the disable/enable interrupt function as a short term critical section. Other than the possible delays caused by this, it will not affect FreeRTOS.  
+One thing to warn you about your method of measuring break time, assuming a 1 ms tick rate &#40;which is actually probably faster than you should need for most of your program&#41; a 2ms delay for getting the semaphore is actually a 1 to 2 ms delay, as if it starts just before a time tick, that very small sliver of time counts as a tick for the timeout. What I would do for this application is have the ISR set/reset a hardware timer on each character, and if the timer expires then you have a break in transmission &#40;which I think is what you are trying to detect&#41;. Now if you are actually trying to detect a &#8220;line break&#8221; &#40;the serial line held in the &#42;active&#42; state for an extended period of time&#41; the serial ports are capable of detecting that themselves. Having the hardware timer detect the line idle condition would allow you to drop the tick rate to something more reasonable.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jandle">jandle</a> on October 25, 2011</div><div class="thread-post-content">I am measuring the time that LATA bit 9 is high with a digital scope.&nbsp; I also measured the RX ISR and so on.&nbsp; I have all ISR priorities at 1 &#40;though I had earlier set RX to 2, I caught that and it changed nothing.&#41;&nbsp; The RX ISR is only engaged a typical 10-20 us and closer to 60us when I post 256 bytes to the queue.  
+void &#95;&#95;attribute&#95;&#95;&#40;&#40;&#95;&#95;interrupt&#95;&#95;, auto&#95;psv&#41;&#41; &#95;T1Interrupt&#40; void &#41;<br />
+&#123;<br />
+/&#42; Clear the timer interrupt. &#42;/<br />
+IFS0bits.T1IF = 0;<br />
+LATA |= 0x0200;  
+vTaskIncrementTick&#40;&#41;;  
+&#35;if configUSE&#95;PREEMPTION == 1<br />
+portYIELD&#40;&#41;;<br />
+&#35;endif<br />
+LATA &amp;= 0xFDFF;<br />
+&#125;  
+I already do have a hardware timer instead of a task:  
+/&#42; &#8212;&#8212;&#8212;&#8212;&#8212; Platform includes &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#42;/<br />
+&#35;include &#8220;iSAW&#95;Base.h&#8221;<br />
+&#35;include &#8220;MBPortTimer.h&#8221;<br />
+&#35;include &#8220;Serial.h&#8221;  
+static xSemaphoreHandle rxCharRecievedSemaphore;  
+// =====================================================================<br />
+// Timer 2 is inter-character timeout for Serial 0<br />
+// Timer 3 is inter-character timeout for Serial 1<br />
+// PR3 is set to give an interrupt after the delay specified in<br />
+// the parameters, in milliseconds.<br />
+// also register the semaphores as this module will be<br />
+// keeping Serial&#35;Monitor in line &#40;unless it replaces it?&#41;<br />
+//<br />
+void vInitMBTimers&#40;unsigned short usDelay0, xSemaphoreHandle xSP0,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unsigned short usDelay1, xSemaphoreHandle xSP1&#41;<br />
+&#123;<br />
+rxCharRecievedSemaphore = xSP0;<br />
+rxCharRecievedSemaphore = xSP1;  
+T2CONbits.TON = 0; // Stop any 16/32-bit Timer3 operation<br />
+T2CONbits.T32 = 0; // Disable 32-bit Timer mode<br />
+T2CONbits.TCS = 0; // Select internal instruction cycle clock<br />
+T2CONbits.TGATE = 0; // Disable Gated Timer mode<br />
+T2CONbits.TCKPS = 0b01; // Select Prescaler = 8 -&gt; 2500 pulses per millisecond<br />
+TMR2 = 0x00; // Clear 16-bit Timer<br />
+PR2 = TICKS&#95;PER&#95;MS &#42; usDelay0; // Set 16-bit Timer range<br />
+T2CONbits.TON = 0; // Don&#8217;t start 16-bit Timer<br />
+&#95;&#95;TIM2&#95;ENBIT = 1;<br />
+&#95;&#95;TIM2&#95;PRIOR = 1;<br />
+&#95;&#95;TIM2&#95;FLAG&nbsp; = 0;  
+T3CONbits.TON = 0; // Stop any 16-bit Timer3 operation<br />
+T3CONbits.TCS = 0; // Select internal instruction cycle clock<br />
+T3CONbits.TGATE = 0; // Disable Gated Timer mode<br />
+T3CONbits.TCKPS = 0b01; // Select Prescaler = 8 -&gt; 2500 pulses per millisecond<br />
+TMR3 = 0x00; // Clear 16-bit Timer<br />
+PR3 = TICKS&#95;PER&#95;MS &#42; usDelay1; // Set 16-bit Timer range<br />
+T3CONbits.TON = 0; // Don&#8217;t start 16-bit Timer<br />
+&#95;&#95;TIM3&#95;ENBIT = 1;<br />
+&#95;&#95;TIM3&#95;PRIOR = 1;<br />
+&#95;&#95;TIM3&#95;FLAG&nbsp; = 0;<br />
+&#125;  
+// ===================================================================================<br />
+// call this on each received character to start or reset the appropriate timer<br />
+//<br />
+void vTimerOnCharRX &#40;unsigned short usPort&#41;<br />
+&#123;<br />
+switch &#40;usPort&#41;<br />
+&#123;<br />
+case 0:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T2CONbits.TON = 1;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TMR2 = 0x0000;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;TIM2&#95;FLAG&nbsp; = 0;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp; case 1:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T3CONbits.TON = 1;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TMR3 = 0x0000;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;TIM3&#95;FLAG&nbsp; = 0;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp; default:<br />
+&nbsp;&nbsp;&nbsp; break;<br />
+&#125;&nbsp;&nbsp;&nbsp;<br />
+&#125;  
+void &#95;&#95;attribute&#95;&#95;&#40;&#40;&#95;&#95;interrupt&#95;&#95;&#41;&#41; &#95;&#95;attribute&#95;&#95;&#40;&#40;no&#95;auto&#95;psv&#41;&#41; &#95;T2Interrupt&#40;void&#41;<br />
+&#123;<br />
+portBASE&#95;TYPE xHigherPriorityTaskWoken &#95;&#95;attribute&#95;&#95; &#40;&#40;aligned &#40;2&#41;&#41;&#41; = pdFALSE;<br />
+&#95;&#95;TIM2&#95;FLAG&nbsp; = 0;<br />
+&nbsp;&nbsp;&nbsp; T2CONbits.TON = 0;<br />
+//xSemaphoreGiveFromISR&#40;rxCharRecievedSemaphore, &amp;xHigherPriorityTaskWoken&#41;;  
+unsigned short usPort = 0;<br />
+switch &#40;xSerState.usProtocol&#41;<br />
+&#123;<br />
+// In native protocol the ISR parses and this just resets<br />
+case SER&#95;PROT&#95;NATIVE:<br />
+//taskENTER&#95;CRITICAL&#40;&#41;;<br />
+if &#40;xSerState.usRxBufLen&#41;<br />
+&#123;<br />
+if &#40;xDiag.ulSer1ResetRXState &#33;= 0xFFFFFFFF&#41; xDiag.ulSer1ResetRXState++;<br />
+&#125;<br />
+xSerState.usRxBufLen = 0;<br />
+xSerState.usCMDstate = SER&#95;CMD&#95;NONE; // start over on next message&#33;<br />
+xSerState.usRXing = SER&#95;RX&#95;IDLE;<br />
+//taskEXIT&#95;CRITICAL&#40;&#41;;<br />
+break;  
+// in MODBUS RTU the ISR collects and this dispatches<br />
+case SER&#95;PROT&#95;MODBUS:<br />
+//taskENTER&#95;CRITICAL&#40;&#41;;<br />
+if &#40;//&#33;cSerRxBuf || // need to think more about multicast<br />
+&nbsp;&nbsp; &#40;cSerRxBuf == xSerState.usAddress&#41;&#41;<br />
+&#123;<br />
+if &#40;usSerProcessCRC&#40;usPort&#41;&#41;<br />
+&#123;<br />
+// pop out for API call.&nbsp; Only post if it is ours and valid.<br />
+//taskEXIT&#95;CRITICAL&#40;&#41;;<br />
+xQueueSendFromISR&#40; xSerState.xRXMsgQueue, cSerRxBuf, &amp;xHigherPriorityTaskWoken&#41;;<br />
+//taskENTER&#95;CRITICAL&#40;&#41;;<br />
+&#125;<br />
+&#125;   
+xSerState.usRxBufLen = 0;<br />
+xSerState.usCMDstate = SER&#95;CMD&#95;NONE; // start over on next message&#33;<br />
+xSerState.usRXing&nbsp;&nbsp;&nbsp; = SER&#95;RX&#95;IDLE;<br />
+//taskEXIT&#95;CRITICAL&#40;&#41;;<br />
+break;  
+// case SER&#95;PROT&#95;STRIPPED cannot be assigned to a port.<br />
+default:<br />
+break;<br />
+&#125;   
+if&#40; xHigherPriorityTaskWoken &#33;= pdFALSE &#41;<br />
+&#123;<br />
+taskYIELD&#40;&#41;;<br />
+&#125;<br />
+&#125;  
+the commented critical enter and exit calls are from when the logic was in the task.  
+On the one hand, the Timer 1 interrupt is only long when there are commands being processed because otherwise it&#8217;s idle.&nbsp; Tomorrow I&#8217;ll contrive to make it busy without external cause &#40;interrupts&#41; to see if it&#8217;s a task switch issue or an ISR competition issue.&nbsp;   
+To be clear, one level-1 interrupt cannot interrupt another on Microchip hardware, right?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jandle">jandle</a> on October 25, 2011</div><div class="thread-post-content">also, &#8220;Having the hardware timer detect the line idle condition would allow you to drop the tick rate to something more reasonable.&#8221;&nbsp; depends on what happens when taskA yields.&nbsp; None of my tasks do much:  
+Fetch MODBUS registers, strip data from coprocessor responses into registers, fetch co-processor commands from an eeprom script, etc.&nbsp; I bet I rarely run 1 ms…&nbsp; On the other hand I ended up &#42;polling&#42; the DMA-ECAN buffers… That needs to happen about every 5 ms and I have 6-8 tasks depending on how this fleshes out.  
+Not to introduce a totally different topic, but what&#8217;s a &#8220;safe&#8221; excess stack high water mark?&nbsp; I assume 100 bytes is wasteful.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 25, 2011</div><div class="thread-post-content">Thinking back to how the dsPIC port works, your method of checking isn&#8217;t really valid. On the dsPic &#40;and PIC24&#41; port, the call&nbsp; to portYield doesn&#8217;t return until the task that was switched from gets restarted. In effect, the ISR ends on the call to portYield &#40;or taskYield which is the same&#41;. The process of the scheduler saving and restore task context ends the interrupt, and when the switched out task come back again, it goes back into interrupt mode for just a moment and then back to where it was interrupted from. The instructions that the Yield must be the last thing in an ISR means it, as anything after the Yield may not me executed for awhile. If you want to scope trace to see when ISRS happen you need to clear the bit before the yield &#40;so you will get fairly narrow pulses&#41;.  
+I will also add, that when I build a CAN interface routine on the dsPIC I had no trouble with using interrupts for the ECAN buffers in DMA space, I presume you have double checked the errata for the chip, I know the one I was using had a problem with ECAN buffers, and the recommended work around was to use only 1 ECAN TX Buffer.  
+Interrupts can only be nested by HIGHER priority interrupts, not same, on the microchip hardware.  
+As to how much &#8220;safe&#8221; excess stack, depends on how well you have exercised things, if you have really pushed things, you should be able to get away with only 1 byte, but I would feel safer allowing for the max ISR stack.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 25, 2011</div><div class="thread-post-content"><blockquote>
+  I added code in the port function to toggle a line and found I was never in a critical section more than 50 us
+</blockquote>
+You cannot measure critical section lengths, using the method, at least not on the PIC24/dsPIC.&nbsp; Discard any readings you have made for the following reason.  
+Each task maintains its own critical section nesting count.&nbsp; Consider the following scenario:  
+1&#41; Inside the kernel code, a task enters a critical section to look at a queue.&nbsp; You set your toggle line high.<br />
+2&#41; The task blocks on the queue &#8211; still inside the critical section &#40;yes, the kernel is designed to do this on certain ports, I don&#8217;t have time to go into the details as to why it is perfectly ok and does not mean interrupts remain disabled, user code must <strong>never</strong> do it itself&#41;.<br />
+3&#41; The critical section nesting count of the task is saved as part of the task context.<br />
+4&#41; Another task runs.&nbsp; Its context has a critical section nesting count of zero, so interrupts are enabled as the task context is restored &#8211; taskEXIT&#95;CRITICAL&#40;&#41; was never called and your toggle line is still high even though interrupts are enabled.  
+<pre><code>void __attribute__((__interrupt__, auto_psv)) _T1Interrupt( void )
+{
+    /* Clear the timer interrupt. */
+    IFS0bits.T1IF = 0;
+    LATA |= 0x0200;
+    vTaskIncrementTick();
+    #if configUSE_PREEMPTION == 1
+        portYIELD();
+    #endif
+    LATA &amp;= 0xFDFF;
+}
+</code></pre>
+You cannot measure the tick interrupt length in this way.&nbsp; Discard any readings taken using this method.&nbsp; The interrupt will switch to a different context when portYIELD&#40;&#41; is called &#8211; portYIELD must be the <strong>last</strong> thing called in the interrupt.  
+From the documentation page for the PIC24/dsPIC port:  
+<blockquote>
+  Interrupt service routines that can cause a context switch must execute with priority portKERNEL&#95;INTERRUPT&#95;PRIORITY, and only call taskYIELD&#40;&#41; at the very end of the service routine after the interrupt source has been cleared. See the file serial.c included in the demo application for an example.
+</blockquote>
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 25, 2011</div><div class="thread-post-content"><blockquote>
+  I would also like to know from &#42;the other&#42; Richard: is any part of this explained in the official book
+</blockquote>
+Unlike the PIC32 book, which does explain PIC32 interrupts, there is no official book for the PIC24/dsPIC.&nbsp; That leave the generic book, which talks about interrupts generically, that is, not in specific terms for any particular architecture.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jandle">jandle</a> on October 30, 2011</div><div class="thread-post-content">Precious, absolutely precious.&nbsp; I do all the work to use high priority serial port interrupts that throw software interrupts at kernel priority to call the API semaphore and queue functions… change delays to timers &#40;OK, that saved me memory and made it more precise&#41;…&nbsp;&nbsp;   
+Same behavior…  
+The Windows terminal emulator was the cause.&nbsp; I had tested the characters coming out of it when the embedded device was not connected.&nbsp; It had no idle breaks within a packet.&nbsp; I tested it with the embedded system connected and saw none, so I&#8217;ve been chasing down a &#8220;ghost in the machine&#8221;.  
+I just used a better oscilloscope with pattern based triggering and sure enough &#8211; with characters streaming both ways, data to display, and a lot of overhead &#8211; 2-3 ms gaps in about 2-3% of the packets&#33;&nbsp; This is, of course, one of the downfalls of Windows and USB-based virtual com ports.&nbsp; No interrupts on the PC side&#33;  
+Thanks for all the help that made me look outside my system for the real problem.&nbsp;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Confused about interrupts in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 31, 2011</div><div class="thread-post-content">Actually, Windows does have interrupts for the USB device, you just don&#8221;t get them down to the application layer, and the USB protocol might insert some delay. You might want to try raising the priority for the windows application, and/or make sure it send the date for a packet as a single write operation so the device driver has the full packet to send. 
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

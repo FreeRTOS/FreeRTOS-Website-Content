@@ -1,0 +1,563 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STM32 task never gets ready - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2013/freertos_STM32_task_never_gets_ready_8668699.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="STM32 task never gets ready - FreeRTOS" />
+<meta property="og:description" content="STM32 task never gets readyPosted by *anonymous on September 5, 2013Odd thing. I have one task and one interrupt. Task takes elements from queue, interrupt fills the queue. The problem is that the task is not woken if queue is empty and sleep time is grater than 1 if I do not use portYIELD&#095;FROM&#095;ISR&#040;&#041; whithin &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2013/freertos_STM32_task_never_gets_ready_8668699.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="STM32 task never gets readyPosted by *anonymous on September 5, 2013Odd thing. I have one task and one interrupt. Task takes elements from queue, interrupt fills the queue. The problem is that the task is not woken if queue is empty and sleep time is grater than 1 if I do not use portYIELD&#095;FROM&#095;ISR&#040;&#041; whithin [&hellip;]" />
+<meta name="twitter:title" content="STM32 task never gets ready - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202290' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202290' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202290' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202290' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144558' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2013%2Ffreertos_STM32_task_never_gets_ready_8668699.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2013%2Ffreertos_STM32_task_never_gets_ready_8668699.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144558">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2013_freertos_support_forum_archive_index.html/">September 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">STM32 task never gets ready</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on September 5, 2013</div><div class="thread-post-content">Odd thing. I have one task and one interrupt.<br />
+Task takes elements from queue, interrupt fills the queue. The problem is that the task is not woken if queue is empty and sleep time is grater than 1 if I do not use portYIELD&#95;FROM&#95;ISR&#40;&#41; whithin ISR. Alternatively, all starts working if I create another doomy task that sleeps some time. But if another task uses vTaskSuspend&#40;&#41;, problem is back again.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 5, 2013</div><div class="thread-post-content">Are you using the STM32 standard peripheral drivers?&nbsp; If so, then read my first response here:<br />
+<a href="https://sourceforge.net/projects/freertos/forums/forum/382005/topic/8666292">https://sourceforge.net/projects/freertos/forums/forum/382005/topic/8666292</a>  
+Otherwise, do you have configUSE&#95;PREEMPTION set to 1 in FreeRTOSConfig.h and are you sure the tick interrupt is executing &#40;check the value of xTickCount in tasks.c&#41;?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on September 5, 2013</div><div class="thread-post-content">Yes,&nbsp; tick interrupt is executing but xTaskIncrementTick&#40;&#41; only once returns pdTRUE &#40;seen on de debbuger&#41;.<br />
+When I debug more the I get to the place in xQueueGenericSendFromISR&#40;&#41; &#40;marked&#41;  
+<pre><code>....
+if( xTaskRemoveFromEventList( &amp;( pxQueue-&gt;xTasksWaitingToReceive ) ) != pdFALSE )
+{
+    /* The task waiting has a higher priority so record that a
+    context switch is required. */
+    if( pxHigherPriorityTaskWoken != NULL ) // ## here
+    {
+        *pxHigherPriorityTaskWoken = pdTRUE;
+    }
+}
+...
+</code></pre>
+but in Idle task:  
+<pre><code>if( listCURRENT_LIST_LENGTH( &amp;( pxReadyTasksLists[ tskIDLE_PRIORITY ] ) ) &gt; ( unsigned portBASE_TYPE ) 1 )
+{
+    taskYIELD(); // ## never get here
+}
+</code></pre>
+Here is my FreeRTOSConfig.h file.   
+<pre><code>#ifndef FREERTOS_CONFIG_H
+#define FREERTOS_CONFIG_H
+#ifdef __ICCARM__
+    #include &lt;stdint.h&gt;
+    uint32_t SystemCoreClock(void);
+    //extern uint32_t SystemCoreClock;
+#endif
+#define configUSE_PREEMPTION            1
+#define configUSE_IDLE_HOOK             1
+#define configUSE_TICK_HOOK             1
+#define configCPU_CLOCK_HZ              ( SystemCoreClock() )
+#define configTICK_RATE_HZ              ( ( portTickType ) 1000 )
+#define configMAX_PRIORITIES            ( ( unsigned portBASE_TYPE ) 5 )
+#define configMINIMAL_STACK_SIZE        ( ( unsigned short ) 130 )
+#define configTOTAL_HEAP_SIZE           ( ( size_t ) ( 75 * 1024 ) )
+#define configMAX_TASK_NAME_LEN         ( 10 )
+#define configUSE_TRACE_FACILITY        1
+#define configUSE_16_BIT_TICKS          0
+#define configIDLE_SHOULD_YIELD         1
+#define configUSE_MUTEXES               1
+#define configQUEUE_REGISTRY_SIZE       8
+#define configCHECK_FOR_STACK_OVERFLOW  2
+#define configUSE_RECURSIVE_MUTEXES     1
+#define configUSE_MALLOC_FAILED_HOOK    1
+#define configUSE_APPLICATION_TASK_TAG  1
+#define configUSE_NEWLIB_REENTRANT      1
+#define configUSE_COUNTING_SEMAPHORES   1
+#define configGENERATE_RUN_TIME_STATS   0
+/* Co-routine definitions. */
+#define configUSE_CO_ROUTINES       0
+#define configMAX_CO_ROUTINE_PRIORITIES ( 2 )
+/* Software timer definitions. */
+#define configUSE_TIMERS                1
+#define configTIMER_TASK_PRIORITY       ( 2 )
+#define configTIMER_QUEUE_LENGTH        10
+#define configTIMER_TASK_STACK_DEPTH    ( configMINIMAL_STACK_SIZE * 2 )
+/* Set the following definitions to 1 to include the API function, or zero
+to exclude the API function. */
+#define INCLUDE_vTaskPrioritySet        1
+#define INCLUDE_uxTaskPriorityGet       1
+#define INCLUDE_vTaskDelete             1
+#define INCLUDE_vTaskCleanUpResources   1
+#define INCLUDE_vTaskSuspend            1
+#define INCLUDE_vTaskDelayUntil         1
+#define INCLUDE_vTaskDelay              1
+/* Cortex-M specific definitions. */
+#ifdef __NVIC_PRIO_BITS
+    /* __BVIC_PRIO_BITS will be specified when CMSIS is being used. */
+    #define configPRIO_BITS             __NVIC_PRIO_BITS
+#else
+    #define configPRIO_BITS             4        /* 15 priority levels */
+#endif
+#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY         ( (1&lt;&lt;configPRIO_BITS) - 1)
+#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    1
+#define configKERNEL_INTERRUPT_PRIORITY         ( configLIBRARY_LOWEST_INTERRUPT_PRIORITY &lt;&lt; (8 - configPRIO_BITS) )
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY    ( configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY &lt;&lt; (8 - configPRIO_BITS) )
+#include &lt;assert.h&gt;
+#define configASSERT( x ) assert( x )
+standard names. */
+#define vPortSVCHandler SVC_Handler
+#define xPortPendSVHandler PendSV_Handler
+#define xPortSysTickHandler SysTick_Handler
+#endif /* FREERTOS_CONFIG_H */
+</code></pre>
+Task Creation functionons  
+<pre><code>portTASK_FUNCTION(test, param)
+{
+    void __sinit( struct _reent *s );
+    __sinit(_REENT);
+    char stdout_buf[32];
+    setbuf(stdin, NULL); // _IOLBF
+    setvbuf(stdout, stdout_buf, _IOLBF, sizeof_array(stdout_buf));
+    setbuf(stderr, NULL);
+    int cnt = 0;
+    char buf[32];
+    while( 1 )
+    {
+        board_led_togle(LED3);
+        board_led_togle(LED4);
+        printf("%d:r", cnt++);
+    }
+}
+portTASK_FUNCTION(test2, param)
+{
+    //vTaskSuspend
+    while(1)
+        vTaskDelay(portTICK_RATE_MS);
+}
+int main( void )
+{
+    extern void SystemInit();
+    SystemInit();
+    xTaskCreate(test, (signed char *)"Test", configMINIMAL_STACK_SIZE &lt; 512 ? 512 : configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+//  xTaskCreate(test2, (signed char *)"Test2", 256, NULL, 2, NULL);
+    vTaskStartScheduler();
+    abort();
+}
+</code></pre>
+And Problematic code  
+<pre><code>int stm32f4_uart_dma_tc_isr( struct stm32f4_uart *u )
+{
+    assert(u-&gt;tx_dma-&gt;NDTR == 0);
+    assert( (u-&gt;tx_dma-&gt;CR &amp; DMA_SxCR_EN) == 0);
+    assert( !xQueueIsQueueEmptyFromISR(u-&gt;tx_free_queue) || !xQueueIsQueueEmptyFromISR(u-&gt;tx_ready_queue) );
+    signed portBASE_TYPE woken = 0;
+    int res;
+    DMA_ClearITPendingBit(u-&gt;tx_dma, DMA_IT_TCIFx);
+    if( u-&gt;current_rx_buf_isr )
+    {
+        res = xQueueSendFromISR(u-&gt;tx_free_queue, &amp;u-&gt;current_rx_buf_isr, &amp;woken);
+        assert(res == pdTRUE );
+        u-&gt;current_rx_buf_isr = NULL;
+    }
+    struct stm32f4_uart_buffer * b = NULL;
+    res = xQueueReceiveFromISR(u-&gt;tx_ready_queue, &amp;b, NULL);
+    u-&gt;current_rx_buf_isr = b;
+    if( res == pdTRUE )
+    {
+        assert(b);
+        u-&gt;tx_dma-&gt;M0AR = (uint32_t)b-&gt;data;
+        u-&gt;tx_dma-&gt;NDTR = b-&gt;size;
+        //DMA_ITConfig(u-&gt;tx_dma, DMA_IT_TC, ENABLE);
+        DMA_Cmd(u-&gt;tx_dma, ENABLE);
+    }
+    else
+    {
+        assert(!b);
+        //DMA_ITConfig(u-&gt;tx_dma, DMA_IT_TC, DISABLE);
+    }
+    return 0;
+    return woken;
+}
+ssize_t stm32f4_uart_dma_write(void *__cookie, const char *__buf, size_t __n)
+{
+    size_t left = __n;
+    struct stm32f4_uart *u = __cookie;
+    struct stm32f4_uart_buffer *buf;
+    while( left )
+    {
+        int res = xQueueReceive(u-&gt;tx_free_queue, &amp;buf, portMAX_DELAY);
+        assert(res == pdTRUE);
+        buf-&gt;size = left &gt; sizeof_array(buf-&gt;data) ? sizeof_array(buf-&gt;data) : left;
+        memcpy(buf-&gt;data, __buf, buf-&gt;size);
+        left -= buf-&gt;size;
+        portENTER_CRITICAL();
+        {
+            res = xQueueSendToBackFromISR(u-&gt;tx_ready_queue, &amp;buf, NULL);
+            assert(res);
+            if( u-&gt;tx_dma-&gt;NDTR == 0 )
+            {
+                stm32f4_uart_dma_tc_isr(u);
+            }
+        }
+        portEXIT_CRITICAL();
+    }
+    return __n;
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on September 5, 2013</div><div class="thread-post-content">For calification: code below is for testing and int stm32f4&#95;uart&#95;dma&#95;tc&#95;isr is also invoked from DMA handler.   
+<pre><code>return 0;
+return woken;
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on September 5, 2013</div><div class="thread-post-content">Are you using FreeRTOS V7.5.2? It is especially for STM32 users&#33; If assert&#40;&#41; of the stack overflow callback get called will you know by some means other than a printf&#40;&#41;?  
+Things I would try:  
+Remove the printf&#40;&#41; from your task, along with other stdio functions. You can add them back when it is working.  
+What calls stm32f4&#95;uart&#95;dma&#95;write&#40;&#41;? If it is an interrupt then remove the critical section around the sendfromisr function. If it is not an interrupt then use the standard send function, again without the critical section &#40;see <a href="http://www.freertos.org/FAQHelp.html%29">http://www.freertos.org/FAQHelp.html&#41;</a>  
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on September 5, 2013</div><div class="thread-post-content">should be &#8220;If assert&#40;&#41; <strong>or</strong> the stack overflow&#8221;
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on September 5, 2013</div><div class="thread-post-content">@davedoors @richardbarry: yest, I am using FreeRTOS 7.5.2  
+@davedoors: assert&#40;&#41; never calls printf like functions in my application. It call &#95;&#95;assert&#95;func which is  
+<pre><code>void __assert_func(const char *_file, int line, const char *func, const char *expr )
+{
+    while( 1 )
+        asm volatile (" bkpt 1");
+}
+</code></pre>
+<blockquote>
+  Remove the printf&#40;&#41; from your task, along with other stdio functions. You can add them back when it is working.
+</blockquote>
+Code tha was shown is for those functions 😛 I will try directly inwoke stm32f4&#95;uart&#95;dma&#95;write&#40;&#41; but doubt this will help.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on September 5, 2013</div><div class="thread-post-content">My fingers are faster than mind.  
+<blockquote>
+  What calls stm32f4&#95;uart&#95;dma&#95;write&#40;&#41;? If it is an interrupt then remove the critical section around the sendfromisr function. If it is not an interrupt then use the standard send function, again without the critical section &#40;see <a href="http://www.freertos.org/FAQHelp.html%29">http://www.freertos.org/FAQHelp.html&#41;</a>
+</blockquote>
+This is called by newlib IO &#40;printf&#41;. It is not an interrupt.<br />
+Is it something wrong using portENTER&#95;CRITICAL&#40;&#41; and ..ISR&#40;&#41; like functions? I whill have to call this leter to setup DMA stream so to save some ticks I used this constructions.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 5, 2013</div><div class="thread-post-content">The general rules are  
+&#8220;don&#8217;t call API functions from critical sections&#8221;<br />
+&#8220;call the FromISR versions inside interrupts&#8221;<br />
+&#8220;call the standard &#40;not the FromISR versions&#41; from tasks&#8221;  
+That keeps the rules simple and easy for people to follow.&nbsp; In reality whether these rules matter or not depends on the situation and more importantly on the port being used.&nbsp; On an STM32, doing what you are doing <strong>should</strong> be ok, I do similar things myself to optimise code, but with a bit of inside knowledge that you won&#8217;t get from the API.&nbsp; It is however not a well tested usage scenario.  
+The STM32 implements a nest-able critical section inside the xQueueSendToBackFromISR&#40;&#41; function, so the critical section outside the function is obsolete, but provided this code is only executed from a task and not an interrupt, it should not be harmful.&nbsp; I presume in this case the critical section is there to protect the &#8216;u&#8217; variable, rather than the queue access.  
+Going back to the original problem, am I correct in that the fundamental issue is that a task is blocked on a queue with a timeout, and if the timeout expires without any data arriving, then the task should unblock, but doesn&#8217;t?  
+You also mention that, after the task should have unblocked &#40;but didn&#8217;t&#41;, the tick interrupt is still executing, but xTaskIncrementTick&#40;&#41; is returning false, hence no context switch is performed.  
+Can you step through xTaskIncrementTick&#40;&#41; when this situation has occurred?&nbsp; We need to determine what it thinks the status of the system is.&nbsp; Basically we need to determine what state the task is in, is it still blocked on the queue, and if not, where is it.&nbsp; Maybe there just has been a data corruption within the kernel controlled data.  
+I get nervous with printf&#40;&#41; being used in tasks, especially if Newlib is being used &#40;it is too big for small embedded systems, there is a new Newlib Nano now, but even so…&#41;, so I will also be interested to see if you notice a difference when you replace the printf&#40;&#41; with a direct write to the serial port.&nbsp; Start by writing to the serial port using a simple polling function to keep things as small as possible to start.&nbsp; If that works, we can add back in the DMA, and if that works, build up to adding back printf&#40;&#41;, until the problem occurs again.  
+There is a very small and very limited printf&#40;&#41; implementation that comes with FreeRTOS that just requires you to write a character output function.&nbsp; You will find lots of copies of printf-stdarg.c in the FreeRTOS/Demo directory.&nbsp; It is a third party file though.  
+Regards. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jdurand">jdurand</a> on September 5, 2013</div><div class="thread-post-content">I got tired of trying to work with printf in tiny stuff and wrote a super tiny set of routines: PrintS, PrintI, PrintX, PrintB, and ScanI   
+These allow some formatting of numbers.&nbsp; If anyone is interested in them, let me know off-list.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on September 6, 2013</div><div class="thread-post-content">Ok after couple hours of debbuging I have something.<br />
+I have made an minimal test case that shows the error, see below &#40;using stm32f4discovery &amp; openOCD as debbuger&#41;. In this test case I am using heap&#95;1.c as allocator. No NewLib call are made.  
+<pre><code>#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+#include "stm32f4xx_conf.h"
+uint32_t SystemCoreClock( void )
+{
+    RCC_ClocksTypeDef clk;
+    RCC_GetClocksFreq(&amp;clk);
+    return clk.SYSCLK_Frequency;
+}
+#define PLL_M      8
+#define PLL_N      336
+#define PLL_P      2
+#define PLL_Q      7
+#define BKPT(x) asm volatile ( "bkpt " # x );
+// from STM32 library
+static void SystemInit(void)
+{
+    RCC_DeInit();
+    /******************************************************************************/
+    /*            PLL (clocked by HSE) used as System clock source                */
+    /******************************************************************************/
+    /* Enable HSE */
+    RCC_HSEConfig(RCC_HSE_ON);
+    /* Wait till HSE is ready and if Time out is reached exit */
+    if( RCC_WaitForHSEStartUp() == SUCCESS )
+    {
+        /* Enable high performance mode, System frequency up to 168 MHz */
+        RCC_APB1PeriphClockCmd(RCC_APB1ENR_PWREN, ENABLE);
+        PWR_MainRegulatorModeConfig(PWR_Regulator_Voltage_Scale1);
+        RCC_HCLKConfig(RCC_SYSCLK_Div1);
+        RCC_PCLK2Config(RCC_HCLK_Div2);
+        RCC_PCLK1Config(RCC_HCLK_Div4);
+        RCC_PLLConfig( RCC_PLLSource_HSE, PLL_M, PLL_N, PLL_P, PLL_Q);
+        RCC_PLLCmd(ENABLE);
+        do { } while( RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != RESET );
+        FLASH_SetLatency(FLASH_Latency_5); // FLASH_Latency_7
+        FLASH_InstructionCacheCmd(ENABLE);
+        FLASH_DataCacheCmd(ENABLE);
+        FLASH_PrefetchBufferCmd(ENABLE);
+        RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+        do { } while ((RCC-&gt;CFGR &amp; (uint32_t)RCC_CFGR_SWS ) != RCC_CFGR_SWS_PLL);
+    }
+    else
+    { /* If HSE fails to start-up, the application will have wrong clock
+         configuration. User can add here some code to deal with this error */
+    }
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+    GPIO_InitTypeDef GPIO_conf = { GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15, GPIO_Mode_OUT, GPIO_Speed_2MHz, GPIO_OType_PP, GPIO_PuPd_NOPULL };
+    GPIO_Init(GPIOD, &amp;GPIO_conf);
+}
+xSemaphoreHandle xTestSemaphore;
+portTASK_FUNCTION(test, param)
+{
+    GPIO_ResetBits(GPIOD, GPIO_Pin_12);
+    for( int i = 0; i&lt; 10; ++i )
+    {
+        int res = xSemaphoreTake(xTestSemaphore, portMAX_DELAY);
+        if( !res )
+        {
+            while( 1 )
+                BKPT(2);
+        }
+    }
+    GPIO_SetBits(GPIOD, GPIO_Pin_12);
+    do { BKPT(3); } while(1);
+}
+portTASK_FUNCTION(test2, param)
+{
+    while(1)
+        vTaskDelay(configTICK_RATE_HZ);
+}
+int main( void )
+{
+    SystemInit();
+    NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
+    xTaskCreate(test, (signed char *)"Test", 512, NULL, 3, NULL);
+//  xTaskCreate(test2, (signed char *)"Test2", 256, NULL, 4, NULL);
+    xTestSemaphore = xSemaphoreCreateCounting(4, 4);
+    vTaskStartScheduler();
+    while( 1 )
+        BKPT(2);
+}
+void vApplicationIdleHook(void)
+{ ; }
+void vApplicationTickHook(void)
+{
+    static int i = 10;
+    if( i != 0 )
+    {
+        i --;
+        return;
+    }
+    xSemaphoreGiveFromISR(xTestSemaphore, NULL);
+}
+extern void vApplicationStackOverflowHook( xTaskHandle xTask, signed char *pcTaskName )
+{
+    while(1)
+        BKPT(1);
+}
+void vApplicationMallocFailedHook( void )
+{
+    while(1)
+        BKPT(10);
+}
+void __assert_func(const char *_file, int line, const char *func, const char *expr )
+{
+    while( 1 )
+        asm volatile (" bkpt 1");
+}
+void _exit( int i )
+{
+    while(1)
+        BKPT(5);
+}
+</code></pre>
+The xSemaphoreGiveFromISR&#40;xTestSemaphore, NULL&#41;;&nbsp; seems to wort ok. It places test task in pxReadyTasksLists.  
+What I have traced out is in xTaskIncrementTick&#40;&#41;: the condition in if statement &#40;task.c:1671&#41; is always false since pxCurrentTCB points at IDLE task &#40;priority 0&#41; and there is only one task at this priority.  
+<pre><code>if( listCURRENT_LIST_LENGTH( &amp;( pxReadyTasksLists[ pxCurrentTCB-&gt;uxPriority ] ) ) &gt; ( unsigned portBASE_TYPE ) 1 )
+{
+    xSwitchRequired = pdTRUE;
+}
+</code></pre>
+When I had uncommented code that creates task2, the task test is executing just after test2 delay expires &#40;but before task2&#41;. It is because condition in task.c:1601 becomes true and xSwitchRequired variable is set to true, but still expression int task.c:1671 is false.  
+Is there some issue in task.c:1671? I think, it should be checked also higher/&#40;other/all?&#41; priorities for readiness, not only current leve.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 6, 2013</div><div class="thread-post-content">I think I can see why this is happening now.  
+In previous versions of FreeRTOS the tick interrupt performed a context switch on each tick.&nbsp; Doing that meant tasks using<br />
+&#8220;FromISR&#8221; functions inside the tick hook didn&#8217;t need to pend a context switch from inside the tick hook function because a context switch was going to be performed anyway.  
+V7.5.x changed that behaviour so a context switch is only performed when xTaskIncrementTick&#40;&#41; returned pdTRUE &#8211; that is a major efficiency improvement but does have the effect that the tick hook function must now be treated like any other interrupt, with a context switch being pended if the &#8220;FromISR&#8221; function &#40;xSemaphoreGiveFromISR&#40;&#41; in this case&#41; unblocks a task of equal or higher priority than the current Running state task.&nbsp; In fact, the way it is, the last parameter to the &#8220;FromISR&#8221; functions is no longer really optional, especially if there are no other tasks in the system &#40;which would only be the case is test code such as this, not real applications, although a user opting to set it to NULL is also opting to delay when the task will run, but the documents say it will be on the next tick&#41;.  
+This needs to be highlighted and the documentation updated accordingly.&nbsp; It might be that a check is inserted into the xTaskIncrementTick&#40;&#41; function so it returns true if the highest priority ready state task is above the currently running task &#8211; but that would have a run time impact.&nbsp; Instead, maybe an ASSERT&#40;&#41; could be added to check this, with a comment above the assert noting the circumstances that can cause it to be hit.&nbsp; That way the additional hit would only effect development builds.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on September 6, 2013</div><div class="thread-post-content">Ok, I understand your rationale about performance. But not every one need this &#8220;hard realtime&#8221; and even more, in example of my application I depend on old behaviour. When I unblock some higher priority task I do not want to switch context right now but wait for next tic to finish some lower priority jobs because there is still much buffered data do send. Doing a context switch is harmfull in this situation.<br />
+Your changed basic priciple on which someone depends. I made a quick and dirty patch for this, but problem stays open.  
+Here is my patch  
+<pre><code>### Eclipse Workspace Patch 1.0
+#P FreeRTOS
+Index: Source/tasks.c
+===================================================================
+--- Source/tasks.c  (revision 5)
++++ Source/tasks.c  (working copy)
+@@ -1666,14 +1666,47 @@
+        /* Tasks of equal priority to the currently running task will share
+        processing time (time slice) if preemption is on, and the application
+        writer has not explicitly turned time slicing off. */
+-       #if ( ( configUSE_PREEMPTION == 1 ) &amp;&amp; ( configUSE_TIME_SLICING == 1 ) )
++       #if ( configUSE_PREEMPTION == 1 )
+        {
+-           if( listCURRENT_LIST_LENGTH( &amp;( pxReadyTasksLists[ pxCurrentTCB-&gt;uxPriority ] ) ) &gt; ( unsigned portBASE_TYPE ) 1 )
++           if( xSwitchRequired == pdFALSE )
+            {
+-               xSwitchRequired = pdTRUE;
++               /* First check higher priority tasks */
++               unsigned portBASE_TYPE uxPriority = pxCurrentTCB-&gt;uxPriority + 1;
++               while( uxPriority &lt; configMAX_PRIORITIES )
++               {
++                   if( listCURRENT_LIST_LENGTH( &amp;( pxReadyTasksLists[ uxPriority ] ) ) &gt; ( unsigned portBASE_TYPE ) 0 )
++                   {
++                       xSwitchRequired = pdTRUE;
++                   }
++
++                   ++uxPriority;
++               }
++
++               #if ( configUSE_TIME_SLICING == 1 )
++               /* then current priority */
++               if( xSwitchRequired == pdFALSE &amp;&amp; listCURRENT_LIST_LENGTH( &amp;( pxReadyTasksLists[ pxCurrentTCB-&gt;uxPriority ] ) ) &gt; ( unsigned portBASE_TYPE ) 0 )
++               {
++                   if( listCURRENT_LIST_LENGTH( &amp;( pxReadyTasksLists[ pxCurrentTCB-&gt;uxPriority ] ) ) &gt; ( unsigned portBASE_TYPE ) 1 )
++                       xSwitchRequired = pdTRUE;
++               }
++               else
++               {
++                   /* at last lower priority tasks if no tasks at current priority */
++                   uxPriority = pxCurrentTCB-&gt;uxPriority;
++                   while( uxPriority )
++                   {
++                       uxPriority--;
++                       if( listCURRENT_LIST_LENGTH( &amp;( pxReadyTasksLists[ uxPriority ] ) ) &gt; ( unsigned portBASE_TYPE ) 0 )
++                       {
++                           xSwitchRequired = pdTRUE;
++                           break;
++                       }
++                   }
++               }
++               #endif /* ( configUSE_TIME_SLICING == 1 ) */
+            }
+        }
+-       #endif /* ( ( configUSE_PREEMPTION == 1 ) &amp;&amp; ( configUSE_TIME_SLICING == 1 ) ) */
++       #endif /*( configUSE_PREEMPTION == 1 ) */
+    }
+    else
+    {
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on September 6, 2013</div><div class="thread-post-content">In addition: your macros are hard to debug and very confusing.  
+PS: can you enable last post editining option?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 6, 2013</div><div class="thread-post-content">I don&#8217;t get on well with patch files, but I think your solution won&#8217;t work when configPORT&#95;OPTIMISED&#95;TASK&#95;SELECTION is set to 1.  
+I have a small change that reverts to the previous behaviour using the xYieldPending variable.&nbsp; If you write to me using the business contact link on <a href="http://www.freertos.org/contact">http://www.freertos.org/contact</a> I can send it to you to try.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on September 6, 2013</div><div class="thread-post-content">I turned on configUSE&#95;PORT&#95;OPTIMISED&#95;TASK&#95;SELECTION and at first run it worked but I will not argueue wiht you.  
+I send an email on buisness contact address.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on September 9, 2013</div><div class="thread-post-content">richardbarry: file you send, seems to work.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/freddie-chopin">freddie-chopin</a> on October 14, 2013</div><div class="thread-post-content">OK, I have the same problem on LPC1769 &#8211; when I use revision 1914 everything is fine, when I switch to 1927 &#8211; the TCP/IP becomes extremely unresponsive. The problem is that in all my interrupts I use proper return method &#8211; portEND<em>SWITCHING</em>ISR(higher<em>priority</em>task_woken). On the other hand the EMAC interrupt handler, which I took from some FreeRTOS example, does not use this function, as it does not use the FreeRTOS queue directly &#8211; the calls to FreeRTOS API is buried deep inside LwIP and there&#8217;s no good way to actually get the flag indicating that new task was woken up (I could use global variable, but does not seem pretty)&#8230;
+The problem is fixed in the most recent revision, but I wanted to know how should I proceed in the future &#8211; should I always find a way to end interrupt with portEND<em>SWITCHING</em>ISR() or maybe it&#8217;s handled automatically now? I guess it&#8217;s done automagically, as xTaskRemoveFromEventList() sets global variable xYieldPending to true, so using portEND<em>SWITCHING</em>ISR() gives only a speed gain that the switch will be done right after exit from ISR, right?
+Thx in advance.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 14, 2013</div><div class="thread-post-content"><blockquote>
+  as xTaskRemoveFromEventList() sets global variable xYieldPending
+</blockquote>
+[it&#8217;s not global, its file scope]
+That code is not released yet, but I&#8217;m actually just going through the release process now.  It should be in SVN with the new version number very soon.  If not tonight, then tomorrow.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/freddie-chopin">freddie-chopin</a> on October 14, 2013</div><div class="thread-post-content">OK, file scope, true (; But that does not answer my question about &#8220;proper&#8221; interrupt handling with new FreeRTOS (;
+Regards,
+FCh
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 task never gets ready</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 14, 2013</div><div class="thread-post-content">I&#8217;m not sure what your question is.  The setting of the pending yield does not remove the requirement to call portEND<em>SWITCHING</em>ISR / portYIELD<em>FROM</em>ISR if you want the context switch to happen immediately that the interrupt exits.  It just allows context switches requested from the tick hook to occur immediately, and ensure that context switches occur when there is only one task running (as per at the start of this thread).
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multicore advice and suggestions - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2019/freertos_Multicore_advice_and_suggestions_e6d40669c4j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Multicore advice and suggestions - FreeRTOS" />
+<meta property="og:description" content="Multicore advice and suggestionsPosted by ldb on April 10, 2019I have ported freeRTOS successfully onto all 4 cores of the CortexA53. To do it what I basically did is put an &#8220;assignedCore&#8221; field into the TCB struct so any task when running is assigned to a core. I packed a lot of the static global &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2019/freertos_Multicore_advice_and_suggestions_e6d40669c4j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Multicore advice and suggestionsPosted by ldb on April 10, 2019I have ported freeRTOS successfully onto all 4 cores of the CortexA53. To do it what I basically did is put an &#8220;assignedCore&#8221; field into the TCB struct so any task when running is assigned to a core. I packed a lot of the static global [&hellip;]" />
+<meta name="twitter:title" content="Multicore advice and suggestions - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203101' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203101' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203101' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203101' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147696' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2019%2Ffreertos_Multicore_advice_and_suggestions_e6d40669c4j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2019%2Ffreertos_Multicore_advice_and_suggestions_e6d40669c4j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147696">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2019_freertos_support_forum_archive_index.html/">April 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Multicore advice and suggestions</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ldb">ldb</a> on April 10, 2019</div><div class="thread-post-content">I have ported freeRTOS successfully onto all 4 cores of the CortexA53.
+To do it what I basically did is put an &#8220;assignedCore&#8221; field into the TCB struct so any task when running is assigned to a core.
+I packed a lot of the static global data into a core control block (coreCB) so things like pxCurrentTCB are in there and it is statically assigned to core number so it looks like this
+~~~
+<h1>define MAX<em>CPU</em>CORES 4</h1>
+static struct CoreControlBlock
+{
+    volatile TCB<em>t* pxCurrentTCB; /*&lt; Current task running on core */
+  /* blah blah blah */
+} coreCB [MAX</em>CPU_CORES] = { 0 };
+~~~
+A task can for example know it&#8217;s cores current by 
+<code>coreCB[Task-&gt;assignedCore].pxCurrentTCB</code>
+Now for the  gotcha there are functions that take NULL as a handle specifically this macro
+~~~
+<h1>define prvGetTCBFromHandle( pxHandle ) ( ( ( pxHandle ) == NULL ) ? pxCurrentTCB : ( pxHandle ) )</h1>
+~~~
+So it appears you can write vTaskDelete(NULL), I assume meaning delete the current task but I have 4 current tasks  🙂
+Those ones are relatively easy I can just stop you ever using NULL by making it illegal but the one that has me scratching my head
+<code>uxTaskPriorityGetFromISR</code>
+Does uxTaskPriorityGetFromISR(NULL) really mean get the current task priority from some random interrupt and when is it ever used.
+It is a drop dead because the interrupt is probably being handled by a different core and so there is no possible translation of that I can think of.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 10, 2019</div><div class="thread-post-content">The NULL task pointer shouldn&#8217;t be a problem, as you should be able to know which core a give thread of execution is executing on, so &#8216;current task&#8217; would be the curent task of THAT core.  So vTaskDelete(NULL) makes a lot of sense, and can be implemented. You can even use that inside an ISR, it would pertain to the task that the ISR interrupted on the core that the ISR was attached to. Now,  there may not be a lot of reason that makes much difference to the ISR, becausae it doesn&#8217;t mean as much, since other cores are running other tasks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 10, 2019</div><div class="thread-post-content">It sounds like you have created your own SMP version of FreeRTOS
+(symmetric multiprocessing, where there is only one instance of FreeRTOS
+that is scheduling tasks across multiple cores).  Is that the case?
+There are a few of these around (like the version Espressif have for
+their dual core ESP32) so its an interesting topic.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ldb">ldb</a> on April 10, 2019</div><div class="thread-post-content">@Richard Damon Ah yes  &#8230; getCoreID which is just assembler read or the Core ID register will do that on those other pesky calls.
+The Irq one won&#8217;t work because the IRQ are just flagged and immediately cleared.  A seperate task will note the irq flag and go handle them so the task and the irq coudl end up on seperate cores. 
+All the serious interrupts are on the FIQ system so FreeRTOS doesn&#8217;t interfer with them which is sort of like the M4 question earlier. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ldb">ldb</a> on April 10, 2019</div><div class="thread-post-content">@Richard Barry no there are 4 versions of FreeRTOS running there are even 4 idle tasks there is no master core and no core ever sleeps. At the front end the tasks pull from a long master task queue as well as the local queue which is the only change from normal FreeRTOS.
+So there are 5 queues, 4 local normal FreeRTOS ones and one larger system one. The heavy timing sensitive are assigned to specific cores and the cores pick over the lesser tasks from the system queue as they see fit. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 10, 2019</div><div class="thread-post-content">If you have 4 distinct versions of FreeRTOS running, with 4 seperate task lists, then NULL is not a problem, as each each FreeRTOS version has its own &#8216;current task&#8217; to refer to. From your description though, it sounds like you DO have a &#8216;single&#8217; version of FreeRTOS, with some information being kept specific for each core, and some information global shared with all cores.
+If the IRQ just kicks a task, then the ISR doesn&#8217;t need to know about &#8216;current task&#8217; and the task handling it of course know who the &#8216;current task&#8217; is, it is them (when it is running)
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ldb">ldb</a> on April 10, 2019</div><div class="thread-post-content">Calling it a single system is sort of weird,  they are completely normal FreeRTOS it is just the idle pulls low priority tasks from the long queue rather than spin around in a deadloop. Obviously the long queue has locks to stop all the cores hitting it at once that is the only thing shared between the cores. 
+I can also completely shutoff one FreeRTOS system and the other 3 FreeRTOS systems will merrily chug along completely oblivious I just lose the specific tasks that were assigned manually to that 1 core.
+I am not sure I would call it one FreeRTOS system, I would tend to call it 4 parallel FreeRTOS systems with a shared low priority task queue.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ldb">ldb</a> on April 10, 2019</div><div class="thread-post-content">One other quick one is uxSchedulerSuspended actually a bool or is it a count?
+It is set to and compared to pdFalse but it is incremented and decremented like it is a count so I am confused. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 10, 2019</div><div class="thread-post-content">uxScheduler is a count, as it can be uxSchedulerSuspend/Resume can be nested, and the resume doesn;t actually resume until the count gets back to zero.
+The key difference to one/four version is there one set of machine language instructions in memory, accessing (and a give core/thread finds the right set of core specific globals) or are there multiple independant instruction streams, each compiled with its own private set of globals, that the other copies can&#8217;t reference, with limited communication boxes between them.
+The first is clearly a SMP (or very close to it) system, with all the power and issues of SMP, the second is getting much more like AMP.
+Part of the key difference is how much you need to worry about sharing between cores. One key advantage of AMP is that sharing tends to be fairly explicit, so can be simpler, and cross core communication tends to be explicit. With SMP, what sharing is cross core and what sharing is intra core is often less well defined, and thus you need to take more care about things.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ldb">ldb</a> on April 11, 2019</div><div class="thread-post-content">Thought that might be the issue I had mappped it in a single bitfield
+~~~
+struct {
+    volatile unsigned uxPercentLoadCPU : 16;
+    volatile unsigned uxIdleTickCount : 16; 
+    volatile unsigned uxCPULoadCount: 16;
+    volatile unsigned xSchedulerRunning : 1;
+    volatile unsigned xYieldPending : 1;
+    volatile unsigned uxSchedulerSuspended : 1; /* WOOOPSSSSIE */
+};
+~~~
+I have changed it to 16 bits and changed the compares from pdFalse to 0 so I don&#8217;t fall for that trap again 🙂
+Now if you really want to try and class the system in those terms I would say it is BMP because there are tasks bound to each core. However for me it fails the definitions of SMP, AMP and BMP because there is absolutely no IPC &#8230; not even a simple one.
+It gets worse if you talk about address space because the code can run 1 copy of freertos.obj for all 4 cores or it can run 1 copy of freertos.obj per core. You make that decision based solely on the L1/L2 cache connections to the core.  A cortexA53 has all 4 cores sharing L1/L2 cache so you run one 1 freertos.obj and the 4 cores run thru it but use there own coreCB data block (It looks exactly like a C++ object). On a CortexA75 each core has its own L1/L2 cache so you would have 4 copies of FreeRTOS.obj and each core would run thru it&#8217;s own block. The code block doesn&#8217;t care which way you do it as each core has it&#8217;s own data block.
+So on address space it would be classed SMP &amp; AMP depending how I set it up 🙂 
+ I think that sort of definitions just muddies the water all in an effort to give it a name &#8230; it is what it is.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on April 11, 2019</div><div class="thread-post-content">Perhaps one thing that muddies the picture here is that I am not sure you are keeping some of the assumptions that at least I see as part of the fundamental model in using FreeRTOS. One key aspect is address space. FreeRTOS has an implied very simple address mapping, Logical Address Space in a task = Physical Memory Address Space (i.e. there is no MMU remapping of addresses). Any task can give any other task (or ISR) and address, and it can access that location without any overhead of re-mapping the address to its address space. There are some restricted task (that are sort of second class citizens) that might not be able to do some access to that location, but its address is always the same for every task that wants to use it, and no special function needs to be called to get such a chunk of memory. One thing this implies is that things like Thread Local Storage (or Core Local Storage) isn&#8217;t done by address remapping, but any routine that wants to access TLS can&#8217;t just assume some fixed address that will change memory mapping, but need to access a pointer in the Task Control Block. This makes TLS access a bit more awkward, but says that task switching can be fast and efficient. One implication of this is that if multiple tasks share the same base code, they share &#8216;globals&#8217;, and if they need private copies of data, they need to refer to the TCB to get the address of their private data, or keep a pointer on the stack. 
+Part of this assumption is rooted in the fact that FreeRTOS runs on many processors, many which don&#8217;t have a MMU, so it can&#8217;t assume the ability to remap addresses to provide TLS at a common address, and the optional restricted tasks only need a MPU, not a MMU so it would be possible to create a MPU port for a processor without a real MPU that work just the same, except that the restricted tasks aren&#8217;t really restricted.
+If you keep that rule for a multicore version, then if all the cores are running off of the same copy of code, and all use the same address space, so to get to the core specific data structures, they need to get their core-id and select the right block for it. This means it doesn&#8217;t matter if there is a share cache or distint caches for the cores, as address X is address X. Perhaps it makes sense that a multi-core varient would assume a MMU and use it to provide some limited Core Local Storage to simpify some operations, but that starts to depart from some of the core principles behind FreeRTOS, but some of that happens anyway in a multicore system.
+I think here the distintion between SMP and AMP (with BMP somewhat in the middle) is that the AMP model puts a FreeRTOS &#8216;system&#8217; on a single core, and the primary interactions are between other tasks on that core, using resources that are basically dedicated to that core. There may be stuff going on in other cores, but that &#8216;Them&#8217; and not &#8216;Us&#8217;, and communication to them is done differently, perhaps even through a different API, or at the least the code behaves someone differently when doing so. That is the Asymetric part.
+In SMP, the whole system works together and you don&#8217;t really care what core a given task might be on, at the task level you just talk to it through the basic services and things happen. There isn&#8217;t an Us vs Them on cores and it is all just We. Tasks might be locked to specific cores for efficentcies or to promote scheduling but the basics of inter task communication don&#8217;t assume that. This is &#8216;Symmetric&#8217;. 
+In between is the Bound Multiprocessing, where tasks don&#8217;t move core to core, and maybe you bind a group of them together on a given core to have a more efficent inter-task communication. The OS still deals with things multi-core with perhaps a bit of a mix of AMP and SMP techniques within it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multicore advice and suggestions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ldb">ldb</a> on April 11, 2019</div><div class="thread-post-content">I completely agree with everything you and much of what you said is behind decisions that are somewhat forced on me.
+On the Pi there is a minimum of a 20 fold penalty for not running with the MMU. It catches people out but it means as a minimum you are forced to at least a 1:1 MMU mapping just to run FreeRTOS as is. So your memory mapping  problems as well as ideas are very much in play.
+The second sets of decisions was that it in pointless to support 8bit stuff at all because you don&#8217;t get multicore 8 bit CPU&#8217;s and almost all have to do aligned 16, 32 and 64 bit loads and stores. So some of the types for this is preordained to a minimum 16bit size for anything. The variable above (xSchedulerSuspended) is typical of one of those where 16bit easily gives you enough nesting depth but it is pointless going smaller because the load/store will actually be slower if you made it a byte for example.  If you want to save memory space you bitfield pack (which I did above) because these processors can load and roll usually in a single instruction so it cost you nothing in speed.
+How or if I could ever merge this back into FreeRTOS itself was a question for down the track once I see it&#8217;s final form. It&#8217;s all running and I am writing it up to put up on GitHub so I will shot a link up when it&#8217;s up which should be by weekend. My old single core port is still up but I am about to revamp it with a 1:1 MMU mapping to get the speed back to where it should be
+https://github.com/LdB-ECM/Raspberry-Pi/tree/master/FreeRTOSv10.1.1
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Porting HCS12 for GCC - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2005/freertos_Porting_HCS12_for_GCC_1312018.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Porting HCS12 for GCC - FreeRTOS" />
+<meta property="og:description" content="Porting HCS12 for GCCPosted by imajeff on July 1, 2005I&#8217;m going to try to get FreeRTOS running on my C32 DIP module starting from HCS12 -&gt; MC9S12C32 &#040;small&#041; http://www.freertos.org/porthcs12.html The problem is that I am using GCC instead of CodeWarrior. It&#8217;s just more available. Although I feel qualified to port the source for GCC, I &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2005/freertos_Porting_HCS12_for_GCC_1312018.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Porting HCS12 for GCCPosted by imajeff on July 1, 2005I&#8217;m going to try to get FreeRTOS running on my C32 DIP module starting from HCS12 -&gt; MC9S12C32 &#040;small&#041; http://www.freertos.org/porthcs12.html The problem is that I am using GCC instead of CodeWarrior. It&#8217;s just more available. Although I feel qualified to port the source for GCC, I [&hellip;]" />
+<meta name="twitter:title" content="Porting HCS12 for GCC - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201281' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201281' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201281' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201281' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138245' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2005%2Ffreertos_Porting_HCS12_for_GCC_1312018.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2005%2Ffreertos_Porting_HCS12_for_GCC_1312018.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138245">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/a00104.html" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/FAQ.html" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2005_freertos_support_forum_archive_index.html/">July 2005 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Porting HCS12 for GCC</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/imajeff">imajeff</a> on July 1, 2005</div><div class="thread-post-content">I&#8217;m going to try to get FreeRTOS running on my C32 DIP module starting from
+HCS12 -&gt; MC9S12C32 &#40;small&#41;
+http://www.freertos.org/porthcs12.html
+The problem is that I am using GCC instead of CodeWarrior. It&#8217;s just more available.
+Although I feel qualified to port the source for GCC, I wonder if anyone else is working or planning to make an official port to GCC.
+Some related links
+http://www.technologicalarts.ca/catalog/index.php/cPath/50&#95;36
+http://m68hc11.serveftp.org/
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting HCS12 for GCC</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 1, 2005</div><div class="thread-post-content">I have not used GCC with this device, but I think the translation should be fairly straight forward.&nbsp; GCC is a very flexible compiler in general and tends to make life easy.
+I think the original &#40;unsupported&#41; HCS12 port was configured so it could be built with either CodeWarrior or GCC.&nbsp; It is still available here:
+http://www.realtimeengineers.com/hcs12.zip
+I should copy the code from the supported port rather than this, but it might be useful for reference to the needed GCC syntax.&nbsp; It assumes the banked memory model.
+I have just taken a look at the HCS12 GCC manual.&nbsp; One place to take care is interrupt function prologue and epilogue, and trap &#40;SWI&#41; function prologue and epilogue.&nbsp; They are not the same.&nbsp; Although the processor saves the registers it seems that GCC requires more data to be saved &#40;soft registers&#41;.&nbsp; All required data needs saving and restoring in both interrupt and SWI cases.
+As a tip to start I suggest setting the scheduler to use cooperative mode as this makes debugging much easier.&nbsp; Then just create a single task that runs at the idle priority and calls portYIELD&#40;&#41;.&nbsp; You should then get simply switching between that task and the idle task.&nbsp; When you have that running you can try something more adventurous.
+Let us know how you get on.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting HCS12 for GCC</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/imajeff">imajeff</a> on July 1, 2005</div><div class="thread-post-content">I didn&#8217;t mention before that I was working on the unsupported version before the supported version appeared. I realized that the supported version would be the better base, although I figure it will take some getting used to since 3.0 had significant changes. I will include the patch below &#40;sorry if it&#8217;s not very readable&#41;.
+I felt like my work was ready for a first test, but didn&#8217;t test it. Here are some issues with portability:
+I addressed some interrupt details as you mentioned. I found that the gcc-m68hc1x port does not support the &quot;naked&quot; attribute, so I can&#8217;t tell it not to generate it&#8217;s own interrupt code. Also the code would need changed if the number of software registers &#40;such as &quot;.&#95;d0&quot;&#41; changed
+The example is changed for no longer for CodeWarrior. The leftovers might make it hard to read. I tried to keep the port files switchable, but not sure since it&#8217;s not tested.
+The method of addressing IO ports is from the Ipac port in GEL examples. The file there is &quot;gel-1.6.1/include/asm-m68hc12/arch-Ipac/arch/iodg256b.h&quot;. I added some defines to it for some popular bits used.
+======== patch =========
+Only in FreeRTOS-2.6.1-m/Source/portable/CodeWarrior/HCS12/sources: Makefile
+diff -r -u FreeRTOS-2.6.1/Source/portable/CodeWarrior/HCS12/sources/port.c FreeRTOS-2.6.1-m/Source/portable/CodeWarrior/HCS12/sources/port.c
+&#45;&#8211; FreeRTOS-2.6.1/Source/portable/CodeWarrior/HCS12/sources/port.c&nbsp;&nbsp;&nbsp; 2005-07-01 13:37:45.587354171 -0600
++++ FreeRTOS-2.6.1-m/Source/portable/CodeWarrior/HCS12/sources/port.c&nbsp;&nbsp;&nbsp; 2005-04-08 14:48:51.000000000 -0600
+@@ -1,5 +1,7 @@
+ /&#42; This file is part of an &quot;unsupported&quot; FreeRTOS port distribution for
+&nbsp; &#42; Freescale MC9S12DP256B CPU.
+&#43; &#42;
+&#43; &#42; 2004-04-06 imajeff: modify to work with GCC
+&nbsp; &#42;/
+ /&#42; Scheduler include files. &#42;/
+@@ -14,7 +16,7 @@
+&nbsp;&nbsp;&nbsp; &#35;pragma MESSAGE DISABLE C12053
+&nbsp;&nbsp;&nbsp; &#35;include &quot;6812dp256b.h&quot;
+ &#35;else
+&#8211;&nbsp;&nbsp; &#35;include &quot;port.h&quot;
++&nbsp;&nbsp; &#35;include &lt;arch/iodg256b.h&gt;
+ &#35;endif
+ volatile unsigned char vPortSchRunning = 0;
+@@ -231,7 +233,7 @@
+&nbsp;&nbsp;&nbsp;&nbsp; CRGINT = &#40;unsigned char&#41; 0x80;
+&nbsp;&nbsp;&nbsp;&nbsp; /&#42; clear overflow interrupt flag &#42;/
+&#8211;&nbsp;&nbsp;&nbsp; CRGFLG&#95;RTIF = 1;
++&nbsp;&nbsp;&nbsp; CRGFLG = RTIF;
+ &#125;
+ /&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+diff -r -u FreeRTOS-2.6.1/Source/portable/CodeWarrior/HCS12/sources/portmacro.h FreeRTOS-2.6.1-m/Source/portable/CodeWarrior/HCS12/sources/portmacro.h
+&#45;&#8211; FreeRTOS-2.6.1/Source/portable/CodeWarrior/HCS12/sources/portmacro.h&nbsp;&nbsp;&nbsp; 2005-07-01 13:37:45.584354465 -0600
++++ FreeRTOS-2.6.1-m/Source/portable/CodeWarrior/HCS12/sources/portmacro.h&nbsp;&nbsp;&nbsp; 2005-04-19 09:44:36.000000000 -0600
+@@ -1,5 +1,7 @@
+ /&#42; This file is part of an &quot;unsupported&quot; FreeRTOS port distribution for
+&nbsp; &#42; Freescale MC9S12DP256B CPU.
+&#43; &#42;
+&#43; &#42; 2005-04-06 gcc fixes, imajeff
+&nbsp; &#42;/
+ &#35;ifndef PORTMACRO&#95;H
+@@ -42,7 +44,7 @@
+&nbsp; &#42; or a 32 bit value.&nbsp; See documentation on http://www.FreeRTOS.org to decide
+&nbsp; &#42; which to use.
+&nbsp; &#42;/
+-&#35;define USE&#95;16&#95;BIT&#95;TICKS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0
++&#35;define USE&#95;16&#95;BIT&#95;TICKS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+ /&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+@@ -72,8 +74,13 @@
+ &#35;endif
+ /&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/&nbsp;&nbsp;&nbsp; 
++&#35;ifdef &#95;&#95;HIWARE&#95;&#95;
+ &#35;define portDISABLE&#95;RTI&#95;INTERRUPT&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CRGINT&#95;RTIE = 0
+ &#35;define portENABLE&#95;RTI&#95;INTERRUPT&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CRGINT&#95;RTIE = 1
++&#35;else
++&#35;define portDISABLE&#95;RTI&#95;INTERRUPT&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CRGINT &amp;= ~RTIE
++&#35;define portENABLE&#95;RTI&#95;INTERRUPT&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CRGINT |= RTIE
++&#35;endif
+ /&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/&nbsp;&nbsp;&nbsp; 
+ void vPortEnterCritical&#40;void&#41;;
+ void vPortExitCritical&#40;void&#41;;
+@@ -118,7 +125,7 @@
+ &#35;define vPortIsrTail&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &#123;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; reset pending RTI interrupt &#42;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CRGFLG&#95;RTIF = 1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CRGFLG = RTIF;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;asm&#95;&#95;&#40;&quot;rti&quot;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &#125;
+@@ -126,6 +133,7 @@
+ /&#42; hardware interrupt handler saves CCR, A, B, X, Y, so there&#8217;s no need to save
+&nbsp; &#42; them one more time &#42;/
++&#35;ifdef &#95;&#95;HIWARE&#95;&#95;
+ &#35;define portSAVE&#95;CONTEXT&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+ &#123;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; extern volatile void &#42; pxCurrentTCB;&nbsp;&nbsp; 
+@@ -144,5 +152,34 @@
+&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;asm&#95;&#95;&#40;&quot;stab 0x30&quot;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+ &#125;
++&#35;else /&#42; GNUC &#42;/
++&#35;define portSAVE&#95;CONTEXT&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
++&#123;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
++&nbsp;&nbsp;&nbsp; &#95;&#95;asm&#95;&#95;&#40;&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; .globl pxCurrentTCB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; movw &#95;.frame, 2,-sp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; movw &#95;.tmp, 2,-sp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; movw &#95;.xy, 2,-sp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; movw &#95;.z, 2,-sp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; movb 0x30, 1,-sp&nbsp; ; PPAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; sts&nbsp; pxCurrentTCB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; &quot;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
++&#125;
+&#43;
++&#35;define portRESTORE&#95;CONTEXT&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
++&#123;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
++&nbsp;&nbsp;&nbsp; &#95;&#95;asm&#95;&#95;&#40;&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; .globl pxCurrentTCB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; lds&nbsp; pxCurrentTCB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; movb 1,+sp, 0x30&nbsp; ; PPAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; movw &#95;.z, 2,+sp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; movw &#95;.xy, 2,+sp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; movw &#95;.tmp, 2,+sp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; movw &#95;.frame, 2,+sp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n
++&nbsp;&nbsp;&nbsp; &quot;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
++&#125;
++&#35;endif
+&#43;
+&#43;
+ &#35;endif /&#42; PORTMACRO&#95;H &#42;/
+diff -r -u FreeRTOS-2.6.1/Source/portable/CodeWarrior/HCS12/sources/queue.c FreeRTOS-2.6.1-m/Source/portable/CodeWarrior/HCS12/sources/queue.c
+&#45;&#8211; FreeRTOS-2.6.1/Source/portable/CodeWarrior/HCS12/sources/queue.c&nbsp;&nbsp;&nbsp; 2005-07-01 13:37:45.594353485 -0600
++++ FreeRTOS-2.6.1-m/Source/portable/CodeWarrior/HCS12/sources/queue.c&nbsp;&nbsp;&nbsp; 2005-04-14 12:22:08.000000000 -0600
+@@ -109,6 +109,7 @@
+ void vQueueDelete&#40; xQueueHandle xQueue &#41;;
+ signed portCHAR cQueueSendFromISR&#40; xQueueHandle pxQueue, const void &#42;pvItemToQueue, signed portCHAR cTaskPreviouslyWoken &#41;;
+ signed portCHAR cQueueReceive&#40; xQueueHandle pxQueue, void &#42;pcBuffer, portTickType xTicksToWait &#41;;
++signed portCHAR cQueueReceiveFromISR&#40; xQueueHandle pxQueue, void &#42;pcBuffer, signed portCHAR &#42;pcTaskWoken &#41;;
+ /&#42; 
+&nbsp; &#42; Unlocks a queue locked by a call to prvLockQueue.&nbsp; Locking a queue does not 
+diff -r -u FreeRTOS-2.6.1/Source/portable/CodeWarrior/HCS12/sources/test.c FreeRTOS-2.6.1-m/Source/portable/CodeWarrior/HCS12/sources/test.c
+&#45;&#8211; FreeRTOS-2.6.1/Source/portable/CodeWarrior/HCS12/sources/test.c&nbsp;&nbsp;&nbsp; 2005-07-01 13:37:45.589353975 -0600
++++ FreeRTOS-2.6.1-m/Source/portable/CodeWarrior/HCS12/sources/test.c&nbsp;&nbsp;&nbsp; 2005-04-18 17:22:43.000000000 -0600
+@@ -1,36 +1,37 @@
+-&#35;include &lt;6812dp256b.h&gt;&nbsp; /&#42; derivative information &#42;/
++/&#42; 
+&#43; &#42; 2004-04-06 imajeff: modifying to test FreeRTOS with HC12/GCC
+&#43; &#42;/
+&#43;
++&#35;include &lt;arch/iodg256b.h&gt;&nbsp; /&#42; derivative information &#42;/
+ &#35;include &lt;stddef.h&gt;
+ &#35;include &lt;stdio.h&gt;
++&#35;include &lt;string.h&gt;
+ &#35;include &quot;task.h&quot;
+ &#35;include &quot;semphr.h&quot;
+-&#35;pragma MESSAGE DISABLE C4002
+&#45;
+-const char message&#91;&#93; = &quot;This is a FreeRTOS test program. &quot;;
+-const char message2&#91;&#93; = &quot;Semaphore work demonstration. &quot;;
+-const char charTable&#91;&#93; = &quot;0123456789abcdef&quot;;
++void isrDefault7 &#40;void&#41;;
++void testTask &#40;void &#42;&#41;;
++void testTask2 &#40;void &#42;&#41;;
++void pllConfig &#40;void&#41;;
+&#43;
++const portCHAR message&#91;&#93; = &quot;This is a FreeRTOS test program. &quot;;
++const portCHAR message2&#91;&#93; = &quot;Semaphore work demonstration. &quot;;
++const portCHAR charTable&#91;&#93; = &quot;0123456789abcdef&quot;;
+ xSemaphoreHandle xSemaphore;
+-&#35;pragma CODE&#95;SEG NON&#95;BANKED
+-&#35;pragma MESSAGE DISABLE C12053
+-/&#42; pay attention to &#95;VECTOR section in PRM file &#42;/
+-&#35;pragma NO&#95;EXIT
+-&#95;&#95;interrupt void isrDefault7&#40;void&#41;
++void isrDefault7 &#40;void&#41;
+ &#123;
+&nbsp;&nbsp;&nbsp; vPortIsrHead&#40;&#41;;
+&#8211;&nbsp;&nbsp; 
+&#43;
+&nbsp;&nbsp;&nbsp; /&#42; do interrupt stuff&#8230; &#42;/
+&#8211;&nbsp;&nbsp;&nbsp; vPortIsrTail&#40;&#41;;
++&nbsp;&nbsp; vPortIsrTail&#40;&#41;;
+ &#125;
+-&#35;pragma MESSAGE DEFAULT C12053
+-&#35;pragma CODE&#95;SEG DEFAULT
+&#45;
+-void testTask&#40;void &#42; p&#41;
++void testTask &#40;void &#42; p&#41;
+ &#123;
+&nbsp;&nbsp;&nbsp; static const char &#42; strMsg = message;
+&nbsp;&nbsp;&nbsp; static unsigned int count = 0;
+@@ -38,11 +39,6 @@
+&nbsp;&nbsp;&nbsp; &#40;void&#41; p;
+&#8211;&nbsp;&nbsp; /&#42; initialize SCI: baud rate = 115200 with bus clock 16MHz &#42;/
+&#8211;&nbsp;&nbsp; SCI1CR1&nbsp; = 0x00;
+&#8211;&nbsp;&nbsp; SCI1CR2&nbsp; = 0x0c;
+&#8211;&nbsp;&nbsp; SCI1BD&nbsp;&nbsp; = 0x09;
+&#45;
+&nbsp;&nbsp;&nbsp; while &#40;cSemaphoreTake&#40;xSemaphore, 100&#41; &#33;= pdTRUE&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portYIELD&#40;&#41;;
+@@ -50,8 +46,9 @@
+&nbsp;&nbsp;&nbsp; for &#40;;;&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while &#40;&#33;SCI1SR1&#95;TDRE&#41;
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while &#40;&#33;SCI1SR1 &amp; TDRE&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // waiting for byte on SCI
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SCI1DRL = &#42;strMsg;
+@@ -60,10 +57,11 @@
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40;&#42;strMsg == &#8216; &#8217;&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sprintf&#40;msg, &quot;0x%04xr&quot;, count&#41;;
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy&#40;msg, &quot;, So har&quot;&#41;;
++//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sprintf&#40;msg, &quot;0x%04xr&quot;, count&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for &#40;strMsg = msg; &#42;strMsg &gt; 0; strMsg++&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while &#40;&#33;SCI1SR1&#95;TDRE&#41;
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while &#40;&#33;SCI1SR1 &amp; TDRE&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+@@ -83,7 +81,7 @@
+&nbsp;&nbsp;&nbsp; &#125;
+ &#125;
+-void testTask2&#40;void &#42; p&#41;
++void testTask2 &#40;void &#42; p&#41;
+ &#123;
+&nbsp;&nbsp;&nbsp; static const char &#42; strMsg = message2;
+&nbsp;&nbsp;&nbsp; static unsigned int count;
+@@ -91,11 +89,6 @@
+&nbsp;&nbsp;&nbsp; &#40;void&#41; p;
+&#8211;&nbsp;&nbsp; /&#42; initialize SCI: baud rate = 115200 with bus clock 16MHz &#42;/
+&#8211;&nbsp;&nbsp; SCI1CR1&nbsp; = 0x00;
+&#8211;&nbsp;&nbsp; SCI1CR2&nbsp; = 0x0c;
+&#8211;&nbsp;&nbsp; SCI1BD&nbsp;&nbsp; = 0x09;
+&#45;
+&nbsp;&nbsp;&nbsp; while &#40;cSemaphoreTake&#40;xSemaphore, 100&#41; &#33;= pdTRUE&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portYIELD&#40;&#41;;
+@@ -103,7 +96,7 @@
+&nbsp;&nbsp;&nbsp; for &#40;;;&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while &#40;&#33;SCI1SR1&#95;TDRE&#41;
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while &#40;&#33;SCI1SR1 &amp; TDRE&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+@@ -112,10 +105,11 @@
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strMsg++;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40;&#42;strMsg == &#8216; &#8217;&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sprintf&#40;msg, &quot;0x%04xr&quot;, count&#41;;
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy&#40;msg, &quot;, So therer&quot;&#41;;
++//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sprintf&#40;msg, &quot;0x%04xr&quot;, count&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for &#40;strMsg = msg; &#42;strMsg &gt; 0; strMsg++&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while &#40;&#33;SCI1SR1&#95;TDRE&#41;
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while &#40;&#33;SCI1SR1 &amp; TDRE&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+@@ -135,24 +129,26 @@
+&nbsp;&nbsp;&nbsp; &#125;
+ &#125;
+-void pllConfig&#40;void&#41;
++void sciConfig &#40;&#41;
+ &#123;
+&#8211;&nbsp;&nbsp; SYNR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 0x07;
+&#8211;&nbsp;&nbsp; REFDV&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 0x01;
+&#8211;&nbsp;&nbsp; while &#40;&#33;CRGFLG&#95;LOCK&#41;;
+&#8211;&nbsp;&nbsp; PLLCTL&#95;AUTO&nbsp;&nbsp;&nbsp; = 1;
+&#8211;&nbsp;&nbsp; CLKSEL&#95;PLLSEL&nbsp; = 1;
++&nbsp;&nbsp; /&#42; initialize SCI1: baud rate = 9615 with bus clock 24MHz &#42;/
++&nbsp;&nbsp; SCI1CR1&nbsp; = 0x00;
++&nbsp;&nbsp; SCI1CR2&nbsp; = 0x0c;
++&nbsp;&nbsp; SCI1BD&nbsp;&nbsp; = 0x009c;
+&#43;
+ &#125;
+-void main&#40;void&#41;
++int main &#40;void&#41;
+ &#123;
+&nbsp;&nbsp;&nbsp; xTaskHandle xHandle;
+&#8211;&nbsp;&nbsp; pllConfig&#40;&#41;;
++&nbsp;&nbsp; sciConfig&#40;&#41;;
+&nbsp;&nbsp;&nbsp; vSemaphoreCreateBinary&#40;xSemaphore&#41;;
+&nbsp;&nbsp;&nbsp; &#40;void&#41; sTaskCreate&#40;testTask, &quot;test&quot;, 100, NULL, tskIDLE&#95;PRIORITY, &amp;xHandle&#41;;
+&nbsp;&nbsp;&nbsp; &#40;void&#41; sTaskCreate&#40;testTask2, &quot;test2&quot;, 100, NULL, tskIDLE&#95;PRIORITY, &amp;xHandle&#41;;
+&nbsp;&nbsp;&nbsp; vTaskStartScheduler&#40;portUSE&#95;PREEMPTION&#41;;
+&#43;
++&nbsp;&nbsp; return 0;&nbsp;&nbsp;&nbsp; // never does
+ &#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting HCS12 for GCC</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/imajeff">imajeff</a> on July 7, 2005</div><div class="thread-post-content">In studying the port, I found this initial value
+volatile unsigned portBASE&#95;TYPE uxCriticalNesting = 0xff;
+I am puzzled. It seems it should have been initialized to 0, according to how it is being handled.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#8211;jeffs
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting HCS12 for GCC</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 7, 2005</div><div class="thread-post-content">This is to prevent interrupts being enabled before the scheduler has been initialised.
+Interrupts being enabled prior to the scheduler being initialised is only a problem if the interrupt service routine expects to be able to use the scheduler.&nbsp; The demo applications install ISR&#8217;s that will attempt a context switch, so it is important that the ISR&#8217;s are not enabled prior to the scheduler being started.
+Creating a task will cause calls to portENTER&#95;CRITICAL&#40;&#41; and portEXIT&#95;CRITICAL&#40;&#41;.&nbsp; The portEXIT&#95;CRITICAL&#40;&#41; macro will enable interrupts if it finds uxCriticalNesting to be 0.&nbsp; Initialising it to 0xff ensures this will never happen.&nbsp; &#91;In fact 0xff is a bad initial value if portBASE&#95;TYPE is set to be a char as overflows will occur, 10 would be better.&#93;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting HCS12 for GCC</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hermarcel">hermarcel</a> on July 7, 2005</div><div class="thread-post-content">I can answer this one because it tricked me during my port of FreeRTOS to
+PIC18/wizC 
+During normal processing you are correct. However, to avoid interrupts from
+being enabled during taskcreations BEFORE the scheduler has started, this
+initial value is chosen. In &quot;my&quot; port portBASE&#95;TYPE is a char and
+uxCriticalNesting is initialized to 0x7F. By setting it to a value
+&quot;halfway&quot;, it can be incremented and decremented without risking it to reach
+zero.
+When the scheduler is started, this situation must end. This is done by
+initializing uxCriticalNesting to zero on the initial stack.
+This sets uxCriticalNesting to zero for every task when this task is
+switched in for the first time.
+HTH
+Marcel
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting HCS12 for GCC</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/imajeff">imajeff</a> on July 7, 2005</div><div class="thread-post-content">I finally found what you described, in pxPortInitialiseStack&#40;&#41;.&nbsp; So I see what you mean about the overflow problem with 0xff.&nbsp; I&#8217;ll try changing it to 10 or even half-way between. Also thank you Marcel for your explanation.
+I haven&#8217;t got anything ready to compile yet, but I&#8217;m making progress on the port.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#8211;jeffs
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting HCS12 for GCC</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/imajeff">imajeff</a> on July 15, 2005</div><div class="thread-post-content">I&#8217;m having some trouble finding how malloc functions &#40;i.e. pvPortMalloc&#40;&#41; &#41; are defined in the CodeWarrior version. 
+Maybe it won&#8217;t help me port to GCC anyway, since GCC-m68hc1x doesn&#8217;t come with an efficient malloc yet.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting HCS12 for GCC</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on July 15, 2005</div><div class="thread-post-content">Just include either heap&#95;1.c or heap&#95;2.c in your project as described on the WEB site under Configuration-&gt;Memory Management.
+The files are in FreeRTOS/portable/MemMang.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/RTOS.html" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

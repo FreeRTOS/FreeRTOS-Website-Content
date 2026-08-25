@@ -1,0 +1,329 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xQueueSendFromISR() &amp; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2016/freertos_xQueueSendFromISR_xQueueReceiveFromISR_causing_configASSERT_failure_in_V8.2.3_d0a69634j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="xQueueSendFromISR() &amp; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3 - FreeRTOS" />
+<meta property="og:description" content="xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3Posted by ajellisuk on February 19, 2016Hi, I have a block of code for handling USART interrupts on an STM32F407 discovery board: ~~~~ void USART2IRQHandler( void ) { portBASETYPE xHigherPriorityTaskWoken = pdFALSE; portCHAR cChar; if( USART_GetITStatus( USART2, USART_IT_TXE ) == SET ) { /* The interrupt was caused &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2016/freertos_xQueueSendFromISR_xQueueReceiveFromISR_causing_configASSERT_failure_in_V8.2.3_d0a69634j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3Posted by ajellisuk on February 19, 2016Hi, I have a block of code for handling USART interrupts on an STM32F407 discovery board: ~~~~ void USART2IRQHandler( void ) { portBASETYPE xHigherPriorityTaskWoken = pdFALSE; portCHAR cChar; if( USART_GetITStatus( USART2, USART_IT_TXE ) == SET ) { /* The interrupt was caused [&hellip;]" />
+<meta name="twitter:title" content="xQueueSendFromISR() &amp; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202604' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202604' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202604' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202604' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145587' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2016%2Ffreertos_xQueueSendFromISR_xQueueReceiveFromISR_causing_configASSERT_failure_in_V8.2.3_d0a69634j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2016%2Ffreertos_xQueueSendFromISR_xQueueReceiveFromISR_causing_configASSERT_failure_in_V8.2.3_d0a69634j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145587">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2016_freertos_support_forum_archive_index.html/">February 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ajellisuk">ajellisuk</a> on February 19, 2016</div><div class="thread-post-content">Hi, 
+I have a block of code for handling USART interrupts on an STM32F407 discovery board:
+~~~~
+void USART2<em>IRQHandler( void )
+{
+    portBASE</em>TYPE xHigherPriorityTaskWoken = pdFALSE;
+    portCHAR cChar;
+<pre><code>if( USART_GetITStatus( USART2, USART_IT_TXE ) == SET )
+{
+    /* The interrupt was caused by the TX register becoming empty.  Are
+    there any more characters to transmit? */
+    if( xQueueReceiveFromISR( xCharsForTx, &amp;cChar, &amp;xHigherPriorityTaskWoken ) == pdTRUE )
+    {
+        // A character was retrieved from the queue so can be sent to the
+        // USART now.
+        USART_SendData( USART2, cChar );
+    }
+    else
+    {
+        USART_ITConfig( USART2, USART_IT_TXE, DISABLE );
+    }
+}
+if( USART_GetITStatus( USART2, USART_IT_RXNE ) == SET )
+{
+    /* A character has been received on the USART, send it to the Rx
+    handler task. */
+    cChar = USART_ReceiveData( USART2 );
+    xQueueSendFromISR( xRxedChars, &amp;cChar, &amp;xHigherPriorityTaskWoken );
+}
+/* If sending or receiving from a queue has caused a task to unblock, and
+the unblocked task has a priority equal to or higher than the currently
+running task (the task this ISR interrupted), then xHigherPriorityTaskWoken
+will have automatically been set to pdTRUE within the queue send or receive
+function.  portEND_SWITCHING_ISR() will then ensure that this ISR returns
+directly to the higher priority unblocked task. */
+portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
+</code></pre>
+}
+~~~~
+Previously I was using V7.1.0, which is available through CooCox. The code worked fine with this version of FreeRTOS, but I needed to upgrade to V8.2.3 so that I could access some of the new features, such as xTaskNotify. When I try and run my firmware, whenever either of the aforementioned functions are used, my firmware ends up hitting <em>configASSERT( ucCurrentPriority >= ucMaxSysCallPriority );</em> in the following block of code:
+~~~~
+<h1>if( configASSERT_DEFINED == 1 )</h1>
+<pre><code>void vPortValidateInterruptPriority( void )
+{
+uint32_t ulCurrentInterrupt;
+uint8_t ucCurrentPriority;
+    /* Obtain the number of the currently executing interrupt. */
+    __asm volatile( "mrs %0, ipsr" : "=r"( ulCurrentInterrupt ) );
+    /* Is the interrupt number a user defined interrupt? */
+    if( ulCurrentInterrupt &gt;= portFIRST_USER_INTERRUPT_NUMBER )
+    {
+        /* Look up the interrupt's priority. */
+        ucCurrentPriority = pcInterruptPriorityRegisters[ ulCurrentInterrupt ];
+        /* The following assertion will fail if a service routine (ISR) for
+        an interrupt that has been assigned a priority above
+        configMAX_SYSCALL_INTERRUPT_PRIORITY calls an ISR safe FreeRTOS API
+        function.  ISR safe FreeRTOS API functions must *only* be called
+        from interrupts that have been assigned a priority at or below
+        configMAX_SYSCALL_INTERRUPT_PRIORITY.
+        Numerically low interrupt priority numbers represent logically high
+        interrupt priorities, therefore the priority of the interrupt must
+        be set to a value equal to or numerically *higher* than
+        configMAX_SYSCALL_INTERRUPT_PRIORITY.
+        Interrupts that use the FreeRTOS API must not be left at their
+        default priority of zero as that is the highest possible priority,
+        which is guaranteed to be above configMAX_SYSCALL_INTERRUPT_PRIORITY,
+        and therefore also guaranteed to be invalid.
+        FreeRTOS maintains separate thread and ISR API functions to ensure
+        interrupt entry is as fast and simple as possible.
+        The following links provide detailed information:
+        http://www.freertos.org/RTOS-Cortex-M3-M4.html
+        http://www.freertos.org/FAQHelp.html */
+        configASSERT( ucCurrentPriority &gt;= ucMaxSysCallPriority );
+    }
+    /* Priority grouping:  The interrupt controller (NVIC) allows the bits
+    that define each interrupt's priority to be split between bits that
+    define the interrupt's pre-emption priority bits and bits that define
+    the interrupt's sub-priority.  For simplicity all bits must be defined
+    to be pre-emption priority bits.  The following assertion will fail if
+    this is not the case (if some bits represent a sub-priority).
+    If the application only uses CMSIS libraries for interrupt
+    configuration then the correct setting can be achieved on all Cortex-M
+    devices by calling NVIC_SetPriorityGrouping( 0 ); before starting the
+    scheduler.  Note however that some vendor specific peripheral libraries
+    assume a non-zero priority group setting, in which cases using a value
+    of zero will result in unpredicable behaviour. */
+    configASSERT( ( portAIRCR_REG &amp; portPRIORITY_GROUP_MASK ) &lt;= ulMaxPRIGROUPValue );
+}
+</code></pre>
+<h1>endif /* configASSERT_DEFINED */</h1>
+~~~~
+Can anyone suggest what the issue is here please? As I say the code worked fine with an older version of FreeRTOS, so is there something extra I need to use <em>xQueueSendFromISR() &amp; xQueueReceiveFromISR()</em>  in later versions of FreeRTOS.
+Thanks
+Andrew
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 20, 2016</div><div class="thread-post-content">I&#8217;m not sure what more I can say over and above the information provided in the comments of the code you have already posted&#8230;&#8230;.you have an incorrect interrupt priority.
+You didn&#8217;t hit this assert before because the assert was added to the code after the older FreeRTOS version you were using, and it seems your code will always have had this bug but you were just lucky enough not to hit it &#8211; yet.
+More information is provided on the following link: http://www.freertos.org/RTOS-Cortex-M3-M4.html
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ajellisuk">ajellisuk</a> on February 22, 2016</div><div class="thread-post-content">Thank you for getting back to me.
+I&#8217;ll take a look at the link you sent me, and I&#8217;ll let you know how I get on.
+Regards
+Andrew
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ajellisuk">ajellisuk</a> on February 23, 2016</div><div class="thread-post-content">Hi,
+I have read through the link you have provided, and I&#8217;m still unclear what I&#8217;m doing wrong. I have attached my project. I have placed a couple of snippets of code which I beleive to be where my problem lies.
+In FreeRTOSConfig.h the relevent interrupt priority macros are defined as:
+~~~~
+/* Cortex-M specific definitions. */
+<h1>ifdef __NVIC<em>PRIO</em>BITS</h1>
+<pre><code>/* __BVIC_PRIO_BITS will be specified when CMSIS is being used. */
+#define configPRIO_BITS             __NVIC_PRIO_BITS
+</code></pre>
+<h1>else</h1>
+<pre><code>#define configPRIO_BITS             4        /* 15 priority levels */
+</code></pre>
+<h1>endif</h1>
+/* The lowest interrupt priority that can be used in a call to a &#8220;set priority&#8221;
+function. */
+<h1>define configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY         0xf</h1>
+/* The highest interrupt priority that can be used by any interrupt service
+routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
+INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER
+PRIORITY THAN THIS! (higher priorities are lower numeric values. */
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY    5</h1>
+/* Interrupt priorities used by the kernel port layer itself.  These are generic
+to all Cortex-M ports, and do not rely on any particular library functions. */
+<h1>define configKERNEL<em>INTERRUPT</em>PRIORITY         ( configLIBRARY<em>LOWEST</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+/* !!!! configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY must not be set to zero !!!!
+See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
+<h1>define configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY    ( configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+~~~~
+In my serial.c file, the usart interrupts are set up with:
+~~~~
+NVIC<em>InitStructure.NVIC</em>IRQChannel = USART2<em>IRQn;
+        NVIC</em>InitStructure.NVIC<em>IRQChannelPreemptionPriority = configMAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY + 10;
+        NVIC<em>InitStructure.NVIC</em>IRQChannelSubPriority = 0; // Not used as 4 bits are used for the pre-emption priority.
+        NVIC<em>InitStructure.NVIC</em>IRQChannelCmd = ENABLE;
+        NVIC<em>Init( &amp;NVIC</em>InitStructure );
+        USART<em>ITConfig( USART2, USART</em>IT_RXNE, ENABLE );
+~~~~
+If I have understood the documentation correctly, then the usart interrupt priority should be well within the range of the interrupt priority limts. If I comment out xQueueSendFromISR() &amp; xQueueReceiveFromISR() in my usart isr, the firmware does not hit configASSERT.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 23, 2016</div><div class="thread-post-content">Those priorities look ok.  As you are using an STM32, have you also 
+called NVIC<em>PriorityGroupConfig( NVIC</em>PriorityGroup_4 ); ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/koor1200">koor1200</a> on February 23, 2016</div><div class="thread-post-content">Hi,
+Thank you for your response.
+My target is not STM32. It is the KINETIS K64 series as stated in the original post. 
+There are 4 tasks:
+OSA<em>TaskCreate(task</em>two,&#8221;task<em>two&#8221;,TASK</em>ONE<em>STACK</em>SIZE,0,6u,NULL,false,&amp;task<em>two</em>task<em>handler);
+    OSA</em>TaskCreate(vATask,&#8221;vATask&#8221;,TASK<em>ONE</em>STACK<em>SIZE,0,5u,NULL,false,&amp;vATask</em>task<em>handler);
+    OSA</em>TaskCreate(vADifferentTask,&#8221;vADifferentTask&#8221;,TASK<em>ONE</em>STACK<em>SIZE,0,5u,NULL,false,&amp;vADifferentTask</em>task_handler);
+<pre><code>//create task
+result = OSA_TaskCreate(task_one,
+        (uint8_t *)"task_one",
+        TASK_ONE_STACK_SIZE,
+        0,
+        6u,
+        (task_param_t)0,
+        false,
+        &amp;task_one_task_handler);
+        and here:
+        void vATask( void *pvParameters )
+</code></pre>
+ {
+ struct AMessage *pxMessage;
+ uint32_t * test_ptr;
+<pre><code>// Create a queue capable of containing 10 pointers to AMessage structures.
+// These should be passed by pointer as they contain a lot of data.
+xQueue = xQueueCreate( 16, sizeof( unsigned int*  ) );
+if( xQueue == 0 )
+{
+    // Failed to create the queue.
+}
+// ...
+// Send a pointer to a struct AMessage object.  Don't block if the
+// queue is already full.
+pxMessage = &amp; xMessage;
+test_ptr= &amp;test_var;
+xQueueSend( xQueue, ( void * )/* &amp;pxMessage*/&amp;test_ptr, ( TickType_t ) 0 );
+// ... Rest of task code.
+</code></pre>
+ }
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/koor1200">koor1200</a> on February 23, 2016</div><div class="thread-post-content">Sorry my mistake.
+My reply doe not belong to the this original post.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ajellisuk">ajellisuk</a> on February 24, 2016</div><div class="thread-post-content">I have called NVIC<em>PriorityGroupConfig( NVIC</em>PriorityGroup_4 ); just before calling vTaskStartScheduler();
+My main() function reads:
+~~~~
+int main( void ) {
+<pre><code>HwInit();
+vDebugInitQueue();
+vDebugPrintf( "rnEPS Test1 0.0.1 - 1/4/2012rn" );
+vDebugPrintResetType();
+// Tasks get started here...
+xTaskCreate( vTimeTask, (signed char *) "TIME", configMINIMAL_STACK_SIZE,
+        NULL, mainTIME_TASK_PRIORITY, &amp;hTimeTask );
+xTaskCreate( vMemsTask, (signed char *) "MEMS", configMINIMAL_STACK_SIZE,
+        NULL, mainMEMS_TASK_PRIORITY, &amp;hMemsTask );
+</code></pre>
+   xTaskCreate( vDebugTask, (signed char *) &#8220;DEBUG&#8221;, configMINIMAL_STACK_SIZE,
+            NULL, mainDEBUG_TASK_PRIORITY, &amp;hDebugTask );
+   NVIC<em>PriorityGroupConfig( NVIC</em>PriorityGroup_4 );
+<pre><code>vTaskStartScheduler(); // This should never return.
+// Will only get here if there was insufficient memory to create
+// the idle task.
+for( ;; );  
+</code></pre>
+}
+~~~~
+When I step into xQueueReceiveFromISR(), the code reaches vPortValidateInterruptPriority() as I would expect, then I get some results which I&#8217;m perplexed by.
+When <code>asm volatile( "mrs %0, ipsr" : "=r"( ulCurrentInterrupt ) );</code>  is called <em>ulCurrentInterrupt</em> is 32 which according to the stm32 reference manual is I2C1<em>ER. The ISR which calls xQueueReceiveFromISR() is USART2</em>IRQHandler(), and has a value of 38.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueSendFromISR() &#038; xQueueReceiveFromISR() causing configASSERT() failure in V8.2.3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on February 24, 2016</div><div class="thread-post-content">Looks like it is not the interrupt you think, but be careful with the numbering in case the numbers are an index into the vector table or from the first non system interrupt.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vTaskDelay doesn&#039;t return and Timers not running - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2018/freertos_vTaskDelay_doesnt_return_and_Timers_not_running_61dfd80bj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="vTaskDelay doesn&#039;t return and Timers not running - FreeRTOS" />
+<meta property="og:description" content="vTaskDelay doesn&#8217;t return and Timers not runningPosted by tobisf on June 6, 2018Hi, I&#8217;m trying to set up my first project with FreeRTOS. I want to run it on a STM32L0, for the first tests a NUCLEO-L031K6 using Keil µVision 5. I included the FreeRTOS by adding FreeRTOS/source, FreeRTOS/soruce/include and FreeRTOS/source/portable/RVDS/ARM_CM0 directorys to the include &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2018/freertos_vTaskDelay_doesnt_return_and_Timers_not_running_61dfd80bj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="vTaskDelay doesn&#8217;t return and Timers not runningPosted by tobisf on June 6, 2018Hi, I&#8217;m trying to set up my first project with FreeRTOS. I want to run it on a STM32L0, for the first tests a NUCLEO-L031K6 using Keil µVision 5. I included the FreeRTOS by adding FreeRTOS/source, FreeRTOS/soruce/include and FreeRTOS/source/portable/RVDS/ARM_CM0 directorys to the include [&hellip;]" />
+<meta name="twitter:title" content="vTaskDelay doesn&#039;t return and Timers not running - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202964' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202964' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202964' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202964' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147171' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2018%2Ffreertos_vTaskDelay_doesnt_return_and_Timers_not_running_61dfd80bj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2018%2Ffreertos_vTaskDelay_doesnt_return_and_Timers_not_running_61dfd80bj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147171">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2018_freertos_support_forum_archive_index.html/">June 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">vTaskDelay doesn&#8217;t return and Timers not running</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tobisf">tobisf</a> on June 6, 2018</div><div class="thread-post-content">Hi,
+I&#8217;m trying to set up my first project with FreeRTOS. I want to run it on a STM32L0, for the first tests a NUCLEO-L031K6 using Keil µVision 5.
+I included the FreeRTOS by adding FreeRTOS/source, FreeRTOS/soruce/include and FreeRTOS/source/portable/RVDS/ARM_CM0 directorys to the include path and the files to the project. I took the FreeTROSConfig.h from an generated project.
+To get into FreeRTOS, the first thing I wanted to implement is just one task what does some periodic UART printouts. For creating a delay between the printouts, first I used a simple Loop and it worked. Second I wanted to use vTaskDelay, but it seems that it never returns. After that I wanted to create a Timer to achive a delay between printouts, but the Timer Callback is never called.
+Since I don&#8217;t took my task to sleep, I thought maybe it&#8217;s a priority problem. But the TimerTask is running at priority 6 and my task at priority 2.
+Another strange thing was, when I switched from a STM32L011 to a STM32L031 (because of memory issues), I did not got the error that the SysTick_Handler is defined multiple times. So is this maybe a problem that some SysTick in FreeRTOS is not running correctly?
+How can I check if everything is running correctly?
+Here is my code:
+main.c
+~~~
+[Auto Generated Config Code]
+    UartTask_init();
+<pre><code>/* Start the scheduler so the demo tasks start to execute. */
+vTaskStartScheduler();
+</code></pre>
+  /* USER CODE END 2 */
+  /* Infinite loop <em>/
+  /</em> USER CODE BEGIN WHILE */
+  while (1)
+[Empty Loop]
+~~~
+UartTask.c
+~~~
+<h1>include &#8220;UartTask.h&#8221;</h1>
+// STM Includes
+<h1>include &#8220;stm32l0xx_hal.h&#8221;</h1>
+<h1>include &#8220;usart.h&#8221;</h1>
+/* Scheduler include files. */
+<h1>include &#8220;FreeRTOS.h&#8221;</h1>
+<h1>include &#8220;task.h&#8221;</h1>
+<h1>include &#8220;queue.h&#8221;</h1>
+<h1>include &#8220;semphr.h&#8221;</h1>
+<h1>include &#8220;event_groups.h&#8221;</h1>
+<h1>include &#8220;timers.h&#8221;</h1>
+<h1>include &#8220;assert.h&#8221;</h1>
+/* &#8212;&#8212;&#8212;- Timers &#8212;&#8212;&#8212;- */
+static TimerHandle_t timerHandle = NULL;
+static StaticTimer_t timer;
+static volatile bool timerFlag = false;
+/* &#8212;&#8212;&#8212;- Task Variables &#8212;&#8212;&#8212;- */
+/* The priority at which the task that performs the tests is created. */
+<h1>define UART<em>TASK</em>PRIORITY              (tskIDLE_PRIORITY + 2)</h1>
+/* The size of the stack used by the task that runs the tests. */
+<h1>define UART<em>TASK</em>STACK_SIZE            (256)</h1>
+/* StaticTask<em>t is a publicly accessible structure that has the same size and
+alignment requirements as the real TCB structure.  It is provided as a mechanism
+for applications to know the size of the TCB (which is dependent on the
+architecture and configuration file settings) without breaking the strict data
+hiding policy by exposing the real TCB.  This StaticTask</em>t variable is passed
+into the xTaskCreateStatic() function that creates the
+prvStaticallyAllocatedCreator() task, and will hold the TCB of the created
+tasks. <em>/
+static StaticTask_t uartTaskTCBBuffer;
+/</em> This is the stack that will be used by the prvStaticallyAllocatedCreator()
+task, which is itself created using statically allocated buffers (so without any
+dynamic memory allocation). */
+static StackType_t uartTaskStackBuffer[UART_TASK_STACK_SIZE];
+/* &#8212;&#8212;&#8212;- Private Function Declarations &#8212;&#8212;&#8212;&#8211; */
+static void task_function(void *pvParameters);
+/* &#8212;&#8212;&#8212;- Callback Declarations &#8212;&#8212;&#8212;- */
+static void timerCallback(TimerHandle_t xTimer);
+/* &#8212;&#8212;&#8212;- Public Function &#8212;&#8212;&#8212;- */
+void UartTask_init(void)
+{
+    timerHandle = NULL;
+    timerFlag = false;
+<pre><code>timerHandle = xTimerCreateStatic(
+                            /* Just a text name. Not used by the RTOS kernel. */
+            "UartTimer",
+                            /* The timer period, in ticks. Must be greater than 0. */
+                            pdMS_TO_TICKS(2000),
+            /* The timers will auto-reload themselves when they expire. */
+            pdTRUE,
+            /* The ID*/
+            (void*)0,
+            /* Each timer calls the same callback when it expires. */
+            timerCallback,
+            /* Pass in the address of a StaticTimer_t variable, which will hold the data associated with the timer being created. */
+            &amp;timer);
+if(timerHandle == NULL)
+    _Error_Handler(__FILE__, __LINE__);
+/* Create a single task, which then repeatedly creates and deletes the other
+     RTOS objects using both statically and dynamically allocated RAM. */
+xTaskCreateStatic(task_function,                                /* The function that implements the task being created. */
+                                    "UartTask",                                     /* Text name for the task - not used by the RTOS, its just to assist debugging. */
+                                    UART_TASK_STACK_SIZE,                   /* Size of the buffer passed in as the stack - in words, not bytes! */
+                                    NULL,                                                   /* Parameter passed into the task - not used in this case. */
+                                    UART_TASK_PRIORITY,                     /* Priority of the task. */
+                                    &amp;(uartTaskStackBuffer[0]),      /* The buffer to use as the task's stack. */
+                                    &amp;uartTaskTCBBuffer );                   /* The variable that will hold the task's TCB. */
+</code></pre>
+}
+/* &#8212;&#8212;&#8212;&#8211; Private Functions &#8212;&#8212;&#8212;- */
+static void task_function(void *pvParameters)
+{
+    /* Avoid compiler warnings. */
+    (void)pvParameters;
+    volatile int foo = 0;
+<pre><code>if (xTimerStart(timerHandle, 0) == pdFAIL)
+    foo++; // Code does not reach here, so xTimerStart does NOT return pdFAIL
+while (true)
+{
+    /* ------ With Timer ------ */
+    if (timerFlag)
+    {
+        timerFlag = false;
+        HAL_UART_Transmit(&amp;huart2, (uint8_t*)"Timern", 6, 1000);
+    }
+    /* ----- With Delay ------ */
+</code></pre>
+//      HAL<em>UART</em>Transmit(&amp;huart2, (uint8<em>t*)&#8221;Delayn&#8221;, 6, 1000);
+//      vTaskDelay(pdMS</em>TO_TICKS(1000));
+<pre><code>    /* ----- With DelayLoop ----- */
+</code></pre>
+//      HAL<em>StatusTypeDef status = HAL</em>UART<em>Transmit(&amp;huart2, (uint8</em>t*)&#8221;Loopn&#8221;, 5, 1000);
+//      while (foo &lt; 1000000)
+//          foo++;
+//      foo = 0;
+    }
+}
+/* &#8212;&#8212;&#8212;- Callbacks &#8212;&#8212;&#8212;- */
+static void timerCallback(TimerHandle_t xTimer)
+{
+    timerFlag = true;
+}
+~~~
+FreeRTOSConfig.h
+~~~
+/*
+    FreeRTOS V9.0.0 &#8211; Copyright (C) 2016 Real Time Engineers Ltd.
+    All rights reserved
+<pre><code>VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
+This file is part of the FreeRTOS distribution.
+FreeRTOS is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License (version 2) as published by the
+Free Software Foundation &gt;&gt;!AND MODIFIED BY!&lt;&lt; the FreeRTOS exception.
+***************************************************************************
+&gt;&gt;!   NOTE: The modification to the GPL is included to allow you to     !&lt;&lt;
+&gt;&gt;!   distribute a combined work that includes FreeRTOS without being   !&lt;&lt;
+&gt;&gt;!   obliged to provide the source code for proprietary components     !&lt;&lt;
+&gt;&gt;!   outside of the FreeRTOS kernel.                                   !&lt;&lt;
+***************************************************************************
+FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  Full license text is available on the following
+link: http://www.freertos.org/a00114.html
+***************************************************************************
+ *                                                                       *
+ *    FreeRTOS provides completely free yet professionally developed,    *
+ *    robust, strictly quality controlled, supported, and cross          *
+ *    platform software that is more than just the market leader, it     *
+ *    is the industry's de facto standard.                               *
+ *                                                                       *
+ *    Help yourself get started quickly while simultaneously helping     *
+ *    to support the FreeRTOS project by purchasing a FreeRTOS           *
+ *    tutorial book, reference manual, or both:                          *
+ *    http://www.FreeRTOS.org/Documentation                              *
+ *                                                                       *
+***************************************************************************
+http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
+the FAQ page "My application does not run, what could be wrong?".  Have you
+defined configASSERT()?
+http://www.FreeRTOS.org/support - In return for receiving this top quality
+embedded software for free we request you assist our global community by
+participating in the support forum.
+http://www.FreeRTOS.org/training - Investing in training allows your team to
+be as productive as possible as early as possible.  Now you can receive
+FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
+Ltd, and the world's leading authority on the world's leading RTOS.
+http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
+including FreeRTOS+Trace - an indispensable productivity tool, a DOS
+compatible FAT file system, and our tiny thread aware UDP/IP stack.
+http://www.FreeRTOS.org/labs - Where new FreeRTOS products go to incubate.
+Come and try FreeRTOS+TCP, our new open source TCP/IP stack for FreeRTOS.
+http://www.OpenRTOS.com - Real Time Engineers ltd. license FreeRTOS to High
+Integrity Systems ltd. to sell under the OpenRTOS brand.  Low cost OpenRTOS
+licenses offer ticketed support, indemnification and commercial middleware.
+http://www.SafeRTOS.com - High Integrity Systems also provide a safety
+engineered and independently SIL3 certified version for use in safety and
+mission critical applications that require provable dependability.
+1 tab == 4 spaces!
+</code></pre>
+*/
+<h1>ifndef FREERTOS<em>CONFIG</em>H</h1>
+<h1>define FREERTOS<em>CONFIG</em>H</h1>
+/<em>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+ * Application specific definitions.
+ *
+ * These definitions should be adjusted for your particular hardware and
+ * application requirements.
+ *
+ * THESE PARAMETERS ARE DESCRIBED WITHIN THE &#8216;CONFIGURATION&#8217; SECTION OF THE
+ * FreeRTOS API DOCUMENTATION AVAILABLE ON THE FreeRTOS.org WEB SITE.
+ *
+ * See http://www.freertos.org/a00110.html.
+ *&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-</em>/
+/* USER CODE BEGIN Includes <em>/<br />
+/</em> Section where include file can be added <em>/
+/</em> USER CODE END Includes */ 
+/* Ensure stdint is only used by the compiler, and not the assembler. */
+<h1>if defined(<strong>ICCARM</strong>) || defined(<strong>CC_ARM) || defined(</strong>GNUC__)</h1>
+<pre><code>#include &lt;stdint.h&gt;
+#include "main.h" 
+extern uint32_t SystemCoreClock;
+</code></pre>
+<h1>endif</h1>
+<h1>define configUSE_PREEMPTION                     1</h1>
+<h1>define configSUPPORT<em>STATIC</em>ALLOCATION          1</h1>
+<h1>define configSUPPORT<em>DYNAMIC</em>ALLOCATION         0</h1>
+<h1>define configUSE<em>IDLE</em>HOOK                      0</h1>
+<h1>define configUSE<em>TICK</em>HOOK                      0</h1>
+<h1>define configCPU<em>CLOCK</em>HZ                       ( SystemCoreClock )</h1>
+<h1>define configTICK<em>RATE</em>HZ                       ((TickType_t)1000)</h1>
+<h1>define configMAX_PRIORITIES                     ( 7 )</h1>
+<h1>define configMINIMAL<em>STACK</em>SIZE                 ((uint16_t)64)</h1>
+<h1>define configMAX<em>TASK</em>NAME_LEN                  ( 16 )</h1>
+<h1>define configUSE<em>16</em>BIT_TICKS                   0</h1>
+<h1>define configUSE_MUTEXES                        1</h1>
+<h1>define configQUEUE<em>REGISTRY</em>SIZE                8</h1>
+/* Co-routine definitions. */
+<h1>define configUSE<em>CO</em>ROUTINES                    0</h1>
+<h1>define configMAX<em>CO</em>ROUTINE_PRIORITIES          ( 2 )</h1>
+/* Software timer definitions. */
+<h1>define configUSE_TIMERS                         1</h1>
+//#define configTIMER<em>TASK</em>PRIORITY                ( 2 )
+<h1>define configTIMER<em>TASK</em>PRIORITY                ( configMAX_PRIORITIES &#8211; 1 )</h1>
+<h1>define configTIMER<em>QUEUE</em>LENGTH                 16</h1>
+<h1>define configTIMER<em>TASK</em>STACK_DEPTH             128</h1>
+/* Set the following definitions to 1 to include the API function, or zero
+to exclude the API function. */
+<h1>define INCLUDE_vTaskPrioritySet            1</h1>
+<h1>define INCLUDE_uxTaskPriorityGet           1</h1>
+<h1>define INCLUDE_vTaskDelete                 1</h1>
+<h1>define INCLUDE_vTaskCleanUpResources       0</h1>
+<h1>define INCLUDE_vTaskSuspend                1</h1>
+<h1>define INCLUDE_vTaskDelayUntil             0</h1>
+<h1>define INCLUDE_vTaskDelay                  1</h1>
+<h1>define INCLUDE_xTaskGetSchedulerState      1</h1>
+/* Cortex-M specific definitions. */
+<h1>ifdef __NVIC<em>PRIO</em>BITS</h1>
+ /* __BVIC<em>PRIO</em>BITS will be specified when CMSIS is being used. */
+ #define configPRIO_BITS         __NVIC_PRIO_BITS
+<h1>else</h1>
+ #define configPRIO_BITS         2
+<h1>endif</h1>
+/* The lowest interrupt priority that can be used in a call to a &#8220;set priority&#8221;
+function. */
+<h1>define configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY   3</h1>
+/* The highest interrupt priority that can be used by any interrupt service
+routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
+INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER
+PRIORITY THAN THIS! (higher priorities are lower numeric values. */
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY 3</h1>
+/* Interrupt priorities used by the kernel port layer itself.  These are generic
+to all Cortex-M ports, and do not rely on any particular library functions. */
+<h1>define configKERNEL<em>INTERRUPT</em>PRIORITY         ( configLIBRARY<em>LOWEST</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+/* !!!! configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY must not be set to zero !!!!
+See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
+<h1>define configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY    ( configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+/* Normal assert() semantics without relying on the provision of an assert.h
+header file. <em>/
+/</em> USER CODE BEGIN 1 */   
+<h1>define configASSERT( x ) if ((x) == 0) {taskDISABLE_INTERRUPTS(); for( ;; );}</h1>
+/* USER CODE END 1 */
+/* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
+standard names. */
+<h1>define vPortSVCHandler    SVC_Handler</h1>
+<h1>define xPortPendSVHandler PendSV_Handler</h1>
+/* IMPORTANT: This define MUST be commented when used with STM32Cube firmware, 
+              to prevent overwriting SysTick<em>Handler defined within STM32Cube HAL */
+/* #define xPortSysTickHandler SysTick</em>Handler */
+/* USER CODE BEGIN Defines <em>/<br />
+/</em> Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) <em>/
+/</em> USER CODE END Defines */ 
+<h1>endif /* FREERTOS<em>CONFIG</em>H */</h1>
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskDelay doesn&#8217;t return and Timers not running</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 6, 2018</div><div class="thread-post-content">In the first case it sounds like the tick interrupt is not executing &#8211; 
+which probably just means its not installed.  if the tick count is not 
+incrementing then as far as the kernel is concerned time is standing 
+still and no timeouts will even expire.  See the &#8216;special note for ARM 
+Cortex-M users&#8217; in the first Q on this page of the FAQ: 
+https://www.freertos.org/FAQHelp.html
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

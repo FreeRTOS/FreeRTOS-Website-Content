@@ -1,0 +1,261 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tickless/stm32/Interrupt issue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2018/freertos_Tickless_stm32_Interrupt_issue_beb071d715j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tickless/stm32/Interrupt issue - FreeRTOS" />
+<meta property="og:description" content="Tickless/stm32/Interrupt issuePosted by fizzyaid on November 16, 2018Hi, I&#8217;ve just tried to enable tickless mode, as expected it causes uart interrupts to be missed, so I redefined this: #define portSUPPRESS_TICKS_AND_SLEEP( xExpectedIdleTime ) if( AppWantsToEnterSleepMode() == pdTRUE ) { vPortSuppressTicksAndSleep( xExpectedIdleTime ); } My AppWantsToEnterSleepMode was set to return false, so never to allow the processor &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2018/freertos_Tickless_stm32_Interrupt_issue_beb071d715j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Tickless/stm32/Interrupt issuePosted by fizzyaid on November 16, 2018Hi, I&#8217;ve just tried to enable tickless mode, as expected it causes uart interrupts to be missed, so I redefined this: #define portSUPPRESS_TICKS_AND_SLEEP( xExpectedIdleTime ) if( AppWantsToEnterSleepMode() == pdTRUE ) { vPortSuppressTicksAndSleep( xExpectedIdleTime ); } My AppWantsToEnterSleepMode was set to return false, so never to allow the processor [&hellip;]" />
+<meta name="twitter:title" content="Tickless/stm32/Interrupt issue - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203035' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203035' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203035' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203035' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147440' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2018%2Ffreertos_Tickless_stm32_Interrupt_issue_beb071d715j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2018%2Ffreertos_Tickless_stm32_Interrupt_issue_beb071d715j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147440">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2018_freertos_support_forum_archive_index.html/">November 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Tickless/stm32/Interrupt issue</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fizzyaid">fizzyaid</a> on November 16, 2018</div><div class="thread-post-content">Hi,
+I&#8217;ve just tried to enable tickless mode, as expected it causes uart interrupts to be missed, so I redefined this:
+ <code>#define portSUPPRESS_TICKS_AND_SLEEP( xExpectedIdleTime ) 
+     if( AppWantsToEnterSleepMode() == pdTRUE )            
+     {                                                     
+         vPortSuppressTicksAndSleep( xExpectedIdleTime );  
+     }</code>
+   My AppWantsToEnterSleepMode was set to return false, so never to allow the processor to sleep.  Weirdly, the interrupts were getting lost.
+   So in tasks.c I commented out:
+   `#if ( configUSE<em>TICKLESS</em>IDLE != 0 )
+        {
+        TickType_t xExpectedIdleTime;
+<pre><code>        /* It is not desirable to suspend then resume the scheduler on
+        each iteration of the idle task.  Therefore, a preliminary
+        test of the expected idle time is performed without the
+        scheduler suspended.  The result here is not necessarily
+        valid. */
+        xExpectedIdleTime = prvGetExpectedIdleTime();
+        if( xExpectedIdleTime &gt;= configEXPECTED_IDLE_TIME_BEFORE_SLEEP )
+        {
+            vTaskSuspendAll();
+            {
+                /* Now the scheduler is suspended, the expected idle
+                time can be sampled again, and this time its value can
+                be used. */
+                configASSERT( xNextTaskUnblockTime &gt;= xTickCount );
+                xExpectedIdleTime = prvGetExpectedIdleTime();
+                /* Define the following macro to set xExpectedIdleTime to 0
+                if the application does not want
+                portSUPPRESS_TICKS_AND_SLEEP() to be called. */
+                configPRE_SUPPRESS_TICKS_AND_SLEEP_PROCESSING( xExpectedIdleTime );
+                if( xExpectedIdleTime &gt;= configEXPECTED_IDLE_TIME_BEFORE_SLEEP )
+                {
+                    traceLOW_POWER_IDLE_BEGIN();
+                    portSUPPRESS_TICKS_AND_SLEEP( xExpectedIdleTime );
+                    traceLOW_POWER_IDLE_END();
+                }
+                else
+                {
+                    mtCOVERAGE_TEST_MARKER();
+                }
+            }
+            ( void ) xTaskResumeAll();
+        }
+        else
+        {
+            mtCOVERAGE_TEST_MARKER();
+        }
+    }
+    #endif /* configUSE_TICKLESS_IDLE */`
+</code></pre>
+And ran the code and interrupts were working again, so then I just added:
+~~~
+                vTaskSuspendAll();
+                xTaskResumeAll();
+~~~
+And the code starts losing interrupts, any explanation for this?  I see that xTaskResumeAll has a critical section and these two lines are only in play when tickless is enabled (regardless of whether you actually enter tickless)
+Any thoughts?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fizzyaid">fizzyaid</a> on November 16, 2018</div><div class="thread-post-content">Removing the define of portSUPPRESS<em>TICKS</em>AND_SLEEP and putting an &#8220;if AppWantsToEnterSleepMode() &#8221; around the tickless idle stuff solves the problem because it&#8217;ll only go into it if the application allows it to, outside of that it wont and therefore won&#8217;t call the Suspend and Resume all.
+Obviously I have to patch tasks.c file every time I update.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 17, 2018</div><div class="thread-post-content">Not sure if I&#8217;m missing something &#8211; but the PRE<em>SLEEP</em>PROCESSING() and 
+POST<em>SLEEP</em>PROCESSING() macros are available to enable an application 
+abort entry to tickless mode if it wishes without needing to edit the C 
+code.  Search for the macros on this page: 
+https://www.freertos.org/low-power-ARM-cortex-rtos.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fizzyaid">fizzyaid</a> on November 17, 2018</div><div class="thread-post-content">the issue im seeing is that the suspend and resume that happens way before it gets anywhere near that macro are causing me to miss serial interrupts as shown by my experiment above, those two line of code are executed regardless of whether the processor actually goes into sleep mode and seem to be causing me problems.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on November 17, 2018</div><div class="thread-post-content">Some questions come to mine, because you seem to be saying that the suspend is what is causing the issue:
+1) What rate are these serial interrupts happening?
+2) Are you fully getting the data in the ISR, or is part of the data fetch using a pend function?
+If you are losing data because the ISR can&#8217;t run the task level code at each interrupt, then that is, in my opinion, an issue with program design, not FreeRTOS. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fizzyaid">fizzyaid</a> on November 17, 2018</div><div class="thread-post-content">its receiving data at 115200, not many bytes.
+the interrupt simply reads the register and posts the byte into a stream buffer.
+what im seeing is that with the suspend and resume calls in play in the code i quoted, interrupts get missed.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fizzyaid">fizzyaid</a> on November 19, 2018</div><div class="thread-post-content">Richard, any thoughts on this behaviour?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on November 19, 2018</div><div class="thread-post-content">115200  should be slow enough that critical sections used in FreeRTOS are short enough not to lose interrupts, and Suspending/Resuming the Scheduler won&#8217;t block them.
+The one  thought I have is that you are putting the device into too low of a low power mode that actually turns off the devices, and/or takes too long to wake up from when going into tickless idle.
+There is also a  possibility that there is some sort of hardware bug that is causing an issue, but my first guess is that your definition of &#8216;low powr idle&#8217; is too low.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fizzyaid">fizzyaid</a> on November 19, 2018</div><div class="thread-post-content">I&#8217;m not going into sleep mode, I&#8217;ve commented the code out and just have:
+ vTaskSuspendAll();
+xTaskResumeAll();
+Added in to replace as it&#8217;s these lines of code causing the issue, these lines are code are executed before and after (one of each) sleep mode (or the decision on when to sleep) is made.
+In normal (non tickless) mode of FreeRTOS these calls are not here and it works perfectly as you would expect, but the moment these calls are introduced into the equation I start losing serial interrupts.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fizzyaid">fizzyaid</a> on November 20, 2018</div><div class="thread-post-content">Richard Barry, do you have any suggestions or thoughts on what is happening here?
+my &#8220;fix&#8221; is as i posted in the first link, modify the code in tasks.c so that the very first check is whether tickless is currently enabled before doing anything else. (straight after the first ifdef)
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fizzyaid">fizzyaid</a> on November 21, 2018</div><div class="thread-post-content">bump for Richard! (sorry)
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 21, 2018</div><div class="thread-post-content">I&#8217;m not sure I fully understand the original question.  Does this have 
+anything to do with tickless mode, or are you just noting that calling 
+xTaskResumeAll() causes interrupts to be missed?
+vTaskSuspendAll() would have little if any effect on interrupts &#8211; hence 
+I&#8217;m ignoring that.
+xTaskResumeAll() does have a critical section but that would do little 
+under normal circumstances.
+Are you generating an interrupt on each 115200 characters per second? 
+If so, can you minimise the overhead using a DMA or FIFO?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fizzyaid">fizzyaid</a> on November 22, 2018</div><div class="thread-post-content">I noticed that tickless was losing interrupts regardless of whether tickless was actually being entered, so I commented out the tickless code above and ran and no interrupts were missed.
+I then started delving into what was causing the issue and found it was the xTaskResumeAll that was causing it.
+So I simply commented out the tickless code and replaced it with a simple:
+vTaskSuspendAll
+xTaskResumeAll
+And interrupts were getting lost, in tickless mode of operation both these lines of code are executed regardless of whether the decision to sleep is made (which with your macros happens later on in the code above).
+I&#8217;m using an interrupt, but I&#8217;m concerned about what this might be doing to other interrupts in the system.
+These particular lines of code are only &#8220;in play&#8221; when the OS is configured in tickless mode.
+My solution is to make the decision right at the top of the code as to whether tickless is enabled, if it is I have to accept that there will be possible issues with interrupts, but given that I&#8217;ve opted to go to sleep then it&#8217;s something I can live with., but while I don&#8217;t allow the processor to sleep I don&#8217;t have issues with interrupts.
+~~~
+        #if ( configUSE<em>TICKLESS</em>IDLE != 0 )
+                if (configALLOW<em>SLEEP</em>MODE())
+        {
+        TickType_t xExpectedIdleTime;
+<pre><code>        /* It is not desirable to suspend then resume the scheduler on
+        each iteration of the idle task.  Therefore, a preliminary
+        test of the expected idle time is performed without the
+        scheduler suspended.  The result here is not necessarily
+        valid. */
+        xExpectedIdleTime = prvGetExpectedIdleTime();
+        if( xExpectedIdleTime &gt;= configEXPECTED_IDLE_TIME_BEFORE_SLEEP )
+</code></pre>
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 22, 2018</div><div class="thread-post-content">Hence you can&#8217;t use the pre and post sleep macros to abort entering low 
+power mode as they are in the section that executes with the scheduler 
+suspended.  The tickless entry/exit actually has to be done with the 
+scheduler suspended to allow the kernel to know what the situation is on 
+exiting sleep mode.  Likewise to give the pre/post sleep macros a known 
+execution state.
+First, if the UART interrupt can be implemented without using any 
+FreeRTOS API calls then you can set its priority above 
+configMAX<em>SYSCALL</em>INTERRUPT_PRIORIY (which on a Cortex-M means a low 
+numeric priority value, 0 being the highest priority).
+Other than that it is a curious situation.  My thought process was that 
+suspending the scheduler is very fast and doesn&#8217;t have any critical 
+sections.  Resuming the scheduler does however have a critical section &#8211; 
+and that if all your idle task is doing is calling xTaskResumeAll() over 
+and over again very rapidly then it will spend a good proportion of its 
+time in that function &#8211; however likewise as it is being called rapidly 
+the amount of time spent inside any single call of the function should 
+be extremely short.  I&#8217;m afraid I don&#8217;t really have any other thoughts 
+at this point.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fizzyaid">fizzyaid</a> on November 22, 2018</div><div class="thread-post-content">Hi Richard,
+at this point with tasks.c as it stands the behavior tickless mode is (as far as i can tell) broken (i understand we may have opposing views on this! im trying to be as subjective asni can) the critical section there kills interrupts which it shouldnt,
+any chance of implementing the &#8220;fix&#8221; as i have described above into the freertos code, by default the default defined value could be 1 so that it operates as it did, but allows tickless to be enabled with no extra overhead with the critical section.  although it doesnt fix it with regards to lost interrupts whrn tickless mode is allowed, it does fix it when sleep is not allowed.
+i was very surprised by this behaviour, especially when i implemented it as suggested and told it not to allow sleep, i didnt expect to see lost interrupts.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless/stm32/Interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on November 22, 2018</div><div class="thread-post-content">Yes, if a critical section cause interrupts to be lost like this, then something is broken. It is NOT the fault of the critical section though, as that is done exactly as the ARM architecture says it should be done. My first guess is that somehow your ISR is written wrong, or the interrupt is configured wrong.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

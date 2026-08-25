@@ -1,0 +1,205 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIC 16-bit port - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2015/freertos_PIC_16-bit_port_5bd3a3b3j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="PIC 16-bit port - FreeRTOS" />
+<meta property="og:description" content="PIC 16-bit portPosted by dragonflight1 on February 6, 2015In upgrading to V8, in general (7.5.3 has been running quite nicely for me :)) and my own PIC port, I&#8217;ve come across/pondered the following issues The PIC24E series requires 1 instruction after writing to SR before interrupts are actually disabled. This probably is not a problem &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2015/freertos_PIC_16-bit_port_5bd3a3b3j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="PIC 16-bit portPosted by dragonflight1 on February 6, 2015In upgrading to V8, in general (7.5.3 has been running quite nicely for me :)) and my own PIC port, I&#8217;ve come across/pondered the following issues The PIC24E series requires 1 instruction after writing to SR before interrupts are actually disabled. This probably is not a problem [&hellip;]" />
+<meta name="twitter:title" content="PIC 16-bit port - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202479' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202479' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202479' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202479' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145250' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2015%2Ffreertos_PIC_16-bit_port_5bd3a3b3j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2015%2Ffreertos_PIC_16-bit_port_5bd3a3b3j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145250">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2015_freertos_support_forum_archive_index.html/">February 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">PIC 16-bit port</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on February 6, 2015</div><div class="thread-post-content">In upgrading to V8, in general (7.5.3 has been running quite nicely for me :)) and my own PIC port, I&#8217;ve come across/pondered the following issues
+<ol>
+<li>The PIC24E series requires 1 instruction after writing to SR before interrupts are actually disabled.
+This probably is not a problem (it wasn&#8217;t in 7.5.3) in V8.2, but a nop should be added to portDISABLE_INTERRUPTS()</li>
+</ol>
+<ul>
+<li>The following all relate to saving/restoring stuff in _T1Interrupt and depend on how &#8220;always correct&#8221; it should be.
+<ul>
+<li>The DC flag is not saved/restored in _T1Interrupt.
+This is probably in the technically correct, but who cares category</li>
+<li>In the non-DSP PICs the PSV flag (in CORCON) is not saved/restored
+I could not find any example of Microchip bothering to save/set this in any examples</li>
+<li>In the dsPICs the PSV flag (in CORCON) and MODCON are not saved/restored
+If the DSP instructions are actually used MODCON needs to be saved restored and if the functions in libdsp are called then the PSV flag needs to be saved/restored and set to 1 in the interrupt</li>
+</ul></li>
+</ul>
+mike
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC 16-bit port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 6, 2015</div><div class="thread-post-content">Thank you for your comments:
+<blockquote>
+  The PIC24E series requires 1 instruction after writing to SR before interrupts are actually disabled.
+</blockquote>
+To ensure correctness I have added an __asm volatile( &#8220;NOP&#8221; ) after the write to the SR.
+<blockquote>
+  The following all relate to saving/restoring stuff in _T1Interrupt and depend on how &#8220;always correct&#8221; it should be.
+  The DC flag is not saved/restored in _T1Interrupt.
+  This is probably in the technically correct, but who cares category
+</blockquote>
+Let me know if you think it is an issue.
+<blockquote>
+  In the non-DSP PICs the PSV flag (in CORCON) is not saved/restored
+  I could not find any example of Microchip bothering to save/set this in any examples
+</blockquote>
+I think this was discussed some years ago (the PIC24 ports are quite old now) and it was decided to leave it like this.  I can&#8217;t quite remember the rationale now, but it will be in the archive somewhere.
+<blockquote>
+  In the dsPICs the PSV flag (in CORCON) and MODCON are not saved/restored
+  If the DSP instructions are actually used MODCON needs to be saved restored and if the functions in libdsp are called then the PSV flag needs to be saved/restored and set to 1 in the interrupt
+</blockquote>
+Likewise I think these were discussed at the same time regarding how far to go in making the DSP functionality thread safe.  I will need to look up the discussion and re-familiarise myself with the architecture to comment fully.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC 16-bit port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on February 6, 2015</div><div class="thread-post-content">None of the interrupt issues are a question of thread safe, but rather a question of if the user creates code that changes/uses DC, PSV, MODCON then timer1 will either fail or corrupt the program.
+In reverse order, for the dsp&#8217;s, if PSV and MODCON are not set and the user calls a function in libdsp the code WILL fail in the interrupt (constants won&#8217;t be correct and register indexing won&#8217;t work) &#8211; probably should be added.
+In non-dsp&#8217;s, if the user modifies PSV (highly unlikely) they should be probably be smart enough to realize that interrupt routines need to be checked, but they might not think of the timer &#8211; iffy to add.
+As for the DC bit, I think any poor user that tries to use it and has any interrupt routines will spend months trying to figure out why it doesn&#8217;t always work even if timer save/restores it! &#8211; probably not worth it.
+On the other hand even if Microchip doesn&#8217;t seem to worry about PSV and DC  saving them would cost about .01% to .1% of the cpu.
+I&#8217;m afraid I don&#8217;t have an answer as to what is right &#8211; I partially brought it up to see what you thought and if I should bother for my version of the port
+mike
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC 16-bit port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tlafleur">tlafleur</a> on February 6, 2015</div><div class="thread-post-content">I also would very much like to see a current port for this series of
+processors&#8230;
+For NOW, I&#8217;m using Mike&#8217;s port.c code, I&#8217;m using ATD, I2C, CAN, 2 UART and
+4 ch of DMA and it all run well under 8.2.0 with 11 task.. I&#8217;m using the
+dsPIC33EP primarily for it larger RAM&#8230; but may consider using the 5.0V
+dsPIC33EV for my next project&#8230;
+I&#8217;m not using any of the DSP registers at this time&#8230;
+Thanks
+On Fri, Feb 6, 2015 at 1:28 PM, mike <a href="/FreeRTOS_Support_Forum_Archive/February_2015/&#109;&#x61;i&#108;&#x74;&#111;&#58;&#x64;&#114;&#x61;&#x67;&#111;&#x6e;f&#108;&#x69;&#103;&#104;&#x74;&#49;&#x40;&#x75;&#115;&#x65;&#x72;&#115;&#x2e;s&#102;&#x2e;&#110;&#101;&#x74;">&#x64;&#114;&#x61;&#x67;&#111;&#x6e;f&#108;&#x69;&#103;&#104;&#x74;&#49;&#x40;&#x75;&#115;&#x65;&#x72;&#115;&#x2e;s&#102;&#x2e;&#110;&#101;&#x74;</a> wrote:
+<blockquote>
+  None of the interrupt issues are a question of thread safe, but rather a
+  question of if the user creates code that changes/uses DC, PSV, MODCON then
+  timer1 will either fail or corrupt the program.
+  In reverse order, for the dsp&#8217;s, if PSV and MODCON are not set and the
+  user calls a function in libdsp the code WILL fail in the interrupt
+  (constants won&#8217;t be correct and register indexing won&#8217;t work) &#8211; probably
+  should be added.
+  In non-dsp&#8217;s, if the user modifies PSV (highly unlikely) they should be
+  probably be smart enough to realize that interrupt routines need to be
+  checked, but they might not think of the timer &#8211; iffy to add.
+  As for the DC bit, I think any poor user that tries to use it and has any
+  interrupt routines will spend months trying to figure out why it doesn&#8217;t
+  always work even if timer save/restores it! &#8211; probably not worth it.
+  On the other hand even if Microchip doesn&#8217;t seem to worry about PSV and DC
+  saving them would cost about .01% to .1% of the cpu.
+  I&#8217;m afraid I don&#8217;t have an answer as to what is right &#8211; I partially
+  brought it up to see what you thought and if I should bother for my version
+  of the port
+  <h2>mike</h2>
+  PIC 16-bit port
+  <h2><a href="https://sourceforge.net/p/freertos/discussion/382005/thread/5bd3a3b3/?limit=25#a8d2">https://sourceforge.net/p/freertos/discussion/382005/thread/5bd3a3b3/?limit=25#a8d2</a></h2>
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+&#8212; 
+~~ _/) ~~~~ _/) ~~~~ _/) ~~~~ _/) ~~
+Tom Lafleur
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

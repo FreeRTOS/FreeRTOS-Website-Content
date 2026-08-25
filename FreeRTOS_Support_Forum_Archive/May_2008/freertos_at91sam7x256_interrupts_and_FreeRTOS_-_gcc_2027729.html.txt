@@ -1,0 +1,213 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>at91sam7x256 interrupts and FreeRTOS - gcc - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2008/freertos_at91sam7x256_interrupts_and_FreeRTOS_-_gcc_2027729.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="at91sam7x256 interrupts and FreeRTOS - gcc - FreeRTOS" />
+<meta property="og:description" content="at91sam7x256 interrupts and FreeRTOS &#8211; gccPosted by johnkpierce on May 3, 2008I realize there have been other posts on this issue, but I still am up a creek. I followed the atmel code which doesn&#8217;t use the RTOS and have 3 timer interrupts, a PIO interrupt, and 3 uarts working.&nbsp; The UART code ports seamlessly &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2008/freertos_at91sam7x256_interrupts_and_FreeRTOS_-_gcc_2027729.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="at91sam7x256 interrupts and FreeRTOS &#8211; gccPosted by johnkpierce on May 3, 2008I realize there have been other posts on this issue, but I still am up a creek. I followed the atmel code which doesn&#8217;t use the RTOS and have 3 timer interrupts, a PIO interrupt, and 3 uarts working.&nbsp; The UART code ports seamlessly [&hellip;]" />
+<meta name="twitter:title" content="at91sam7x256 interrupts and FreeRTOS - gcc - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201609' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201609' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201609' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201609' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139699' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2008%2Ffreertos_at91sam7x256_interrupts_and_FreeRTOS_-_gcc_2027729.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2008%2Ffreertos_at91sam7x256_interrupts_and_FreeRTOS_-_gcc_2027729.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139699">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2008_freertos_support_forum_archive_index.html/">May 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">at91sam7x256 interrupts and FreeRTOS &#8211; gcc</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johnkpierce">johnkpierce</a> on May 3, 2008</div><div class="thread-post-content">I realize there have been other posts on this issue, but I still am up a creek.
+I followed the atmel code which doesn&#8217;t use the RTOS and have 3 timer interrupts, a PIO interrupt, and 3 uarts working.&nbsp; The UART code ports seamlessly to the RTOS.&nbsp; I followed examples in the RTOS for the uIP EMAC, and also looked at another implementation example that had a full interrupt-setup interface as models for my setup routines.
+My issue is that I don&#8217;t appear to be getting my PIO or my Timer interrupts.&nbsp; Code compiles correctly, everything is in place, the interrupts are running in ARM mode, but they never trigger.&nbsp; For the PIO, pins are set correctly.&nbsp; For the timers, pins are not an issue.
+In the port.c code for the at91sam7, I placed my timer interrupt setup along with the PIT setup, figuring that would be the right time to do it.&nbsp; The actual interrupt is in a timer interrupt module that is compiled for ARM.&nbsp; Here is the code:
+in port.c:
+/&#42;
+ &#42; Setup the timer 0 to generate the tick interrupts at the required frequency.
+ &#42;/
+static void prvSetupTimerInterrupt&#40; void &#41;
+&#123;
+&nbsp; AT91PS&#95;PITC pxPIT = AT91C&#95;BASE&#95;PITC;
+//&#33; This is the original code &#33;
+&nbsp;&nbsp;&nbsp; /&#42; Setup the AIC for PIT interrupts.&nbsp; The interrupt routine chosen depends
+&nbsp;&nbsp;&nbsp; on whether the preemptive or cooperative scheduler is being used. &#42;/
+&nbsp;&nbsp;&nbsp; &#35;if configUSE&#95;PREEMPTION == 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; extern void &#40; vNonPreemptiveTick &#41; &#40; void &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AT91F&#95;AIC&#95;ConfigureIt&#40; AT91C&#95;ID&#95;SYS, AT91C&#95;AIC&#95;PRIOR&#95;HIGHEST, portINT&#95;LEVEL&#95;SENSITIVE, &#40; void &#40;&#42;&#41;&#40;void&#41; &#41; vNonPreemptiveTick &#41;;
+&nbsp;&nbsp;&nbsp; &#35;else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; extern void &#40; vPreemptiveTick &#41;&#40; void &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AT91F&#95;AIC&#95;ConfigureIt&#40; AT91C&#95;ID&#95;SYS, AT91C&#95;AIC&#95;PRIOR&#95;HIGHEST, portINT&#95;LEVEL&#95;SENSITIVE, &#40; void &#40;&#42;&#41;&#40;void&#41; &#41; vPreemptiveTick &#41;;
+&nbsp;&nbsp;&nbsp; &#35;endif
+&nbsp;&nbsp;&nbsp; /&#42; Configure the PIT period. &#42;/
+&nbsp;&nbsp;&nbsp; pxPIT-&gt;PITC&#95;PIMR = portPIT&#95;ENABLE | portPIT&#95;INT&#95;ENABLE | portPIT&#95;COUNTER&#95;VALUE;
+&nbsp;&nbsp;&nbsp; /&#42; Enable the interrupt.&nbsp; Global interrupts are disables at this point so 
+&nbsp;&nbsp;&nbsp; this is safe. &#42;/
+&nbsp;&nbsp;&nbsp; AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;IECR = 0x1 &lt;&lt; AT91C&#95;ID&#95;SYS;
+&nbsp;&nbsp;&nbsp; 
+//&#33; This is the code I added &#33;
+&nbsp;&nbsp;&nbsp; /&#42; See if we can do timer interrupt here&#8230; &#42;/
+&nbsp;&nbsp;&nbsp; //
+&nbsp;&nbsp;&nbsp; //
+&nbsp;&nbsp;&nbsp; extern&nbsp;&nbsp;&nbsp; void TimerSetup1&#40;void&#41;;
+&nbsp;&nbsp;&nbsp; TimerSetup1&#40;&#41;;
+//&nbsp; &#40;Here is the code from TimerSetup1&#40;&#41;&#41;:
+void&nbsp;&nbsp;&nbsp; TimerSetup1&#40;void&#41; &#123;
+&nbsp;&nbsp;&nbsp; AT91PS&#95;TCB pTCB = AT91C&#95;BASE&#95;TCB;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // create a pointer to TC Global Register structure
+&nbsp;&nbsp;&nbsp; pTCB-&gt;TCB&#95;BCR = 0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // SYNC trigger not used
+&nbsp;&nbsp;&nbsp; pTCB-&gt;TCB&#95;BMR = AT91C&#95;TCB&#95;TC0XC0S&#95;NONE | AT91C&#95;TCB&#95;TC1XC1S&#95;NONE | AT91C&#95;TCB&#95;TC2XC2S&#95;NONE;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // external clocks not used&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; AT91PS&#95;TC pTC = AT91C&#95;BASE&#95;TC1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // create a pointer to channel 1 Register structure
+&nbsp;&nbsp;&nbsp; pTC-&gt;TC&#95;CCR = AT91C&#95;TC&#95;CLKEN | AT91C&#95;TC&#95;SWTRG;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // enable the clock&nbsp;&nbsp;&nbsp; and start it
+&nbsp;&nbsp;&nbsp; pTC-&gt;TC&#95;CMR = AT91C&#95;TC&#95;CPCTRG | AT91C&#95;TC&#95;CLKS&#95;TIMER&#95;DIV4&#95;CLOCK;
+&nbsp;&nbsp;&nbsp; pTC-&gt;TC&#95;RC = 125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // clk4
+&nbsp;&nbsp;&nbsp; pTC-&gt;TC&#95;IER = AT91C&#95;TC&#95;CPCS;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // RC compare interrupt
+&nbsp;&nbsp;&nbsp; pTC-&gt;TC&#95;IDR = ~AT91C&#95;TC&#95;CPCS;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // disable all except RC compare interrupt
+&#125;
+// and here we are back to what is in port.c
+&nbsp;&nbsp;&nbsp; volatile AT91PS&#95;AIC&nbsp;&nbsp;&nbsp; pAIC = AT91C&#95;BASE&#95;AIC;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; // enable the Timer&#8217;s peripheral clocks
+&nbsp;&nbsp;&nbsp; volatile AT91PS&#95;PMC&nbsp;&nbsp;&nbsp; pPMC = AT91C&#95;BASE&#95;PMC;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // pointer to PMC data structure
+&nbsp;&nbsp;&nbsp; pPMC-&gt;PMC&#95;PCER = &#40;1&lt;&lt;AT91C&#95;ID&#95;TC1&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; // Set up the AIC&nbsp; registers for Timer 1&nbsp; 
+&nbsp;&nbsp;&nbsp; extern void &#40; Timer1IrqHandler &#41;&#40; void &#41;;
+&nbsp;&nbsp;&nbsp; AT91F&#95;AIC&#95;ConfigureIt&#40; AT91C&#95;ID&#95;TC1, 0x4, AT91C&#95;AIC&#95;SRCTYPE&#95;INT&#95;HIGH&#95;LEVEL, &#40; void &#40;&#42;&#41;&#40;void&#41; &#41; Timer1IrqHandler &#41;;
+&nbsp;&nbsp;&nbsp; pAIC-&gt;AIC&#95;ICCR = &#40;1&lt;&lt;AT91C&#95;ID&#95;TC1&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Clear the TC1 interrupt in AIC Interrupt Clear Command Register
+&nbsp;&nbsp;&nbsp; pAIC-&gt;AIC&#95;IDCR &amp;= &#40;~&#40;1&lt;&lt;AT91C&#95;ID&#95;TC1&#41;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Remove disable timer 1 interrupt in AIC Interrupt Disable Command Reg&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; pAIC-&gt;AIC&#95;IECR = &#40;1&lt;&lt;AT91C&#95;ID&#95;TC1&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Enable the TC1 interrupt in AIC Interrupt Enable Command Register
+&#125;
+Finally, here is the actual interrupt:
+void Timer1IrqHandler&#40; void &#41; &#95;&#95;attribute&#95;&#95; &#40;&#40;interrupt &#40;&quot;IRQ&quot;&#41;&#41;&#41;;
+void Timer1IrqHandler &#40;void&#41; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; volatile AT91PS&#95;TC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pTC = AT91C&#95;BASE&#95;TC1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // pointer to timer channel 1 register structure
+&nbsp;&nbsp;&nbsp; volatile AT91PS&#95;PIO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pPIO = AT91C&#95;BASE&#95;PIOB;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // pointer to PIO register structure
+&nbsp;&nbsp;&nbsp; unsigned int&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dummy;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // temporary
+&nbsp;&nbsp;&nbsp; dummy = pTC-&gt;TC&#95;SR;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // read TC1 Status Register to clear interrupt
+// just a test function
+&nbsp;&nbsp;&nbsp; if &#40;tickcount1++ &gt;= 200&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tickcount1 = 0;
+&nbsp;&nbsp;&nbsp; &#125;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; if &#40;&#40;BUZZER&#95;BASE-&gt;PIO&#95;ODSR &amp; BUZZER&#95;PIN&#41; == BUZZER&#95;PIN&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BUZZER&#95;BASE-&gt;PIO&#95;CODR = BUZZER&#95;PIN;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BUZZER&#95;BASE-&gt;PIO&#95;SODR = BUZZER&#95;PIN;
+&#35;endif
+&#125;
+The buzzer never sounds, although in the other Atmel example it buzzes just fine.
+What am I missing???
+</div></div><div class="thread-post"><h3 class="thread-post-title">at91sam7x256 interrupts and FreeRTOS &#8211; gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 5, 2008</div><div class="thread-post-content">Unfortunately I can&#8217;t go through the timer setup code just at the moment &#40;this is SAM7 specific&#41;, but just to clarify, are you saying that the timer works fine with exactly the same code when not using a FreeRTOS.org build, but never gets entered even once when using FreeRTOS.org in your build?&nbsp; Are there any significant differences in the way interrupts are handled within the startup code for the projects for which it works?&nbsp; I cannot see why all the other interrupts would work &#40;EMAC, UART, PIT&#41; but not this one, unless there is some sort of peripheral resource sharing clash somewhere.&nbsp; 
+The PIT uses the system interrupt, which is shared with the Debug COM port, are you using the Debug COM port?&nbsp; Is the RTOS tick itnerrupt working when you also use your extra timer?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">at91sam7x256 interrupts and FreeRTOS &#8211; gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johnkpierce">johnkpierce</a> on May 5, 2008</div><div class="thread-post-content">To clarify,
+1&#46; &#8211; exactly the same code? &#8211; All the setup code is the same, although in the other examples I&#8217;m running the timer in THUMB mode and I changed it to compile in ARM mode with the added entry header as in the FreeRTOS.org examples.
+2&#46; &#8211; &quot;all the other interrupts.&quot;&nbsp; Unfortunately one of the clues is fuzzy, since I realized the UARTs are not using the interrupt examples, but just reading or writing the characters when the device buffer is ready.&nbsp; Although it is true that the EMAC interrupt is working.
+3&#46; &#8211; The RTOS tick interrupt is working fine.
+4&#46; &#8211; You are right in pointing out the obvious, and I just need to go through and find the difference, I think, in setup.&nbsp; I was hoping there was something basic I overlooked that someone would see. 
+Thanks for the feedback.&nbsp; I&#8217;ll let you know if I find the issue.
+</div></div><div class="thread-post"><h3 class="thread-post-title">at91sam7x256 interrupts and FreeRTOS &#8211; gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johnkpierce">johnkpierce</a> on May 5, 2008</div><div class="thread-post-content">Well, the issue is solved.&nbsp; It had to be fairly simple, I suppose.&nbsp; The Atmel startup file had its own IRQ handler written in assembly code, which then vectors to the user&#8217;s routine.&nbsp; The FreeRTOS.org code just reads the AIC vector and branches to the routine.&nbsp; The difference was that on return, the Atmel code clears the AIC interrupt, and the user&#8217;s routine has to do that in the FreeRTOS.org environment.
+Although, there is still a little quirk, which I will eventually track down and is not a show-stopper.&nbsp; My timer setup routine is supposed to enable the timer and start it running, but after everything is set up I checked the timer and it wasn&#8217;t running.&nbsp; So I wrote an extra enable+start command to the timer in my primary task, and then it started working..
+Anyway, thanks.&nbsp; It looks good now.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

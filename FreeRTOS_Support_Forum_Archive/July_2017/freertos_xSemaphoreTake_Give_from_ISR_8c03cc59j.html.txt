@@ -1,0 +1,183 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xSemaphoreTake/Give from ISR - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2017/freertos_xSemaphoreTake_Give_from_ISR_8c03cc59j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="xSemaphoreTake/Give from ISR - FreeRTOS" />
+<meta property="og:description" content="xSemaphoreTake/Give from ISRPosted by alsaleem on July 30, 2017I have a resource to be synchronized on task accesses. I made a code (in the resource driver) to use xSemaphoreTake/Give for this synchronization. I now have a case that this resource needs to be accessed from ISR. This requires that the lock process take/give be done &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2017/freertos_xSemaphoreTake_Give_from_ISR_8c03cc59j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="xSemaphoreTake/Give from ISRPosted by alsaleem on July 30, 2017I have a resource to be synchronized on task accesses. I made a code (in the resource driver) to use xSemaphoreTake/Give for this synchronization. I now have a case that this resource needs to be accessed from ISR. This requires that the lock process take/give be done [&hellip;]" />
+<meta name="twitter:title" content="xSemaphoreTake/Give from ISR - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202846' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202846' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202846' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202846' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146633' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2017%2Ffreertos_xSemaphoreTake_Give_from_ISR_8c03cc59j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2017%2Ffreertos_xSemaphoreTake_Give_from_ISR_8c03cc59j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146633">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2017_freertos_support_forum_archive_index.html/">July 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">xSemaphoreTake/Give from ISR</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 30, 2017</div><div class="thread-post-content">I have a resource to be synchronized on task accesses. I made a code (in the resource driver) to use xSemaphoreTake/Give for this synchronization.
+I now have a case that this resource needs to be accessed from ISR. This requires that the lock process take/give be done in the calling function (instead of the driver) since it might be the task or isr. This adds a little complexity.
+My question: Is there away in FreeRTOS to know if the code being executed is from a task or isr?
+If yes, is it going to take too much cpu time?
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 30, 2017</div><div class="thread-post-content">FreeRTOS exposes no portable way to detect if yoou are in an ISR or not (and it may not be an easy thing to determine on all platforms it has been ported to). If you look in port.c, inside vPortEnterCritical there may be code to test this as part of a configASSERT statement, that code being very port specific.
+Sometimes I do wonder if it would make sense for poort.c/portmacro.h to export this code as a callable function for those ports where it is something reasonable to test. I do find that there are a few cases where it could be useful.
+One thing you are going need to watch out the way you are describing things, if a task has locked the resource, and an ISR that needs it gets invoked, there is no way for the ISR to do the equivalent of a block till available, so you may need  to rethink your program structure. I rarely find that this sort of access can be made to look mostly the same between the ISR context and the Task Context, so the resource driver needs different code for the two cases, so the ISR can just call the FromISR version of the driver.
+The point where having the test could be helpful is if the ISR needs to use a middle layer of code that then access the driver, and duplicating the middle layer may be a bit awkward. (But if the middle layer has much code, it probably shouldn&#8217;t be called in the ISR anyway).
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 30, 2017</div><div class="thread-post-content"><blockquote>
+  if a task has locked the resource, and an ISR that needs it gets invoked, there is no way for the ISR to do the equivalent of a block till available,
+</blockquote>
+yes. good point. However, if the isr is of a lower priority than systick, then it should be able to wait.
+I will look into the code you mentioned and also see if i could do a work-around.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 30, 2017</div><div class="thread-post-content">First, I beleive SysTick needs to be the lowest priority of interrupt. (That is an assumption in most ports)
+Second, if the ISR does try to wait, all it can do is spin its wheels, which means the task that has the lock will NEVER run, and never finish its operation and your program dies in a deadlock.
+If your ISR tried to wait by going back to the task, nothing will ever resume the ISR, so it will never do its action.
+Like I said, ISR access to shared resources is different than task level access.
+One option is you could put the code that needs to accerss the resource into a Pended function, which will then mean it will run at &#8216;Task Level&#8217; and is written very much like task code (uses non-FromISR routines).
+Remember, xSemaphoreTakeFromISR does NOT block, and thus doesn&#8217;t provide the same sort of exclusion that xSemaphoreTake does.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 30, 2017</div><div class="thread-post-content">I was confusing 
+~~~
+<h1>define configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY   0xf</h1>
+~~~
+and 
+~~~
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY 5</h1>
+~~~
+yes, systick has the lowest.
+<blockquote>
+  If your ISR tried to wait by going back to the task, nothing will ever resume the ISR, so it will never do its action.
+</blockquote>
+Thanks for the explanation as it contains facts. 
+What if the sysytick has mid-priority (e.g. 8 in 16-level)? Is there away to push isr&#8217;s PC/SP into top of FreeRTOS&#8217;s TCB list?
+I managed to do work around, in my current case. I created a high priority task and used (xTaskNotifyFromISR/portYIELD<em>FROM</em>ISR &#8211;> xTaskNotifyWait) to continue the work.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 30, 2017</div><div class="thread-post-content">The Tick Processing code assumes it is on the lowest priority interrupt, so moving it up is likely to cause problems.
+Trying to add the ISR to the TCB list is basically trying to make it a task, actually making a task avoids a lot of problems, which is a good solution. I was suggesting using xTimerPendFunctionFromISR() which is a slightly lighter weight option (but might add some undesired interactions depending on who long some other task might be holding the resource). 
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hs2sf">hs2sf</a> on July 31, 2017</div><div class="thread-post-content">I&#8217;d propose to rethink your design. It&#8217;s not the best idea trying to block in an ISR and also this is not supported by any other OS I&#8217;m aware of for a reason.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on August 1, 2017</div><div class="thread-post-content">Thanks. I already made a separate high priority task to continue the work.
+Maybe FreeRTOS team may think of this scenario. There might be a case to do that.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 1, 2017</div><div class="thread-post-content"><blockquote>
+  Thanks. I already made a sepeare high priority task to continue the work.
+  Maybe FreeRTOS team may think of this scenario. There might be a case to 
+  do that.
+</blockquote>
+That is what xTimerPendFunctionFromISR() does, it takes the function you 
+pass it as a parameter and runs it in the RTOS daemon task (also known 
+as the timer service task) &#8211; the priority of which is set by the 
+application writer.
+Going back to answer the question at the top of the thread, if you are 
+using a Cortex-M then there is a function xPortIsInsideInterrupt() that 
+tells you if you are in an interrupt or not &#8211; but that would not help 
+you in any case.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on August 1, 2017</div><div class="thread-post-content">Yes, indeed xTimerPendFunctionCallFromISR does exactly the work I wanted, although it adds a separate task (xTimer task) same as i did.
+Unfortunately, i am running V8.2.1, and could not find xPortIsInsideInterrupt in this version&#8217;s code.
+Is upgrade a seamless process? I mean, do I need to re-write some code to upgrade?
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 1, 2017</div><div class="thread-post-content">The upgrade should be a drop in replacement.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 1, 2017</div><div class="thread-post-content">xTimerPendFunctinCallFromISR adds a single task, that allows you to create a number of ISR callbacks and/or Timer Call back routines. If you have no other use for the TImer/Service task, then it is extra overhead. Knowing it is there, can often simplify code and save tasks.
+RTE can make a more diffinative comment, but I don&#8217;t remember any incompatibility issues between v8 and v9 of FreeRTOS (lots of new features, but I don&#8217;t remember anything breaking.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake/Give from ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on August 2, 2017</div><div class="thread-post-content">Thanks. I assume it is 100% drop-in.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

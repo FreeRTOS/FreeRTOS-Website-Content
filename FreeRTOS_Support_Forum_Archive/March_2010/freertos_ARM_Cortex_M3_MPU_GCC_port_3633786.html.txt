@@ -1,0 +1,316 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARM Cortex M3 MPU (GCC) port - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2010/freertos_ARM_Cortex_M3_MPU_GCC_port_3633786.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="ARM Cortex M3 MPU (GCC) port - FreeRTOS" />
+<meta property="og:description" content="ARM Cortex M3 MPU (GCC) portPosted by sjlongland on March 24, 2010Hi all, Has anyone struck compiler errors when trying to convert a project over to use the new Cortex M3 MPU code?&nbsp; I&#8217;m trying to track down an issue wherein the task list gets overwritten by some task &#8211; the cause has not yet &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2010/freertos_ARM_Cortex_M3_MPU_GCC_port_3633786.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="ARM Cortex M3 MPU (GCC) portPosted by sjlongland on March 24, 2010Hi all, Has anyone struck compiler errors when trying to convert a project over to use the new Cortex M3 MPU code?&nbsp; I&#8217;m trying to track down an issue wherein the task list gets overwritten by some task &#8211; the cause has not yet [&hellip;]" />
+<meta name="twitter:title" content="ARM Cortex M3 MPU (GCC) port - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201877' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201877' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201877' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201877' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138744' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2010%2Ffreertos_ARM_Cortex_M3_MPU_GCC_port_3633786.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2010%2Ffreertos_ARM_Cortex_M3_MPU_GCC_port_3633786.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138744">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2010_freertos_support_forum_archive_index.html/">March 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">ARM Cortex M3 MPU (GCC) port</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sjlongland">sjlongland</a> on March 24, 2010</div><div class="thread-post-content">Hi all,<br />
+Has anyone struck compiler errors when trying to convert a project over to use the new Cortex M3 MPU code?&nbsp; I&#8217;m trying to track down an issue wherein the task list gets overwritten by some task &#8211; the cause has not yet been discovered, and it&#8217;s causing me quite a bit of grief.  
+As a means of tracking down the culprit, I was hoping to try and get the MPU on the job, in order to determine what the cause of this misbehaviour might be &#8211; the only threads that should be writing to this patch of memory should be exclusively the FreeRTOS kernel itself.&nbsp; Microcontroller/board here is the Luminary Micro EK-LM3S8962 evaluation kit.  
+My code is based on the Eclipse demo for this board &#8211; for now I&#8217;ve disabled pre-emptive multitasking &#40;this helps&#41; and enabled stack overflow checking.&nbsp; It compiles fine and runs &#40;with the aforementioned glitch&#41; with the non-MPU Cortex M3 port &#40;portable/GCC/ARM&#95;CM3/port&#123;.c,macro.h&#125;&#41;.&nbsp; If however, I switch the Makefile to use the MPU version &#40;portable/GCC/ARM&#95;CM3&#95;MPU/port&#123;.c,macro.h&#125;&#41;, I get loads of linker errors:  
+<pre><code>arm-stellaris-eabi-gcc -g -O0 -pipe -I /home/stuartl/ezecorp/git/arm-dcc -I /home/stuartl/ezecorp/git/arm-dcc/../libcan -I /home/stuartl/ezecorp/git/arm-dcc/../libsmartwheel -I /home/stuartl/ezecorp/git/arm-dcc/../stellarisware -I /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/boards/ek-lm3s8962 -I /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party -I /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/include -I /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU -D GCC_ARMCM3_LM3S8962 -D inline= -mthumb -mcpu=cortex-m3 -Tarm-dcc.ld -D PACK_STRUCT_END=__attribute((packed)) -D ALIGN_STRUCT_END=__attribute((aligned(4))) -D sprintf=usprintf -D snprintf=usnprintf -D printf=uipprintf -D DEVICE_SERIAL=0xa44ff1d -ffunction-sections -fdata-sections /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/utils/ustdlib.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/fatfs/src/ff.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/queue.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/MemMang/heap_2.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/list.o mmc-ek-lm3s8962.o rit128x96x4.o ssi_sem.o startup.o main.o hw.o font-small.o font-big.o font-huge.o uartTask.o oledTask.o calcTask.o menuTask.o /home/stuartl/ezecorp/git/arm-dcc/libcan/libcan.a /home/stuartl/ezecorp/git/arm-dcc/libsmartwheel/libsmartwheel.a /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/driverlib/gcc/libdriver.a -nostartfiles -Xlinker -oarm-dcc.elf -Xlinker -M -Xlinker -Map=arm-dcc.map -Xlinker --no-gc-sections --entry reset -lm
+/usr/local/lib/gcc/arm-stellaris-eabi/4.4.1/../../../../arm-stellaris-eabi/bin/ld: section privileged_functions loaded at [0001b63c,0001bbeb] overlaps section .data loaded at [0001b63c,0001b87f]
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `prvSetupMPU':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:458: undefined reference to `__FLASH_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:458: undefined reference to `__FLASH_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:464: undefined reference to `__FLASH_segment_end__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:464: undefined reference to `__FLASH_segment_end__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:464: undefined reference to `__FLASH_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:464: undefined reference to `__FLASH_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:470: undefined reference to `__FLASH_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:470: undefined reference to `__FLASH_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:476: undefined reference to `__privileged_functions_end__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:476: undefined reference to `__privileged_functions_end__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:476: undefined reference to `__FLASH_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:476: undefined reference to `__FLASH_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:481: undefined reference to `__privileged_data_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:481: undefined reference to `__privileged_data_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:485: undefined reference to `__privileged_data_end__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:485: undefined reference to `__privileged_data_end__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:485: undefined reference to `__privileged_data_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:485: undefined reference to `__privileged_data_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `vPortStoreTaskMPUSettings':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:564: undefined reference to `__SRAM_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:564: undefined reference to `__SRAM_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:571: undefined reference to `__SRAM_segment_end__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:571: undefined reference to `__SRAM_segment_end__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:571: undefined reference to `__SRAM_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:571: undefined reference to `__SRAM_segment_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:577: undefined reference to `__privileged_data_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:577: undefined reference to `__privileged_data_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:582: undefined reference to `__privileged_data_end__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:582: undefined reference to `__privileged_data_end__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:582: undefined reference to `__privileged_data_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:582: undefined reference to `__privileged_data_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `MPU_vTaskAllocateMPURegions':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:662: undefined reference to `vTaskAllocateMPURegions'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.o: In function `xTaskGenericCreate':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.c:523: undefined reference to `vPortYieldFromISR'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.o: In function `vTaskDelete':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.c:582: undefined reference to `vPortYieldFromISR'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.o: In function `vTaskDelayUntil':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.c:668: undefined reference to `vPortYieldFromISR'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.o: In function `vTaskDelay':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.c:729: undefined reference to `vPortYieldFromISR'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.o: In function `vTaskPrioritySet':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.c:853: undefined reference to `vPortYieldFromISR'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.o:/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.c:899: more undefined references to `vPortYieldFromISR' follow
+collect2: ld returned 1 exit status
+make: *** [arm-dcc.elf] Error 1
+</code></pre>
+I don&#8217;t see any demos using plain GCC that I can base my modifications on, especially not for this microcontroller, so I&#8217;m at a loss.&nbsp; &#40;And Eclipse has horrid hard-to-read config files… it also doesn&#8217;t run very well on mipsel-linux as I lack Java.&#41;  
+How does one properly go about integrating the MPU code into an existing project?
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM Cortex M3 MPU (GCC) port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sjlongland">sjlongland</a> on March 24, 2010</div><div class="thread-post-content"><strong>Update:</strong> Managed to get some of the linker errors down, but not all…<br />
+This was done by adding in both port.c&#8217;s from ARM&#95;CM3 and ARM&#95;CM3&#95;MPU… which does not look right, and &#40;predictably&#41; leads to multiple definition errors.&nbsp; I also tinkered with the linker script.  
+<pre><code>arm-stellaris-eabi-gcc -g -O0 -pipe -I /home/stuartl/ezecorp/git/arm-dcc -I /home/stuartl/ezecorp/git/arm-dcc/../libcan -I /home/stuartl/ezecorp/git/arm-dcc/../libsmartwheel -I /home/stuartl/ezecorp/git/arm-dcc/../stellarisware -I /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/boards/ek-lm3s8962 -I /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party -I /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/include -I /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU -D GCC_ARMCM3_LM3S8962 -D inline= -mthumb -mcpu=cortex-m3 -Tarm-dcc.ld -D PACK_STRUCT_END=__attribute((packed)) -D ALIGN_STRUCT_END=__attribute((aligned(4))) -D sprintf=usprintf -D snprintf=usnprintf -D printf=uipprintf -D DEVICE_SERIAL=0xa44ff1d -ffunction-sections -fdata-sections /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/utils/ustdlib.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/fatfs/src/ff.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/tasks.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/queue.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/MemMang/heap_2.o /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/list.o mmc-ek-lm3s8962.o rit128x96x4.o ssi_sem.o startup.o main.o hw.o font-small.o font-big.o font-huge.o uartTask.o oledTask.o calcTask.o menuTask.o /home/stuartl/ezecorp/git/arm-dcc/libcan/libcan.a /home/stuartl/ezecorp/git/arm-dcc/libsmartwheel/libsmartwheel.a /home/stuartl/ezecorp/git/arm-dcc/../stellarisware/driverlib/gcc/libdriver.a -nostartfiles -Xlinker -oarm-dcc.elf -Xlinker -M -Xlinker -Map=arm-dcc.map -Xlinker --no-gc-sections --entry reset -lm
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `pxPortInitialiseStack':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:207: multiple definition of `pxPortInitialiseStack'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.o:/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.c:115: first defined here
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `vPortSVCHandler':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:236: multiple definition of `vPortSVCHandler'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.o:/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.c:134: first defined here
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `xPortStartScheduler':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:320: multiple definition of `xPortStartScheduler'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.o:/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.c:167: first defined here
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `vPortEndScheduler':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:345: multiple definition of `vPortEndScheduler'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.o:/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.c:188: first defined here
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `vPortEnterCritical':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:352: multiple definition of `vPortEnterCritical'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.o:/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.c:202: first defined here
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `vPortExitCritical':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:363: multiple definition of `vPortExitCritical'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.o:/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.c:209: first defined here
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `xPortPendSVHandler':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:379: multiple definition of `xPortPendSVHandler'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.o:/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.c:222: first defined here
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `xPortSysTickHandler':
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.c:418: multiple definition of `xPortSysTickHandler'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.o:/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3/port.c:254: first defined here
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `prvSetupMPU':
+port.c:(privileged_functions+0x252): undefined reference to `__FLASH_segment_start__'
+port.c:(privileged_functions+0x256): undefined reference to `__FLASH_segment_start__'
+port.c:(privileged_functions+0x268): undefined reference to `__FLASH_segment_end__'
+port.c:(privileged_functions+0x26c): undefined reference to `__FLASH_segment_end__'
+port.c:(privileged_functions+0x270): undefined reference to `__FLASH_segment_start__'
+port.c:(privileged_functions+0x274): undefined reference to `__FLASH_segment_start__'
+port.c:(privileged_functions+0x29a): undefined reference to `__FLASH_segment_start__'
+port.c:(privileged_functions+0x29e): undefined reference to `__FLASH_segment_start__'
+port.c:(privileged_functions+0x2b0): undefined reference to `__privileged_functions_end__'
+port.c:(privileged_functions+0x2b4): undefined reference to `__privileged_functions_end__'
+port.c:(privileged_functions+0x2b8): undefined reference to `__FLASH_segment_start__'
+port.c:(privileged_functions+0x2bc): undefined reference to `__FLASH_segment_start__'
+port.c:(privileged_functions+0x2e2): undefined reference to `__privileged_data_start__'
+port.c:(privileged_functions+0x2e6): undefined reference to `__privileged_data_start__'
+port.c:(privileged_functions+0x2f8): undefined reference to `__privileged_data_end__'
+port.c:(privileged_functions+0x2fc): undefined reference to `__privileged_data_end__'
+port.c:(privileged_functions+0x300): undefined reference to `__privileged_data_start__'
+port.c:(privileged_functions+0x304): undefined reference to `__privileged_data_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `vPortStoreTaskMPUSettings':
+port.c:(privileged_functions+0x3e4): undefined reference to `__SRAM_segment_start__'
+port.c:(privileged_functions+0x3e8): undefined reference to `__SRAM_segment_start__'
+port.c:(privileged_functions+0x3f4): undefined reference to `__SRAM_segment_end__'
+port.c:(privileged_functions+0x3f8): undefined reference to `__SRAM_segment_end__'
+port.c:(privileged_functions+0x3fc): undefined reference to `__SRAM_segment_start__'
+port.c:(privileged_functions+0x400): undefined reference to `__SRAM_segment_start__'
+port.c:(privileged_functions+0x420): undefined reference to `__privileged_data_start__'
+port.c:(privileged_functions+0x424): undefined reference to `__privileged_data_start__'
+port.c:(privileged_functions+0x430): undefined reference to `__privileged_data_end__'
+port.c:(privileged_functions+0x434): undefined reference to `__privileged_data_end__'
+port.c:(privileged_functions+0x438): undefined reference to `__privileged_data_start__'
+port.c:(privileged_functions+0x43c): undefined reference to `__privileged_data_start__'
+/home/stuartl/ezecorp/git/arm-dcc/../stellarisware/third_party/freertos/Source/portable/GCC/ARM_CM3_MPU/port.o: In function `MPU_vTaskAllocateMPURegions':
+port.c:(.text.MPU_vTaskAllocateMPURegions+0x16): undefined reference to `vTaskAllocateMPURegions'
+collect2: ld returned 1 exit status
+make: *** [arm-dcc.elf] Error 1
+</code></pre>
+The linker script is as follows:  
+<pre><code>/******************************************************************************
+ *
+ * standalone.ld - Linker script for applications using startup.c and
+ *                 DriverLib.
+ *
+ * Copyright (c) 2005-2007 Luminary Micro, Inc.  All rights reserved.
+ *
+ * Software License Agreement
+ *
+ * Luminary Micro, Inc. (LMI) is supplying this software for use solely and
+ * exclusively on LMI's microcontroller products.
+ *
+ * The software is owned by LMI and/or its suppliers, and is protected under
+ * applicable copyright laws.  All rights are reserved.  Any use in violation
+ * of the foregoing restrictions may subject the user to criminal sanctions
+ * under applicable laws, as well as to civil liability for the breach of the
+ * terms and conditions of this license.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
+ * LMI SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
+ * CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+ *
+ * This is part of revision 1392 of the Stellaris Peripheral Driver Library.
+ *
+ *****************************************************************************/
+MEMORY
+{
+    FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 256K
+    SRAM (rwx) : ORIGIN = 0x20000000, LENGTH = 64K
+}
+SECTIONS
+{
+    .text :
+    {
+        KEEP(*(.isr_vector))
+        *(.text*)
+        *(.rodata*)
+        _etext = .;
+    } &gt; FLASH
+    .privileged_functions : AT (ADDR(.text) + SIZEOF(.text))
+    {
+        *(.privileged_functions*)
+    } &gt; FLASH
+    .data : AT (ADDR(.privileged_functions) + SIZEOF(.privileged_functions))
+    {
+        _data = .;
+        *(vtable)
+        *(.data*)
+        _edata = .;
+    } &gt; SRAM
+    .bss :
+    {
+        _bss = .;
+        *(.bss*)
+        *(COMMON)
+        _ebss = .;
+    } &gt; SRAM
+}
+</code></pre>
+Regards,<br />
+Stuart Longland
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM Cortex M3 MPU (GCC) port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on March 24, 2010</div><div class="thread-post-content">Going back to your original problem &#40;rather than answering your question :o&#41; the most common cause of a crash in a cortex M3 application is a misconfigured interrupt priority. This can result from a misunderstanding of how interrupts priorities are defined &#40;it is strange&#41; or the misuse of a vendor provided function used to set a priority &#40;the semantics differs between vendors and the vendors themselves get it wrong&#41;.  
+This is some text from the SafeRTOS support forum, it holds true for FreeRTOS too except in FreeRTOS the priorities set by the constants can be configured:  
+<blockquote>
+  The SafeRTOS Cortex M3 port implements a full interrupt nesting model.&nbsp; Normally the user definable constants configKERNEL&#95;INTERRUPT&#95;PRIORITY and configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY define the interrupt priority used by the kernel itself and the maximum interrupt priority from which SafeRTOS API calls can be made respectively.&nbsp; However, when SafeRTOS is pre-loaded in ROM these constants cannot be modified.&nbsp; In the LM3S9B96 configKERNEL&#95;INTERRUPT&#95;PRIORITY is set to 255 and configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY is set to 191.   
+</blockquote>
+Important: The Cortex-M3 core uses numerically low priority numbers to represent HIGH priority interrupts, which can seem counter-intuitive and is easy to forget.&nbsp; If you wish to assign an interrupt a low priority do not assign it a priority of 0 &#40;or other low numeric value&#41; as this can result in the interrupt actually having the highest priority; and potentially make your system behaviour unpredictable if this priority is above portSYSCALL&#95;INTERRUPT&#95;PRIORITY. Interrupts that use the SafeRTOS API must be assigned a numeric priority of 191 or a numerically higher value to give them an interrupt priority equal to or lower than 191.&nbsp; Interrupts that make use of the SafeRTOS API must be explicitly assigned an interrupt priority as all interrupt priorities are zero by default.  
+The value 191 is stated as if all eight priority bits were implemented.&nbsp; The LM3S9B96 only has three bits implemented, further the three bits are the top three bits of the byte.&nbsp; Therefore 191 is equivalent to &#40; 5 &lt;&lt; 5 &#41; , or simply 5 if a CMSIS function is used to assign a priority to an interrupt.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM Cortex M3 MPU (GCC) port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on March 24, 2010</div><div class="thread-post-content">Everything under the quote tag is supposed to be included in the quote, right down to the bottom.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM Cortex M3 MPU (GCC) port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 24, 2010</div><div class="thread-post-content">Switching from the standard CM3 port to the MPU enabled CM3 port can be quite involved, unless you have experience of doing it before and have taken care not to accidentally use any shared memory from the outset.&nbsp; Once the MPU is enabled user mode tasks will not be able to access shared memory unless they are explicitly given access to a memory region &#8211; so in most cases you would have to both switch to the MPU enabled port files AND determine which tasks can legitimately access which memory.  
+If you want to use the MPU enabled port then I would suggest that you start with one of the pre-configured MPU demo applications.&nbsp; That way you will have all the correct configuration from the outset &#40;the LPC17xx eBook also contains a short chapter on using the MPU port&#41; and can add in your own application code little by little so you always know you have a working configuration.  
+The linker errors you are seeing are generated because the port code expects to see certain constants &#40;addresses&#41; defined in the linker script itself.&nbsp; Take a look at the linker scripts that come with the existing MPU demos.  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

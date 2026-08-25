@@ -1,0 +1,161 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARM IAR, LPC2000, interrupt theory of op - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2009/freertos_ARM_IAR_LPC2000_interrupt_theory_of_op_3227605.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="ARM IAR, LPC2000, interrupt theory of op - FreeRTOS" />
+<meta property="og:description" content="ARM IAR, LPC2000, interrupt theory of opPosted by gasilvis on April 19, 2009Could someone explain how the interrupts work in the demo project for the ARM7 LPC2000 IAR project? From the cstart.s: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#091;pc,&#035;+24&#093;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Reset &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#091;pc,&#035;+24&#093;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Undefined instructions ;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#091;pc,&#035;+24&#093;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Software interrupt &#040;SWI/SVC&#041; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b vPortYieldProcessor &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2009/freertos_ARM_IAR_LPC2000_interrupt_theory_of_op_3227605.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="ARM IAR, LPC2000, interrupt theory of opPosted by gasilvis on April 19, 2009Could someone explain how the interrupts work in the demo project for the ARM7 LPC2000 IAR project? From the cstart.s: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#091;pc,&#035;+24&#093;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Reset &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#091;pc,&#035;+24&#093;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Undefined instructions ;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#091;pc,&#035;+24&#093;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Software interrupt &#040;SWI/SVC&#041; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b vPortYieldProcessor &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; [&hellip;]" />
+<meta name="twitter:title" content="ARM IAR, LPC2000, interrupt theory of op - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201735' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201735' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201735' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201735' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139263' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2009%2Ffreertos_ARM_IAR_LPC2000_interrupt_theory_of_op_3227605.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2009%2Ffreertos_ARM_IAR_LPC2000_interrupt_theory_of_op_3227605.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139263">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2009_freertos_support_forum_archive_index.html/">April 2009 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">ARM IAR, LPC2000, interrupt theory of op</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gasilvis">gasilvis</a> on April 19, 2009</div><div class="thread-post-content">Could someone explain how the interrupts work in the demo project for the ARM7 LPC2000 IAR project?
+From the cstart.s:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#91;pc,&#35;+24&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Reset
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#91;pc,&#35;+24&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Undefined instructions
+;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#91;pc,&#35;+24&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Software interrupt &#40;SWI/SVC&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b vPortYieldProcessor
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#91;pc,&#35;+24&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Prefetch abort
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#91;pc,&#35;+24&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; Data abort
+&#95;&#95;vector&#95;0x14
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DC32&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; RESERVED
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc, &#91;PC, &#35;-0xFF0&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; IRQ
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc,&#91;pc,&#35;+24&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;; FIQ
+The SWI interrupt calls vPortYieldProcessor.
+What does the IRQ interrupt call? Does the &quot;ldr&nbsp;&nbsp; pc, &#91;PC, &#35;-0xFF0&#93; &quot;&nbsp; also invoke the vPortYieldProcessor?
+I don&#8217;t see how the TIMER0 interrupt and its calls to vPortPreemptiveTickEntry get called. Where is IRQ&#95;Handler?
+Is IRQ being routed to the SWI interrupt in order to get on the SVC&#95;STACK?
+If you have insight into this and can explain the strategy, I&#8217;d be obliged.
+George
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM IAR, LPC2000, interrupt theory of op</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/spacewrench">spacewrench</a> on April 19, 2009</div><div class="thread-post-content">&gt; What does the IRQ interrupt call? Does the &quot;ldr pc, &#91;PC, &#35;-0xFF0&#93; &quot; also invoke the vPortYieldProcessor? 
+ARM processors &#40;at least, the ones we&#8217;re talking about here&#41; place an interrupt table at the beginning of memory.&nbsp; This table is different from a conventional interrupt vector table in that the table contains &#95;instructions&#95;, not the addresses of the ISRs.&nbsp; So when an exception occurs &#40;for example, when a peripheral raises an interrupt&#41;, the processor loads the constant value 0x00000018 into the instruction pointer, changes some state bits, and resumes executing &#40;by fetching the instruction &quot;LDR PC,&#91;PC,&#35;-0xFF0&#93;&quot; and executing it&#41;.
+Now, on the LPC2K processors, the Vectored Interrupt Controller has a dynamic register at location 0xFFFFF030 that returns the address of an ISR that&#8217;s been set up to handle the highest-priority pending interrupt.&nbsp; 0xFFFFF030 just happens to be 0x00000018 &#8211; 0x00000FF0, so the LDR instruction causes the PC to be loaded with the address of this highest-priority interrupt ISR, and the ISR starts running.&nbsp; &#40;For those of you playing along at home, who have just gotten out your hex calculators and are about to tell me that 0x00000018-0x00000FF0 is not 0xFFFFF030, the difference is because of the way the instruction pipeline works.&#41;
+So the short answer is that the LDR instruction is slightly hackish magic, and it Does The Right Thing.&nbsp; It may invoke vPortYieldProcessor if the VIC has been set up that way, but I don&#8217;t think that&#8217;s a common way of doing it.&nbsp; I don&#8217;t remember what timer interrupt setup the FreeRTOS port uses.
+When I was just starting out with the LPC processor, I couldn&#8217;t find a lot of this basic info online, and ended up buying the Steve Furber book, &#95;ARM System-On-Chip Architecture&#95;.&nbsp; It&#8217;s not great, but it&#8217;s better than nothing.&nbsp; &#40;I&#8217;m using Luminary Cortex-M3 processors now, and there&#8217;s MUCH more info available for download.&#41;
+This is based on my slightly vague memories of the LPC.&nbsp; It should be close enough to get you going, though.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM IAR, LPC2000, interrupt theory of op</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gasilvis">gasilvis</a> on April 20, 2009</div><div class="thread-post-content">Aha&#33; So with this &quot;LDR PC,&#91;PC,&#35;-0xFF0&#93;&quot; construct you don&#8217;t need:
+&#95;&#95;irq &#95;&#95;arm void IRQ&#95;Handler &#40;void&#41;
+&#123;
+&nbsp; void &#40;&#42;interrupt&#95;function&#41;&#40;&#41;;
+&nbsp; unsigned int vector;
+&nbsp; vector = VICVectAddr;&nbsp;&nbsp;&nbsp;&nbsp; // Get interrupt vector.
+&nbsp; interrupt&#95;function = &#40;void&#40;&#42;&#41;&#40;&#41;&#41;vector;
+&nbsp; &#40;&#42;interrupt&#95;function&#41;&#40;&#41;;&nbsp; // Call vectored interrupt function thru pointer
+&nbsp; VICVectAddr = 0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Clear interrupt in VIC
+&#125;
+The correct interrupt&#95;function will be called directly.&nbsp;&nbsp; Though you would then need to make sure each of these functions were prefixed with &#95;&#95;irq &#95;&#95;arm. 
+Thanks for explanation&#33;
+George
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM IAR, LPC2000, interrupt theory of op</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gasilvis">gasilvis</a> on April 20, 2009</div><div class="thread-post-content">Quick follow up:&nbsp;&nbsp; You mentioned &quot;instruction pipeline&quot;. Does the &quot;LDR PC,&#91;PC,&#35;-0xFF0&#93;&quot; construct assume that the Memory Acceleration Module &#40;MAM&#41;&nbsp; is activated at its full level?
+Thanks again,
+George
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM IAR, LPC2000, interrupt theory of op</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/spacewrench">spacewrench</a> on April 20, 2009</div><div class="thread-post-content">No, the CPU is set up to achieve the same results whether or not hardware acceleration is in operation.&nbsp; There are some known bugs with the MAM, but I am not aware of any that would change things such as which memory location a PC-relative load reads from.&nbsp; &#40;Such a bug would be a showstopper of the finest water; if somebody released a chip with a bug like that, my guess would be that it&#8217;d be the last chip they every released.&#41;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interrupts and AT91 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2006/freertos_Interrupts_and_AT91_1587909.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Interrupts and AT91 - FreeRTOS" />
+<meta property="og:description" content="Interrupts and AT91Posted by seaton on October 8, 2006I&#8217;m a real newb to the AT91SAM7X and on a bit of a learning curve. I&#8217;m having some issues trying to get an ISR on one of my PIOB inputs working. I&#8217;m using GNUARM and FreeRTOS on a small robotics project. Under FreeRTOS I&#8217;m successfully running a &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2006/freertos_Interrupts_and_AT91_1587909.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Interrupts and AT91Posted by seaton on October 8, 2006I&#8217;m a real newb to the AT91SAM7X and on a bit of a learning curve. I&#8217;m having some issues trying to get an ISR on one of my PIOB inputs working. I&#8217;m using GNUARM and FreeRTOS on a small robotics project. Under FreeRTOS I&#8217;m successfully running a [&hellip;]" />
+<meta name="twitter:title" content="Interrupts and AT91 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201396' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201396' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201396' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201396' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139330' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2006%2Ffreertos_Interrupts_and_AT91_1587909.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2006%2Ffreertos_Interrupts_and_AT91_1587909.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139330">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2006_freertos_support_forum_archive_index.html/">October 2006 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Interrupts and AT91</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/seaton">seaton</a> on October 8, 2006</div><div class="thread-post-content">I&#8217;m a real newb to the AT91SAM7X and on a bit of a learning curve.
+I&#8217;m having some issues trying to get an ISR on one of my PIOB inputs
+working. I&#8217;m using GNUARM and FreeRTOS on a small robotics project.
+Under FreeRTOS I&#8217;m successfully running a simple task &#40; blink Led&#41;
+that as the name says just blinks a led, it gives me some indication
+that things a running, and I also have my non context switching ISR
+that I want to run based on a digital input PIOB, that will
+eventually be my wheel encoder ISR.
+It appears my ISR is being called when I put a high on the PIOB input
+port, I have my ISR turning on one of my development board Leds, this
+is happening the first time, then freezes the controller So I&#8217;m
+wondering. Do I have to re-enable interrupts manually after I
+complete my ISR???
+Another thing I thought what could be causing it could be ISR Stack
+Size. Anyone know where this is set? However I don&#8217;t think it is
+stack size of the ISR as I have tested it by cutting the ISR back to
+just about nothing, and it still froze.
+Anyway my Interrupt setup code so far if anyone can see any serious
+holes that they could drive a truck though that a beginner like me
+might be missing.
+&#45;&#8212;GPIOB&#95;ISR.c&#8212;-
+/&#35;include &quot;Board.h&quot;
+/&#42; Scheduler includes. &#42;/
+&#35;include &quot;FreeRTOS.h&quot;
+&#35;include &quot;task.h&quot;
+&#35;include &quot;queue.h&quot;
+&#35;include &quot;semphr.h&quot;
+&#35;include &quot;appboard.h&quot;
+&#35;include &quot;buzzbot.h&quot;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+extern struct Encoder&#95; Encoder;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+/&#42; This does not cause a Context switch so is declared as IRQ &#42;/
+void PIOB&#95;ISR&#40;void&#41; &#95;&#95;attribute&#95;&#95;&#40;&#40;interrupt&#40;&quot;IRQ&quot;&#41;&#41;&#41;;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+/&#42;
+&#42; wheel encoder runs each time interrupt occurs generated from PIOB
+&#42;/
+void PIOB&#95;ISR&#40;void&#41;
+&#123;
+//portENTER&#95;SWITCHING&#95;ISR&#40;&#41;;
+portENTER&#95;CRITICAL&#40;&#41; ;
+// This reads and clears the IRQ Status Register on the PIO
+unsigned int ulIRQ = AT91C&#95;BASE&#95;PIOB-&gt;PIO&#95;ISR;
+//if &#40;ulIRQ &amp; L&#95;WHEEL&#41; &#123;
+//TODO just for testing of ISR, need to determine source of interrupt
+etc
+// Encoder.l&#95;Distance++;
+// &#125;
+//if &#40;ulIRQ &amp; R&#95;WHEEL&#41; &#123;
+// Encoder.r&#95;Distance++;
+//&#125;
+// give some thing visual
+if &#40;AppLed&#95;GetState&#40;0&#41;&#41;
+AppLed&#95;SetState&#40;0,0&#41;;
+else
+AppLed&#95;SetState&#40;0,1&#41;;
+Debug&#40; 2, &quot;PIOB&#95;ISR Hit&#33;&#33;&#33;&#33;&quot; &#41;;
+/&#42; Clear AIC to complete ISR processing &#42;/
+AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;EOICR = 0;
+portEXIT&#95;CRITICAL&#40;&#41;
+/&#42; Do a task switch if needed &#42;/
+//portEXIT&#95;SWITCHING&#95;ISR&#40; 0 &#41;;
+&#125;
+&#45;&#8212; interrupt setup code &#8212;&#8211;
+/&#42; &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+/&#42; Configures PIOB for interrupt on change of state &#42;/
+int Din&#95;PIOB&#95;Setup&#40;void&#41;
+&#123;
+//unsigned int oldHandler;
+unsigned int mask ;
+// interrupts need the clock
+AT91C&#95;BASE&#95;PMC-&gt;PMC&#95;PCER = 1 &lt;&lt; AT91C&#95;ID&#95;PIOB;
+// Configure AIC
+//AT91C&#95;AIC&#95;SRCTYPE&#95;POSITIVE&#95;EDGE,AT91C&#95;AIC&#95;SRCTYPE&#95;EXT&#95;LOW&#95;LEVEL,
+AT91C&#95;AIC&#95;SRCTYPE&#95;HIGH&#95;LEVEL,AT91C&#95;AIC&#95;SRCTYPE&#95;EXT&#95;NEGATIVE&#95;EDGE
+// gets old IRQ handler
+//oldHandler = AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;SVR&#91;AT91C&#95;ID&#95;PIOB&#93;;
+mask = 0x1 &lt;&lt; AT91C&#95;ID&#95;PIOB ;
+//&#42; Disable the interrupt on the interrupt controller
+AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;IDCR = mask ;
+//&#42; Save the interrupt handler routine pointer and the interrupt
+priority
+AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;SVR&#91;AT91C&#95;ID&#95;PIOB&#93; = &#40;unsigned int&#41; PIOB&#95;ISR ;
+//&#42; Store the Source Mode Register
+AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;SMR&#91;AT91C&#95;ID&#95;PIOB&#93; =
+AT91C&#95;AIC&#95;SRCTYPE&#95;INT&#95;HIGH&#95;LEVEL | 7 ; // IRQ Priority
+//&#42; Clear the interrupt on the interrupt controller
+AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;ICCR = mask ;
+//&#42; Enable the interrupt on the interrupt controller
+AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;IECR = 0x1 &lt;&lt; AT91C&#95;ID&#95;PIOB ;
+//AT91F&#95;AIC&#95;EnableIt&#40;AT91C&#95;BASE&#95;AIC, 0x1 &lt;&lt; AT91C&#95;ID&#95;PIOB&#41;;
+return CONTROLLER&#95;OK;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;- &#42;/
+/&#42; Configures specified pin as a digital input and &#42;/
+/&#42; enables this pin as interrupt source &#42;/
+int Din&#95;PIOB&#95;Enable&#40;unsigned int pin&#41;
+&#123;
+// Disable output on specified PIO pin
+AT91C&#95;BASE&#95;PIOB-&gt;PIO&#95;ODR = 0x1&lt;&lt;pin;
+AT91C&#95;BASE&#95;PIOB-&gt;PIO&#95;PER = 0x1&lt;&lt;pin;
+// enable interrupt on PIO Pin
+AT91C&#95;BASE&#95;PIOB-&gt;PIO&#95;IER = 0x1&lt;&lt;pin;
+return CONTROLLER&#95;OK;
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupts and AT91</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on October 8, 2006</div><div class="thread-post-content">&gt; Under FreeRTOS I&#8217;m successfully running a simple task &#40; blink Led&#41;
+&gt; that as the name says just blinks a led, it gives me some indication
+&gt; that things a running, and I also have my non context switching ISR
+&gt; that I want to run based on a digital input PIOB, that will
+&gt; eventually be my wheel encoder ISR.
+I would suggest writing a simple program that does not use FreeRTOS to get the PIOB interrupt working as you want first, then add the known working code to your FreeRTOS project.&nbsp; Something very simple, like toggle an LED from the interrupt and have main just setup the interrupt, then sit in a for&#40;;;&#41;; loop not doing anything &#40;assuming your PIOB interrupt occur slowly enough to see the LED toggle&#41;.
+&gt; It appears my ISR is being called when I put a high on the PIOB input
+&gt; port, I have my ISR turning on one of my development board Leds, this
+&gt; is happening the first time, then freezes the controller So I&#8217;m
+&gt; wondering. Do I have to re-enable interrupts manually after I
+&gt; complete my ISR???
+You have to clear the AIC as:
+AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;EOICR = 0;
+Other than that, you may have to clear the BIOB interrupt also, I don&#8217;t know the details of how the port interrupts work.&nbsp; You don&#8217;t need to enable interrupts as such.
+Maybe you ISR is being continuously entered.&nbsp; Run the code in the debugger, set a break point in the ISR, then step trough the code.&nbsp; Do you immediately go back into the ISR when the ISR function ends?&nbsp; If so then the interrupt is still being asserted.
+&gt; 
+&gt; Another thing I thought what could be causing it could be ISR Stack
+&gt; Size. Anyone know where this is set? However I don&#8217;t think it is
+&gt; stack size of the ISR as I have tested it by cutting the ISR back to
+&gt; just about nothing, and it still froze.
+The stack size is set in the startup file &#8211; the asm file that calls main.&nbsp; You will probably find a definition in there for the stack size of each processor mode.
+&gt; 
+&gt; Anyway my Interrupt setup code so far if anyone can see any serious
+&gt; holes that they could drive a truck though that a beginner like me
+&gt; might be missing.
+Do not call ENTER&#95;EXIT critical from the ISR &#8211; this is a definite no no.&nbsp; Also don&#8217;t call a function to toggle an LED that uses enter/exit critical.
+The enter/exit switching isr macros need only be used if the isr causes a context switch, and should only be used if the ISR is declared as naked.
+I don&#8217;t know what the debug&#40;&#41; function does &#8211; but I suspect it will be something that you don&#8217;t want to happen from within an ISR&#33;
+Hope this provides some pointers.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupts and AT91</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on October 9, 2006</div><div class="thread-post-content">Thanks for that.
+I&#8217;m already clearing the AIC at the end of my ISR, and by reading the PIOB Interrupt Register it should be clearing it &#40;as I interpret the datasheet anyway&#41;
+I only had the entry/exit ISR macros in to test as a &quot;naked&quot; ISR to see if it made any difference.
+I will remove everything else and test tonight without FreeRTOS when I get home as you suggest.&nbsp; this was the next thing I was going to do. 
+Thanks,
+Stephen&#8230;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

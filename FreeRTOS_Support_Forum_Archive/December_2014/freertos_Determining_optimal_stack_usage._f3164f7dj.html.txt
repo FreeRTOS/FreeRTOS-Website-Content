@@ -1,0 +1,464 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Determining optimal stack usage. - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/December_2014/freertos_Determining_optimal_stack_usage._f3164f7dj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Determining optimal stack usage. - FreeRTOS" />
+<meta property="og:description" content="Determining optimal stack usage.Posted by znatok on December 8, 2014HI, I have a project with 10 to 20 tasks running depending on configuration and active connections (TCP server, &#8230;). I want to optimize stack usage by every single task and for that I&#8217;m about to use uxTaskGetStackHighWaterMark() http://www.freertos.org/uxTaskGetStackHighWaterMark.html But I&#8217;d like to check stack usage &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/December_2014/freertos_Determining_optimal_stack_usage._f3164f7dj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Determining optimal stack usage.Posted by znatok on December 8, 2014HI, I have a project with 10 to 20 tasks running depending on configuration and active connections (TCP server, &#8230;). I want to optimize stack usage by every single task and for that I&#8217;m about to use uxTaskGetStackHighWaterMark() http://www.freertos.org/uxTaskGetStackHighWaterMark.html But I&#8217;d like to check stack usage [&hellip;]" />
+<meta name="twitter:title" content="Determining optimal stack usage. - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202461' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202461' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202461' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202461' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144045' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2014%2Ffreertos_Determining_optimal_stack_usage._f3164f7dj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2014%2Ffreertos_Determining_optimal_stack_usage._f3164f7dj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144045">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/December_2014_freertos_support_forum_archive_index.html/">December 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Determining optimal stack usage.</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/znatok">znatok</a> on December 8, 2014</div><div class="thread-post-content">HI,
+I have a project with 10 to 20 tasks running depending on configuration and
+active connections (TCP server, &#8230;).
+I want to optimize stack usage by every single task and for that I&#8217;m about
+to use
+uxTaskGetStackHighWaterMark()
+<a href="http://www.freertos.org/uxTaskGetStackHighWaterMark.html">http://www.freertos.org/uxTaskGetStackHighWaterMark.html</a>
+But I&#8217;d like to check stack usage of all tasks and not only some specific.
+So I need a functionality to walk over all tasks. Unfortunately I do not
+see a way to do it without turning on costly configUSE<em>TRACE</em>FACILITY . From
+the other hand scheduler must have a list or lists of ALL tasks somewhere
+and this should not be related to TRACE<em>FACILITY. My question is if I can
+get access to task handlers list(s) without TRACE</em>FACILITY ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Determining optimal stack usage.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on December 8, 2014</div><div class="thread-post-content">The Eclipse, IAR, and various other, IDE plugins will show you the RAM usage. Otherwise temporarily hack the code to loose the configUSE<em>TRACE</em>FACILITY guards then use uxTaskGetSystemState().
+</div></div><div class="thread-post"><h3 class="thread-post-title">Determining optimal stack usage.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/znatok">znatok</a> on December 8, 2014</div><div class="thread-post-content">I do not use IDE. I need to get stack real time usage information.
+Still is where a way to get access to the task handlers list in some way?
+On Mon, Dec 8, 2014 at 7:49 PM, Dave <a href="/FreeRTOS_Support_Forum_Archive/December_2014/&#x6d;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#100;&#x61;&#118;&#101;&#x64;&#111;&#111;&#x72;&#115;&#64;&#x75;&#115;&#x65;&#x72;&#115;&#x2e;&#x73;&#102;&#x2e;&#110;&#101;&#x74;">&#100;&#x61;&#118;&#101;&#x64;&#111;&#111;&#x72;&#115;&#64;&#x75;&#115;&#x65;&#x72;&#115;&#x2e;&#x73;&#102;&#x2e;&#110;&#101;&#x74;</a> wrote:
+<blockquote>
+  The Eclipse, IAR, and various other, IDE plugins will show you the RAM
+  usage. Otherwise temporarily hack the code to loose the
+  <h2>configUSE<em>TRACE</em>FACILITY guards then use uxTaskGetSystemState().</h2>
+  Determining optimal stack usage.
+  <h2><a href="https://sourceforge.net/p/freertos/discussion/382005/thread/f3164f7d/?limit=25#cb43">https://sourceforge.net/p/freertos/discussion/382005/thread/f3164f7d/?limit=25#cb43</a></h2>
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Determining optimal stack usage.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/markwrichardson">markwrichardson</a> on December 9, 2014</div><div class="thread-post-content">I did the following . . .  
+The current running job info is application specific, but you should get 
+the idea
+~~~~~~
+//======================================================================
+//
+//  notes for below
+//======================================================================
+/*
+    &#8212; TaskStatus<em>t type
+    TaskHandle</em>t            xHandle                 &#8211; The handle of the task
+    const signed char *     pcTaskName              &#8211; A pointer to the task&#8217;s name
+    unsigned BaseType<em>t     xTaskNumber             &#8211; A number unique to the task
+    eTaskState              eCurrentState           &#8211; Task state
+    unsigned BaseType</em>t     uxCurrentPriority       &#8211; task Priority
+    unsigned BaseType_t     uxBasePriority          &#8211; Normal Priority
+    unsigned long           ulRunTimeCounter        &#8211; Total Run time
+    unsigned short          usStackHighWaterMark    &#8211; smallest stack remaining so far
+<pre><code>eTaskState
+'G' eRunning = 0,    A task is querying the state of itself, so must be running. 
+'R' eReady,          The task being queried is in a read or pending ready list. 
+'B' eBlocked,        The task being queried is in the Blocked state.
+'S' eSuspended,      The task being queried is in the Suspended state, or is in the Blocked state with an infinite time out. 
+'D' eDeleted         The task being queried has been deleted, but its TCB has not yet been freed. 
+</code></pre>
+*/
+// put here instead of altering the distro
+void *  xTimerGetTimerDaemonTaskHandle( void );
+//{ &#8220;TASKLIST&#8221;, &#8220;Show all tasks and stats&#8221;,     0,0, &#8220;&#8221;,                    { 0 },                      0, &#8216;N&#8217;, &#8216; &#8216;, &#8216;s&#8217;, &#8216;=&#8217;, &amp;cmd<em>TASKLIST },
+//======================================================================
+//
+//  report task statistics to the console
+//======================================================================
+int cmd</em>TASKLIST( CMDARG *args ) 
+{
+    TaskStatus_t        TaskInfo[1 + TC_BASICTASKS + TC_MAXJOBTASKS + 1];
+    unsigned portCHAR   TaskCnt;
+    unsigned portLONG   TotalRunTime;
+    unsigned portCHAR   TaskIdx;
+    portCHAR            st;
+    size_t              FreeHeap;
+    TASKCTLITEM         *pTCI;
+    char                CmdString[41];
+    char                Jobstate;
+    CMDJOBNO            JobNumber;
+    uint16_t            StackSize;
+    char                LockListBuffer[100];
+<pre><code>vTaskSuspendAll();
+TaskCnt = uxTaskGetSystemState( TaskInfo, (1 + TC_BASICTASKS + TC_MAXJOBTASKS + 1), &amp;TotalRunTime);
+CIOCommandOutLine("Name           Tn S  P  p RunTime StkRmn/StkSiz St JobNum CmdString");
+for(TaskIdx = 0; TaskIdx &lt; TaskCnt; TaskIdx ++)
+{
+    switch (TaskInfo[TaskIdx].eCurrentState)
+    {
+        case eRunning:
+            st = 'G';
+            break;
+        case eReady:
+            st = 'r';
+            break;
+        case eBlocked:
+            st = 'b';
+            break;
+        case eSuspended:
+            st = 's';
+            break;
+        case eDeleted:
+            st = 'd';
+            break;
+        default:
+            st = '?';
+            break;
+    };
+    pTCI = (TASKCTLITEM *) xTaskGetApplicationTaskTag( TaskInfo[TaskIdx].xHandle );
+    if (pTCI)
+    {
+        if (pTCI-&gt;Job )             // JobInfo gets set to zero after Jobstate;
+        {
+            strncpy(CmdString, pTCI-&gt;Job-&gt;Args.cmdinput, 40);
+        }
+        JobNumber = pTCI-&gt;Job-&gt;JobNo;
+        Jobstate = pTCI-&gt;JobState;      // get Jobstate after and test in case job ends
+        StackSize = pTCI-&gt;StackSize;
+        if (Jobstate != TC_NOJOB)
+        {
+            CmdString[40] = 0;
+            LockListBuffer[0] = 0;
+            RSLMakeListAllDomainLocksForTaskId( pTCI, LockListBuffer );
+        }
+        else
+        {
+            // if no job, don't trust job info
+            CmdString[0] = 0;       
+            JobNumber = 0;
+            Jobstate = ' ';
+            LockListBuffer[0] = 0;
+        }
+    }
+    else
+    {
+        if (TaskInfo[TaskIdx].xHandle == xTaskGetIdleTaskHandle())
+        {
+            Jobstate = ' ';
+            CmdString[0] = 0;
+            JobNumber = 0;
+            StackSize = configMINIMAL_STACK_SIZE;
+        }
+        else if (TaskInfo[TaskIdx].xHandle == xTimerGetTimerDaemonTaskHandle())
+        {
+            Jobstate = ' ';
+            CmdString[0] = 0;
+            JobNumber = 0;
+            StackSize = configTIMER_TASK_STACK_DEPTH;
+        }
+        else
+        {
+            Jobstate = ' ';
+            CmdString[0] = 0;
+            JobNumber = 0;
+            StackSize = 0;
+        }
+    }
+    CIOCommandOutLine("%-*.*s %2d %c %2d %2d %7ld %6d/%6d  %c %6d %-40.40s", 
+        14,
+        configMAX_TASK_NAME_LEN-1,
+        TaskInfo[TaskIdx].pcTaskName,
+        TaskInfo[TaskIdx].xTaskNumber,
+        st,
+        TaskInfo[TaskIdx].uxCurrentPriority,
+        TaskInfo[TaskIdx].uxBasePriority,
+        TaskInfo[TaskIdx].ulRunTimeCounter,
+        TaskInfo[TaskIdx].usStackHighWaterMark,
+        StackSize,
+        Jobstate,
+        JobNumber,
+        CmdString   );
+    if ( LockListBuffer[0] != 0 )
+        CIOCommandOutLine( " - Locks held: %s", LockListBuffer ); 
+}
+FreeHeap = xPortGetFreeHeapSize();
+CIOCommandOutLine( "Heap Remaining = %u of %u", FreeHeap, configTOTAL_HEAP_SIZE);
+CIOCommandOutLine( "Active Job Count = %u", UCL_GetActiveJobCount() );
+xTaskResumeAll();
+return 0;
+</code></pre>
+}
+~~~~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Determining optimal stack usage.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/znatok">znatok</a> on December 9, 2014</div><div class="thread-post-content">Hi Mark. 
+I do not want to use 
+configUSE<em>TRACE</em>FACILITY and uxTaskGetSystemState(). 
+I need access to tasks list but without tracing on as it is costly. 
+Sent from my iPad
+On Dec 9, 2014, at 5:56 AM, &#8220;Mark &#8221; <a href="/FreeRTOS_Support_Forum_Archive/December_2014/&#x6d;&#97;i&#x6c;&#116;o&#x3a;&#109;a&#x72;&#107;w&#x72;&#105;c&#x68;&#97;r&#x64;&#115;o&#x6e;&#64;u&#x73;&#101;r&#x73;&#46;&#115;&#x66;&#46;&#110;&#x65;&#116;">&#109;a&#x72;&#107;w&#x72;&#105;c&#x68;&#97;r&#x64;&#115;o&#x6e;&#64;u&#x73;&#101;r&#x73;&#46;&#115;&#x66;&#46;&#110;&#x65;&#116;</a> wrote:
+<blockquote>
+  I did the following . . .
+  The current running job info is application specific, but you should get 
+  the idea
+  //======================================================================
+  //
+  //  notes for below
+  //======================================================================
+  /*
+      &#8212; TaskStatus<em>t type
+      TaskHandle</em>t            xHandle                 &#8211; The handle of the task
+      const signed char *     pcTaskName              &#8211; A pointer to the task&#8217;s name
+      unsigned BaseType<em>t     xTaskNumber             &#8211; A number unique to the task
+      eTaskState              eCurrentState           &#8211; Task state
+      unsigned BaseType</em>t     uxCurrentPriority       &#8211; task Priority
+      unsigned BaseType_t     uxBasePriority          &#8211; Normal Priority
+      unsigned long           ulRunTimeCounter        &#8211; Total Run time
+      unsigned short          usStackHighWaterMark    &#8211; smallest stack remaining so far
+<pre><code>eTaskState
+'G' eRunning = 0,    A task is querying the state of itself, so must be running. 
+'R' eReady,          The task being queried is in a read or pending ready list. 
+'B' eBlocked,        The task being queried is in the Blocked state.
+'S' eSuspended,      The task being queried is in the Suspended state, or is in the Blocked state with an infinite time out. 
+'D' eDeleted         The task being queried has been deleted, but its TCB has not yet been freed. 
+</code></pre>
+  */
+  // put here instead of altering the distro
+  void *  xTimerGetTimerDaemonTaskHandle( void );
+  //{ &#8220;TASKLIST&#8221;, &#8220;Show all tasks and stats&#8221;,     0,0, &#8220;&#8221;,                    { 0 },                      0, &#8216;N&#8217;, &#8216; &#8216;, &#8216;s&#8217;, &#8216;=&#8217;, &amp;cmd<em>TASKLIST },
+  //======================================================================
+  //
+  //  report task statistics to the console
+  //======================================================================
+  int cmd</em>TASKLIST( CMDARG *args ) 
+  {
+      TaskStatus_t        TaskInfo[1 + TC_BASICTASKS + TC_MAXJOBTASKS + 1];
+      unsigned portCHAR   TaskCnt;
+      unsigned portLONG   TotalRunTime;
+      unsigned portCHAR   TaskIdx;
+      portCHAR            st;
+      size_t              FreeHeap;
+      TASKCTLITEM         *pTCI;
+      char                CmdString[41];
+      char                Jobstate;
+      CMDJOBNO            JobNumber;
+      uint16_t            StackSize;
+      char                LockListBuffer[100];
+<pre><code>vTaskSuspendAll();
+TaskCnt = uxTaskGetSystemState( TaskInfo, (1 + TC_BASICTASKS + TC_MAXJOBTASKS + 1), &amp;TotalRunTime);
+CIOCommandOutLine("Name           Tn S  P  p RunTime StkRmn/StkSiz St JobNum CmdString");
+for(TaskIdx = 0; TaskIdx &lt; TaskCnt; TaskIdx ++)
+{
+    switch (TaskInfo[TaskIdx].eCurrentState)
+    {
+        case eRunning:
+            st = 'G';
+            break;
+        case eReady:
+            st = 'r';
+            break;
+        case eBlocked:
+            st = 'b';
+            break;
+        case eSuspended:
+            st = 's';
+            break;
+        case eDeleted:
+            st = 'd';
+            break;
+        default:
+            st = '?';
+            break;
+    };
+    pTCI = (TASKCTLITEM *) xTaskGetApplicationTaskTag( TaskInfo[TaskIdx].xHandle );
+    if (pTCI)
+    {
+        if (pTCI-&gt;Job )             // JobInfo gets set to zero after Jobstate;
+        {
+            strncpy(CmdString, pTCI-&gt;Job-&gt;Args.cmdinput, 40);
+        }
+        JobNumber = pTCI-&gt;Job-&gt;JobNo;
+        Jobstate = pTCI-&gt;JobState;      // get Jobstate after and test in case job ends
+        StackSize = pTCI-&gt;StackSize;
+        if (Jobstate != TC_NOJOB)
+        {
+            CmdString[40] = 0;
+            LockListBuffer[0] = 0;
+            RSLMakeListAllDomainLocksForTaskId( pTCI, LockListBuffer );
+        }
+        else
+        {
+            // if no job, don't trust job info
+            CmdString[0] = 0;       
+            JobNumber = 0;
+            Jobstate = ' ';
+            LockListBuffer[0] = 0;
+        }
+    }
+    else
+    {
+        if (TaskInfo[TaskIdx].xHandle == xTaskGetIdleTaskHandle())
+        {
+            Jobstate = ' ';
+            CmdString[0] = 0;
+            JobNumber = 0;
+            StackSize = configMINIMAL_STACK_SIZE;
+        }
+        else if (TaskInfo[TaskIdx].xHandle == xTimerGetTimerDaemonTaskHandle())
+        {
+            Jobstate = ' ';
+            CmdString[0] = 0;
+            JobNumber = 0;
+            StackSize = configTIMER_TASK_STACK_DEPTH;
+        }
+        else
+        {
+            Jobstate = ' ';
+            CmdString[0] = 0;
+            JobNumber = 0;
+            StackSize = 0;
+        }
+    }
+    CIOCommandOutLine("%-*.*s %2d %c %2d %2d %7ld %6d/%6d  %c %6d %-40.40s", 
+        14,
+        configMAX_TASK_NAME_LEN-1,
+        TaskInfo[TaskIdx].pcTaskName,
+        TaskInfo[TaskIdx].xTaskNumber,
+        st,
+        TaskInfo[TaskIdx].uxCurrentPriority,
+        TaskInfo[TaskIdx].uxBasePriority,
+        TaskInfo[TaskIdx].ulRunTimeCounter,
+        TaskInfo[TaskIdx].usStackHighWaterMark,
+        StackSize,
+        Jobstate,
+        JobNumber,
+        CmdString   );
+    if ( LockListBuffer[0] != 0 )
+        CIOCommandOutLine( " - Locks held: %s", LockListBuffer ); 
+}
+FreeHeap = xPortGetFreeHeapSize();
+CIOCommandOutLine( "Heap Remaining = %u of %u", FreeHeap, configTOTAL_HEAP_SIZE);
+CIOCommandOutLine( "Active Job Count = %u", UCL_GetActiveJobCount() );
+xTaskResumeAll();
+return 0;
+</code></pre>
+  }
+  Determining optimal stack usage.
+  Sent from sourceforge.net because you indicated interest in https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Determining optimal stack usage.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 9, 2014</div><div class="thread-post-content">uxTaskGetSystemState() is the function provided to do this.  If you 
+don&#8217;t want to use that function then I&#8217;m afraid the only way is to 
+provide your own, which will mean adding your own code to the FreeRTOS 
+tasks.c file.  You can copy the way uxTaskGetSystemState() does it, but 
+if you are going to copy the way it does it, it would seem to make sense 
+to instead edit tasks.c to just remove the need for 
+configUSE<em>TRACE</em>FACILITY to be defined.
+FreeRTOS has always employed strict data hiding as a principal of good 
+engineering practice, so without adding your own code into tasks.c, or 
+using the API function already provided to do this, there is no other 
+way as that is the only file in which the information you need is 
+accessible.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

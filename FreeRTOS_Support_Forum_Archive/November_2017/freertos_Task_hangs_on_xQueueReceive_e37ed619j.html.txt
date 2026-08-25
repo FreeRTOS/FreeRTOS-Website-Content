@@ -1,0 +1,503 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task hangs on xQueueReceive - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2017/freertos_Task_hangs_on_xQueueReceive_e37ed619j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Task hangs on xQueueReceive - FreeRTOS" />
+<meta property="og:description" content="Task hangs on xQueueReceivePosted by nixz on November 14, 2017Hi All, I&#8217;m using STM32F767 with CubeMX and open STM32 compiler. I have latest CubeMX is using FreeRTOS 9.0.0. I have 3 tasks (TaskA, TaskB, TaskC) every of these 3 task have same structure: ~~~ void StartTaskA(void const * argument) { uint32_t msg = 0; for &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2017/freertos_Task_hangs_on_xQueueReceive_e37ed619j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Task hangs on xQueueReceivePosted by nixz on November 14, 2017Hi All, I&#8217;m using STM32F767 with CubeMX and open STM32 compiler. I have latest CubeMX is using FreeRTOS 9.0.0. I have 3 tasks (TaskA, TaskB, TaskC) every of these 3 task have same structure: ~~~ void StartTaskA(void const * argument) { uint32_t msg = 0; for [&hellip;]" />
+<meta name="twitter:title" content="Task hangs on xQueueReceive - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202872' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202872' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202872' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202872' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146742' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2017%2Ffreertos_Task_hangs_on_xQueueReceive_e37ed619j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2017%2Ffreertos_Task_hangs_on_xQueueReceive_e37ed619j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146742">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2017_freertos_support_forum_archive_index.html/">November 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Task hangs on xQueueReceive</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 14, 2017</div><div class="thread-post-content">Hi All,
+I&#8217;m using STM32F767 with CubeMX and open STM32 compiler. I have latest CubeMX is using FreeRTOS 9.0.0. I have 3 tasks (TaskA, TaskB, TaskC) every of these 3 task have same structure:
+~~~
+void StartTaskA(void const * argument)
+{
+    uint32_t msg = 0;
+<pre><code>for (;;)
+{
+    while( xQueueReceive(TaskAudioInputQueueHandle, &amp;msg, portMAX_DELAY) != pdTRUE )
+    //while( xQueueReceive(TaskAudioInputQueueHandle, &amp;msg, 100) != pdTRUE )
+        ;
+    switch(msg)
+    {
+        // message stuff
+    }
+</code></pre>
+}
+~~~
+TaskA has Normal priority, TaskB has High priority and TaskC has Realtime priority.
+TaskA is sending to the queue of TaskB, TaskB is waiting on xQueueReceive().
+I&#8217;m sure that I send from TaskA:
+~~~
+xQueueSendToBack(TaskHandle, &amp;msg, 0);
+~~~
+It seems that in TaskA &#8220;xQueueSendToBack(TaskHandle, &amp;msg, 0);&#8221; return pdTRUE for the first N times (however it isn&#8217;t handled from the other task) and faild with subsequent calls (when queue is full besause TaskB is not returns from xQueueReceive).
+Maybe I shall call some manual task reschedule/notify/etc procedure?
+TaskA sending message to TaskB not from ISR.
+Any Idea what can be wrong? It seems that situation is better when all task has Normal priority. 
+Lower priority task can&#8217;t Resume Higher priority task by adding elements to it&#8217;s queue?
+Thx in advance for any comments and ideas to check!
+best regards
+Mik
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 14, 2017</div><div class="thread-post-content">Do you have configASSERT() defined?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 14, 2017</div><div class="thread-post-content">Yes, I have configASSERT() by default from CubeMX.
+I&#8217;ve debugged xQueueSendToBack and it pass all asserts, hovewer queues is full because higher priority task does not wake to read queue filled by lower priority task&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 14, 2017</div><div class="thread-post-content">Do you suspect that xQueueReceive() is frozen on some configASSERT()?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 14, 2017</div><div class="thread-post-content">I was asking as adding configASSERT() may have found a problem, but if 
+it is already defined then it could well be on an assert already.  How 
+have you defined the configASSERT() macro?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 14, 2017</div><div class="thread-post-content">Yes, I have configASSERT() by default from CubeMX.
+I&#8217;ve debugged xQueueSendToBack and it pass all asserts, hovewer queues is full because higher priority task does not wake to read queue filled by lower priority task&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 14, 2017</div><div class="thread-post-content">~~~
+/* USER CODE BEGIN 1 */   
+<h1>define configASSERT( x ) if ((x) == 0) {taskDISABLE_INTERRUPTS(); for( ;; );}</h1>
+/* USER CODE END 1 */
+~~~
+But it doesn&#8217;t help if I change it to:
+~~~
+<h1>define configASSERT( x ) {}</h1>
+~~~
+Lower priority task can&#8217;t wake higher priority task&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 14, 2017</div><div class="thread-post-content">Another hint&#8230;
+I&#8217;ve changed code to receive messages from:
+~~~
+        while( xQueueReceive(TaskAudioInputQueueHandle, &amp;msg, portMAX_DELAY) != pdTRUE )
+            ;
+~~~
+to:
+~~~
+        while( xQueueReceive(TaskAudioInputQueueHandle, &amp;msg, 0) != pdTRUE )
+            vTaskDelay(10);
+~~~
+after this change it seems that it doesn&#8217;t hang even with highter priority destination thread, however it causes 10ms unwanted delay 🙁
+My configuration:
+~~~
+<h1>define configUSE_PREEMPTION                     1</h1>
+<h1>define configSUPPORT<em>STATIC</em>ALLOCATION          1</h1>
+<h1>define configSUPPORT<em>DYNAMIC</em>ALLOCATION         0</h1>
+<h1>define configUSE<em>IDLE</em>HOOK                      0</h1>
+<h1>define configUSE<em>TICK</em>HOOK                      0</h1>
+<h1>define configCPU<em>CLOCK</em>HZ                       ( SystemCoreClock )</h1>
+<h1>define configTICK<em>RATE</em>HZ                       ((TickType_t)1000)</h1>
+<h1>define configMAX_PRIORITIES                     ( 7 )</h1>
+<h1>define configMINIMAL<em>STACK</em>SIZE                 ((uint16_t)128)</h1>
+<h1>define configMAX<em>TASK</em>NAME_LEN                  ( 16 )</h1>
+<h1>define configUSE<em>16</em>BIT_TICKS                   0</h1>
+<h1>define configUSE_MUTEXES                        1</h1>
+<h1>define configQUEUE<em>REGISTRY</em>SIZE                8</h1>
+<h1>define configUSE<em>PORT</em>OPTIMISED<em>TASK</em>SELECTION  1</h1>
+<h1>define configUSE<em>CO</em>ROUTINES                    0</h1>
+<h1>define configMAX<em>CO</em>ROUTINE_PRIORITIES          ( 2 )</h1>
+<h1>define INCLUDE_vTaskPrioritySet            1</h1>
+<h1>define INCLUDE_uxTaskPriorityGet           1</h1>
+<h1>define INCLUDE_vTaskDelete                 1</h1>
+<h1>define INCLUDE_vTaskCleanUpResources       0</h1>
+<h1>define INCLUDE_vTaskSuspend                1</h1>
+<h1>define INCLUDE_vTaskDelayUntil             0</h1>
+<h1>define INCLUDE_vTaskDelay                  1</h1>
+<h1>define INCLUDE_xTaskGetSchedulerState      1</h1>
+<h1>define configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY   15</h1>
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY 5</h1>
+<h1>define configKERNEL<em>INTERRUPT</em>PRIORITY         ( configLIBRARY<em>LOWEST</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+<h1>define configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY    ( configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+~~~
+All ISR routines has priority od 5 (and are allowed to call &#8220;FromISR&#8221; API).
+Is there a possibility to dump call stac on configASSERT()? I have printf() on UART defined.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 14, 2017</div><div class="thread-post-content"><blockquote>
+  while( xQueueReceive(TaskAudioInputQueueHandle, &amp;msg, portMAX_DELAY) != pdTRUE ) ;
+</blockquote>
+The above is a bit illogical: when you call <code>xQueueReceive()</code> with <code>portMAX_DELAY</code> as a time-out, the function will block for ever, or until an item has been received.
+and so it will always return <code>pdTRUE</code>.
+<blockquote>
+  while( xQueueReceive(TaskAudioInputQueueHandle, &amp;msg, 0) != pdTRUE ) vTaskDelay(10);
+</blockquote>
+The above loop makes more sense:  a time-out of 0 ( ticks ) means: polling. The call to <code>xQueueReceive()</code> will poll if there is a packet, and return immediately, either success, or fail  As long as there is no packet, every loop will sleep <strong>unconditionally</strong> for 10 clock-ticks.
+Please also realise that when it calls <code>vTaskDelay(10)</code>, other ( lower-priority ) tasks get a chance to become active.  It will also be possible for other tasks to read from <code>TaskAudioInputQueueHandle</code>.
+<blockquote>
+  But it doesn&#8217;t help if I change it to:
+</blockquote>
+~~~
+<blockquote>
+  <h1>define configASSERT( x ) {}</h1>
+  ~~~
+</blockquote>
+The introduction of <code>configASSERT()</code> will not directly prevent problems, at most it may reveal some bad behaviour.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 14, 2017</div><div class="thread-post-content">I have added loop to the:
+~~~
+while( xQueueReceive(TaskAudioInputQueueHandle, &amp;msg, portMAX<em>DELAY) != pdTRUE ) ;
+~~~
+because I was playing with various timeouts from 0 to portMAX</em>DELAY and only 0 works for me. In facet for portMAX_DELAY it shoud not return nothing other than PDTRUE/pdPASS.
+I still have no idea why xQueueReceive(&#8230;, portMAX_DELAY) freezes and make queue overflow, especially this task has higher/realtime priority. It works only if all task has same Normal priority (which is unwanted for me).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 14, 2017</div><div class="thread-post-content">I&#8217;ve changed configASSERT() to:
+~~~
+<h1>define configASSERT( x ) if((x)==0) printf( &#8220;##########nASSERT FAILED in %s, line %inn&#8221;, <strong>FILE</strong>, <strong>LINE</strong> )</h1>
+~~~
+However it wasn&#8217;t executed and task waiting on queue have freezed and queue overflows&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 15, 2017</div><div class="thread-post-content">If you want, can you attach some more complete code that I can actually run?
+I&#8217;d like to see :
+● the three tasks functions
+● the calls to Send and Receive
+● the way in which you create all queues
+and you can leave-out other details
+~~~
+int msg;
+xQueueSendToBack(TaskHandle, &amp;msg, 0);
+~~~
+Isn&#8217;t <code>TaskHandle</code> a strange name for a handle to a queue?  Aren&#8217;t you mistaken here?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 15, 2017</div><div class="thread-post-content">Sure, some code is created by STM32 CubeMX:
+Tasks:
+~~~
+osThreadId TaskMainHandle;
+uint32<em>t TaskMainBuffer[ 2048 ];
+osStaticThreadDef</em>t TaskMainControlBlock;
+osThreadId TaskAudioInputHandle;
+uint32<em>t TaskAudioInputBuffer[ 1024 ];
+osStaticThreadDef</em>t TaskAudioInputControlBlock;
+osThreadId TaskAudioOutputHandle;
+uint32<em>t TaskAudioOutputBuffer[ 1024 ];
+osStaticThreadDef</em>t TaskAudioOutputControlBlock;
+&#8230;
+ osThreadStaticDef(TaskMain, StartTaskMain, osPriorityNormal, 0, 2048, TaskMainBuffer, &amp;TaskMainControlBlock);
+  TaskMainHandle = osThreadCreate(osThread(TaskMain), NULL);
+osThreadStaticDef(TaskAudioInput, StartTaskAudioInput, osPriorityNormal, 0, 1024, TaskAudioInputBuffer, &amp;TaskAudioInputControlBlock);
+  TaskAudioInputHandle = osThreadCreate(osThread(TaskAudioInput), NULL);
+osThreadStaticDef(TaskAudioOutput, StartTaskAudioOutput, osPriorityNormal, 0, 1024, TaskAudioOutputBuffer, &amp;TaskAudioOutputControlBlock);
+  TaskAudioOutputHandle = osThreadCreate(osThread(TaskAudioOutput), NULL);
+~~~
+Queues:
+~~~
+osMessageQId CmdTxRxQueueHandle;
+uint8<em>t CmdTxRxQueueBuffer[32 * sizeof(struct msg</em>t)];
+osStaticMessageQDef_t CmdTxRxQueueControlBlock;
+osMessageQId TaskAudioInputQueueHandle;
+uint8<em>t TaskAudioInputQueueBuffer[16 * sizeof(uint32</em>t)];
+osStaticMessageQDef_t TaskAudioInputQueueControlBlock;
+osMessageQId TaskAudioOutputQueueHandle;
+uint8<em>t TaskAudioOutputQueueBuffer[16 * sizeof(uint32</em>t)];
+osStaticMessageQDef_t TaskAudioOutputQueueControlBlock;
+<pre><code>osMessageQStaticDef(CmdTxRxQueue, 32, msg_t, CmdTxRxQueueBuffer, &amp;CmdTxRxQueueControlBlock);
+CmdTxRxQueueHandle = osMessageCreate(osMessageQ(CmdTxRxQueue), NULL);
+osMessageQStaticDef(TaskAudioInputQueue, 16, uint32_t, TaskAudioInputQueueBuffer, &amp;TaskAudioInputQueueControlBlock);
+TaskAudioInputQueueHandle = osMessageCreate(osMessageQ(TaskAudioInputQueue), NULL);
+osMessageQStaticDef(TaskAudioOutputQueue, 16, uint32_t, TaskAudioOutputQueueBuffer, &amp;TaskAudioOutputQueueControlBlock);
+TaskAudioOutputQueueHandle = osMessageCreate(osMessageQ(TaskAudioOutputQueue), NULL);
+</code></pre>
+~~~
+Task structure (~same for all three tasks):
+~~~
+    for (;;)
+    {
+        while( xQueueReceive(CmdTxRxQueueHandle, &amp;msg, portMAX_DELAY) != pdTRUE )
+            ;
+<pre><code>    switch(msg.id)
+    {
+    case MNone:
+    {
+        break;
+    }
+...
+}
+</code></pre>
+~~~
+Send functions (all three looks the same):
+~~~
+BaseType<em>t SendToMainTask(msg</em>t msg, bool from<em>isr)
+{
+    if (!from</em>isr)
+        return xQueueSendToBack(CmdTxRxQueueHandle, &amp;msg, 0);
+<pre><code>BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+return xQueueSendToBackFromISR(CmdTxRxQueueHandle, &amp;msg, &amp;xHigherPriorityTaskWoken);
+</code></pre>
+}
+~~~
+It works if all three tasks have Normal priority, if I change priority of TaskB AboveNormal it would freeze xQueueReceive(CmdTxRxQueueHandle, &amp;msg, portMAX_DELAY) and makes queue overflow. Which is visible from TaskA which is still running and responding&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 15, 2017</div><div class="thread-post-content">~~~
+BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    return xQueueSendToBackFromISR(CmdTxRxQueueHandle, &amp;msg, &amp;xHigherPriorityTaskWoken);
+~~~
+The above code is called if <code>from_isr = 1</code>, that is good.
+But what I miss is a yield, By default the ISR will return without switching, i.e. to the task ( or interrupt ) that was active.
+Could you this :
+~~~
+BaseType<em>t SendToMainTask(msg</em>t msg, bool from<em>isr)
+{
+BaseType</em>t xResult;
+    if (!from<em>isr)
+    {
+        xResult = xQueueSendToBack(CmdTxRxQueueHandle, &amp;msg, 0);
+    }
+    else
+    {
+        BaseType</em>t xHigherPriorityTaskWoken = pdFALSE;
+        xResult = xQueueSendToBackFromISR(CmdTxRxQueueHandle, &amp;msg, &amp;xHigherPriorityTaskWoken);
+        portYIELD<em>FROM</em>ISR(xHigherPriorityTaskWoken);
+    }
+    return xResult;
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 15, 2017</div><div class="thread-post-content">~~~
+Task structure (~same for all three tasks):
+<pre><code>for (;;)
+{
+    while( xQueueReceive(CmdTxRxQueueHandle, &amp;msg, portMAX_DELAY) != pdTRUE )
+        ;
+</code></pre>
+~~~
+Just another question: do the three tasks all wait for the same queue name <code>CmdTxRxQueueHandle</code> ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 15, 2017</div><div class="thread-post-content">No, all three tasks has three separate queues:
+~~~
+osMessageQId CmdTxRxQueueHandle;
+osMessageQId TaskAudioInputQueueHandle;
+osMessageQId TaskAudioOutputQueueHandle;
+~~~
+I&#8217;ve attached definitions before (see above).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 15, 2017</div><div class="thread-post-content">And what is the effect of calling <code>portYIELD_FROM_ISR()</code> in case <code>SendToMainTask()</code> is called from an interrupt?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 15, 2017</div><div class="thread-post-content">Thank you for the idea to check. I will check it when I will get access to the code again. However task B and C are feeded also from main loop od task A not only from ISR. Those &#8220;non ISR&#8221; messages also do not wake taks B and C. Do yoy think I shall try adding portYIELD() to the non ISR portion of this function?
+~~~
+BaseType<em>t SendToMainTask(msg</em>t msg, bool from<em>isr)
+{
+BaseType</em>t xResult;
+    if (!from<em>isr)
+    {
+        xResult = xQueueSendToBack(CmdTxRxQueueHandle, &amp;msg, 0);
+      <strong>portYIELD();</strong>
+    }
+    else
+    {
+        BaseType</em>t xHigherPriorityTaskWoken = pdFALSE;
+        xResult = xQueueSendToBackFromISR(CmdTxRxQueueHandle, &amp;msg, &amp;xHigherPriorityTaskWoken);
+        portYIELD<em>FROM</em>ISR(xHigherPriorityTaskWoken);
+    }
+    return xResult;
+}
+~~~
+BTW: I have preemption enabled so I believe FreeRTOS shall switch task as soon as new item is send to the queue&#8230; 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 15, 2017</div><div class="thread-post-content"><blockquote>
+  BTW: I have preemption enabled so I believe FreeRTOS shall
+  switch task as soon as new item is send to the queue&#8230; 
+</blockquote>
+I think that is correct.
+~~~
+        xResult = xQueueSendToBack(CmdTxRxQueueHandle, &amp;msg, 0);
+      <strong>portYIELD();</strong>
+~~~
+and so there is no need to call <code>portYIELD()</code> explicitly.
+In case of an interrupt, a yield must be scheduled explicitly.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 15, 2017</div><div class="thread-post-content">But when I disable all messaged sent from ISRs and leave only those sent from TaskA (Normal) main loop, TaskB also hangs on reading item from queue so thats the idea behing adding &#8220;portYIELD()&#8221; from non ISR calls.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 15, 2017</div><div class="thread-post-content"><blockquote>
+  BTW: I have preemption enabled so I believe FreeRTOS shall switch task 
+  as soon as new item is send to the queue&#8230;
+</blockquote>
+That is true for when the queue is written to from a task, so the yield 
+is not needed there, but it is not true when the queue is written to 
+from an interrupt.  Sometimes more control is needed in interrupts &#8211; for 
+example if you get an interrupt each time a character is received on a 
+UART you might not want to switch immediately to the handling task 
+unless you know the last character received was the end of the message.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 15, 2017</div><div class="thread-post-content">Adding:
+~~~
+portYIELD<em>FROM</em>ISR(xHigherPriorityTaskWoken);
+~~~
+or
+~~~
+portYIELD<em>FROM</em>ISR(pdTRUE);
+~~~
+and from the not ISR calls:
+~~~
+portYIELD();
+~~~
+does not change situation&#8230; higher prioryty taks are frozen after short while :-/
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 17, 2017</div><div class="thread-post-content">Hi, I&#8217;m afraid that we&#8217;ve come to a point here where there is not enough information to find the root cause.
+I noticed that the FreeRTOS functions and objects are wrapped into a library. I assume that is not introducing a problem?
+If you can send me a simple but complete project that shows the failure, I can test it on my STM32F.
+You can use this email address: &#8220;h [point] tibosch [at] freertos [point] org&#8221; to send me code directly.
+But I can not give support on the libraries ( HAL / OS-layer ) that you are using, only direct calls ( API&#8217;s ) to the FreeRTOS kernel.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 20, 2017</div><div class="thread-post-content">OK, I will prepare extra simplified project you can run on your STM. My project is strictly based on template generated from CubeMX (FreeRTOS 9.0.0 is modified by STM and some functions are wrapped by CMISIS).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 20, 2017</div><div class="thread-post-content">No change after extra call to the portYIELD<em>FROM</em>ISR().
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 23, 2017</div><div class="thread-post-content">I ve prepared simplified project to demonstrate problem. Project template was generated with STM32CubeMX, it contains 3 tasks (main A and two higher priority B and C). B and C are blinking LEDs on the board.Queue of A is feed from ISR, queue of B is feed from A and queue of C is feed from ISR.
+Task A (normal priority is working as expected), B and C are freezing on xQueueReceive(&#8230;, portMAX_DELAY).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 23, 2017</div><div class="thread-post-content">Before trying to work out what the code is doing:
+<ul>
+<li>I&#8217;m not familiar with the abstraction layer used, so would have to 
+look at the documentation to see if it was used correctly, and the 
+implementation to see if it was implemented correctly (neither of which 
+I have time to do ;o)  That limits the support that can be provided as 
+its not easy to support other people&#8217;s code.</li>
+<li>I note the assert function is implemented to do nothing but return. 
+If that assert function is called in response to assert failures within 
+FreeRTOS then it needs to be implemented to halt operation as assert 
+failures within FreeRTOS are unrecoverable.</li>
+<li>Is STM32Cube generating C++ code, or is that your code?  I see calls 
+such as: SendToMainTask(msg<em>t(MUserBtn), true); that, inside the 
+function, use the address of the msg</em>t object.</li>
+<li>Lines such as:</li>
+</ul>
+SendToAudioInputTask( ((++counter) &amp; 1) ? BUFFER<em>READY</em>LOW : 
+BUFFER<em>READY</em>HIGH);
+appear to use only a single parameter, but when I look at the prototype 
+of SendToAudtioInputTask():
+BaseType<em>t SendToAudioInputTask(uint32</em>t msg, bool from_isr);
+It needs two parameters, yet no compiler warning is generated.  That 
+makes me think I don&#8217;t really understand the function call.
+Regards,
+Richard.
+<ul>
+<li>http://www.FreeRTOS.org
+The de facto standard, downloaded every 3 minutes during 2016.</li>
+<li>http://www.FreeRTOS.org/plus
+IoT, Trace, Certification, TCP/IP, FAT FS, Training, and more&#8230;</li>
+</ul>
+On 11/23/2017 6:45 AM, nixz wrote:
+<blockquote>
+  I ve prepared simplified project to demonstrate problem. Project 
+  template was generated with STM32CubeMX, it contains 3 tasks (main A and 
+  two higher priority B and C). B and C are blinking LEDs on the 
+  board.Queue of A is feed from ISR, queue of B is feed from A and queue 
+  of C is feed from ISR.
+  Task A (normal priority is working as expected), B and C are freezing on 
+  xQueueReceive(&#8230;, portMAX_DELAY).
+  Attachments:
+  <ul>
+  <li>QueueTest.zip
+  <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/e37ed619/7d52/attachment/QueueTest.zip">https://sourceforge.net/p/freertos/discussion/382005/thread/e37ed619/7d52/attachment/QueueTest.zip</a>
+  (769.3 kB; application/x-zip-compressed)</li>
+  </ul>
+  <hr />
+  Task hangs on xQueueReceive 
+  <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/e37ed619/?limit=25#7d52">https://sourceforge.net/p/freertos/discussion/382005/thread/e37ed619/?limit=25#7d52</a>
+  <hr />
+  Sent from sourceforge.net because you indicated interest in 
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit 
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 24, 2017</div><div class="thread-post-content"><ol>
+<li>I&#8217;m not aware of CubeMX->FreeRTOS abstraction layer documentation. It seems that most of the calls are simply defines osXXXXXX to FreeRTOS native.</li>
+<li>I&#8217;ve also played with assertion reporting &#8211; it changed nothig as no assertion were triggered.</li>
+<li>Yes, this is my code. It is using some C++ features. Object msg_t is simply union with constructor.</li>
+<li>SendToXXXTask() functions have two parameters, however second one &#8220;bool from_isr&#8221; is defaulted to false in header file.</li>
+</ol>
+best regards
+Mikoaj Tutak
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 27, 2017</div><div class="thread-post-content">I&#8217;ve removed xQueueReceive()/xQueueSend() and changed IPC mechanism to xTaskNotify()/xTaskNotifyWait() and it seems to solve freezing issues. However &#8220;queue&#8221; has only 1 element of uint32_t, so it is easy to lose send information&#8230; I believe there is some bug in reschedule of higher priority tasks waiting on xQueueReceive()&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 27, 2017</div><div class="thread-post-content"><blockquote>
+  I believe there is some bug in reschedule of higher 
+  priority tasks waiting on xQueueReceive()&#8230;
+</blockquote>
+That is unlikely (although of course not impossible) as the reschedule 
+mechanism is the same in both cases, and that code is mature plus tested 
+by ourselves.  I think there is something else going on that we haven&#8217;t 
+discovered yet.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task hangs on xQueueReceive</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nixz">nixz</a> on November 27, 2017</div><div class="thread-post-content">I mean that xQueueSend() do not wake higher priority task wating opposite to  xTaskNotify() which works as expected&#8230; I&#8217;m quite happy with xTaskNotify() however it is intresting why queue version doesn&#8217;t work im my case&#8230; Maybe problem with ST port within MxCube?
+PS: is it possible to clear notification bits one by one (when processed) not in one call?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>64 bit system time using 32bit TickCount - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2019/freertos_64_bit_system_time_using_32bit_TickCount_5ca2b2657bj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="64 bit system time using 32bit TickCount - FreeRTOS" />
+<meta property="og:description" content="64 bit system time using 32bit TickCountPosted by jarni on June 30, 2019~~~ uint64t GetSysTime64() { static uint64t systime = 0; static uint32t maxticktime = 0; static uint32t overflow = 0; uint32_t ticktime; ticktime = xTaskGetTickCount(); if (ticktime &lt; maxticktime) overflow++; maxticktime = ticktime; systime = overflow; systime &lt;&lt;= 32; systime += ticktime; return systime; &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2019/freertos_64_bit_system_time_using_32bit_TickCount_5ca2b2657bj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="64 bit system time using 32bit TickCountPosted by jarni on June 30, 2019~~~ uint64t GetSysTime64() { static uint64t systime = 0; static uint32t maxticktime = 0; static uint32t overflow = 0; uint32_t ticktime; ticktime = xTaskGetTickCount(); if (ticktime &lt; maxticktime) overflow++; maxticktime = ticktime; systime = overflow; systime &lt;&lt;= 32; systime += ticktime; return systime; [&hellip;]" />
+<meta name="twitter:title" content="64 bit system time using 32bit TickCount - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203143' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203143' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203143' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203143' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147858' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2019%2Ffreertos_64_bit_system_time_using_32bit_TickCount_5ca2b2657bj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2019%2Ffreertos_64_bit_system_time_using_32bit_TickCount_5ca2b2657bj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147858">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2019_freertos_support_forum_archive_index.html/">June 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">64 bit system time using 32bit TickCount</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jarni">jarni</a> on June 30, 2019</div><div class="thread-post-content">~~~
+uint64<em>t GetSysTime64()
+{
+    static uint64</em>t systime = 0;
+    static uint32<em>t maxticktime = 0;
+    static uint32</em>t overflow = 0;
+    uint32_t ticktime;
+<pre><code>ticktime = xTaskGetTickCount();
+if (ticktime &lt; maxticktime) overflow++;
+maxticktime = ticktime;
+systime = overflow;
+systime &lt;&lt;= 32;
+systime += ticktime;
+return systime;
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 30, 2019</div><div class="thread-post-content">&#8220;<code>systime</code>&#8221; doesn&#8217;t have to be static 🙂
+If you do not call your function <code>GetSysTime64()</code> for a long time, you might miss an overflow.
+With a 1000 Hz clock, the tick time overflows after 49 days, which is quiet a long time.
+But mind you, there is a time tick hook, in which you can update your own tick counter:
+~~~
+<h1>if(  configUSE<em>TICK</em>HOOK != 0 )</h1>
+<pre><code>volatile uint64_t tickCount64;
+void vApplicationTickHook( void )
+{
+    tickCount64++;
+}
+</code></pre>
+<h1>endif /* configUSE<em>TICK</em>HOOK */</h1>
+~~~
+The above code won&#8217;t miss a single clock tick
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jarni">jarni</a> on June 30, 2019</div><div class="thread-post-content">I didn&#8217;t remember configUSE<em>TICK</em>HOOK&#8230;
+Anyway you need a mutex to read/write tickCount64, or:
+~~~
+uint64<em>t GetTickCount64()
+{
+    uint64</em> tick;
+    taskENTER<em>CRITICAL();
+    tick = tickCount64;
+    taskEXIT</em>CRITICAL();
+    return tick;
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 30, 2019</div><div class="thread-post-content">In your example code, it would be more correct to use <code>TickType_t</code> in stead of <code>uint32_t</code>.
+You&#8217;re right about the critical section, unless you have you&#8217;re on a 64-bit machine. And in that case, you wouldn&#8217;t need the extra code at all, because <code>xTaskGetTickCount()</code> will return a 64-bit count.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 30, 2019</div><div class="thread-post-content">Not sure what is trying to be achieved here, but the kernel code already
+keeps a count of the number of overflows if that is helpful:
+https://sourceforge.net/p/freertos/code/HEAD/tree/trunk/FreeRTOS/Source/tasks.c#l373
+If you want access to it you can add your own code into tasks.c using
+the c additions header file:
+https://sourceforge.net/p/freertos/code/HEAD/tree/trunk/FreeRTOS/Source/tasks.c#l5203
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 30, 2019</div><div class="thread-post-content">One more addition about the atomical copy of <code>TickType_t</code>:
+~~~
+TickType<em>t xTaskGetTickCount( void )
+{
+TickType</em>t xTicks;
+<pre><code>/* Critical section required if running on a 16 bit processor. */
+portTICK_TYPE_ENTER_CRITICAL();
+{
+    xTicks = xTickCount;
+}
+portTICK_TYPE_EXIT_CRITICAL();
+return xTicks;
+</code></pre>
+}
+~~~
+With the above code, a critical section will be entered only if needed.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jarni">jarni</a> on June 30, 2019</div><div class="thread-post-content">On 32bit systems reading/modifying TickType_t variables is atomic:
+~~~
+/* 32-bit tick type on a 32-bit architecture, so reads of the tick count do
+not need to be guarded with a critical section. */
+<h1>define portTICK<em>TYPE</em>IS_ATOMIC 1</h1>
+<h1>endif</h1>
+~~~
+~~~
+<h1>if (portTICK<em>TYPE</em>IS_ATOMIC == 0)</h1>
+/* Either variables of tick type cannot be read atomically, or
+portTICK<em>TYPE</em>IS_ATOMIC was not set &#8211; map the critical sections used when
+the tick count is returned to the standard critical section macros. */
+<h1>define portTICK<em>TYPE</em>ENTER<em>CRITICAL() portENTER</em>CRITICAL()</h1>
+<h1>define portTICK<em>TYPE</em>EXIT<em>CRITICAL() portEXIT</em>CRITICAL()</h1>
+<h1>define portTICK<em>TYPE</em>SET<em>INTERRUPT</em>MASK<em>FROM</em>ISR() portSET<em>INTERRUPT</em>MASK<em>FROM</em>ISR()</h1>
+<h1>define portTICK<em>TYPE</em>CLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR(x) portCLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR((x))</h1>
+<h1>else</h1>
+/* The tick type can be read atomically, so critical sections used when the
+tick count is returned can be defined away. */
+<h1>define portTICK<em>TYPE</em>ENTER_CRITICAL()</h1>
+<h1>define portTICK<em>TYPE</em>EXIT_CRITICAL()</h1>
+<h1>define portTICK<em>TYPE</em>SET<em>INTERRUPT</em>MASK<em>FROM</em>ISR() 0</h1>
+<h1>define portTICK<em>TYPE</em>CLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR(x) (void)x</h1>
+<h1>endif</h1>
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jarni">jarni</a> on June 30, 2019</div><div class="thread-post-content">I&#8217;m on a 32bit system, and I need to read system time many times per second, but I need a time counter that covers more than 49 days.
+So the function of my first post is perfect.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jarni">jarni</a> on June 30, 2019</div><div class="thread-post-content">Yes, but this overflow count is more for internal use, and I prefer not to modify FreeRTOS source files.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 30, 2019</div><div class="thread-post-content">The point of the C inclusions header file is that you can add code into
+the task.c file WITHOUT modifying the kernel code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on June 30, 2019</div><div class="thread-post-content">FreeRTOS already keeps track of the number of times the tick has overflowed in xNumOfOverflows, and the vTaskSetTimeOutState function will fetch the current tick count and the current overflow state, so the data is already available. The details of what vTaskSetTimeOutState gets isn&#8217;t well documented. 
+It also wouldn&#8217;t be hard to use the freertos<em>tasks</em>c_additions.h hook to add a function to fetch the pair as a 64 bit number.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jarni">jarni</a> on June 30, 2019</div><div class="thread-post-content">For my apllication I nedd an absolute 64bit  time counter.
+vTaskSetTimeOutState doesn&#8217;t work well for me.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on June 30, 2019</div><div class="thread-post-content">But the values returned by it can easily be converted into the 64 bit value you want. The xNumOfOverflows is exactly what you overflow counter is, and kept by FreeRTOS in a way to prevent races.
+Your function has the issue that it isn&#8217;t thread safe, and has a data race (If the first task that is calling it gets preempted after detecting the roll over but before resetting the maxTickTime, or after getting the current tick count and before testing against maxTickCount, and a tick increment occurs before some preempting task calls the function.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64 bit system time using 32bit TickCount</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jarni">jarni</a> on June 30, 2019</div><div class="thread-post-content">I don&#8217;t need thread safe, only one task calls this function.
+Anyway I can use taskENTER_CRITICAL.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

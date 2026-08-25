@@ -1,0 +1,374 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS stack corruption on STM32F4 with gcc - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2013/freertos_FreeRTOS_stack_corruption_on_STM32F4_with_gcc_6772412.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS stack corruption on STM32F4 with gcc - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS stack corruption on STM32F4 with gccPosted by *anonymous on February 20, 2013I&#8217;m trying to get FreeRTOS running on my stm32f4discovery board. I have installed summon-arm-toolchain and created a Makefile to compile my code. Here is the Makefile: TOOLCHAIN_PATH:=/usr/local/sat/bin TOOLCHAIN_PREFIX:=arm-none-eabi OPTLVL:=0 FREERTOS:=.. STARTUP:=$(CURDIR)/startup LINKER_SCRIPT:=$(FREERTOS)/Utilities/stm32_flash.ld INCLUDE=-I$(CURDIR) # Setting other include path... BUILD_DIR = $(CURDIR)/build BIN_DIR = &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2013/freertos_FreeRTOS_stack_corruption_on_STM32F4_with_gcc_6772412.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS stack corruption on STM32F4 with gccPosted by *anonymous on February 20, 2013I&#8217;m trying to get FreeRTOS running on my stm32f4discovery board. I have installed summon-arm-toolchain and created a Makefile to compile my code. Here is the Makefile: TOOLCHAIN_PATH:=/usr/local/sat/bin TOOLCHAIN_PREFIX:=arm-none-eabi OPTLVL:=0 FREERTOS:=.. STARTUP:=$(CURDIR)/startup LINKER_SCRIPT:=$(FREERTOS)/Utilities/stm32_flash.ld INCLUDE=-I$(CURDIR) # Setting other include path... BUILD_DIR = $(CURDIR)/build BIN_DIR = [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS stack corruption on STM32F4 with gcc - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202236' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202236' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202236' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202236' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144755' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2013%2Ffreertos_FreeRTOS_stack_corruption_on_STM32F4_with_gcc_6772412.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2013%2Ffreertos_FreeRTOS_stack_corruption_on_STM32F4_with_gcc_6772412.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144755">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2013_freertos_support_forum_archive_index.html/">February 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on February 20, 2013</div><div class="thread-post-content">I&#8217;m trying to get FreeRTOS running on my stm32f4discovery board. I have installed summon-arm-toolchain and created a Makefile to compile my code. Here is the Makefile:  
+<pre><code>TOOLCHAIN_PATH:=/usr/local/sat/bin
+TOOLCHAIN_PREFIX:=arm-none-eabi
+OPTLVL:=0
+FREERTOS:=..
+STARTUP:=$(CURDIR)/startup
+LINKER_SCRIPT:=$(FREERTOS)/Utilities/stm32_flash.ld
+INCLUDE=-I$(CURDIR)
+# Setting other include path...
+BUILD_DIR = $(CURDIR)/build
+BIN_DIR = $(CURDIR)/binary
+vpath %.c  $(CURDIR)
+# Setting other vpath...
+vpath %.s $(STARTUP)
+ASRC=startup_stm32f4xx.s
+# Project Source Files
+SRC+=stm32f4xx_it.c
+SRC+=system_stm32f4xx.c
+SRC+=main.c
+# FreeRTOS Source Files
+SRC+=port.c
+SRC+=list.c
+SRC+=queue.c
+SRC+=tasks.c
+SRC+=timers.c
+SRC+=heap_2.c
+SRC+=syscalls.c
+SRC+=stm32f4xx_usart.c
+# Other peripheral source files...
+CDEFS=-DUSE_STDPERIPH_DRIVER
+CDEFS+=-DSTM32F4XX
+CDEFS+=-DHSE_VALUE=8000000
+MCUFLAGS=-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp
+COMMONFLAGS=-O$(OPTLVL) -g -Wall
+CFLAGS=$(COMMONFLAGS) $(MCUFLAGS) $(INCLUDE) $(CDEFS)
+LDLIBS=
+LDFLAGS=$(COMMONFLAGS) -fno-exceptions -ffunction-sections -fdata-sections -nostartfiles -Wl,--gc-sections,-T$(LINKER_SCRIPT)
+OBJ = $(SRC:%.c=$(BUILD_DIR)/%.o)
+CC=$(TOOLCHAIN_PATH)/$(TOOLCHAIN_PREFIX)-gcc
+LD=$(TOOLCHAIN_PATH)/$(TOOLCHAIN_PREFIX)-gcc
+OBJCOPY=$(TOOLCHAIN_PATH)/$(TOOLCHAIN_PREFIX)-objcopy
+AS=$(TOOLCHAIN_PATH)/$(TOOLCHAIN_PREFIX)-as
+AR=$(TOOLCHAIN_PATH)/$(TOOLCHAIN_PREFIX)-ar
+GDB=$(TOOLCHAIN_PATH)/$(TOOLCHAIN_PREFIX)-gdb
+$(BUILD_DIR)/%.o: %.c
+    $(CC) $(CFLAGS) $&lt; -c -o $@
+all: $(OBJ)
+    $(AS) -o $(ASRC:%.s=$(BUILD_DIR)/%.o) $(STARTUP)/$(ASRC)
+    $(CC) -o $(BIN_DIR)/$(TARGET).elf $(LDFLAGS) $(OBJ) $(ASRC:%.s=$(BUILD_DIR)/%.o) $(LDLIBS)
+    $(OBJCOPY) -O ihex $(BIN_DIR)/$(TARGET).elf $(BIN_DIR)/$(TARGET).hex
+    $(OBJCOPY) -O binary $(BIN_DIR)/$(TARGET).elf $(BIN_DIR)/$(TARGET).bin
+</code></pre>
+I modified project in folder CORTEX&#95;M4F&#95;STM32F407ZG-SK of FreeRTOS Demo projects&#40;removing the existing tasks and creating my own&#41;. Here is the main function:  
+<pre><code>int main(void) {
+    int ret;
+    prvSetupHardware();
+    DebugPrintf("FreeRTOS v7.3.0 startingn");
+    ret = xTaskCreate(SampleTask0, (signed char *) "T0", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+    if (ret == pdTRUE) {
+        DebugPrintf("Task %x creared successfully:%d.n", SampleTask0, ret);
+    } else {
+        DebugPrintf("Task 0 created failed.n");
+    }
+    ret = xTaskCreate(SampleTask1, (signed char *) "T1", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    if (ret == pdTRUE) {
+        DebugPrintf("Task %x creared successfully:%d.n", SampleTask1, ret);
+    } else {
+        DebugPrintf("Task 1 created failed.n");
+    }
+    DebugPrintf("Starting scheduler...n");
+    vTaskStartScheduler();
+    for (;;);
+}
+</code></pre>
+I have configured configMINIMAL&#95;STACK&#95;SIZE as 4096 in FreeRTOSConfig.h and the code goes well as Task Scheduler started and invoked my SampleTask0 function. Here is the task code:  
+<pre><code>void SampleTask0(void *pvParameters) {
+    (void) pvParameters;
+    uint16_t delay;
+    for (;;) {
+        delay = 10000;
+        DebugPrintf("Task 0 runningn");
+        while(delay) {delay--;}
+    }
+    vTaskDelete(NULL);
+}
+</code></pre>
+The Task 1 function is almost the same as Task 0 except it prints different information. These code compile and after I write the binary to my board, the SampleTask0 does not work as expected. The DebugPrintf function which sends character through USART3 only prints &#8220;Tas&#8221; and then everything halts. I traced the code with gdb and execute the code by step, &#8220;Task 0 running&#8221; got printed but when it returned to task function&#40;before &#8220;while&#40;delay&#41; &#123;delay-;&#125;&#8221;&#41; an error occurred:  
+Cannot access memory at address 0xa5a5a5a5  
+SampleTask0 &#40;pvParameters=0x0&#41; at main.c…  
+According to FreeRTOS documents, the stack of each task is filled with 0xa5 bytes upon creation. I think there may be something wrong with stack. I have set configCHECK&#95;FOR&#95;STACK&#95;OVERFLOW to 2 to enable stack overflow detection, but my hook function had not been invoked when this happened.  
+The startup&#95;stm32f4xx.s in CORTEX&#95;M4F&#95;STM32F407ZG-SK was created for EWARM toolchain and I replaced it with the startup file in STM32F4-Discovery&#95;FW&#95;V1.1.0 which I downloaded from ST website. So it could potentially corrupt the stack, but I&#8217;m not sure about this. Anyone have ideas about this?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on February 20, 2013</div><div class="thread-post-content">Your defined stack size should be many times greater than necessary, so I don&#8217;t think stack overflow will be the issue.  
+Your tasks do not ever block.&nbsp; This means that, because you are creating one task at priority 1 and the other task at priority 2, only the task at priority 2 will ever run.&nbsp; I would suggest replacing the &#8220;while&#40;delay&#41; &#123;delay-;&#125;&#8221; loop with a call to vTaskDelay&#40;&#41; &#8211; that will allow both tasks to execute.  
+Then there will be nothing to stop both tasks from attempting to print to the serial port at the same time, so you will need to use some kind of critical section around calls to DebugPrintf&#40;&#41;.&nbsp; You cannot disable interrupts, or mask interrupts &#40;using taskENTER/EXIT&#95;CRITICAL&#40;&#41;&#41; because that might stop the UART from working.&nbsp; Instead you could wrap the calls in vTaskSuspendAll&#40;&#41;, xTaskResumeAll&#40;&#41; calls to prevent context switching while in the DebugPrintf&#40;&#41; function.  
+However, to start with I would recommend removing the DebugPrintf&#40;&#41; calls.&nbsp; Replace them with a simple variable increment, so  
+<pre><code>volatile uint_32_t ulTask1Inc = 0, ulTask2Inc = 0;
+void vTask1( void *pvParameters )
+{
+    for( ;; )
+    {
+        ulTask1Inc++;
+        vTaskDelay( 100 );
+    }
+}
+</code></pre>
+and the same for Task 2 &#40;but incrementing the other variable&#41;.&nbsp; Let it run for a while then ensure both variables have incremented.  
+Most problems on STM32&#8217;s stem from incorrect priority asignments, or incorrect preemption/sub priority assignments, but it does not seem you are using any interrupts in your system yet so that cannot be your problem.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on February 21, 2013</div><div class="thread-post-content">@richardbarry, thanks for your reply and part of this problem is solved.<br />
+1&#46; Wrapping vTaskSuspendAll&#40;&#41;, xTaskResumeAll&#40;&#41; calls inside DebugPrintf prevents context switching and I can get the whole line now.<br />
+2&#46; I remove DebugPrintf in the task code as you suggested. It seems that now task 0 &#40;higher priority&#41; keeps running as ulTask0Inc is increasing. And task 1 never runs because of lower priority.  
+<pre><code>void SampleTask0(void *pvParameters) {
+  (void) pvParameters;
+  for (;;) {
+    ulTask0Inc++;
+    //vTaskDelay(100);
+  }
+  vTaskDelete(NULL);
+}
+</code></pre>
+However, when I uncomment the vTaskDelay line to enable both tasks to run. Task 0 simply gets stuck at vTaskDelay. When I trace the code with GDB, the &#8220;Cannot access memory at address 0xa5a5a5a5&#8221; occurred again when vTaskDelay returned to the task function. I think maybe there&#8217;s something preventing a context switch. As there&#8217;s no official port for STM32F4 with gcc toolchain. I used the startup file and link script from the STM32F4 examples provided by ST. Is it a possible cause of this problem?  
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on February 21, 2013</div><div class="thread-post-content"><blockquote>
+  Task 0 simply gets stuck at vTaskDelay
+</blockquote>
+Can you explain what that means?&nbsp; Do you mean that once vTaskDelay&#40;&#41; is called the task never runs again?&nbsp; Or that the MCU gets stuck somewhere inside vTaskDelay&#40;&#41; and the other task never runs?&nbsp; Or something else?  
+<blockquote>
+  When I trace the code with GDB, the &#8220;Cannot access memory at address 0xa5a5a5a5&#8221;
+</blockquote>
+Where is that message being displayed?  
+GDB will try and unwind the stack frame so it can be displayed in a debugger window.&nbsp; It expects the stack to end at the stack of main&#40;&#41;, and for all the stack memory to be in the stack segment as defined by the linker script.&nbsp; However, when you run a task the stack of the task will have come from the FreeRTOS heap, and the top stack frame does not end up with the stack of main&#40;&#41;.&nbsp; This can result in the GDB window showing this kind of error because it attempts to unwind past the end of the stack &#40;where it will find 0xa5a5a5a5, which is the FreeRTOS stack fill byte&#41;.&nbsp; Which version of FreeRTOS are you using?  
+Have you installed the interrupt handlers necessary to perform a context switch?&nbsp; See point 1 here: <a href="http://www.freertos.org/FAQHelp.html">http://www.freertos.org/FAQHelp.html</a>  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on February 22, 2013</div><div class="thread-post-content">@richardbarry, thanks for your reply. I&#8217;m using FreeRTOS V7.3.0 now.<br />
+For &#8220;Task 0 gets stuck at vTaskDelay&#8221;, I mean that Task 0 called vTaskDelay but the function never return. And if I traced into vTaskDelay with GDB, the function returned with the &#8220;Cannot access memory at address 0xa5a5a5a5&#8221;&nbsp; error.<br />
+GDB output is like this if I continue:  
+<pre><code>(gdb) b SampleTask0
+Breakpoint 1 at 0x8000860: file main.c, line 160.
+(gdb) b SampleTask1
+Breakpoint 2 at 0x800088c: file main.c, line 171.
+(gdb) c
+Continuing.
+Note: automatically using hardware breakpoints for read-only addresses.
+Breakpoint 1, SampleTask0 (pvParameters=0x0) at main.c:160
+160     ulTask0Inc++;
+(gdb) n
+162     vTaskDelay(1);
+(gdb) c
+Continuing.
+</code></pre>
+And like this if I traced into vTaskDelay:  
+<pre><code>814   if (xAlreadyYielded == pdFALSE)
+(gdb) 
+816       [b]portYIELD_WITHIN_API[/b]();
+(gdb) s
+vPortYieldFromISR () at ../Source/portable/GCC/ARM_CM4F/port.c:274
+274   portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+(gdb) n
+275 }
+(gdb) 
+vTaskDelay (xTicksToDelay=1) at ../Source/tasks.c:818
+818 }
+(gdb) 
+Cannot access memory at address 0xa5a5a5a5
+SampleTask0 (pvParameters=0x0) at main.c:163
+163   }
+(gdb) 
+</code></pre>
+Please note that if I tried to step over portYIELD&#95;WITHIN&#95;API, it did not return. And if I step into then step out, it returned to vTaskDelay normally. However, then it returned to Task 0 with the &#8220;Cannot access memory&#8221; error, as you explained it&#8217;s caused by GDB. So it seems that there&#8217;s something wrong in portYIELD&#95;WITHIN&#95;API.  
+I checked my startup file and FreeRTOSConfig.h, seems that interrupt handlers list on the FAQ page have been installed. Here is the vector table:  
+<pre><code>g_pfnVectors:
+  .word  _estack
+  .word  Reset_Handler
+  .word  NMI_Handler
+  .word  HardFault_Handler
+  .word  MemManage_Handler
+  .word  BusFault_Handler
+  .word  UsageFault_Handler
+  .word  0
+  .word  0
+  .word  0
+  .word  0
+  .word  SVC_Handler
+  .word  DebugMon_Handler
+  .word  0
+  .word  PendSV_Handler
+  .word  SysTick_Handler
+</code></pre>
+And I have added the following lines in FreeRTOSConfig.h:  
+<pre><code>#define vPortSVCHandler SVC_Handler
+#define xPortPendSVHandler PendSV_Handler
+#define xPortSysTickHandler SysTick_Handler
+</code></pre>
+I have deleted the default handlers in stm32f4xx&#95;it.c, and I have confirmed these handlers have been called by setting a breakpoint on them with GDB.  
+Thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on February 22, 2013</div><div class="thread-post-content">It would seem from what you have said that the code is as it should be, but the yield is not yielding.&nbsp; If you run both tasks at the same priority, without a vTaskDelay&#40;&#41;, do the counts in both tasks increment or just in one task?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on February 23, 2013</div><div class="thread-post-content">@richardbarry, thanks for your reply.<br />
+I run both task at the same priority, without a vTaskDelay&#40;&#41;. Now only Task 1 is executed.  
+<pre><code>(gdb) b SampleTask0
+Breakpoint 1 at 0x8000818: file main.c, line 159.
+(gdb) b SampleTask1
+Breakpoint 2 at 0x800083c: file main.c, line 170.
+(gdb) c
+Continuing.
+Note: automatically using hardware breakpoints for read-only addresses.
+Breakpoint 2, SampleTask1 (pvParameters=0x0) at main.c:170
+170     ulTask1Inc++;
+(gdb) 
+Continuing.
+Breakpoint 2, SampleTask1 (pvParameters=0x0) at main.c:170
+170     ulTask1Inc++;
+(gdb) 
+Continuing.
+Breakpoint 2, SampleTask1 (pvParameters=0x0) at main.c:170
+170     ulTask1Inc++;
+(gdb) 
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on February 23, 2013</div><div class="thread-post-content">Sorry if this is a silly question, but when you step through code like that you will only see one task running because the debugger does not know that the whole micro context can get changed between lines of C code. You will have to look at the values of the two variables to know if the other task is running as well.  
+If only one task is running then a context switch is not happening in the tick interrupt. You have already said that a context switch is not happening when vTaskDelay&#40;&#41; is called. On that chip the same software interrupt is used for both so it is likely that the software interrupt is not executing. It might be that no interrupts are executing.  
+You said earlier that one of the RTOS interrupts was being called, but which one? The SVC handler must execute because the tasks start running, so that indicates the interrupt handlers are installed &#40;SVC is only used once at the start&#41;. Can you put a break point in xPortPendSVHandler&#40;&#41; and another in xPortSysTickHandler&#40;&#41; in port.c to see which get called. xPortSysTickHandler&#40;&#41; is called on each tick but does not actually do the context switching, that is done from cxPortPendSVHandler&#40;&#41;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on February 23, 2013</div><div class="thread-post-content">@davedoors, thanks for your reply.<br />
+I have checked the value of the two variables and I am sure only one task is running without vTaskDelay&#40;&#41;.<br />
+Then I add vTaskDelay&#40;&#41; in my tasks and all the three handlers are called as you said. However, I traced into xPortPendSVHandler&#40;&#41; and find taskSECOND&#95;CHECK&#95;FOR&#95;STACK&#95;OVERFLOW&#40;&#41; triggered an error.  
+<pre><code>(gdb) 
+1826          taskSECOND_CHECK_FOR_STACK_OVERFLOW();
+(gdb) 
+HardFault_Handler () at stm32f4xx_it.c:54
+54  {
+(gdb) 
+</code></pre>
+So I set configCHECK&#95;FOR&#95;STACK&#95;OVERFLOW to 1 and the context switching works. Both tasks are running.<br />
+I still cannot figure out why stack overflow check makes context switching not working.  
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on February 24, 2013</div><div class="thread-post-content">I would appreciate it if you could clarify your comments here so I can suggest what your problem might be.  
+Does the context switch work when:  
+1&#41; configCHECK&#95;FOR&#95;STACK&#95;OVERFLOW is set to 0?  
+2&#41; configCHECK&#95;FOR&#95;STACK&#95;OVERFLOW is set to 1?  
+3&#41; configCHECK&#95;FOR&#95;STACK&#95;OVERFLOW is set to 2?  
+If the answer is no to any of the above, at which point in the context switch does it get stuck.  
+<blockquote>
+  triggered an error.
+</blockquote>
+By triggers an error, do you mean it calls the stack overflow hook?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on February 25, 2013</div><div class="thread-post-content">@richardbarry, thanks for your reply.<br />
+As you can see from the gdb output, after calling taskSECOND&#95;CHECK&#95;FOR&#95;STACK&#95;OVERFLOW&#40;&#41;, it went to HardFault&#95;Handler&#40;&#41; which indicates a invalid memory access or stack overflow. I take a look at taskSECOND&#95;CHECK&#95;FOR&#95;STACK&#95;OVERFLOW&#40;&#41; and find it called memcmp&#40;line 149 in StackMacro.h&#41;, which is a function in C library. However, the tool chain I use&#40;<a href="https://github.com/esden/summon-arm-toolchain">summon-arm-toolchain</a>&#41; , is for bare bone ARM processor software, with no libc. I replaced the memcmp with a function I implemented myself, both tasks run well.<br />
+Some commercial GCC distributions like Atollic <a href="http://en.wikipedia.org/wiki/Newlib#Inclusion">contain the Newlib as the C library</a>, but others do not. So in my humble opinion, could you please add some check during compilation of FreeRTOS, to check if libc exists or not? At least give an error message when there&#8217;s no libc.  
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS stack corruption on STM32F4 with gcc</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on February 25, 2013</div><div class="thread-post-content"><blockquote>
+  could you please add some check during compilation of FreeRTOS, to check if libc exists or not
+</blockquote>
+There is no need to do that because in any application, whether it uses FreeRTOS or not, if the source code calls a function that does not exist then the project will not link &#40;it will compiler, but it won&#8217;t link&#41;. Either you application was never actually building &#40;which can&#8217;t be true if you were able to debug it&#41; or memcmp&#40;&#41; is defined somewhere in your code, probably just as a stub. This issue is completely related to your build environment, and not FreeRTOS. You can get pre-built ARM GCC toolchains from lots of places. ARM themselves develop support and distribute one.  
+&#40;Newlib is not a good choice for Embedded tiny systems&#41;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

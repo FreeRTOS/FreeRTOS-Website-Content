@@ -1,0 +1,203 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISR stack - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2007/freertos_ISR_stack_1852742.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="ISR stack - FreeRTOS" />
+<meta property="og:description" content="ISR stackPosted by m_a_d_i_s on October 24, 2007Hi&#033; I have an interesting problem here related to ISR-s. ISR-s are started as in case of FreeRTOS demos etc.: void vUSB&#095;ISR&#040; void &#041; &#095;&#095;attribute&#095;&#095; &#040;&#040;naked&#041;&#041;; /&#042;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#042;/ void vUSB&#095;ISR&#040; void &#041; &#123; &nbsp;&nbsp;&nbsp; /&#042; This ISR can cause a context switch.&nbsp; Therefore a call to the &nbsp;&nbsp;&nbsp; portENTER&#095;SWITCHING&#095;ISR&#040;&#041; &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2007/freertos_ISR_stack_1852742.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="ISR stackPosted by m_a_d_i_s on October 24, 2007Hi&#033; I have an interesting problem here related to ISR-s. ISR-s are started as in case of FreeRTOS demos etc.: void vUSB&#095;ISR&#040; void &#041; &#095;&#095;attribute&#095;&#095; &#040;&#040;naked&#041;&#041;; /&#042;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#042;/ void vUSB&#095;ISR&#040; void &#041; &#123; &nbsp;&nbsp;&nbsp; /&#042; This ISR can cause a context switch.&nbsp; Therefore a call to the &nbsp;&nbsp;&nbsp; portENTER&#095;SWITCHING&#095;ISR&#040;&#041; [&hellip;]" />
+<meta name="twitter:title" content="ISR stack - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201534' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201534' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201534' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201534' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140568' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2007%2Ffreertos_ISR_stack_1852742.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2007%2Ffreertos_ISR_stack_1852742.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140568">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2007_freertos_support_forum_archive_index.html/">October 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">ISR stack</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/m_a_d_i_s">m_a_d_i_s</a> on October 24, 2007</div><div class="thread-post-content">Hi&#33;
+I have an interesting problem here related to ISR-s. ISR-s are started as in case of FreeRTOS demos etc.:
+void vUSB&#95;ISR&#40; void &#41; &#95;&#95;attribute&#95;&#95; &#40;&#40;naked&#41;&#41;;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+void vUSB&#95;ISR&#40; void &#41;
+&#123;
+&nbsp;&nbsp;&nbsp; /&#42; This ISR can cause a context switch.&nbsp; Therefore a call to the 
+&nbsp;&nbsp;&nbsp; portENTER&#95;SWITCHING&#95;ISR&#40;&#41; macro is made.&nbsp; This must come BEFORE any 
+&nbsp;&nbsp;&nbsp; stack variable declarations. &#42;/
+&nbsp;&nbsp;&nbsp; portENTER&#95;SWITCHING&#95;ISR&#40;&#41;;
+&nbsp;&nbsp;&nbsp; /&#42; Now variables can be declared. &#42;/
+Which is followed by local variable declarations. But I noticed that when I declare too many local variables, funny things will happen. So I started to debug the entering to ISR-s. IRQ stack pointer is located at 0xfff0 as expected &#40;part is SAM7X256 with 64K RAM and I debug in RAM&#41;. Stack sizes are declared like:
+&nbsp;&nbsp;&nbsp; /&#42; Stack Sizes &#42;/
+&nbsp;&nbsp;&nbsp; .set&nbsp; UND&#95;STACK&#95;SIZE, 0x00000004
+&nbsp;&nbsp;&nbsp; .set&nbsp; ABT&#95;STACK&#95;SIZE, 0x00000004
+&nbsp;&nbsp;&nbsp; .set&nbsp; FIQ&#95;STACK&#95;SIZE, 0x00000004
+&nbsp;&nbsp;&nbsp; .set&nbsp; IRQ&#95;STACK&#95;SIZE, 0X00002000
+&nbsp;&nbsp;&nbsp; .set&nbsp; SVC&#95;STACK&#95;SIZE, 0x00000800
+So IRQ stack is empty. But do to the naked attribute stack pointer is not modified while entering to the ISR. I think thats the expected action, as there is asm macro included, that enter&#95;isr? But now the local variables are situated above the stack pointer&#8230;? So in case I declare enough local variables in ISR, it overwrites my vector table. I verified it with debugger. while declaring the local variables and initialising them, asm code generated is:
+&nbsp;&nbsp;&nbsp; portCHAR cTaskWokenByPost = pdFALSE;
+0x00001454 &lt;vAudio&#95;ISR+96&gt;:&nbsp; mov&nbsp;&nbsp; r3, &#35;0&nbsp;&nbsp;&nbsp; ; 0x0
+0x00001458 &lt;vAudio&#95;ISR+100&gt;: strb&nbsp; r3, &#91;sp, &#35;11&#93;
+while stack pointer stays at the beginning of IRQ stack 0xfff0.
+C flags are:
+CPFLAGS = $&#40;MCFLAGS&#41; -mthumb-interwork $&#40;OPT&#41; -ggdb -fomit-frame-pointer -ffunction-sections -fdata-sections -Wall -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wno-strict-aliasing -fverbose-asm -Wa,-ahlms=$&#40;&lt;:.c=.lst&#41; $&#40;DEFS&#41;
+CPFLAGS += -MD -MP -MF .dep/$&#40;@F&#41;.d
+arm-elf-gcc version is 4.1.1 which was included with yagarto toolchain.
+Can anybody point me whats wrong with my code, cflags or something else?
+Thank you,
+Madis
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on October 24, 2007</div><div class="thread-post-content">Did you change the portENTER&#95;SWITCHING&#95;ISR&#40;&#41; macro at all?&nbsp; Looking at the comments in the macro it seems to have this point covered by switching stacks:
+&#35;define portENTER&#95;SWITCHING&#95;ISR&#40;&#41; 
+/&#42; Save the context of the interrupted task. &#42;/&nbsp;&nbsp;&nbsp; 
+portSAVE&#95;CONTEXT&#40;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+/&#42; We don&#8217;t know the stack requirements for the ISR, so the frame &#42;/
+/&#42; pointer will be set to the top of the task stack, and the stack&#42;/
+/&#42; pointer left where it is.&nbsp; The IRQ stack will get used for any &#42;/
+/&#42; functions calls made by this ISR. &#42;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+asm volatile &#40; &quot;SUB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R11, LR, &#35;4&quot; &#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#123;
+I think the last bracket is also very important.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/m_a_d_i_s">m_a_d_i_s</a> on October 24, 2007</div><div class="thread-post-content">No, I did not change the portENTER&#95;SWITCHING&#95;ISR&#40;&#41; macro&#8230; Should I? Maybe I have missed an important point here.
+Thank you,
+Madis
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/m_a_d_i_s">m_a_d_i_s</a> on October 25, 2007</div><div class="thread-post-content">But what about the demo projects provided with the FreeRTOS download? They use the same portENTER&#95;SWITCHING&#95;ISR&#40;&#41; but just dont declare too many local variables in serial ISR. But I think these local variables are also situated above the IRQ stack? Any comments/guidance?
+Madis
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on October 25, 2007</div><div class="thread-post-content">I don&#8217;t fully understand your problem, and find it odd that you would want to allocate so many variables within the ISR that you take up 0x2000 bytes of stack.&nbsp; However, it seems from the assembly code you provide that you could run into problems when making function calls from within the assembly routine as the function could use the same stack space.
+I note you have the -fomit-frame-pointer compiler option set.&nbsp; This option was added to get around a bug in the GCC code generation.&nbsp; It might be though that this is what is causing your problem.&nbsp; I think this because of the comment in the macro that states the frame pointer is being moved to the task stack, but you are not using a frame pointer.&nbsp; I would have to look at the entire assembly code output to know if this actually was a problem or not.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sotd">sotd</a> on October 25, 2007</div><div class="thread-post-content">but the stack grows down, so its writing off the bottom.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 25, 2007</div><div class="thread-post-content">Looks like you might have a point here Dave ref the -fomit-stack-pointer option.&nbsp; I will check this out this evening and report back.&nbsp; In the mean time you can make your variables static &#40;don&#8217;t forget to manually initialise them then&#41;, or turn optimisation up to 1.&nbsp; This should get you going in the short term.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on October 25, 2007</div><div class="thread-post-content">Richard, et al
+As you may recall, I have never accepted -fomit-frame-pointer as an acceptable solution to the FreeRTOS/GCC ARM context switch issue. The -fomit-frame-pointer impedes stack tracebacks too much for me.
+I hope that -fomit-frame-pointer is not the problem in in this case, but if it is, I have previously posted a fix to the portSAVE&#95;CONTEXT&#40;&#41; macro. Well, as it turns out that fix didn&#8217;t quite do it under certain optimization levels &#40;note that I use -fno-omit-frame-pointer when I optimize, so I still have the problem under optimization&#41;. The 8 bytes of open space I left on the stack needs to be increased to 32 bytes. The number has been arrived at purely by experimentation. 16 is too small, 32 seems to work.
+The good news is that a colleague of mine recently did some further experimentation and believes that GCC 4.2.1 finally fixes the underlying problem in the ARM/Thumb code generation. We&#8217;ll see.
+Note that the fix to portSAVE&#95;CONTEXT&#40;&#41; is reasonably inocuous even if the GCC thing is fixed.
+Glen
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 25, 2007</div><div class="thread-post-content">Hi Glen, et al :o&#41;
+I&#8217;m just looking at this again now and coming to the conclusion that probably the safest already solution is to declare all local variables in the interrupt service routine as static.&nbsp; This way it does not matter whether the frame pointer is used or not.&nbsp; This would also mean that the line &quot;asm volatile &#40; &quot;SUB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R11, LR, &#35;4&quot; &#41;;&quot; could be removed from the portENTER&#95;SWITCHING&#95;ISR&#40;&#41; macro &#91;it does not do anything when the frame pointer is not used anyway&#93;.&nbsp; This should then work will all compiler options at all optimisation levels.&nbsp; 
+What do you think?
+Also, probably the reason the amount of RAM you have to leave spare on entry to interrupts &#40;with your previous work around&#41; varies is simply because the stack requirement of the ISRs varies?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 25, 2007</div><div class="thread-post-content">I have added the following to the list of known issues:&nbsp; 
+ARM7 GCC demos
+Some time back the compiler option -fomit-frame-pointer was introduced to all the ARM7 GCC demos as a work around for a GCC bug.&nbsp; It has recently been brought to my attention that since then interrupts that can cause a context switch have the potential to cause memory corruption as the macros used assume the existence of a frame pointer.&nbsp; As a workaround, all variables declared locally within an ISR should be declared static &#8211; when doing this don&#8217;t forget to initialise the variables manually within the C code, not just where the variable is declared.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on October 26, 2007</div><div class="thread-post-content">Richard
+I don&#8217;t fully comprehend the specific ISR issue that triggered this discussion, so I can&#8217;t really comment on that. Certainly I avoid using auto variables in functions with portENTER&#95;SWITCHING&#95;ISR&#40;&#41; but I can&#8217;t recall the details as to why it was necessary.
+It made sense at the time &#8211; I don&#8217;t recall if I read the advice or got it direct from you after explaining a problem.
+On the issue of my workaround, no, it has nothing to do with ISR stack requirements. It&#8217;s all about how GCC fiddles the stack pointer on returns from functions.
+The point is this&#8230; under certain circumstances, details and rationale elude me, GCC generates code to return from functions in a bad way. Sometimes the stack pointer gets &#40;briefly&#41; pulled back behind valid stack data &#40;such as the return address&#41;, then it is adjusted forward again, and the return address, etc. are popped off. This apparently only happens when no-omit-frame-pointers is in effect. The max. amount it gets pulled back beyond valid data varies, but my current guess is that it is less than 8 long words &#40;32 bytes&#41;.
+Now if an interrupt happens and FreeRTOS saves a task context just when the sp is badly positioned, boom, the valid data gets clobbered.
+One solution, and that used by some other kernels, is to save the context in the TCB rather than on the system/user stack. My solution was stick with your design &#40;and ARM port&#41; but modify it to skip 32 bytes &#40;originally 8&#41; before pushing the context. That skips over the potentially valid data so that it doesn&#8217;t get clobbered. Your context restore is robust against this change.
+A colleague has pointed out to me that the GCC issue is a serious problem for those who want nested interrupts, even if there is no multitasking kernel. It&#8217;s almost a requirement that things get pushed on the operational stack. This he argues, demonstates that it truly is a bug in GCC code generation &#40;not merely an idiosyncracy&#41;. We are both relieved that it finally appears to be fixed in GCC 4.2.1.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/m_a_d_i_s">m_a_d_i_s</a> on October 26, 2007</div><div class="thread-post-content">Dave wrote:
+&gt;I don&#8217;t fully understand your problem, and find it odd that you would want to allocate so many variables &gt;within the ISR that you take up 0x2000 bytes of stack. However, it seems from the assembly code you provide &gt;that you could run into problems when making function calls from within the assembly routine as the function &gt;could use the same stack space.
+I dont use 0x2000 bytes of stack in IRQ &#40;I just reserved more stack as &quot;funny things happened&quot; within ISR&#41;. The assembly code I provided is generated by gcc. And shows how it initialises local variables, which are not static. These local variables get saved above the IRQ stack pointer, which is set to 0xfff0 &#40;running from RAM and part is SAM7X256 so its at the end of RAM&#41; by boot.S. I.e. no nested interrupts, just first interrupt arrives and stack is empty. And the situation is the same for all the interrupt functions, Im afraid. Local variables just happened to fit upon IRQ stack without overwriting vector table. Static variables dont cause any problem.
+I changed ISR variables to static in my current project. But another solution would be to move IRQ stack down. Like declare it in two parts in boot.s. First make room for &quot;unspecified features&quot; and then save IRQ sp.
+Madis
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISR stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 28, 2007</div><div class="thread-post-content">See the following thread:
+https://sourceforge.net/forum/message.php?msg&#95;id=4592701
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to catch code that caused the hard fault - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2017/freertos_How_to_catch_code_that_caused_the_hard_fault_f16902b9j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How to catch code that caused the hard fault - FreeRTOS" />
+<meta property="og:description" content="How to catch code that caused the hard faultPosted by alsaleem on July 10, 2017Hi, I have an application that runs for several hours then stops at the default handler. My code is running repeatedly so there is no new code introduced at the fault time. I am using STM32F411 with (FreeRTOS V8.2.1) I am &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2017/freertos_How_to_catch_code_that_caused_the_hard_fault_f16902b9j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="How to catch code that caused the hard faultPosted by alsaleem on July 10, 2017Hi, I have an application that runs for several hours then stops at the default handler. My code is running repeatedly so there is no new code introduced at the fault time. I am using STM32F411 with (FreeRTOS V8.2.1) I am [&hellip;]" />
+<meta name="twitter:title" content="How to catch code that caused the hard fault - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202836' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202836' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202836' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202836' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146602' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2017%2Ffreertos_How_to_catch_code_that_caused_the_hard_fault_f16902b9j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2017%2Ffreertos_How_to_catch_code_that_caused_the_hard_fault_f16902b9j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146602">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2017_freertos_support_forum_archive_index.html/">July 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">How to catch code that caused the hard fault</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 10, 2017</div><div class="thread-post-content">Hi,
+I have an application that runs for several hours then stops at the default handler.
+My code is running repeatedly so there is no new code introduced at the fault time.
+I am using STM32F411 with (FreeRTOS V8.2.1)
+I am using the code presented <a href="http://www.freertos.org/Debugging-Hard-Faults-On-Cortex-M-Microcontrollers.html">here</a> in RTOS site, repeated down:
+~~~
+   .section .text.Default<em>Handler,&#8221;ax&#8221;,%progbits
+Default</em>Handler:
+    /* Load the address of the interrupt control register into r3. <em>/
+     /</em> NVIC<em>INT</em>CTRL<em>CONST */
+    /*ldr r3, #0xE000ED04 */
+    ldr r3, =SCBICSR
+    /* Load the value of the interrupt control register into r2 from the address held in r3. */
+    ldr r2, [r3, #0]
+    /* The interrupt number is in the least significant byte &#8211; clear all other bits. */
+    uxtb r2, r2
+Infinite</em>Loop:
+    b   Infinite<em>Loop (&lt;====)
+    .size   Default</em>Handler, .-Default_Handler
+~~~
+R2 indeed has the value of (3), PC is pointing to (b    Infinite_Loop)
+I also implemeted the other code for hard fault handler with C function (hard<em>fault</em>handler_c) to print variables, but nothing was printed.
+~~~
+    .section    .text.HardFault<em>Handler
+    .weak   HardFault</em>Handler
+    .type   HardFault<em>Handler, %function
+HardFault</em>Handler:
+    TST LR, #4
+    ITE EQ
+    MRSEQ R0, MSP
+    MRSNE R0, PSP
+    B hard<em>fault</em>handler<em>c
+    .size   HardFault</em>Handler, .-HardFault_Handler
+~~~
+The vector table is arranged as :
+~~~
+g<em>pfnVectors:
+    .word   _estack
+    .word   Reset</em>Handler
+    .word   NMI<em>Handler
+    .word   HardFault</em>Handler
+    .word   MemManage<em>Handler
+    .word   BusFault</em>Handler
+    &#8230;.
+    &#8230;.
+~~~
+The hard fault handler is defined as 
+~~~
+    .weak   HardFault<em>Handler
+    .thumb</em>set HardFault<em>Handler,Default</em>Handler
+~~~
+I&#8217;ve also impleneted the stack overflow function hooks, and also nothing was printed.
+~~~
+void vApplicationMallocFailedHook( void ) {
+    printf(&#8220;malloc failed &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;n&#8221;);
+}
+void vApplicationStackOverflowHook( TaskHandle<em>t xTask, signed char *pcTaskName )
+{
+    printf(&#8220;stack overflow in task id %lu, name: %s &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-n&#8221;, (uint32</em>t)xTask, pcTaskName);
+}
+~~~
+So, could some one point where to catch the code that caused the interrupt and why hard_fault interrupt is not being served?
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 10, 2017</div><div class="thread-post-content">So, if I understand correctly, you have determined that it is the hard 
+fault that caused the exception, but the hard fault handler is not 
+executing.
+Are you sure the hard fault handler is installed in the vector table?
+Did you take note of the Handling Imprecise Faults section on the page 
+you linked to?
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on July 10, 2017</div><div class="thread-post-content">You can test if your <code>HardFault_Handler</code> does get called by putting a break-point in it and execute the following code:
+~~~~
+    uint32_t ulAddress = 0xF0937531;
+    printf( ( &#8220;Divide by zero = %un&#8221;, *( ( unsigned * )ulAddress ) ) );
+~~~~
+<code>0xF0937531</code> is just an unaligned non-implemented memory address.
+The <code>printf()</code> should make sure that the dereferencing does take place.
+But if your <code>Default_Handler</code> is being called, isn&#8217;t there some interrupt that you haven&#8217;t set correctly yet?
+Maybe you have miss-spelled the name of some Interrupt handler, using the wrong case, e.g. <code>ETH_IRQhandler</code> in stead of <code>ETH_IRQHandler</code> ?
+~~~~
+    .weak   HardFault<em>Handler
+    .thumb</em>set HardFault<em>Handler,Default</em>Handler
+~~~~
+The above means that the <code>Default_Handler</code> will be called in stead of the <code>HardFault_Handler</code>.
+The <code>weak</code> means that the user can override this definition without changing anything to the library.
+If you want to override the above <code>weak</code> definition, I would <strong>not use weak</strong> here:
+~~~~
+    .section    .text.HardFault<em>Handler
+    .weak   HardFault</em>Handler
+    .type   HardFault<em>Handler, %function
+HardFault</em>Handler:
+~~~~
+Why don&#8217;t you use the C example from the FreeRTOS page that you refer to ?
+Slightly modified, with less code:
+~~~~
+struct xREGISTER<em>STACK {
+    uint32</em>t spare0[ 8 ];
+    uint32<em>t r0;
+    uint32</em>t r1;
+    uint32<em>t r2;
+    uint32</em>t r3;
+    uint32<em>t r12;
+    uint32</em>t lr; /* Link register. <em>/
+    uint32_t pc; /</em> Program counter. <em>/
+    uint32_t psr;/</em> Program status register. */
+    uint32_t spare1[ 8 ];
+};
+volatile struct xREGISTER_STACK *pxRegisterStack = NULL;
+void prvGetRegistersFromStack( uint32<em>t *pulFaultStackAddress )
+{
+    /* &#8216;pxRegisterStack&#8217; can be inspected in a break-point. */
+    pxRegisterStack = ( struct xREGISTER</em>STACK *)
+        ( pulFaultStackAddress &#8211; ARRAY_SIZE( pxRegisterStack->spare0 ) );
+<pre><code>/* When the following line is hit, the variables contain the register values. */
+for( ;; );
+</code></pre>
+}
+/<em>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</em>/
+/* A non-static declaration, not using naked: */
+void HardFault_Handler(void)
+{
+    __asm volatile
+    (
+        &#8221; tst lr, #4                                                n&#8221;
+        &#8221; ite eq                                                    n&#8221;
+        &#8221; mrseq r0, msp                                             n&#8221;
+        &#8221; mrsne r0, psp                                             n&#8221;
+        &#8221; ldr r1, [r0, #24]                                         n&#8221;
+        &#8221; bl prvGetRegistersFromStack                               n&#8221;
+    );
+}
+/*&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;*/
+~~~~
+Your ISR declarations should not be weak.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on July 10, 2017</div><div class="thread-post-content">My sample code is using a macro that is often used in /labs, defined as:
+~~~
+    #define ARRAY_SIZE( x ) ( int )( sizeof( x ) / sizeof( x )[ 0 ] )
+~~~
+<code>pulFaultStackAddress</code> will point to the location where register <code>r0</code> is stored.
+The 16 bytes in <code>spare0</code> / <code>spare1</code> sometimes give a bit more information about the process: bytes that were stored before the crash (<code>spare1</code>) and after it (<code>spare0</code>).
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 10, 2017</div><div class="thread-post-content">Hi Hein,
+Sorry for late reply. the problem occurs after 5 hours, so i have to wait until the fault is cought to check.
+&#8211; As you can see above it is not miss-spelled mistake! at least as it looks! And indeed it is hardf ault since R2 = (3)
+Nevertheless, I went on to analyze the fault manually with the default handler. 
+@Real Time Engineers ltd, the fault is precise BFSR @ 0xE000ED29 = 0
+I checked the content of memory pointed by MSP (my case 0x2001ff18) and found:
+  Address                  0 &#8211; 3          4 &#8211; 7          8 &#8211; B          C &#8211; F<br />
+  000000002001FF10  04600240  6CE60020  686014A0  A4130020<br />
+  000000002001FF20  686014A0  686014A0  00000000  F1D10008<br />
+  000000002001FF30  BCC30008  0F000001  A4130020  686014A0<br />
+  000000002001FF40  C9DD0108  B40A0020  58FF0120  50FF0120<br />
+  000000002001FF50  67450108  BDAA2000  A0130020  64170020<br />
+  000000002001FF60  BDAA2000  00000000  70FF0120  CBDF0008<br />
+  000000002001FF70  AFD20008  50000000  00000000  02000000<br />
+  000000002001FF80  88FF0120  4FC30008  90FF0120  71860108          
+R0 = A0146068
+R1 = 200013A4
+R2 = A0146068
+R3 = A0146068
+R12 = 0
+LR = 0800D1F1
+PC = 0800C3BC
+PSR = 0100000F
+BFAR = 200013A4
+CFSR = A0146068
+HFSR = 0801DDC9
+DFSR = 20000AB4
+AFSR = 20000AB4
+SCB_SHCSR = 2001FF58
+From my .map file, here is what I found (~ PC = 0800C3BC) :
+~~~
+ .text.osSystickHandler
+                0x0800c33c       0x18 Middlewares/Third<em>Party/FreeRTOS/Source/CMSIS</em>RTOS/cmsis<em>os.o
+                0x0800c33c                osSystickHandler
+ .text.vListInitialise
+                0x0800c354       0x40 Middlewares/Third</em>Party/FreeRTOS/Source/list.o
+                0x0800c354                vListInitialise
+ .text.vListInitialiseItem
+                0x0800c394       0x1c Middlewares/Third<em>Party/FreeRTOS/Source/list.o
+                0x0800c394                vListInitialiseItem
+ .text.vListInsertEnd
+                0x0800c3b0       0x48 Middlewares/Third</em>Party/FreeRTOS/Source/list.o
+                0x0800c3b0                vListInsertEnd
+ .text.vListInsert
+                0x0800c3f8       0x74 Middlewares/Third<em>Party/FreeRTOS/Source/list.o
+                0x0800c3f8                vListInsert
+ .text.uxListRemove
+                0x0800c46c       0x54 Middlewares/Third</em>Party/FreeRTOS/Source/list.o
+                0x0800c46c                uxListRemove
+~~~
+And for LR
+~~~
+ .text.xTaskGetTickCount
+                0x0800d0d4       0x20 Middlewares/Third<em>Party/FreeRTOS/Source/tasks.o
+                0x0800d0d4                xTaskGetTickCount
+ .text.xTaskIncrementTick
+                0x0800d0f4      0x17c Middlewares/Third</em>Party/FreeRTOS/Source/tasks.o
+                0x0800d0f4                xTaskIncrementTick
+ .text.vTaskSwitchContext
+                0x0800d270       0xd4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0800d270                vTaskSwitchContext
+~~~
+Now it looks that hard fault was cought in a FreeRTOS code (vListInsertEnd). (Am I right?)
+FYI, 
+I have RTC_WKUP with priority 10U every one second. It reads RTC registers and computes EPOCH using mktime().
+EXTI4/EXTI0 with priority 10.
+UART1 no ISR (debug)
+UART2 ISR priority 10.
+I2C/SPI no ISR
+I2S DMA ISR  priority 10
+5 tasks with same priority (=1)
+Do I have to upgrade?
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 10, 2017</div><div class="thread-post-content">Also,
+HFSR = 0801DDC9 (&lt;== printf code)
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 11, 2017</div><div class="thread-post-content">There is some good debug information here.
+As for your question &#8211; do I have to upgrade?  No, you should not have 
+to.  Newer versions have more assert() statements to help catch 
+problems, but you should not have issues like this in any version.
+What you are describing doesn&#8217;t make sense so far &#8211; which just means 
+there is some information missing.
+You appear to be entering an ISR that is not defined.  If the interrupt 
+entry is genuine, then it is nothing to do with FreeRTOS as such, as 
+interrupts are generated by hardware.
+However, reading the registers indicates you are in a hard fault, but 
+the hard fault handler is not being called.  Potentially the actual 
+interrupt handler is itself faulting, but I would still expect the fault 
+handler to be entered even if the fault occurred inside another interrupt.
+There are several fault handlers at the base of the interrupt vector 
+table.  Do they all have their own fault handlers, or do some of them 
+just go to the default handler.  If some go to the default handler then 
+try adding a unique handler for each to see if you end up in one of those.
+When you say:
+<blockquote>
+  LR = 0800D1F1
+</blockquote>
+where is that value coming from?  When an interrupt is taken the PC 
+address is pushed onto the task stack before the ISR is entered.  Did 
+you pull the value from the task stack (I can&#8217;t see it in the memory 
+dump)?  Inside a non-nested ISR itself the LR should contain an 
+EXC_RETURN code, not an address.
+You could try unwinding the task stack from inside the default handler, 
+like you are inside the hardfault handler, to find the address of the 
+instruction that was executing when the interrupt was taken.  That would 
+only be helpful if it was a fault that caused the interrupt entry though 
+&#8211; if it is a genuine interrupt then it will be asynchronous to the code 
+execution.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 11, 2017</div><div class="thread-post-content">LR is the 5th word in MSP, it is shown but LE, PC is the sixth.
+Here is the code to print the MSP values, I borrowed names from it. There is also corection on BFSR+ values. :
+~~~
+    stacked<em>r0 = ((unsigned long) hardfault</em>args[0]);
+    stacked<em>r1 = ((unsigned long) hardfault</em>args[1]);
+    stacked<em>r2 = ((unsigned long) hardfault</em>args[2]);
+    stacked<em>r3 = ((unsigned long) hardfault</em>args[3]);
+<pre><code>stacked_r12 = ((unsigned long) hardfault_args[4]);
+stacked_lr = ((unsigned long) hardfault_args[5]);
+stacked_pc = ((unsigned long) hardfault_args[6]);
+stacked_psr = ((unsigned long) hardfault_args[7]);
+printf ("nn[Hard fault handler - all numbers in hex]n");
+printf ("R0 = %xn", stacked_r0);
+printf ("R1 = %xn", stacked_r1);
+printf ("R2 = %xn", stacked_r2);
+printf ("R3 = %xn", stacked_r3);
+printf ("R12 = %xn", stacked_r12);
+printf ("LR [R14] = %x  subroutine call return addressn", stacked_lr);
+printf ("PC [R15] = %x  program countern", stacked_pc);
+printf ("PSR = %xn", stacked_psr);
+printf ("BFAR = %lxn", (*((volatile unsigned long *)(0xE000ED38))));
+printf ("CFSR = %lxn", (*((volatile unsigned long *)(0xE000ED28))));
+printf ("HFSR = %lxn", (*((volatile unsigned long *)(0xE000ED2C))));
+printf ("DFSR = %lxn", (*((volatile unsigned long *)(0xE000ED30))));
+printf ("AFSR = %lxn", (*((volatile unsigned long *)(0xE000ED3C))));
+printf ("SCB_SHCSR = %lxn", SCB-&gt;SHCSR);
+</code></pre>
+~~~
+BFAR (0xE000ED38) = A014606C
+CFSR (0xE000ED28) = 00820000
+HFSR (0xE000ED2C) = 00000040
+DFSR (0xE000ED30) = 0B000000
+AFSR (0xE000ED3C) = 00000000
+Yes, I had the same thinking to put a unique handler for each interrupt and just not use the default at all to see which is the one that causing interrupt. Actually I am using only few of them. All look like this, for example :
+~~~
+   .weak      EXTI0<em>IRQHandler
+   .thumb</em>set EXTI0<em>IRQHandler,Default</em>Handler
+~~~
+I will make separate isr for each interrupt.
+Regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on July 11, 2017</div><div class="thread-post-content"><blockquote>
+  I will make separate isr for each interrupt.
+</blockquote>
+I also did that sometimes. You&#8217;ll have to do a lot of careful typing, but it can reveil information on the problem.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 11, 2017</div><div class="thread-post-content">Now, I got the hard fault running after making separate isr for each interrupt and removing default handler. Unfortunately the result is the same as indicared above.
+~~~
+R0 = a0146068
+R1 = 200013a4
+R2 = a0146068
+R3 = a0146068
+R12 = 0
+LR [R14] = 800d1f1  subroutine call return address
+PC [R15] = 800c3bc  program counter
+PSR = 100000f
+BFAR = a014606c
+CFSR = 8200
+HFSR = 40000000
+DFSR = a
+AFSR = 0
+SCB_SHCSR = 800
+~~~
+PC &amp; LR indicates addresses inside the FreeRTOS code zone, please see notes before.from .map file.
+Any idea?
+Thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 11, 2017</div><div class="thread-post-content">If you are 100% sure all your interrupt priorities are as per the 
+FreeRTOS requirements (nothing with a logical priority above 
+configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY is calling any FreeRTOS API 
+functions from an ISR), and you have checked everything in the &#8220;my 
+application does not run, what could be wrong?&#8221; FAQ, then I suspect some 
+form of data corruption.  That is, something is writing over one of the 
+RTOS data structures resulting in a hard fault when the structure is 
+accessed.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 11, 2017</div><div class="thread-post-content">per FreeRTOSConfig.h.
+~~~
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY 5</h1>
+<h1>define configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY  ( configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+~~~
+All of my interrupts (5 interrupts) have priority of 10 which is lower than FreeRTOS&#8217;s.
+I am not calling any of the FreeRTOS functions inside them.
+All my variables are global. I do not use malloc. 
+I am using FreeRTOS heap4.c
+Are any of the FreeRTOS variables (data structures) dependent on FreeRTOS&#8217;s alocated stack?
+Is there away to know which task that this hard fault appear into while on hard fault (code snippet)? I do not mind digging into memory, but this will give me clue on where that happen.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 11, 2017</div><div class="thread-post-content">The pxCurrentTCB variable points to the TCB of the currently executing 
+task.  Depending on the debugger, you may have to cast it to a tskTCB 
+type in the debugger watch window to see its internals, which includes 
+its name:
+(tskTCB*)pxCurrentTCB
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 11, 2017</div><div class="thread-post-content">From my curiosity while waiting the hard fault exception:
+(1) It is mentioned in <a href="http://www.freertos.org/Stacks-and-stack-overflow-checking.html">this</a>, re-quoted again
+<blockquote>
+  Also, some processors could generate a fault or exception in response to a stack corruption before the RTOS kernel overflow check can occur.
+</blockquote>
+Can you suggest a method to detect this situation ?
+(2) The below code is my implementation of the stack overflow check:
+~~~
+void vApplicationStackOverflowHook( TaskHandle<em>t xTask, signed char *pcTaskName )
+{
+    printf(&#8220;stack overflow in task id %lu, name: %s n&#8221;, (uint32</em>t)xTask, pcTaskName);
+}
+~~~
+Now, this function is used to report stack overflow and the same time it uses stack!! 
+Could you suggest an implementation where I do not use a stack to print/report error message?
+<strong>Note:</strong> On my previous message on reporting the hard fault, LR is showing the address of the printf. I think this may lead to locating the cause.
+(3) As mentioned :
+<blockquote>
+  Stack overflow is by far the most common source of support requests. The size of the stack available to a task is set using the usStackDepth parameter of the xTaskCreate() or xTaskCreateStatic() API function.
+</blockquote>
+Suggestion : why do not make a safe space/threshold to report stack overflow before it gets into this delimma. Size may be a #define.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 11, 2017</div><div class="thread-post-content"><blockquote>
+  Can you suggest a method to detect this situation ?
+</blockquote>
+Not easily.
+<blockquote>
+  (2) The below code is my implementation of the stack overflow check:
+  void  vApplicationStackOverflowHook(  TaskHandle<em>t  xTask,  signed  char  *pcTaskName  )
+  {
+       printf(&#8220;stack overflow in task id %lu, name: %s n&#8221;,  (uint32</em>t)xTask,  pcTaskName);
+  }
+</blockquote>
+You should not try to return from a stack overflow &#8211; it is a fatal error 
+(unless you are using the MPU version, in which case the overflow is 
+trapped before it occurs).  You can implement the stack overflow hook 
+simply as:
+void  vApplicationStackOverflowHook(  TaskHandle_t  xTask,  signed  char 
+   pcTaskName  )
+{
+     // To ensure nothing else executes.
+     DisableInterrupts(); // Psuedocode only.
+<pre><code> // To make sure this function never exits.
+ for( ;; );
+</code></pre>
+}
+Then place a break point on the infinite loop.
+<blockquote>
+  (3) As mentioned :
+<pre><code>Stack overflow is by far the most common source of support requests.
+The size of the stack available to a task is set using the
+usStackDepth parameter of the xTaskCreate() or xTaskCreateStatic()
+API function.
+</code></pre>
+  Suggestion : why do not make a safe space/threshold to report stack 
+  overflow before it gets into this delimma. Size may be a #define.
+</blockquote>
+There already is &#8211; its eating into the space/threashold that triggers 
+the overflow hook (if the stack overflow configuration parameter is set 
+to 2).
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 11, 2017</div><div class="thread-post-content">I got the hard fault
+I made a break point into vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ), ==> stopped there ==> hard fault
+pxCurrentTCB points to a very simple task I created to show health on debug port as below.
+~~~
+void tskDum( void *pvParameters )
+{
+    TickType_t tickCnt;
+    int i=0;
+<pre><code>printf("dum: dum start ...n");
+for( ;; )
+{
+    tickCnt = xTaskGetTickCount();
+    printf("dum: dum run %d, %d, %un", i, (int)tickCnt, rtcEpoc);
+    i++;
+    HAL_Delay(5000);
+}
+</code></pre>
+}
+~~~
+~~~
+tRet = xTaskCreate( tskDum, &#8220;dum&#8221;, 200, NULL, 1, &amp;hTaskDum);
+~~~
+HAL_Delay is STM32F4 HAL function.
+rtcEpoc is updated by rtc WKUP ISR (priority = 10).
+~~~
+[Hard fault handler &#8211; all numbers in hex]
+R0 = a0146068
+R1 = 200013a4
+R2 = a0146068
+R3 = a0146068
+R12 = 0
+LR [R14] = 800d1f1  subroutine call return address
+PC [R15] = 800c3bc  program counter (&lt;==== RTOS code)
+PSR = 101000f
+BFAR = a014606c
+CFSR = 8200
+HFSR = 40000000
+DFSR = b
+AFSR = 0
+SCB_SHCSR = 800
+~~~
+Is the pxCurrentTCB really showing the current task? because this is a simple task.
+Regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 11, 2017</div><div class="thread-post-content">I&#8217;m not following.  Are you saying you went into the stack overflow 
+hook, and then (while inside the hook) a hard fault is generated?  If so 
+then it sounds like the hard fault is generated either by the code in 
+the overflow hook function or when attempting to return from the 
+overflow hook function (see my previous reply).
+It may be a simple function, but it is using printf() &#8211; and printf() 
+<em>can</em>, depending on the implementation of the library, use masses of 
+stack space.  That is why embedded systems often have cut down versions 
+of printf/sprintf &#8211; you will find such cut down versions in the FreeRTOS 
+download.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 11, 2017</div><div class="thread-post-content">Yes, I am returning from stack overflow hook. And, true, the hard fault maybe be caused by printf code in it.
+I am using the stdio printf(). But does it keep the allocated space (i.e memory leak) (not freed)? because it runs for 5 hours.
+Regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 11, 2017</div><div class="thread-post-content"><blockquote>
+  Yes, I am returning from stack overflow hook.
+</blockquote>
+I have said twice not to do that.
+<blockquote>
+  And, true, the hard fault 
+  maybe be caused by printf code in it.
+  I am using the stdio printf(). But does it keep the allocated space (i.e 
+  memory leak) (not freed)? because it runs for 5 hours.
+</blockquote>
+printf() will use stack, and may use the heap.  If it uses the stack 
+then the stack space will be returned when the function exits.  printf() 
+often also calls malloc(), perhaps unexpectedly for some developers, in 
+which case the memory it allocates should be freed again &#8211; assuming 
+there are no bugs in the printf() implementation.
+However, you are missing the point &#8211; the overflow hook is only called 
+AFTER the stack has already overflowed.  Calling printf() when you know 
+there is no stack space cannot be recommend.  In fact, calling printf() 
+in a small embedded system is rarely recommended at all unless you know 
+how it is implemented.  For example, it is very unlikely to be thread safe.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 12, 2017</div><div class="thread-post-content">Thanks. 
+I have disabled the printf and run again to verify printf is the problem.
+I see you recommend (printf-stdarg.c) for printf. 
+I will use it to see if it is a printf problem or other, I am using sprintf in other tasks too 
+I do not know if the one (gcc) I have is thread-safe, does not leak memory, or bug-free.
+Regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on July 12, 2017</div><div class="thread-post-content">On this forum, a lot has been written about the pros and cons of the standard <code>[v][s][n]printf()</code> family.
+For <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/8fbac97d">instance here</a> where I also attached the latest version of printf-stdarg.c,
+That implementation is using stack only. And although it is unusual to do, the string-formatting functions can be used from within an ISR.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to catch code that caused the hard fault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alsaleem">alsaleem</a> on July 12, 2017</div><div class="thread-post-content">Thanks. It&#8217;s been running for over 12 hours now.
+I have included printf-stdarg.c file in my project.
+I am trying to remove reference to stdio.h from my project.
+Thanks and appreciate your help.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

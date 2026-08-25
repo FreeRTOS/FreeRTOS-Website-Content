@@ -1,0 +1,236 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Structure protection: One writer, mult reader - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2013/freertos_Structure_protection_One_writer_mult_reader_8259246.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Structure protection: One writer, mult reader - FreeRTOS" />
+<meta property="og:description" content="Structure protection: One writer, mult readerPosted by hermarcel on May 22, 2013Hello, I am designing my first real FreeRTOS project and would like your opinion on the following. I have a common datastructure that is frequently updated with new data from the outside world. Updates are done by a gatekeeper task. This is the only &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2013/freertos_Structure_protection_One_writer_mult_reader_8259246.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Structure protection: One writer, mult readerPosted by hermarcel on May 22, 2013Hello, I am designing my first real FreeRTOS project and would like your opinion on the following. I have a common datastructure that is frequently updated with new data from the outside world. Updates are done by a gatekeeper task. This is the only [&hellip;]" />
+<meta name="twitter:title" content="Structure protection: One writer, mult reader - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202263' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202263' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202263' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202263' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144895' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2013%2Ffreertos_Structure_protection_One_writer_mult_reader_8259246.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2013%2Ffreertos_Structure_protection_One_writer_mult_reader_8259246.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144895">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2013_freertos_support_forum_archive_index.html/">May 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Structure protection: One writer, mult reader</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hermarcel">hermarcel</a> on May 22, 2013</div><div class="thread-post-content">Hello,  
+I am designing my first real FreeRTOS project and would like your opinion on the following.  
+I have a common datastructure that is frequently updated with new data from the outside world. Updates are done by a gatekeeper task. This is the only task that will be updating the structure.  
+Several tasks will need read-access to the data. These tasks should not have to wait for each other &#40;they are only reading&#41;.  
+I would like to create a situation where the writer indicates it is about to update the struct and then blocks until all current readers are done with it. When the writer is updating the struct, the readers will wait &#40;block&#41; until the writer is done.  
+What would be a nice strategy to go with?<br />
+I could have the writer-task take a binary semaphore when it is about to update the structure. And give the semaphore when updating is finished. The reader-tasks should then have a means to check is the semaphore is taken or not.<br />
+After the writer has taken it&#8217;s semaphore it could block until a counting-semaphore reaches zero to indicate that no reader-tasks are using the structure.   
+Is this a viable approach? There seem to be no RTOS api-calls for checking if a binary-semaphore is taken. Nor can I find funtions that block until a counting semaphore reaches zero.  
+What approach would you take?  
+Thank you,  
+Marcel
+</div></div><div class="thread-post"><h3 class="thread-post-title">Structure protection: One writer, mult reader</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 23, 2013</div><div class="thread-post-content">The easiest approach would be to guard the structure with a mutex, and code your tasks &#40;be they reading or writing&#41; to block on obtaining the mutex before accessing the structure, and then give the mutex back when they are finished with the structure.&nbsp;   
+Another approach would be to place all reads and writes inside a critical section.&nbsp; That is an easy solution if reading and writing is very fast.&nbsp; If reading and writing is not fast then you can always suspend the scheduler &#40;so no context switches occur&#41; before a read or write, then resume it again when the read or write has finished.  
+However, whether any of these options are necessary or not depends on what the structure contains.  
+If reading of the structure is atomic, then the readers really need not worry about mutual exclusion at all.  
+Reads will be atomic if the following two conditions are met:  
+1&#41; The values being read from the structure are contained in variables that are no greater than the natural size of the architecture.&nbsp; Therefore, on a 32 bit architecture, reading a 32 bit value is atomic, but on an 8 or 16 bit architecture, reading a 32 bit value is not atomic.  
+2&#41; The values in the data structure make sense individually, and are not dependent on other values in the same structure.&nbsp; For example, if the the structure contains members x and y and x and y must be updated together for the data to be valid, then the values must also be read together to make sense.&nbsp; Consider the scenario where x is read by a task, then y is updated by another task before the original task has read y, then if that does not matter then mutual exclusion on reading is not needed.&nbsp; If it does matter then some form of mutual exclusion is needed.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Structure protection: One writer, mult reader</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hermarcel">hermarcel</a> on May 23, 2013</div><div class="thread-post-content">Richard, thank you for your reply.  
+The reads/writes are not atomic. So, I do need to protect the readers from reading incoherent data.  
+It seems that the approaches you propose do not allow multiple readers at the &#8220;same&#8221; time. Usage of a mutex or critical section would allow only one reader atthe time accessing the structure. What I would like is to give all readers concurrent access but give the single writer exclusive access to the structure.   
+I believe it should be possible using two queues. The data in the queues is irrelevant but the numer of messages is.<br />
+The first queue would be a readersqueue: Each reader adds a message to the &#40;large enough&#41; queue to indicate that it is reading the struct. It reads a queue message when it is done. An empty queue means there arecurrently no readers accessing the struct. The second queue would be the writerqueue: The writer adds a message to this queue to indicate it wants exclusive access. The readers monitor this queue and when not-empty, stop accessing the struct&nbsp; &#40;and read a readerqueue-message to let the writer know they are done. When all readers are done, the readersqueue is empty and the writer can continue to update the struct. When updating is done, the writer reads his message from the writersqueue to indicate that the data is accesiblle again to the readers.  
+I think this may work but browsing through the api, I cannot find functions which block for a queue to get empty. This means that I would have to implement a getmessagecount followed by a yield to wait for the count to get zero. This is not very nice &#40;and quite expensive&#41;.  
+A counting-semaphore might work but thre are no functions &#40;afaik&#41; to block until zero &#40;without actually trying to take the semaphore, just block until someone else takes it&#41;.  
+I hope this makes things a little clearer.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Structure protection: One writer, mult reader</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 23, 2013</div><div class="thread-post-content">What about:  
+<pre><code>static unsigned long ReadersCount = 0;
+void LockToRead( void )
+{
+    taskENTER_CRITICAL();
+    if( ReadersCount == 0 )
+    {
+        // Obtain the shared mutex. The writing function raises its priority
+        // when it accesses the data so the reading task calling this function
+        // will only run when the writing function is not running. This call to
+        // take the semaphore should therefore ALWAYS pass. Check the
+        // return value with a configASSERT() to make sure that condition
+        // holds.
+        xSemaphoreTakeFromISR();
+    }
+    // Increment the count of active readers.
+    ReadersCount++;
+    taskEXIT_CRITICAL();
+}
+void UnlockRead( void )
+{
+    taskENTER_CRITICAL();
+    // Decrement count of active readers.
+    ReadersCount--;
+    if( ReadersCount == 0 )
+    {
+        // Give back the shared mutex. Use the FromISR function because
+        // of the critical section.
+        xSemaphoreGiveFromISR();
+    }
+    taskEXIT_CRITICAL();
+}
+void GetWriteAccess( void )
+{
+long GotAccess;
+    // Ensure the writing task has a higher priority than the reading
+    // tasks.
+    xTaskPrioritySet( [a priority above the readers priority ] );
+    // Block to wait for the shared mutex.
+    GotAccess = xSemaphoreTake( mutex, block_time );
+    // Reset priority.
+    xTaskPrioritySet( [original priority] );
+    if( GotAccess == pdPASS )
+    {
+        // Access data here.
+        // Give back the shared mutex.
+        xSemahoreGive();
+    }
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Structure protection: One writer, mult reader</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 23, 2013</div><div class="thread-post-content">Correction. The writing task should only reset its priority when it exits the function.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Structure protection: One writer, mult reader</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hermarcel">hermarcel</a> on May 24, 2013</div><div class="thread-post-content">Wow, you even included some code&#33; :&#41;  
+The idea of having only the first reader and the last reader manipulate the readers-semaphore is a good one. I was, however, trying to find a way without the need for critical sections in my code.  
+Will study on your example.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Structure protection: One writer, mult reader</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 28, 2013</div><div class="thread-post-content">I am not sure that code works, as readers don&#8217;t block on anything if the writing task has the lock. Are you assuming that the write task doesn&#8217;t need to block when it has the write semaphore?  
+My thought is that you need 2 different things for signaling, as you have have tasks both waiting to get access to read and write if the semaphore is currently in write mode, and if the semaphore is switched to read mode, you need to restart multiple readers, while still holding the writers at bay, which may be difficult with only a single blocking object.  
+One thought on how to implement this is using a semaphore &#40;to indicate it is ok to switch between read and write modes&#41; and a mutex to control access to the read counter.  
+To read lock:<br />
+Get Mutex<br />
+if ReadCounter == 0 take Semaphore, if fails, release mutex, wait a moment, and go back to the Get Mutex &#40;this is a deadlock breaker&#41;<br />
+increment the ReadCounter<br />
+Release Mutex  
+Read Unlock<br />
+Get Mutex<br />
+decrement counter<br />
+if counter == 0, Give semaphore<br />
+Release Mutex  
+Write Lock<br />
+Get Semaphore<br />
+Get Mutex  
+Write Unlock<br />
+Give Semaphore<br />
+Release Mutex&nbsp;   
+When there are readers, or a writer, then writers are held off with the semaphore.<br />
+When there is a writer, then readers and held off with the mutex.  
+There is a slight chance of a deadlock if we get a task switch causing both the first reader and a writer to get there first lock and not being able to get their second. One of the paths needs to detect this and back off as shown in the pseudo-code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Structure protection: One writer, mult reader</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hermarcel">hermarcel</a> on May 28, 2013</div><div class="thread-post-content">What about the case that the writer wants access and therefore itnot only waits for all readers to leave, but also delaying new readers from starting?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Structure protection: One writer, mult reader</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 29, 2013</div><div class="thread-post-content">The pseudo code I posted gives readers priority &#40;once you have started reading&#41;. It should be possible to implement priority to the write task, so that once the write task blocks waiting to get control, no other read tasks can enter the read lock state.  
+One outline would be to have one semaphore grabbed by the first read task and release by the last reader, and a second one &#40;or possibly a mutex&#41; grabbed by the write task, which each read task before entering the read lock state needs to grab and release &#40;so they block if the write task has grabbed it. There are still a number of details here that need to be worked out to handle the various race conditions,&nbsp; so we will either likely need another mutex or use some critical sections to prevent.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Structure protection: One writer, mult reader</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hermarcel">hermarcel</a> on September 6, 2013</div><div class="thread-post-content">Decided to go with the following scenario:  
+&#45; Readers create a &#8220;wait for multiple events&#8221;-queue &#40;because several, different, other events are important to the readers as well&#41;.<br />
+&#45; Readers register themselves &#40;their queue&#41; with the Writer<br />
+&#45; Each reader blocks on its queue<br />
+&#45; In the writer, the structure updates are in a critical section<br />
+&#45; The structure reads, in the readers, are also done from within a critical section  
+That should do it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Structure protection: One writer, mult reader</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hermarcel">hermarcel</a> on September 6, 2013</div><div class="thread-post-content">oh and the writer posts a message in each registered queue indicating that the sturcture has been updated.  
+&#40;still no edit-function… ;&#41; &#41;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

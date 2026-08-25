@@ -1,0 +1,527 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Using Task Notifications on Windows Port - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2017/freertos_Using_Task_Notifications_on_Windows_Port_aa30bc22j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Using Task Notifications on Windows Port - FreeRTOS" />
+<meta property="og:description" content="Using Task Notifications on Windows PortPosted by aiyerk on March 14, 2017I am trying to write a small thread abstraction wrapper on top of the freeRTOS implementation and am testing it using the Windows port. I&#8217;m running into an issue which could be due to my use of Task Notifications but I&#8217;m unable to confirm. &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2017/freertos_Using_Task_Notifications_on_Windows_Port_aa30bc22j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Using Task Notifications on Windows PortPosted by aiyerk on March 14, 2017I am trying to write a small thread abstraction wrapper on top of the freeRTOS implementation and am testing it using the Windows port. I&#8217;m running into an issue which could be due to my use of Task Notifications but I&#8217;m unable to confirm. [&hellip;]" />
+<meta name="twitter:title" content="Using Task Notifications on Windows Port - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202781' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202781' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202781' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202781' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146385' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2017%2Ffreertos_Using_Task_Notifications_on_Windows_Port_aa30bc22j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2017%2Ffreertos_Using_Task_Notifications_on_Windows_Port_aa30bc22j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146385">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2017_freertos_support_forum_archive_index.html/">March 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Using Task Notifications on Windows Port</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aiyerk">aiyerk</a> on March 14, 2017</div><div class="thread-post-content">I am trying to write a small thread abstraction wrapper on top of the freeRTOS implementation and am testing it using the Windows port. I&#8217;m running into an issue which could be due to my use of Task Notifications but I&#8217;m unable to confirm. 
+This is my Create Thread Function
+~~~
+static void ThreadLauncher( void* arg )
+{
+  KThread* pThread = ( KThread* )arg;
+  for( ;; ) {
+    TaskHandle<em>t hJoin;
+    ulTaskNotifyTake(pdTRUE, portMAX</em>DELAY );
+    pThread->fn( pThread->arg );
+    KMutexLock( &amp;pThread->joinMutex, WAIT_FOREVER );
+    hJoin = pThread->hJoinRequestTask;
+    KMutexUnlock( &amp;pThread->joinMutex );
+    if( hJoin ) {
+      xTaskNotifyGive( hJoin );
+    }
+    vTaskDelete(NULL);
+  }
+}
+bool KThreadCreate( KThread* pThread, const KThreadCreateParams* pParams )
+{
+  bool retval = false;
+  int err = 0;
+  if ( pThread &amp;&amp;
+      pParams &amp;&amp;
+      pParams->fn &amp;&amp;
+      pParams->pStack &amp;&amp;
+      pParams->stackSizeInBytes / sizeof( StackType<em>t ) > configMINIMAL</em>STACK<em>SIZE  ) {
+    StackType</em>t *pStack = ( StackType_t * ) pParams->pStack;
+    memset( pThread, 0, sizeof( KThread ) );
+    pThread->fn = pParams->fn;
+    pThread->arg = pParams->threadArg;
+    pThread->isComplete = false;
+    pThread->sanity = THREAD_SANITY_CHECK;
+    if ( pParams->pThreadName ) {
+      strncpy( pThread->threadName, pParams->pThreadName, sizeof( pThread->threadName ));
+    } else {
+      memset( pThread->threadName, 0, sizeof( pThread->threadName ));
+    }
+    if ( KMutexCreate( &amp;pThread->joinMutex, NULL ) ) {
+      pThread->hTask = xTaskCreateStatic( ThreadLauncher,
+                                          pThread->threadName,
+                                          pParams->stackSizeInBytes / sizeof( StackType_t ),
+                                          pThread,
+                                          pParams->threadPriority,
+                                          pStack,
+                                          &amp;pThread->task );
+      if ( pThread->hTask ) {
+        xTaskNotifyGive( pThread->hTask );
+        retval = true;
+      }
+    }
+  }
+  return retval;
+}
+~~~
+The thread also creates a companion mutex which I&#8217;m using a part of my implementation to join. Since I&#8217;m storing the handle to the thread returned by xTaskCreateStatic (which is use in my wrapped ThreadLauncher function) I want to make sure that the created thread doesn&#8217;t really start running till pThread->hTask is properly set. Of 
+course this would mean a context switch when the created thread is of higher priority than the creating thread. 
+I try to accomplish the wait by 
+1.   Having the created thread wait on Notification flag using xTaskNotifyTake( pdTRUE, portMAX_DELAY );
+2.   Give this notification in the creating thread using xTaskNotifyGive( pThread->hTask )
+   ** I run into a problem when the creating thread is of higher priority. For some reason, the xTaskNotifyTake() completes even though the creating thread has not yet called xTaskNotifyGive(). The High priority thread runs to completion and when the lower priority (creating) thread resumes it gets blocked in the call to xTaskNotifyGive() specifically on the ReleaseMutex() call in the implementation to vPortExitCritical()**
+ I could use some help trying to figure out if what I did was wrong. I wrote a unit test which I&#8217;m running with embedded unit to test the problem ( the unit test runner itself runs in the freeRTOS task of the lowest priority, it is the first thread created before the task scheduler is launched) .
+~~~
+<h1>include &lt;embUnit/embUnit.h></h1>
+<h1>include &lt;ThreadInterface.h></h1>
+<h1>include &lt;MutexInterface.h></h1>
+typedef struct <em>ThreadTest1Data
+{
+  uint8</em>t value;
+  KMutex mtx;
+} Test1Data;
+static Test1Data s_tst1 = { 0 };
+static void TestThreadFunction( void *arg )
+{
+ // usleep( 1000000 );
+  s_tst1.value = 1;
+}
+static void SetUp(void)
+{
+}
+static void TearDown(void)
+{
+}
+typedef struct <em>ThreadData
+{
+  KThread thread;
+  uint8</em>t stack[ 1024 ];
+}ThreadData;
+static ThreadData s<em>testThreadA;
+static void ThreadApiTest(void)
+{
+  KTHREAD</em>CREATE<em>PARAMS( s</em>testThreadAParams, 
+                         &#8220;Test Thread&#8221;, 
+                         TestThreadFunction, 
+                         NULL, 
+                         s<em>testThreadA.stack, 
+                         sizeof( s</em>testThreadA.stack ), 
+                         SEMANTIC<em>THREAD</em>PRIORITY<em>MID );
+  bool retval = KThreadCreate( &amp;s</em>testThreadA.thread, KTHREAD<em>PARAMS( s</em>testThreadAParams ) );
+  TEST<em>ASSERT( retval );
+  retval = KThreadJoin( &amp;s</em>testThreadA.thread );
+  TEST<em>ASSERT( retval );
+  TEST</em>ASSERT( s<em>tst1.value == 1 );
+  retval = KThreadDelete( &amp;s</em>testThreadA.thread );
+  TEST_ASSERT( retval );
+}
+static void PremptTestThreadHi( void *arg )
+{
+  KMutexLock( &amp;s_tst1.mtx, WAIT_FOREVER);
+  s_tst1.value = 20;
+  KMutexUnlock( &amp;s_tst1.mtx );
+}
+static void PremptTestThreadMid( void *arg )
+{
+  uint32_t val = 0;
+  bool keepRunning = true;
+  while( keepRunning ) {
+    KMutexLock( &amp;s_tst1.mtx, WAIT_FOREVER);
+    val = s_tst1.value;
+    KMutexUnlock( &amp;s_tst1.mtx );
+    keepRunning = ( val == 0 ) ? true : false;
+  }
+}
+static ThreadData s<em>testThreadMid;
+static ThreadData s</em>testThreadHi;
+static void TestBasicPremption( void )
+{
+  memset( &amp;s<em>tst1, 0, sizeof( s</em>tst1 ));
+  if( KMutexCreate( &amp;s<em>tst1.mtx, &#8220;ThreadPremptTestMtx&#8221; )) {
+    s</em>tst1.value = 0;
+    KTHREAD<em>CREATE</em>PARAMS( threadParamsMid,
+                           &#8220;ThreadPremptTestMid&#8221;,
+                           PremptTestThreadMid,
+                           NULL,
+                           s<em>testThreadMid.stack,
+                           sizeof( s</em>testThreadMid.stack ),
+                           SEMANTIC<em>THREAD</em>PRIORITY<em>LOWEST);
+    KTHREAD</em>CREATE<em>PARAMS( threadParamsHi,
+                           &#8220;ThreadPremptTestHi&#8221;,
+                           PremptTestThreadHi,
+                           NULL,
+                           s</em>testThreadMid.stack,
+                           sizeof( s<em>testThreadMid.stack ),
+                           SEMANTIC</em>THREAD<em>PRIORITY</em>HIGH );
+    if( KThreadCreate( &amp;s<em>testThreadMid.thread, KTHREAD</em>PARAMS( threadParamsMid ) )) {
+      if( KThreadCreate( &amp;s<em>testThreadHi.thread, KTHREAD</em>PARAMS( threadParamsHi ) )) {
+        TEST<em>ASSERT( KThreadJoin( &amp;s</em>testThreadMid.thread ) );
+        TEST<em>ASSERT( KThreadJoin( &amp;s</em>testThreadHi.thread ) );
+        TEST<em>ASSERT( KThreadDelete( &amp;s</em>testThreadMid.thread ) );
+        TEST<em>ASSERT( KThreadDelete( &amp;s</em>testThreadHi.thread ) );
+      }
+    }
+    KMutexDelete( &amp;s_tst1.mtx );
+  }
+}
+TestRef KThreadTest<em>ApiTests()
+{
+  EMB</em>UNIT<em>TESTFIXTURES(fixtures) {
+    new</em>TestFixture( &#8220;TreadApiTest&#8221;, ThreadApiTest ),
+    new_TestFixture( &#8220;BasicPremption&#8221;, TestBasicPremption )
+  };
+  EMB<em>UNIT</em>TESTCALLER( KThreadBasic, &#8220;KThreadBasic&#8221;, SetUp, TearDown, fixtures );
+  return (TestRef)&#038;KThreadBasic;
+}
+~~~
+I don&#8217;t think it matters but here is the rest of the implementation of the Thread Wrapper functions
+~~~
+bool KThreadJoin( KThread* pThread )
+{
+  bool retval = false;
+  if( xTaskGetCurrentTaskHandle() != pThread->hTask ) {
+    if ( eTaskGetState( pThread->hTask ) != eDeleted ) {
+      //Wait to be notified when deleted
+      KMutexLock( &amp;pThread->joinMutex, WAIT<em>FOREVER );
+      if( !pThread->hJoinRequestTask ){
+        pThread->hJoinRequestTask = xTaskGetCurrentTaskHandle();
+        retval = true;
+      }
+      KMutexUnlock( &amp;pThread->joinMutex );
+      if( retval ) ulTaskNotifyTake(pdTRUE, portMAX</em>DELAY );
+    } else {
+      retval = true;
+    }
+  }
+  return retval;
+}
+bool KThreadDelete( KThread* pThread )
+{
+  bool retval = false;
+  if( pThread ) {
+    KThreadJoin( pThread );
+    pThread->hTask = 0;
+    pThread->sanity = 0;
+<pre><code>KMutexDelete( &amp;pThread-&gt;joinMutex );
+pThread-&gt;hJoinRequestTask = 0;
+retval = true;
+</code></pre>
+  }
+  return retval;
+}
+int32<em>t KThreadGetPriority( KThread* pThread )
+{
+  return (int32</em>t)uxTaskPriorityGet( pThread->hTask );
+}
+const char* KThreadGetName( KThread* pThread )
+{
+  return pThread->threadName;
+}
+void vAssertCalled( unsigned long ulLine, const char * const pcFileName )
+{
+  volatile uint32_t ulSetToNonZeroInDebuggerToContinue = 0;
+  /* Called if an assertion passed to configASSERT() fails.  See
+  http://www.freertos.org/a00110.html#configASSERT for more information. */
+  /* Parameters are not used. */
+  ( void )ulLine;
+  ( void )pcFileName;
+  printf( &#8220;ASSERT! Line %d, file %srn&#8221;, ulLine, pcFileName );
+  taskENTER_CRITICAL();
+  {
+    /* You can step out of this function to debug the assertion by using
+    the debugger to set ulSetToNonZeroInDebuggerToContinue to a non-zero
+    value. */
+    while ( ulSetToNonZeroInDebuggerToContinue == 0 ) {
+      __asm { NOP };
+      __asm { NOP };
+    }
+  }
+  taskEXIT_CRITICAL();
+}
+/* configUSE<em>STATIC</em>ALLOCATION is set to 1, so the application must provide an
+implementation of vApplicationGetIdleTaskMemory() to provide the memory that is
+used by the Idle task. */
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize )
+{
+  /* If the buffers to be provided to the Idle task are declared inside this
+  function then they must be declared static &#8211; otherwise they will be allocated on
+  the stack and so not exists after this function exits. */
+  static StaticTask_t xIdleTaskTCB;
+  static StackType_t uxIdleTaskStack[ configMINIMAL_STACK_SIZE ];
+  /* Pass out a pointer to the StaticTask_t structure in which the Idle task&#8217;s
+  state will be stored. */
+  *ppxIdleTaskTCBBuffer = &#038;xIdleTaskTCB;
+  /* Pass out the array that will be used as the Idle task&#8217;s stack. */
+  *ppxIdleTaskStackBuffer = uxIdleTaskStack;
+  /* Pass out the size of the array pointed to by <em>ppxIdleTaskStackBuffer.
+  Note that, as the array is necessarily of type StackType_t,
+  configMINIMAL_STACK_SIZE is specified in words, not bytes. */
+  *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+}
+/</em>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;*/
+/* configUSE<em>STATIC</em>ALLOCATION and configUSE<em>TIMERS are both set to 1, so the
+application must provide an implementation of vApplicationGetTimerTaskMemory()
+to provide the memory that is used by the Timer service task. */
+void vApplicationGetTimerTaskMemory( StaticTask</em>t **ppxTimerTaskTCBBuffer, StackType<em>t **ppxTimerTaskStackBuffer, uint32</em>t <em>pulTimerTaskStackSize )
+{
+  /</em> If the buffers to be provided to the Timer task are declared inside this
+  function then they must be declared static &#8211; otherwise they will be allocated on
+  the stack and so not exists after this function exits. */
+  static StaticTask_t xTimerTaskTCB;
+  static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
+  /* Pass out a pointer to the StaticTask_t structure in which the Timer
+  task&#8217;s state will be stored. */
+  *ppxTimerTaskTCBBuffer = &#038;xTimerTaskTCB;
+  /* Pass out the array that will be used as the Timer task&#8217;s stack. */
+  *ppxTimerTaskStackBuffer = uxTimerTaskStack;
+  /* Pass out the size of the array pointed to by *ppxTimerTaskStackBuffer.
+  Note that, as the array is necessarily of type StackType_t,
+  configMINIMAL_STACK_SIZE is specified in words, not bytes. */
+  *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
+}
+void KThreadInit()
+{
+  /* Start the scheduler so the demo tasks start to execute. */
+  vTaskStartScheduler();
+  /* vTaskStartScheduler() would only return if RAM required by the Idle and
+  Timer tasks could not be allocated.  As this demo uses statically allocated
+  RAM only, there are no allocations that could fail, and
+  vTaskStartScheduler() cannot return &#8211; so there is no need to put the normal
+  infinite loop after the call to vTaskStartScheduler(). */
+}
+~~~
+This is my unit test launcher
+~~~
+<h1>include&lt;embUnit.h></h1>
+<h1>include &lt;ThreadInterface.h></h1>
+extern TestRef PoolTest<em>ApiTests();
+extern TestRef KThreadTest</em>ApiTests();
+extern TestRef PriorityWakeTest();
+extern TestRef PriorityDonateChainTest();
+<h1>define TEST<em>RUNNER</em>STACK_SIZE          ( 1 &lt;&lt; 14 )</h1>
+static uint8<em>t s</em>testRunnerThreadStack[ TEST<em>RUNNER</em>STACK<em>SIZE ];
+static KThread s</em>testRunnerThread;
+static void TestRunner( void* arg )
+{
+  TestRunner<em>start();
+  {
+    TestRunner</em>runTest( PoolTest<em>ApiTests() );
+    TestRunner</em>runTest( KThreadTest<em>ApiTests() );
+    TestRunner</em>runTest( PriorityWakeTest() );
+    //TestRunner<em>runTest( PriorityDonateChainTest() );
+  }
+  TestRunner</em>end();
+  for ( ; ; );
+}
+int main (int argc, const char* argv[])
+{
+  KThreadCreateParams param = {
+    .pThreadName = &#8220;TestRunnerThread&#8221;,
+    .threadPriority = SEMANTIC<em>THREAD</em>PRIORITY<em>LOWEST,
+    .threadArg = NULL,
+    .pStack = s</em>testRunnerThreadStack,
+    .stackSizeInBytes = TEST<em>RUNNER</em>STACK<em>SIZE,
+    .fn = TestRunner
+  };
+  KThreadCreate( &amp;s</em>testRunnerThread, &amp;param );
+  KThreadInit();
+}
+~~~
+The complete code with build scripts can be found <a href="https://github.com/KartikAiyer/AbstractUtils">here</a> in case it is useful.
+Again thanks a lot for the help
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Task Notifications on Windows Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 14, 2017</div><div class="thread-post-content">Are you using any Windows system calls in any of your wrappers?  Or just 
+sticking to the FreeRTOS API within the wrappers?  If the former then 
+that could be the issue &#8211; just stick with the FreeRTOS API even though 
+its running on Windows (I haven&#8217;t read through all the code).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Task Notifications on Windows Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 15, 2017</div><div class="thread-post-content">Hi Kartik,
+I&#8217;d like to confirm that the Windows simulation of the scheduler is <strong>very</strong> realistic. It was tested with the task-notify functionality, all queue-types, mutexes and semaphores, and also with the event-groups.
+The usage and <strong>behaviour</strong> of <code>xTaskNotifyGive()</code> / <code>ulTaskNotifyTake()</code> is exactly the same as when your code is running on an embedded system.
+Richard is (as usually) completely right: thou shall not call any (Windows) system API from a FreeRTOS task. Think of stdio and the Windows thread- and process-related functions. It may happen then that two tasks will start running simultaneously.
+Suppose a task calls <code>printf("Hello worldn")</code>. That function will call a Windows API and the API-call will put the thread asleep. The scheduler will start another task and while that runs, the API may return. At that moment, two tasks will be active.
+At least in your published code, I don&#8217;t see Window API calls.
+I extended your test function as:
+~~~
+static void TestThreadFunction( void *pvArgument )
+{
+BaseType_t xIndex;
+SemaphoreHandle_t xSemaphore;
+<pre><code>s_tst1.value = 1;
+xSemaphore = xSemaphoreCreateBinary();
+vLoggingPrintf( "TestThreadFunction startedn" );
+for( xIndex = 1; xIndex &lt; 4; xIndex++ )
+{
+    xSemaphoreTake (xSemaphore, 1000);
+    vLoggingPrintf( "TestThreadFunction: %dn", xIndex );
+}
+vSemaphoreDelete( xSemaphore );
+</code></pre>
+}
+~~~
+just to see some sign of live.
+<code>vLoggingPrintf()</code> sends logging to stdout: this is being done from within a real Windows thread.
+The communication between a FreeRTOS task and a Windows thread is very limited: threads know nothing about semaphores, while tasks are not supposed to use Windows mutexes.
+I ran a bit of your code and what I saw happen is the following:
+1) The creating task has a <strong>higher</strong> priority:
+~~~
+<h2>Time Message</h2>
+ 147 [Main-task] xTaskCreateStatic()
+ 147 [Main-task] xTaskNotifyGive start
+ 147 [Main-task] xTaskNotifyGive end
+ 147 [Main-task] KThreadJoin start
+ 147 [Test Thread] ulTaskNotifyTake start
+ 147 [Test Thread] ulTaskNotifyTake end
+ 147 [Test Thread] TestThreadFunction started
+1147 [Test Thread] TestThreadFunction: 1
+2147 [Test Thread] TestThreadFunction: 2
+3147 [Test Thread] TestThreadFunction: 3
+3147 [Main-task] KThreadJoin end
+3147 [Main-task] KThreadDelete start
+3147 [Main-task] KThreadDelete end
+3147 [Test Thread] Deleting task
+~~~
+2) The creating task has a <strong>lower</strong> priority:
+~~~
+<h2>Time Message</h2>
+ 153 [Main-task] xTaskCreateStatic()
+ 153 [Test Thread] ulTaskNotifyTake start
+ 153 [Main-task] xTaskNotifyGive start
+ 153 [Test Thread] ulTaskNotifyTake end
+ 153 [Test Thread] TestThreadFunction started
+ 153 [Main-task] xTaskNotifyGive end
+ 153 [Main-task] KThreadJoin start
+1153 [Test Thread] TestThreadFunction: 1
+2153 [Test Thread] TestThreadFunction: 2
+3153 [Test Thread] TestThreadFunction: 3
+3153 [Test Thread] Deleting task
+3154 [Main-task] KThreadJoin end
+3154 [Main-task] KThreadDelete start
+3154 [Main-task] KThreadDelete end
+~~~
+Please realise that if you <code>xTaskCreate()</code> a low-priority task, that task will not run until the creator goes in a blocking state. This only happens at <code>KThreadJoin()</code>.
+If you <code>xTaskCreate()</code> a high-priority task, that new task will run immediately, and <code>xTaskCreate()</code> will only return when the new task goes in a bocking state, which happens at <code>ulTaskNotifyTake()</code>.
+As far as I can see there is nothing wrong with the Windows implementation of the task-notify functions. Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Task Notifications on Windows Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aiyerk">aiyerk</a> on March 17, 2017</div><div class="thread-post-content">Hi Hein,
+Thank you very much for getting back to me and for debugging some of my work. I&#8217;m not directly making any windows API calls but I will check the unit test runner code and make changes if needed. Also thanks a lot for pointing out the problem with the creation of threads in my test. I will work out the kinks try again and will update this thread.
+Thanks again.
+    Kartik 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Task Notifications on Windows Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aiyerk">aiyerk</a> on March 26, 2017</div><div class="thread-post-content">Hi Hein,
+Sorry to be asking about this again. I have not been able to find an implementation in the source code of FreeRTOS v9.0.0 for vLoggingPrintf() 
+Can you please point me to the implementation. 
+Thanks
+Kartik
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Task Notifications on Windows Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aiyerk">aiyerk</a> on March 26, 2017</div><div class="thread-post-content">I think I found the code, please ignore my previous message.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Task Notifications on Windows Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 26, 2017</div><div class="thread-post-content">Hi Kartik,
+Just to make sure you find the right one, it&#8217;s in <a href="http://www.freertos.org/FreeRTOS-Labs/RTOS_labs_download.html">the FreeRTOS/Labs download</a>
+<pre><code>FreeRTOS-Plus/Demo/FreeRTOS_Plus_TCP_and_FAT_Windows_Simulator/demo_logging.c
+</code></pre>
+<a href="https://sourceforge.net/p/freertos/discussion/382005/thread/aa30bc22/?limit=25#4c7b">Here you can find</a> a short description of <code>vLoggingPrintf()</code>.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

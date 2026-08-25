@@ -1,0 +1,248 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS_TCP - zero copy - ipBUFFER_PADDING - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2016/freertos_FreeRTOS_TCP_-_zero_copy_-_ipBUFFER_PADDING_cc4d0b2aj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS_TCP - zero copy - ipBUFFER_PADDING - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDINGPosted by joehinkle on June 19, 2016My question is not about ipconfigPACKETFILLERSIZE, it&#8217;s about the other 8 bytes. FreeRTOS_IP.h defines those additional 8 bytes as: uint32_t pointer; // word-aligned uchar_8 filler[6]; Specifically the filler[6]; Why 6? Why not 2? If filler was filler[2] &#8211; the buffer would still be 32bit &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2016/freertos_FreeRTOS_TCP_-_zero_copy_-_ipBUFFER_PADDING_cc4d0b2aj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDINGPosted by joehinkle on June 19, 2016My question is not about ipconfigPACKETFILLERSIZE, it&#8217;s about the other 8 bytes. FreeRTOS_IP.h defines those additional 8 bytes as: uint32_t pointer; // word-aligned uchar_8 filler[6]; Specifically the filler[6]; Why 6? Why not 2? If filler was filler[2] &#8211; the buffer would still be 32bit [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS_TCP - zero copy - ipBUFFER_PADDING - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202659' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202659' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202659' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202659' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145982' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2016%2Ffreertos_FreeRTOS_TCP_-_zero_copy_-_ipBUFFER_PADDING_cc4d0b2aj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2016%2Ffreertos_FreeRTOS_TCP_-_zero_copy_-_ipBUFFER_PADDING_cc4d0b2aj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145982">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2016_freertos_support_forum_archive_index.html/">June 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on June 19, 2016</div><div class="thread-post-content">My question is not about ipconfigPACKET<em>FILLER</em>SIZE, it&#8217;s about the other 8 bytes.
+FreeRTOS_IP.h defines those additional 8 bytes as:
+<pre><code>uint32_t pointer;   // word-aligned
+uchar_8 filler[6];
+</code></pre>
+Specifically the filler[6];  Why 6?  Why not 2?
+If filler was filler[2] &#8211; the buffer would still be 32bit aligned.
+I&#8217;m using 50 buffers, so that&#8217;s an extra 200 bytes wasted is there is not a good reason for them.
+*******  ALSO ******
+The use of the define &#8230;ipconfigPACKET<em>FILLER</em>SIZE
+Besides being used in association with network buffers, it is also used in FreeRTOS<em>IP</em>Private.h
+uint8<em>t fillPacket[ ipconfigPACKET</em>FILLER_SIZE ];
+It&#8217;s part of the socket definition.  
+Question &#8230; Why have a socket element size be defined by a network buffer define?
+I searched for fillPacket and it&#8217;s never used &#8230;. I suggest removing it or changing the define that specifies its size.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 19, 2016</div><div class="thread-post-content">I think this is to ensure members of the packet structure that appear later on become aligned in a way that is more efficient on less capable architectures.  It is also required by some DMA peripherals on some hardware (being somewhat non-specific) which require more than 4-byte alignment.
+There is a comment that may help in FreeRTOS_IP.h, but I think the comment is actually out of date, but does show that at some point the definition was only 2.  I have marked the comment as invalid, so it will get updated too.  As it appears now:
+~~~
+/* Space left at the beginning of a network buffer storage area to store a
+pointer back to the network buffer.  Should be a multiple of 8 to ensure 8 byte
+alignment is maintained on architectures that require it.
+In order to get a 32-bit alignment of network packets, an offset of 2 bytes
+would be desirable, as defined by ipconfigPACKET<em>FILLER</em>SIZE.  So the malloc&#8217;d
+buffer will have the following contents:
+    uint32<em>t pointer;   // word-aligned
+    uchar</em>8 filler[6];
+    &lt;&lt; ETH-header >>    // half-word-aligned
+    uchar<em>8 dest[6];    // start of pucEthernetBuffer
+    uchar</em>8 dest[6];
+    uchar16<em>t type;
+    &lt;&lt; IP-header >>     // word-aligned
+    uint8</em>t ucVersionHeaderLength;
+    etc
+ */
+~~~
+I have also queried the your other question about fillPacket (which doesn&#8217;t comply with the naming standard) so will get back to you on that, but as it is not used anywhere, I think it is in place to ensure the alignment of the buffer that follows it in the structure.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on June 19, 2016</div><div class="thread-post-content">How I read the comment &#8212; the 2 is actually referring to the two bytes associated with ipconfigPACKET<em>FILLER</em>SIZE &#8230; Those 2 bytes will position the buffer such that the 32 bit entries in the IP header are 32bit aligned.
+The filler is only there because THOSE 2 bytes are ipconfigPACKET<em>FILLER</em>SIZE + &#8220;pointer&#8221; + 4 extra bytes &#8212; which are the ones I am questioning.
+As for my second question and your reply about alignment within a structure &#8230; then the premise is faulty since the alignment has nothing to do with network bufferers.
+When ipconfigPACKET<em>FILLER</em>SIZE is set to 0 &#8230; all the suggested alignment disappears.
+I don&#8217;t think we&#8217;ve yet answered my two questions &#8212; sorry.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on June 19, 2016</div><div class="thread-post-content">To be more specific &#8230; I writing a zero copy driver for an NXP K64 (I wrote a K60 for a different stack several years ago).
+The EMAC provides a config setting to ignore the first two bytes of the buffer &#8212; there by aligning the IP address fields.  So payload is actually 1518 but allocated buffer is 1520.
+You might want to clarify on the web site when using the zero copy methed &#8212; that the actual address that is placed inside the DMA descriptor (at least in the Kinetis K series) is:
+Excerpt from web site on zero copy Receive
+~~~
+ Copy the pointer to the newly allocated Ethernet frame to a temporary  variable. 
+<pre><code>pucTemp = pxDescriptor-&gt;pucEthernetBuffer;
+/* This example assumes that the DMADescriptor_t type has a member
+called pucEthernetBuffer that points to the Ethernet buffer containing
+the received data, and a member called xDataLength that holds the length
+of the received data.  Update the newly allocated network buffer descriptor
+to point to the Ethernet buffer that contains the received data. */
+pxDescriptor-&gt;pucEthernetBuffer = pxDMARxDescriptor-&gt;pucEthernetBuffer;
+pxDescriptor-&gt;xDataLength = pxDMARxDescriptor-&gt;xDataLength;
+/* Update the Ethernet Rx DMA descriptor to point to the newly allocated
+Ethernet buffer. */
+pxDMARxDescriptor-&gt;puxEthernetBuffer = pucTemp;
+</code></pre>
+~~~
+<pre><code>Last line SHOULD be ....
+pxDMARxDescriptor-&gt;puxEthernetBuffer = pucTemp - 2;
+The minus 2 is to set the pointer where the EMAC will ignore the first 2 bytes.
+So ... with the 2 extra bytes (ipconfigPACKET_FILLER_SIZE) and the 4 byte pointer that needs to be placed at the front ... that requires NO Extra filler to be involved... so in reality ... the filler in the header is just the size required for ipconfigPACKET_FILLER_SIZE.
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on June 19, 2016</div><div class="thread-post-content">What about the multiple of 8 requirement? Maybe that should be configurable too?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on June 19, 2016</div><div class="thread-post-content">How do you get from CODE back to normal posting.
+In the last of my links above .. code style got set and I can&#8217;t get out!
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on June 20, 2016</div><div class="thread-post-content">I have in my old header file that the xmit and rcv buffers should be 8 aligned but I can no longer find where it states that in the manual.
+Can you point to that requirement?
+Thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 20, 2016</div><div class="thread-post-content">It&#8217;s only a requirement for some DMA hardware, not all.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on June 20, 2016</div><div class="thread-post-content">Referring to my question on the extra 4 bytes of filler in the network buffer &#8230;
+I found this post suggesting that the buffer MUST be 8 bytes aligned.
+<a href="">http://www.freertos.org/FreeRTOS<em>Support</em>Forum<em>Archive/November</em>2014/freertos<em>FreeRTOS</em>TCP<em>minor</em>bug-finds_5591a1a9j.html</a>
+Looking at the code for pxUDPPayloadBuffer<em>to</em>NetworkBuffer, it is passed a pointer to a working buffer and then adjusts it for payload and ipBUFFER<em>PADDING to get a pointer to the start of the buffer created by the NIC driver using BufferManagement</em>1.c
+It then performs a test on the pointer &#8212; cast to dword &#8212; to test if the last 2 bits are zero.  If so, then the buffer is considered valid.
+Here&#8217;s the line of code:
+if( ( ( ( uint32_t ) pucBuffer ) &amp; ( sizeof( pucBuffer ) &#8211; 1 ) ) == 0 )
+If at the time the original bug was found (see link above)  &#8212; IF the test was done on  sizeof( pucBuffer ) and not on  ( sizeof( pucBuffer ) &#8211; 1 ) )  as it is today .. then 8 byte alignment would have been required back then.
+Can anyone check to see if the test has changed because to me &#8212; the current code tests for 4 byte alignment &#8212; which means the extra 4 byte of filler is not required.
+Sorry if it sounds like I&#8217;m beating a dead horse, but I think the extra 4 byte filler is left over from previous code and is no longer required.
+If no one replies, I will test when I get my driver and stack up and running.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on June 20, 2016</div><div class="thread-post-content">Never mind &#8212; I found my question/concern.
+I&#8217;ve been searching the MAC spec for the word align.  Never found anything related the align 8.
+I&#8217;m working on the Driver, what to do with the MAC DMA descriptors, and it says the address must be divisable by 8.  You get what you search for!!
+So, I&#8217;m putting the 4 byte filler back in.
+I saw in the FreeRtos_IP.h &#8212; that it metioned that those bytes might be used as flags in the future.
+Are they used as flags today or can the NIC Driver use them if needed?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS_TCP &#8211; zero copy &#8211; ipBUFFER_PADDING</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 21, 2016</div><div class="thread-post-content">Hi Joe,
+I&#8217;m sorry that I kept silent for so long, but it&#8217;s summer holiday time here 🙂
+The reason to have the pointer located before the network buffer is the zero-copy option for UDP. A UDP payload buffer can be translated to a network buffer and vice versa with these complementary functions:
+~~~~
+NetworkBufferDescriptor<em>t *pxUDPPayloadBuffer</em>to<em>NetworkBuffer( void *pvBuffer )
+uint8</em>t *pcNetworkBuffer_to_UDPPayloadBuffer( NetworkBufferDescriptor_t *pxNetworkBuffer )
+~~~~
+You are right that <strong>for some platforms</strong>, the extra 4 bytes in front of the network buffer are not essential. And so this declaration:
+~~~~
+    #define ipBUFFER<em>PADDING ( 8u + ipconfigPACKET</em>FILLER_SIZE )
+~~~~
+may sometimes be replaced with:
+~~~~
+    #define ipBUFFER<em>PADDING ( 4u + ipconfigPACKET</em>FILLER_SIZE )
+~~~~
+I don&#8217;t mind allowing <code>ipBUFFER_PADDING</code> to get overridden by a new item called <code>ipconfigBUFFER_PADDING</code> from <code>FreeRTOSIPConfig.h</code>:
+~~~~
+<h1>if( ipconfigBUFFER_PADDING != 0 )</h1>
+<pre><code>#define ipBUFFER_PADDING    ipconfigBUFFER_PADDING
+</code></pre>
+<h1>else</h1>
+<pre><code>#define ipBUFFER_PADDING    ( 8u + ipconfigPACKET_FILLER_SIZE )
+</code></pre>
+<h1>endif</h1>
+~~~~
+The following code was introduced just to avoid an exception:
+~~~~
+    /* Here a pointer was placed to the network descriptor,
+      As a pointer is dereferenced, make sure it is well aligned */
+    if( ( ( ( uint32_t ) pucBuffer ) &amp; ( sizeof( pucBuffer ) &#8211; 1 ) ) == 0 )
+~~~~
+We were in doubt about either using the live test or use a <code>configASSERT()</code>.
+But as <code>pxUDPPayloadBuffer_to_NetworkBuffer</code> may also be called from user space, we decided to have the above test.
+As Richard wrote, the &#8220;more than 4-byte&#8221; alignment is required by some DMA&#8217;s.
+The extra 2 bytes <code>ipconfigPACKET_FILLER_SIZE</code> were indeed introduced to get a proper 32-byte alignment for all 32-bit fields in the IP- and protocol headers. Many EMAC&#8217;s have an option that says: &#8220;skip the first 2 bytes&#8221; (as you mentioned).
+FreeRTOS+TCP is still being developed further: it will soon have the possibility to use IPv6 headers, and also allow for multiple interfaces (EMAC&#8217;s). We&#8217;re still looking for more users who want to test the new (still experimental) version.
+If you want to use IPv6, the extra 4 bytes will also get a purpose: store the IP-type in case of a IPv4 packet.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISRs on a Cortex M3 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2014/freertos_ISRs_on_a_Cortex_M3_2fb64df3j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="ISRs on a Cortex M3 - FreeRTOS" />
+<meta property="og:description" content="ISRs on a Cortex M3Posted by wlauer on February 16, 2014I’m trying to figure out how to properly setup a few ISRs for an application running on an Arduino Due using the Atmel SAM3X chip. I think I’m missing something regarding the use of FromISR APIs. In the manual “Using the FreeRTOS Real Time Kernel &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2014/freertos_ISRs_on_a_Cortex_M3_2fb64df3j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="ISRs on a Cortex M3Posted by wlauer on February 16, 2014I’m trying to figure out how to properly setup a few ISRs for an application running on an Arduino Due using the Atmel SAM3X chip. I think I’m missing something regarding the use of FromISR APIs. In the manual “Using the FreeRTOS Real Time Kernel [&hellip;]" />
+<meta name="twitter:title" content="ISRs on a Cortex M3 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202353' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202353' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202353' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202353' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143624' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2014%2Ffreertos_ISRs_on_a_Cortex_M3_2fb64df3j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2014%2Ffreertos_ISRs_on_a_Cortex_M3_2fb64df3j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143624">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2014_freertos_support_forum_archive_index.html/">February 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">ISRs on a Cortex M3</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wlauer">wlauer</a> on February 16, 2014</div><div class="thread-post-content">I’m trying to figure out how to properly setup a few ISRs for an application running on an Arduino Due using the Atmel SAM3X chip. I think I’m missing something regarding the use of FromISR APIs.
+In the manual “Using the FreeRTOS Real Time Kernel – A Practical Guide”  in the chapter 3 “Interrupt Management” section 3.5  regarding interrupt nesting the last two paragraphs state that
+For ISRs to use the FromISR APIs the priority of the interrupt must be between  configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY and configKERNEL</em>INTERRUPT_PRIORITY. But then it goes on to say
+“Interrupts that make API call can only use these priorities, but will be masked by critical sections” and “ Interrupts that use these priorities are prevented from executing while the kernel or application is inside a critical section”. 
+Can I interpret this as while in critical sections, interrupts with aforementioned priority range are masked and consequently missed? If this is the case what’s the point of the FromISR APIs? To me the beauty of synchronizing a task with an ISR using a binary semaphore is lost if you going to miss interrupts.
+Without going into the details my application loses interrupts every once in a while using Give and Take on binary semaphores.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISRs on a Cortex M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on February 16, 2014</div><div class="thread-post-content">They won&#8217;t be &#8220;missed&#8221;, but delayed. Critical sections are supposed to be kept very short, and are used to guard the update of critical data shared between tasks and interrupts (like the lists used to manage which task is to run). 
+The FreeRTOS kernel itself is very good at keeping to a minimum the duration of a critical section, and uses other methods when it needs a longer protection that doesn&#8217;t block interrupts.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISRs on a Cortex M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wlauer">wlauer</a> on February 16, 2014</div><div class="thread-post-content">Ok, things are beautiful again no missing interrupts! 
+My application is using a TC (Timer/Counter) to emit a single pulse. The sequence is to:
+1)  Start the TC
+2)  Wait in the application with a Take of a binary semaphore.
+3)  When the ISR is called at the end of the pulse stop the TC and Give the binary semaphore.
+If the interrupt is delayed too much a second pulse will be emitted and a second interrupt will be generated. This is obviously a function of the frequency of the TC etc. and the maximum expected delay.
+I need to know the delay in order to determine when this kind of situation is a problem.
+The delay is comprised of three software sources:
+1)  The OS
+a.  How do I determine the maximum length of time the OS can delay servicing an interrupt with a priority in the range between configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY and configKERNEL</em>INTERRUPT_PRIORITY?
+2)  The application
+a.  If I use critical sections with a judicious design and this won’t be a problem
+3)  Other interrupt sources especially those with equal or higher priority compared to the TC
+a.  Again with a judicious design and this won’t be a problem
+The delay is also a function of hardware sources such as CPU clock speed, etc.
+Thanks in advance.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISRs on a Cortex M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 16, 2014</div><div class="thread-post-content">If there is a chance that two interrupts are serviced before the binary semaphore is processes then you may consider a counting semaphore instead of a binary semaphore.
+<blockquote>
+  a. How do I determine the maximum length of time the OS can delay servicing an interrupt 
+  with a priority in the range between configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY and 
+  configKERNEL</em>INTERRUPT<em>PRIORITY?a. How do I determine the maximum length of time the OS
+  can delay servicing an interrupt with a priority in the range between 
+  configMAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY and configKERNEL<em>INTERRUPT</em>PRIORITY?
+</blockquote>
+The FreeRTOS Cortex-M port has a full interrupt nesting model, so if this is the most important interrupt make sure all the other interrupts have a priority below it.  
+If there are other interrupts than that have to be higher priority then only you know how long they are going to take as only you know the code that the interrupts are going to execute.
+In most cases, the answer is simply to measure it.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISRs on a Cortex M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wlauer">wlauer</a> on February 16, 2014</div><div class="thread-post-content">I think you missed the point.I don&#8217;t want multiple interrupts.
+In order to prevent multiple interrupts I need to know the maximum time the RTOS can delay servicing the first interrupt. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISRs on a Cortex M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 16, 2014</div><div class="thread-post-content">If you use are using the xHigherPriorityTaskWoken parameter along with the portYIELD<em>FROM</em>ISR or portEND<em>SWITCHING</em>ISR, and the task that reads from the binary semaphore is the highest priority task, then you are guaranteed that the interrupt will return directly to the that task &#8211; without any other tasks executing in between.  If it is not the highest priority task then again only you know how long it will take the other tasks execute first.
+Also reference the context switch time on this page: http://www.freertos.org/FAQMem.html and ensure you have configUSE<em>PORT</em>OPTIMISED<em>TASK</em>SELECTION set to 1 in FreeRTOSConfig.h for the best performance.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISRs on a Cortex M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wlauer">wlauer</a> on February 17, 2014</div><div class="thread-post-content">We are getting closer but not quite there yet.
+My question is not how long a context switch takes. But instead how long is the time from when an interrupt occurs until the ISR starts running.
+For interrupt priorities logically higher than configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY the critical sections of the OS and it’s APIs have no impact.
+For interrupt priorities logically lower than configMAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY the OS and it’s APIs can mask interrupts during critical sections and consequently delay there start of the ISR until the OS exits the critical section.
+What is the maximum value of this delay?
+The FAQ on context switch time notes says “The ARM Cortex-M port performs all task context switches in the PendSV interrupt. The quoted time does not include interrupt entry time.”
+What is the interrupt entry time? This is what’s killing my application. How can I measure it?
+Thanks again.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISRs on a Cortex M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 17, 2014</div><div class="thread-post-content">Ok, so I think you are asking, what is the worst case time between an interrupt being asserted and an interrupt being processed if the interrupt is asserted while in a critical section.  Or, what is the longest critical section.
+I don&#8217;t have numbers for that &#8211; it would not be practical for us to attempt to either as >30 architectures and >16 compilers and each compiler having probably 4 or 5 different optimisation levels would make approximately &#8230;.. a lot of different numbers to measure.
+SafeRTOS does take worst case times for each certified port, and they do it by finding the longest path through a critical section (no doubt in a queue send or receive function &#8211; although they use scheduler and queue locks to allow all interrupts to remain unmasked for the longest operations), taking the cycle count on entry, and the cycle count on exit, then multiplying by the time per cycle.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISRs on a Cortex M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on February 18, 2014</div><div class="thread-post-content">Bill,
+If you haven&#8217;t added any long critical sections, and the delay caused by FreeRTOS&#8217;s use of Critical Sections is given you problems, makes me think that something isn&#8217;t being done right. 
+If the delay of a handful or so of instructions that a Critical Section might cause is a problem, then you need to put that processing into a very high priority interrupt (likely highest possible) and do very rapidly the critical operations (perhaps needing to write this routine in assembly) and if it needs to communicate with a task, trigger a lower priority interrupt of a level that can talk to FreeRTOS.
+If the delay in getting the task rescheduled is the problem, perhaps you need to do a bit more in the ISR (what ever is that critical in timing) before switching to the task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ISRs on a Cortex M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wlauer">wlauer</a> on February 20, 2014</div><div class="thread-post-content">Richard,
+    I got it working by adjust the priorities of the various interrupts.
+I was curious about your solution to get a high priority interrupt to trigger a low priority interrupt to communicate with the OS. I assume you&#8217;re talking about a software generated interrupt. How do I set one of those up? How&#8217;s the handler defined etc? code snipets would be good.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

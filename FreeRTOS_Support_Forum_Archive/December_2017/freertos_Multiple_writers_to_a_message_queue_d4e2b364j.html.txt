@@ -1,0 +1,225 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple writers to a message queue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/December_2017/freertos_Multiple_writers_to_a_message_queue_d4e2b364j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Multiple writers to a message queue - FreeRTOS" />
+<meta property="og:description" content="Multiple writers to a message queuePosted by alainm3 on December 8, 2017In this post about Stream buffers: RTOS Stream &amp; Message Buffers there is an important warning: &#8220;Uniquely among FreeRTOS objects, the stream buffer implementation (so also the message buffer implementation, as message buffers are built on top of stream buffers) assumes there is only &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/December_2017/freertos_Multiple_writers_to_a_message_queue_d4e2b364j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Multiple writers to a message queuePosted by alainm3 on December 8, 2017In this post about Stream buffers: RTOS Stream &amp; Message Buffers there is an important warning: &#8220;Uniquely among FreeRTOS objects, the stream buffer implementation (so also the message buffer implementation, as message buffers are built on top of stream buffers) assumes there is only [&hellip;]" />
+<meta name="twitter:title" content="Multiple writers to a message queue - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202878' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202878' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202878' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202878' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146798' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2017%2Ffreertos_Multiple_writers_to_a_message_queue_d4e2b364j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2017%2Ffreertos_Multiple_writers_to_a_message_queue_d4e2b364j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146798">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/December_2017_freertos_support_forum_archive_index.html/">December 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Multiple writers to a message queue</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alainm3">alainm3</a> on December 8, 2017</div><div class="thread-post-content">In this post about Stream buffers: <a href="https://www.freertos.org/RTOS-stream-message-buffers.html">RTOS Stream &amp; Message Buffers</a> there is an important warning:
+&#8220;Uniquely among FreeRTOS objects, the stream buffer implementation (so also the message buffer implementation, as message buffers are built on top of stream buffers) assumes there is only one task or interrupt that will write to the buffer (the writer), and only one task or interrupt that will read from the buffer (the reader).&#8221;
+This will break many of my applications as I regularly use one message queue to send information from many different sources (some interrups and some not) to a single Task for precessing !!!
+Could someone explain it a bit more? And why this brings new and seemingly impossible restrictions?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 8, 2017</div><div class="thread-post-content">The queue implementation has not changed.  Queues can have multiple 
+readers and multiple writers.  That has always been the case, and I 
+cannot see a time when that will change.  That makes them weightier 
+&#8216;generic&#8217; objects that can be used in any number of use cases.
+Stream buffers and message buffers are completely new features unrelated 
+to queues.  If you use queues in your application, then the introduction 
+of new features that you are not using is not going to break anything. 
+Stream buffers and message buffers are much lighter weight objects than 
+queues in recognition of the fact that in a lot of use cases a lot of 
+the features of queues are not used.  For example, when sending data 
+from an interrupt service routine to a task there is only one writer and 
+one reader, so the overhead of managing multiple readers and writers is 
+not required.
+I&#8217;m interested to know why you thought the introduction of stream 
+buffers would break legacy code, that couldn&#8217;t be using them as they are 
+new in V10.  It may indicate that our documentation is not as clear as 
+it needs to be and that some updates to clear up any confusion might 
+prevent others coming to the same conclusion as yourself.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on December 8, 2017</div><div class="thread-post-content">I think the confusion is that people can think of a &#8216;Queue&#8217; and a &#8216;Message Queue&#8217; which sounds a bit like a &#8216;MessageBuffer&#8217;, so they think it is a change of behavior. I think the notification was writen fairly clearly, but I can understand the possible confusion.
+I have a somewhat related question though, I can see the StreamBuffer as a useful way to implement the holding buffer for a serial port. The one issue would be that multiple tasks would want to be able to write to that serial port at various times. The mitigating factor is that the way I have structured things, any task that wants to write to the serial port, first aquires a mutex guarding that serial port, sends its message (maybe using a number of serial port driver calls), and then releases the mutex, so at any one time, the StreamBuffer (or currently the Queue) will only be accessed by a single task, the it doesn&#8217;t need to worry about handling multiple accesses at once. Looking over the code, I think that would be usable.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/thomask">thomask</a> on December 8, 2017</div><div class="thread-post-content"><code>I have a somewhat related question though, I can see the StreamBuffer as a useful way to implement the holding buffer for a serial port.</code>
+I&#8217;m a little bit disappointed, that the StreamBuffer API seems to be copying bytes around.
+I prefer a zero-copy solution, that can also be used as a target for serial port DMA transfers.. here&#8217;s an example implementation:
+https://github.com/thomask77/drquad32/blob/master/Source/ringbuf.h
+My API was a little bit inspired by DirectX IDirectSoundBuffer, which has similar requirements:
+https://msdn.microsoft.com/en-us/library/mt708923(v=vs.85).aspx
+best regards,
+Thomas.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 8, 2017</div><div class="thread-post-content">Using a mutex means only one writer will access the buffer at a time 
+which is fine PROVIDED no more than one task blocks on the buffer. 
+Queues have lists of blocked tasks, whereas stream and message buffers 
+just have one.  An assert will be triggered if a task attempts to block 
+when another task is already blocked.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 8, 2017</div><div class="thread-post-content"><blockquote>
+  I&#8217;m a little bit disappointed, that the StreamBuffer API seems to be 
+  copying bytes around.
+</blockquote>
+Read the &#8220;User Model: Maximum Simplicity, Maximum Flexibility . . .&#8221; 
+section of this page: https://www.freertos.org/Embedded-RTOS-Queues.html
+Although that page discusses queues and not stream or message buffers, 
+the same principal applies.
+Queue/buffer by copy allows you to use use either pass by copy (copy the 
+bytes) or pass by reference (zero copy, by passing a pointer to the 
+data).  If you design to only pass by reference (zero copy) then you can 
+only do it in the more complex way rather than having the choice (plus 
+you can&#8217;t pass data across memory protection boundaries without created 
+exceptions, etc.).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alainm3">alainm3</a> on December 10, 2017</div><div class="thread-post-content">Hi, Richard Damon got it right, I just confused Message Queues with Message Buffers.
+I am a regular user of FreeRTOS but not continuously, the last time that I read the manual was a few Years ago (there will more sometime&#8230;) so exact terminology gets a bit hazy&#8230;
+It would be nice to rephase that page to avoid that confusion.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidbrown">davidbrown</a> on December 11, 2017</div><div class="thread-post-content">To get the kind of stream Richard Damon is looking for with his serial ports, you are wanting a multiple-writer, single-reader stream.  That should be possible with a StreamBuffer and a Mutex for writing.  Each writer takes the mutex, writes to the stream, then releases the mutex.  You can&#8217;t get more than one task blocking on the StreamBuffer, because only one task can access it at the time.  If the StreamBuffer is full (while waiting for the other side to pass the data on to the serial port) causing it to block, then the mutex won&#8217;t be released by the current writing task &#8211; and thus no other taks can try to write to it.
+An alternative is to have a &#8220;multiplexer&#8221; task.  This would be the reader for multiple StreamBuffers (or MessageBuffers might make more sense).  It would read from one buffer at a time, and pass the data on to the serial port, using whatever priority mechanism you want to determine which buffer to read from next.  This mirrors what you would do in hardware to solve the same problem.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/marjonz">marjonz</a> on November 27, 2018</div><div class="thread-post-content">Has anyone gotton the StreamBuffer implementation working properly? I am running into the problem of losing bytes along the way:
+* I am using a mutex for the writer to the streambuffer because I can have multiple writers from different threads.
+* I breakpoint prior to writing to the streambuffer, checking that the bytes I am attempting to write is correct.
+* Then, I write to the streambuffer and the number of bytes written (return value of the write) is then checked after the write occurs. The number corresponds with the correct number of bytes being attempted to write.
+* In the main for loop of the thread, I then check the streambuffer if there are new bytes available in the streambuffer, and if there is, fetch it.
+* At this point, I get inconsistent results. I sometimes lose 4 bytes at the beginning of the previous byte stream I supposedly wrote.
+* I don&#8217;t have a mutex on the reader side, since I only have that thread as the reader of the stream buffer.
+Can anyone please confirm if this happens to them? Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 28, 2018</div><div class="thread-post-content">Do your writers ever block?  Unlike queues, stream buffers are designed 
+for singe readers and single writers &#8211; so do not maintain a list of 
+blocked tasks as per the Queue implementation.  Therefore if you have 
+multiple writers that have block times you could get into difficulties.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/marjonz">marjonz</a> on November 28, 2018</div><div class="thread-post-content">@Richard Barry, I have a single writer, that is protected by a mutex. But the writer can be called from multiple threads, and I don&#8217;t think they are blocking. Here is the writer function:
+~~~
+BaseType<em>t serial</em>write(uart<em>channel</em>t channel, const char * const out<em>string, uint16</em>t string<em>length)
+{
+    BaseType</em>t return<em>value = pdFAIL;
+    BaseType</em>t sem<em>take = xSemaphoreTake (mutex</em>list[channel],SERIAL<em>GENERIC</em>WAIT);
+    if (sem<em>take == pdPASS)
+    { // Try to place the character in the streambuffer
+        if (xStreamBufferSpacesAvailable(uart</em>tx<em>buffer[channel]) > string</em>length)
+        {
+            return<em>value = send</em>bytes<em>to</em>streambuffer(uart<em>tx</em>buffer[channel],
+                                                      out<em>string, string</em>length);
+        }
+        xSemaphoreGive(mutex_list[channel]);
+    }
+    else
+    { // retry
+    }
+}
+where send<em>bytes</em>to_streambuffer() is 
+static BaseType<em>t send</em>bytes<em>to</em>streambuffer(StreamBufferHandle<em>t streambuffer,
+                                                      const void *tx</em>data,
+                                                      size<em>t tx</em>data<em>length</em>in<em>bytes)
+{
+    BaseType</em>t return<em>value = pdFAIL;
+    size</em>t bytes<em>written = xStreamBufferSend(streambuffer,
+                                                       tx</em>data,
+                                                       tx<em>data</em>length<em>in</em>bytes,
+                                                       0);
+    if (bytes<em>written >= tx</em>data<em>length</em>in<em>bytes)
+    { // bytes sent to stream buffer
+        return</em>value = pdPASS;
+    }
+    return return_value;
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple writers to a message queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/marjonz">marjonz</a> on December 2, 2018</div><div class="thread-post-content">I think I got it sorted, took out most calls to enter/exit the critical section of the code in other places.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

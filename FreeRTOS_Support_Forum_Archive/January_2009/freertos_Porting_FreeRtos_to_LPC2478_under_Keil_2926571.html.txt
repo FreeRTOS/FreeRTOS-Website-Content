@@ -1,0 +1,329 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Porting FreeRtos to LPC2478 under Keil - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2009/freertos_Porting_FreeRtos_to_LPC2478_under_Keil_2926571.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Porting FreeRtos to LPC2478 under Keil - FreeRTOS" />
+<meta property="og:description" content="Porting FreeRtos to LPC2478 under KeilPosted by tns1 on January 27, 2009I see some have already tried this, so I wonder if you could look at my list of changes and see if they make sense. Right now, the first tasks gets launched, but as soon as I call taskSuspend it then it hangs up &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2009/freertos_Porting_FreeRtos_to_LPC2478_under_Keil_2926571.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Porting FreeRtos to LPC2478 under KeilPosted by tns1 on January 27, 2009I see some have already tried this, so I wonder if you could look at my list of changes and see if they make sense. Right now, the first tasks gets launched, but as soon as I call taskSuspend it then it hangs up [&hellip;]" />
+<meta name="twitter:title" content="Porting FreeRtos to LPC2478 under Keil - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201702' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201702' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201702' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201702' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=142023' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2009%2Ffreertos_Porting_FreeRtos_to_LPC2478_under_Keil_2926571.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2009%2Ffreertos_Porting_FreeRtos_to_LPC2478_under_Keil_2926571.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-142023">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2009_freertos_support_forum_archive_index.html/">January 2009 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Porting FreeRtos to LPC2478 under Keil</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tns1">tns1</a> on January 27, 2009</div><div class="thread-post-content">I see some have already tried this, so I wonder if you could look at my list of changes and see if they make sense.
+Right now, the first tasks gets launched, but as soon as I call taskSuspend it then it hangs up in the idle task and subsequent tasks to not get launched.
+ thanks
+Create uVision project for LPC2478 &#40;which uses LPC2400.s&#41;
+Start with FreeRtos v5.1.1 demo ARM7&#95;LPC2129&#95;Keil&#95;RVDS
+use Keil&#8217;s lpc23xx.h instead of lpc21xx.h
+add LPC2400.s to project, edit to add :
+IMPORT&nbsp;&nbsp;&nbsp; vPortYieldProcessor&nbsp;&nbsp;&nbsp; 
+SWI&#95;Addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DCD&nbsp;&nbsp;&nbsp;&nbsp; vPortYieldProcessor&nbsp;&nbsp;&nbsp; 
+also comment out user mode init and force svr mode before jump to C
+add NO&#95;EMC&#95;SETUP to asm options &#8211; just want simplest simulation of code in flash memory 
+edit portable.h to create new device ARM7&#95;LPC2478&#95;KEIL&#95;RVDS&nbsp; 
+create folder RVDS/ARM7&#95;LPC2478 for new device by copying folder RVDS/ARM7&#95;LPC21xx
+add new device symbol and paths to uvision project options
+edit portASM.s to match datasheet and use of T0MR1
+;;VICVECTADDR&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp; 0xFFFFF030 
+VICVECTADDR&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp; 0xFFFFFF00 
+T0IR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp; 0xE0004000
+;;T0MATCHBIT&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp; 0x00000001
+T0MATCHBIT&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp; 0x00000002
+edit port.c prvSetupTimerInterrupt&#40;&#41; by examining GCC demo for 23xx :
+change T0MR0 to T0MR1
+change VICVectAddr0 to VICVectAddr4
+change VICVectCntl0 to VICVectCntl4
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting FreeRtos to LPC2478 under Keil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tns1">tns1</a> on January 28, 2009</div><div class="thread-post-content">Also in port.c :
+change&nbsp;&nbsp;&nbsp;&nbsp; VICVectCntl4 = 1;//priority 1 &#40;0 is highest&#41;
+I must not have gotten all the changes necessary. Under the simulator, once the processor gets into IRQ mode by the first timer tick, it never comes out. 
+I have the timer working, and interrupts are happening at the proper interval.
+Using keils peripheral view, I can see the timer interrupt being set and cleared as expected,
+but I do not see the interrupt being acknowledged in the vic vicaddress register even though 
+it is being written to by the code. I am not sure it would actually be cleared though.
+I also wonder about the stack setup in LPC2400.s. The user SP is never set since once you enter user mode, you can&#8217;t easily hop back to svr mode. How to set the user SP and also start in svr mode?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting FreeRtos to LPC2478 under Keil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on January 28, 2009</div><div class="thread-post-content">How have you installed the IRQ handler? Does it vector directly to the peripheral, or does it vector to a common interrupt entry function?
+The IRQ should be installed something like this, although this might not be quite right:
+ldr&nbsp;&nbsp; pc, &#91;pc,&#35;-0xFF0&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; IRQ &#8211; read the VIC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+so the whole vector table looks something like this:
+&nbsp;&nbsp;&nbsp; b&nbsp;&nbsp;&nbsp;&nbsp; &#95;start&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; reset &#8211; &#95;start&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc, &#95;undf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; undefined &#8211; &#95;undf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc, &#95;swi&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; SWI &#8211; &#95;swi&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc, &#95;pabt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; program abort &#8211; &#95;pabt&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc, &#95;dabt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; data abort &#8211; &#95;dabt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; nop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; reserved&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc, &#91;pc,&#35;-0xFF0&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; IRQ &#8211; read the VIC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp; pc, &#95;fiq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; FIQ &#8211; &#95;fiq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&#95;undf:&nbsp; .word &#95;&#95;undf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; undefined&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&#95;swi:&nbsp;&nbsp; .word vPortYieldProcessor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; SWI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&#95;pabt:&nbsp; .word &#95;&#95;pabt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; program abort&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&#95;dabt:&nbsp; .word &#95;&#95;dabt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; data abort&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&#95;fiq:&nbsp;&nbsp; .word &#95;&#95;fiq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; FIQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&#95;&#95;undf: b&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; undefined&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&#95;&#95;pabt: b&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; program abort&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&#95;&#95;dabt: b&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; data abort&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&#95;&#95;fiq:&nbsp; b&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; FIQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting FreeRtos to LPC2478 under Keil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tns1">tns1</a> on January 28, 2009</div><div class="thread-post-content">Here is all the modified code, changes marked with &#42;&#42;&#42;. Your piece looks like it is for a 21xx under GCC, so similar steps but different syntax. The Vic Vector register is different for 24xx parts.
+BTW, why is a read from VicAddress &#40;xFFFFFF00&#41; coded like LDR PC, &#91;PC, &#35;-0x0120&#93; ?
+PC is 0x18, so this appears to evaluate to PC &lt;- &#91;PC+&#40;&#35;immed&#41;+8&#93;. Somewhere I saw the extra 8byte 
+offset documented, but I can&#8217;t find it now.
+&#42;&#42;&#42;LPC2400.s startup &amp; vector table mods
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IMPORT&nbsp;&nbsp;&nbsp; vPortYieldProcessor&nbsp;&nbsp;&nbsp; ;&#42;&#42;&#42;&nbsp;&nbsp;&nbsp; 
+Vectors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, Reset&#95;Addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, Undef&#95;Addr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, SWI&#95;Addr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, PAbt&#95;Addr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, DAbt&#95;Addr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NOP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Reserved Vector 
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, IRQ&#95;Addr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, &#91;PC, &#35;-0x0120&#93;&nbsp;&nbsp;&nbsp;&nbsp; ; Vector from VicVectAddr &#40;xFFFFFF00&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, FIQ&#95;Addr
+Reset&#95;Addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DCD&nbsp;&nbsp;&nbsp;&nbsp; Reset&#95;Handler
+Undef&#95;Addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DCD&nbsp;&nbsp;&nbsp;&nbsp; Undef&#95;Handler
+SWI&#95;Addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DCD&nbsp;&nbsp;&nbsp;&nbsp; vPortYieldProcessor&nbsp;&nbsp;&nbsp; ;&#42;&#42;&#42;&nbsp;&nbsp;&nbsp;&nbsp; 
+PAbt&#95;Addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DCD&nbsp;&nbsp;&nbsp;&nbsp; PAbt&#95;Handler
+DAbt&#95;Addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DCD&nbsp;&nbsp;&nbsp;&nbsp; DAbt&#95;Handler
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DCD&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Reserved Address 
+IRQ&#95;Addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DCD&nbsp;&nbsp;&nbsp;&nbsp; IRQ&#95;Handler
+FIQ&#95;Addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DCD&nbsp;&nbsp;&nbsp;&nbsp; FIQ&#95;Handler
+Undef&#95;Handler&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Undef&#95;Handler
+SWI&#95;Handler&nbsp;&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SWI&#95;Handler
+PAbt&#95;Handler&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PAbt&#95;Handler
+DAbt&#95;Handler&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DAbt&#95;Handler
+IRQ&#95;Handler&nbsp;&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IRQ&#95;Handler
+FIQ&#95;Handler&nbsp;&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FIQ&#95;Handler
+&#8230;
+; Setup Stack for each mode &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R0, =Stack&#95;Top
+;&nbsp; Enter Undefined Instruction Mode and set its Stack Pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;UND:OR:I&#95;Bit:OR:F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;UND&#95;Stack&#95;Size
+;&nbsp; Enter Abort Mode and set its Stack Pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;ABT:OR:I&#95;Bit:OR:F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;ABT&#95;Stack&#95;Size
+;&nbsp; Enter FIQ Mode and set its Stack Pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;FIQ:OR:I&#95;Bit:OR:F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;FIQ&#95;Stack&#95;Size
+;&nbsp; Enter IRQ Mode and set its Stack Pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;IRQ:OR:I&#95;Bit:OR:F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;IRQ&#95;Stack&#95;Size
+;&nbsp; Enter Supervisor Mode and set its Stack Pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;SVC:OR:I&#95;Bit:OR:F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;SVC&#95;Stack&#95;Size
+;&nbsp; Enter User Mode and set its Stack Pointer &#8211; skip this &#42;&#42;&#42;
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;USR
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :DEF:&#95;&#95;MICROLIB;
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EXPORT &#95;&#95;initial&#95;sp
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; SL, SP, &#35;USR&#95;Stack&#95;Size
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ENDIF
+; Enter the C code &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IMPORT&nbsp; &#95;&#95;main
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R0, =&#95;&#95;main
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :DEF:&#95;&#95;MICROLIB
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EXPORT&nbsp; &#95;&#95;heap&#95;base
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EXPORT&nbsp; &#95;&#95;heap&#95;limit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
+; User Initial Stack &amp; Heap
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AREA&nbsp;&nbsp;&nbsp; |.text|, CODE, READONLY
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IMPORT&nbsp; &#95;&#95;use&#95;two&#95;region&#95;memory
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EXPORT&nbsp; &#95;&#95;user&#95;initial&#95;stackheap
+&#95;&#95;user&#95;initial&#95;stackheap
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R0, =&nbsp; Heap&#95;Mem
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R1, =&#40;Stack&#95;Mem + USR&#95;Stack&#95;Size&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R2, = &#40;Heap&#95;Mem +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Heap&#95;Size&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R3, = Stack&#95;Mem
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LR
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ENDIF
+&#42;&#42;&#42;port.c mods
+&#35;define portTIMER&#95;MATCH&#95;ISR&#95;BIT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; unsigned portCHAR &#41; 0x02 &#41;
+static void prvSetupTimerInterrupt&#40; void &#41;
+&#123;
+unsigned portLONG ulCompareMatch;
+&nbsp;&nbsp;&nbsp; PCLKSEL0 = &#40;PCLKSEL0 &amp; &#40;~&#40;0x3&lt;&lt;2&#41;&#41;&#41; | &#40;0x01 &lt;&lt; 2&#41;; //&#42;&#42;&#42;setup for CCLK
+&nbsp;&nbsp;&nbsp; T0TCR&nbsp; = 2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Stop and reset the timer &#42;/ //&#42;&#42;&#42;
+&nbsp;&nbsp;&nbsp; T0CTCR = 0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Timer mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/ //&#42;&#42;&#42;
+&nbsp;&nbsp;&nbsp; /&#42; A 1ms tick does not require the use of the timer prescale.&nbsp; This is
+&nbsp;&nbsp;&nbsp; defaulted to zero but can be used if necessary. &#42;/
+&nbsp;&nbsp;&nbsp; T0PR = portPRESCALE&#95;VALUE;
+&nbsp;&nbsp;&nbsp; /&#42; Calculate the match value required for our wanted tick rate &#40;1ms&#41;. &#42;/
+&nbsp;&nbsp;&nbsp; ulCompareMatch = configCPU&#95;CLOCK&#95;HZ / configTICK&#95;RATE&#95;HZ; 
+&nbsp;&nbsp;&nbsp; /&#42; Protect against divide by zero.&nbsp; Using an if&#40;&#41; statement still results
+&nbsp;&nbsp;&nbsp; in a warning &#8211; hence the &#35;if. &#42;/
+&nbsp;&nbsp;&nbsp; &#35;if portPRESCALE&#95;VALUE &#33;= 0
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ulCompareMatch /= &#40; portPRESCALE&#95;VALUE + 1 &#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; &#35;endif
+&nbsp;&nbsp;&nbsp; T0MR1 = ulCompareMatch; //&#42;&#42;&#42; timer match value
+&nbsp;&nbsp;&nbsp; /&#42; Generate tick with timer 0 compare match on register 1. &#42;/
+&nbsp;&nbsp;&nbsp; T0MCR = &#40;&#40;portRESET&#95;COUNT&#95;ON&#95;MATCH | portINTERRUPT&#95;ON&#95;MATCH&#41; &lt;&lt; 3&#41;;//&#42;&#42;&#42;
+&nbsp;&nbsp;&nbsp; /&#42; Clear and Setup the VIC for the timer 0, IRQ &#40;not FIQ&#41;. &#42;/
+&nbsp;&nbsp;&nbsp; VICIntSelect &amp;= ~&#40; portTIMER&#95;VIC&#95;CHANNEL&#95;BIT &#41;;
+&nbsp;&nbsp;&nbsp; VICIntEnable |= portTIMER&#95;VIC&#95;CHANNEL&#95;BIT;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42; The ISR installed depends on whether the preemptive or cooperative
+&nbsp;&nbsp;&nbsp; scheduler is being used. &#42;/
+&nbsp;&nbsp;&nbsp; &#35;if configUSE&#95;PREEMPTION == 1
+&nbsp;&nbsp;&nbsp; &#123;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VICVectAddr4 = &#40; unsigned portLONG &#41; vPreemptiveTick; //&#42;&#42;&#42; interrupt 4 is timer0
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; &#35;else
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VICVectAddr4 = &#40; unsigned portLONG &#41; vNonPreemptiveTick;//&#42;&#42;&#42;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; &#35;endif
+&nbsp;&nbsp;&nbsp; VICVectCntl4 = 1;//&#42;&#42;&#42; priority 1 &#40;0 is highest&#41;
+&nbsp;&nbsp;&nbsp; /&#42; Start the timer &#8211; interrupts are disabled when this function is called
+&nbsp;&nbsp;&nbsp; so it is okay to do this here. &#42;/
+&nbsp;&nbsp;&nbsp; T0TCR = portENABLE&#95;TIMER;
+&#125;
+&#42;&#42;&#42; portASM.s mods
+;VICVECTADDR&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp; 0xFFFFF030
+VICVECTADDR&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp; 0xFFFFFF00&nbsp;&nbsp;&nbsp; ;&#42;&#42;&#42;
+T0IR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp; 0xE0004000
+;T0MATCHBIT&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp; 0x00000001
+T0MATCHBIT&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp; 0x00000002&nbsp;&nbsp;&nbsp; ;&#42;&#42;&#42;
+vPreemptiveTick
+&nbsp;&nbsp;&nbsp; PRESERVE8
+&nbsp;&nbsp;&nbsp; portSAVE&#95;CONTEXT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Save the context of the current task.&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; LDR R0, =vTaskIncrementTick&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Increment the tick count.&nbsp; 
+&nbsp;&nbsp;&nbsp; MOV LR, PC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; This may make a delayed task ready
+&nbsp;&nbsp;&nbsp; BX R0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; to run.
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; LDR R0, =vTaskSwitchContext&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Find the highest priority task that 
+&nbsp;&nbsp;&nbsp; MOV LR, PC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; is ready to run.
+&nbsp;&nbsp;&nbsp; BX R0
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; MOV R0, &#35;T0MATCHBIT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Clear the timer event
+&nbsp;&nbsp;&nbsp; LDR R1, =T0IR
+&nbsp;&nbsp;&nbsp; STR R0, &#91;R1&#93; 
+&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp; R0, =VICVECTADDR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Acknowledge the interrupt&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; STR&nbsp;&nbsp;&nbsp; R0,&#91;R0&#93;
+&nbsp;&nbsp;&nbsp; portRESTORE&#95;CONTEXT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Restore the context of the highest 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; priority task that is ready to run.
+&nbsp;&nbsp;&nbsp; END
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting FreeRtos to LPC2478 under Keil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tns1">tns1</a> on January 30, 2009</div><div class="thread-post-content">&#42;&#42;&#42; more mods in LPC2400.s
+change PLLCFG&#95;Val&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp;&nbsp; 0x0000000E ;for 60mhz with a 12Mhz osc
+change CCLKCFG&#95;Val&nbsp;&nbsp;&nbsp;&nbsp; EQU&nbsp;&nbsp;&nbsp;&nbsp; 0x00000005
+&#42;&#42;&#42; mods in serial.c
+change ulDivisor = configCPU&#95;CLOCK&#95;HZ / ulWantedClock /4;//div by 4 for pclk
+change VICVectAddr7 = &#40; unsigned portLONG &#41; vUART&#95;ISREntry;//vector 7
+change VICVectCntl7 = serU1VIC&#95;CHANNEL | serU1VIC&#95;ENABLE;
+After these last changes, my project runs correctly in both the Keil simulator and on the EA board &#40;some pin select changes required&#41; 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting FreeRtos to LPC2478 under Keil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on January 30, 2009</div><div class="thread-post-content">Thank you for taking the time to report this back. It will be helpful to the rest of the community.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

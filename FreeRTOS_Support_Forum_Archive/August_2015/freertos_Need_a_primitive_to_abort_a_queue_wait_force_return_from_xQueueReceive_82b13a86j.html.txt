@@ -1,0 +1,366 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Need a primitive to abort a queue wait (force return from xQueueReceive()) - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2015/freertos_Need_a_primitive_to_abort_a_queue_wait_force_return_from_xQueueReceive_82b13a86j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Need a primitive to abort a queue wait (force return from xQueueReceive()) - FreeRTOS" />
+<meta property="og:description" content="Need a primitive to abort a queue wait (force return from xQueueReceive())Posted by zradouch on August 13, 2015I need to extend FreeRTOS to allow me to abort a queue wait, i.e., to release a task suspended in xQueueReceive(). Here&#8217;s the big picture &#8212; I run WolfSSL on top of the LwIP stack with FreeRTOS below &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2015/freertos_Need_a_primitive_to_abort_a_queue_wait_force_return_from_xQueueReceive_82b13a86j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Need a primitive to abort a queue wait (force return from xQueueReceive())Posted by zradouch on August 13, 2015I need to extend FreeRTOS to allow me to abort a queue wait, i.e., to release a task suspended in xQueueReceive(). Here&#8217;s the big picture &#8212; I run WolfSSL on top of the LwIP stack with FreeRTOS below [&hellip;]" />
+<meta name="twitter:title" content="Need a primitive to abort a queue wait (force return from xQueueReceive()) - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202550' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202550' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202550' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202550' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145404' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2015%2Ffreertos_Need_a_primitive_to_abort_a_queue_wait_force_return_from_xQueueReceive_82b13a86j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2015%2Ffreertos_Need_a_primitive_to_abort_a_queue_wait_force_return_from_xQueueReceive_82b13a86j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145404">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2015_freertos_support_forum_archive_index.html/">August 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zradouch">zradouch</a> on August 13, 2015</div><div class="thread-post-content">I need to extend FreeRTOS to allow me to abort a queue wait, i.e., to release a task suspended in xQueueReceive().
+Here&#8217;s the big picture &#8212; I run WolfSSL on top of the LwIP stack with FreeRTOS below the stack. My app needs full duplex network connectivity, but LwIP is unfortunately only half duplex (either send() or receive()), so in order for my app to transmit it needs to abort the pending receive (which eventually translates to xQueueReceive).
+My solution/hack is to create a new OS primitive: AbortQueueReceive(queue, task) to be called by the transmit task, that verifies that the specified [receive] task is indeed blocked on the specified queue, and releases the task with an error, as if the xQueueReceive() simply timed out.
+I am looking for any pointers, suggestions on where to start, or other ideas or solutions I may have not considered. By the way, I do not consider polling a solution.
+Thanks
+-Z
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 13, 2015</div><div class="thread-post-content">How about posting a message to the queue the task is waiting on.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zradouch">zradouch</a> on August 14, 2015</div><div class="thread-post-content">Note that this is a TLS (over TCP) stack waiting for data. Neither the producer (TCP state machine) nor the consumer (rx socket) are my code. I can&#8217;t simply inject something into the rx data stream. Also note that such injection would have to be properly synchronized with the reader task, since it would be racing with a real rx frame possibly arriving on the same queue at &#8220;the same time&#8221;. Finally, to inject an item that would have the right type, yet that would be rejected by the stack, would be extremely difficult if not impossible, requiring detailed understanding of both the TCP and the TLS layers.
+Aborting the read with an error, while quite a hack when it comes to modularity, will result in a clean, timeout-like error propagating all the way to the app. Doing this requires neither modifications, nor understanding of either the TCP stack or the TLS layer riding on top of it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 14, 2015</div><div class="thread-post-content">Hi Zdenek,
+There are many ways to reach your goal.
+Here are some ideas for FreeRTOS+TCP :
+1)
+One way is to use two separate tasks, one for sending and one for receiving. But you probably want to do both things from within a single task?
+2)
+Use FreeRTOS_select() to wait for RX, TX and Error events on a set of sockets.
+<pre><code>#define ipconfigSUPPORT_SELECT_FUNCTION    1
+</code></pre>
+This method will need a small hack: make a new function:
+<pre><code>BaseType_t FreeRTOS_SelectAbort( SocketSet_t xSocketSet );
+</code></pre>
+which can be called from any other task.
+A possible implementation would be:
+~~~~~
+    BaseType<em>t FreeRTOS</em>SelectAbort( SocketSet<em>t xSocketSet )
+    {
+    SocketSelect</em>t *pxSocketSet = ( SocketSelect_t * ) xSocketSet;
+<pre><code>    xEventGroupSetBits( pxSocketSet-&gt;xSelectGroup, eSELECT_EXCEPT );
+}
+</code></pre>
+~~~~~
+3)
+Here is yet another way, define in <code>FreeRTOSIPConfig.h</code> :
+<pre><code>#define ipconfigSOCKET_HAS_USER_SEMAPHORE    ( 1 )
+</code></pre>
+Your task must create a semaphore and in stead of calling FreeRTOS_recv() in a blocking way, your task will block on the semaphore. You can use any value for time-out (maximum blocking time).
+After creating a socket, advertise your semaphore:
+~~~~~
+    #if( ipconfigSOCKET<em>HAS</em>USER<em>SEMAPHORE != 0 )
+        FreeRTOS</em>setsockopt( xMySocket, 0, FREERTOS<em>SO</em>SET<em>SEMAPHORE,
+            ( void * ) &amp;( xSemaphore ), sizeof( TickType</em>t ) );
+    #endif
+~~~~~
+Please note the ampersand in <code>&amp;( xSemaphore )</code> : setsockopt() wants to receive a pointer to the value.
+Now you can do the following, with either Select() or using a Semaphore:
+~~~~~
+    BaseType_t xMustSendMessage = 0;
+<pre><code>void vMyTask( void *pvParameters )
+{
+</code></pre>
+<h1>if( ipconfigSOCKET<em>HAS</em>USER_SEMAPHORE != 0 )</h1>
+<pre><code>SemaphoreHandle_t xSemaphore;
+    xSemaphore = xSemaphoreCreateBinary();
+</code></pre>
+<h1>elif( ipconfigSUPPORT<em>SELECT</em>FUNCTION != 0 )</h1>
+<pre><code>SocketSet_t xSocketSet;
+    xSocketSet = FreeRTOS_CreateSocketSet();
+</code></pre>
+<h1>endif</h1>
+<pre><code>    for( ;; )
+    {
+    const TickType_t ulMaxBlockTime = pdMS_TO_TICKS( 5000ul );
+        #if( ipconfigSOCKET_HAS_USER_SEMAPHORE != 0 )
+        {
+            xSemaphoreTake( xSemaphore, ulMaxBlockTime );
+        }
+        #elif( ipconfigSUPPORT_SELECT_FUNCTION != 0 )
+        {
+            FreeRTOS_select( xSocketSet, ulMaxBlockTime )
+        }
+        #endif
+        lRc = FreeRTOS_recv( xMySocket, pcBuffer,
+            sizeof pcBuffer, FREERTOS_MSG_DONTWAIT );
+        if( lRc &gt; 0 )
+        {
+            /* Data received */
+        }
+        else if( lRc &lt; 0 )
+        {
+            /* Connection error, probably -pdFREERTOS_ERRNO_ENOTCONN
+            or -pdFREERTOS_ERRNO_ENOMEM. */
+        }
+        if( xMustSendMessage != pdFALSE )
+        {
+            xMustSendMessage = pdFALSE;
+            /* xSemaphoreTake was aborted because we must send
+            a message. */
+        }
+    }
+}
+</code></pre>
+~~~~~
+Got the idea?
+The above is not a polling solution: the task may sleep/block as long as it wants.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 14, 2015</div><div class="thread-post-content">Unfortunately aborting a wait on a queue is not an easy thing to do.  When the waiting task leaves the blocked state it will check the queue again &#8211; if there is data in the queue it was remove the date and exit the function, if there is no data in it then the task will adjust its block time to see if the block time has expired &#8211; and if the block time has not expired simply return to block on the queue once more.  So to abort a wait on a queue you must make the task think its block time has expired &#8211; but the block time is a function parameter &#8211; so either on the stack or in a register.
+The code works this way for the following reason &#8211; a task can be removed from the blocked state because the queue contains data, only to find that by the time it actually runs again a higher priority task has removed the data from the queue &#8211; leaving the queue empty once more.  In that case it is incorrect behaviour for the task to leave the xQueueReceive() function [although some RTOSes will happily do it] because it has neither received data nor timed out.
+In this case I would suggest you have two options.  One is to block on the queue in a loop with a short block time.  Each time the xQueueReceive function returns you check to see if you have data, if you don&#8217;t have data, you then check to see if you should abort waiting &#8211; and only try reading from the queue again if there is no reason to abort.
+Another alternative is to block on an event group instead of blocking on the queue directly &#8211; one bit in the event group can mean &#8220;abort waiting&#8221;, while another bit can mean &#8220;there is something in the queue&#8221;.  Only if the latter bit gets set do you try reading from the queue.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zradouch">zradouch</a> on August 14, 2015</div><div class="thread-post-content">Thanks, I do appreciate your suggestions. Unfortunately, if you re-read my post, most of these suggestions are nonstarters.
+@Hein Tibosch
+Re 1)
+You can&#8217;t have two tasks talking to the same half-duplex socket. Half duplex means that the socket can handle only a single direction transfer at a time.
+Re 2)
+My code is two third-party software packages away from the FreeRTOS calls. I have to work with that. I just know that my app task is blocked in xQueueReceive. I have no idea how it got there, nor do I know anything semantically about the data to be received.
+Re 3)
+Same problem as in 2)
+@Real Time Engineers Ltd.
+<blockquote>
+  block on the queue in a loop with a short block time
+</blockquote>
+I call this polling (or, if you prefer, polling in disguise).
+I don&#8217;t want the latency and I don&#8217;t have the cycles. Plus, it would not pass my own code review; there are [very] few cases that justify polling, and this is not one of them.
+<blockquote>
+  Another alternative is to block on an event group instead of blocking
+  on the queue directly
+</blockquote>
+See Re 2) above.
+I do understand that aborting the wait is not an easy thing to do. I have been working inside multiple OSs for thirty years. If it was an easy thing, I would have simply done it and not asked for help here :-). I have been using FreeRTOS for a while, and in the recent years it has become my RTOS of choice. But so far, I have made only minor modifications to the FreeRTOS code base, thus my understanding of it is still limited.
+I have taken a quick look at the queue code, and concluded that the fake timeout would be by far my best bet. Note both the queue and task in my proposed API. I think I can just mark the task with the fake timeout state, and unblock it. Subsequently, after checking the queue and finding it empty, the task will notice that it has been marked with the fake timeout and will use this information to avoid checking the real timeout
+and thus simply return an error to the direct caller (LwIP who is supposed to propagate the error to the WoldSSL caller, who in turn should deliver the error to the [app] caller).
+So that&#8217;s the theory, I could just really use a few pointers in order to a) get the best place to start hacking, and b) to make sure I am not missing some subtle issues, something quite likely to be found in code like this.  
+Cheers,
+-Z
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 14, 2015</div><div class="thread-post-content">Modifing the system to &#8220;Abort&#8221; a Queue wait (in effect forcing a timeout) has the same level of issues as putting a &#8220;null&#8221; entry into the queue, you still need to understand how the code is going to react to it, and likely there are issues which need to be changed. (Adding the abort just requires changes to TWO pieces of code instead of one). I also suspect that it would also take some study to confirm that this is just what is needed to convert a half duplex driver into full duplex (you will need to confirm that NO data is reused between transmit and receive sections.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zradouch">zradouch</a> on August 15, 2015</div><div class="thread-post-content">The LwIP code expects one of three cases  when xQueueReceive returns:
+1. Success; a pointer (to an internal data structure) has been read from the queue.
+2. Success; a NULL has been read from the queue (indicating closed connection).
+3. Error; the error will be propagated to the caller of the socket recv().
+I can&#8217;t push a NULL; that would shut down the connection. I certainly don&#8217;t want to push some [invalid] internal structure and hope it will work. The only option left is to return an error.
+Note that my solution keeps the socket strictly half-duplex; I send only if the receive is not pending. This will work by definition; no further study is needed.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 15, 2015</div><div class="thread-post-content">Let me begin by reiterating that I haven&#8217;t look at LwIP so I am only going off general principles.
+You start with a basic problem, you need a full duplex stack, but only have a half-duplex stack. This is a fundamental problem, and assuming a &#8216;quick fix&#8217; will help here sounds like a dangerous assumption (if that was all that was needed to make it really work full duplex, the author/community are very apt to have made such an improvement).
+My concern is that by forcing a time-out here in the middle of a reception, you may well break that reception. Thus what should be a single message to recieving task, may well be broken up into multiple message (remember, you forcing a timeout has said there was too long of a space between packets).
+There may well be reuse of variables between the receiving operation and the transmitting operation (after all, the library was written as half-duplex, so they don&#8217;t both occur at once). So this sort of &#8216;tampering&#8217; with the library may have consquences.
+If I were to do this, I would need to study LwIP enough to know what is needed to make it work full duplex and work there.
+You seem to object to modifying LwIP because it is &#8220;Third Party&#8221;, well to your application, so is FreeRTOS. (Is the FreeRTOS Support that much better? Maybe).
+IF you have really determined that all that is needed to make things work is to get that one xQueueReceive to abort its wait, then it would seem that it would be a much smaller change to add a test in LwIP there for a special packet that you make, and treat it like a timeout (that is likely a line of code or two) than to make the more fundamental change to FreeRTOS.
+I am not sure why you think you aren&#8217;t making this full duplex? If something is blocking on reading data, it obviously thinks that the current direction is a read, and thus (barring a bug somewhere) so does the other end. You can&#8217;t just arbitrarily switch the direction and still be truely half-duplex.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zradouch">zradouch</a> on August 15, 2015</div><div class="thread-post-content">Hi Richard,
+You are right that both LwIP and FreeRTOS are third-party packages to me. So why do I want to modify FreeRTOS? Actually for multiple reasons. First of all, this is not the first time I encountered the problem of needing to abort a call in FreeRTOS, and I feel that having a mechanism similar to a signal in Unix would be a great enhancement. Secondly, based on my quick evaluation of the respective code bases, and based on my own experience, it will be much easier for me to modify FreeRTOS than to modify LwIP. Finally, I already made some modifications to the FreeRTOS code I run, and I have not touched the LwIP, so from the maintenance point of view any future changes should be made in the RTOS.
+Regarding the TCP stack, I am afraid you are missing a few key points. 
+The duplex property can be, and in this case is, different in each layer of the communication stack. The Ethernet, once half duplex, is full duplex today. The TCP stack engine in LwIP may be (I don&#8217;t know for sure, and neither do the LwIP folks :-() full duplex, too. The socket interface in LwIP is definitely half duplex. My app supports full duplex mode if it can run that way. So, when you say &#8220;true half duplex&#8221; it does not really mean anything (which layer?).
+I can&#8217;t force an LwIP socket to be full duplex; that would require fundamental redesign. So, as I stated before, I will work with its half duplex semantics. The question is how to design a peer-to-peer app on top of a half duplex channel? One possible answer is to transmit whenever the app needs to transmit, and to suspend in receive whenever the app is not transmitting.  This directly implies being able to abort the receive, and luckily for me the receive is abortable by a [commonly used] timeout. So, at the end of the day, all I need is to control the socket interface, and fool it into thinking it is time to time out. It is by far the cleanest solution I have seen so far.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 16, 2015</div><div class="thread-post-content">Hi Zdenek,
+Both FreeRTOS+TCP and lwIP are full duplex tcp/ip stacks.
+For lwIP running on top of FreeRTOS, a call to lwip<em>recv() may end-up in a call to xQueueReceive().
+For FreeRTOS+TCP, a call to FreeRTOS</em>recv() may block in xEventGroupWaitBits().
+When xxx_recv() is called, the socket option &#8216;<code>SO_RCVTIMEO</code>&#8216; determines the maximum blocking time.
+Giving &#8216;<code>SO_RCVTIMEO</code>&#8216; a low value would be a &#8216;polling solution&#8217;, true.
+In my opinion there is nothing against polling solutions unless:
+<ul>
+<li>You need super-fast responses times (e.g. &lt; 10ms)</li>
+<li>Your platform has to run &#8220;low power&#8221;</li>
+</ul>
+Both TCP/IP stacks provide possibilities to create an application that works full-duplex, in ways that I described here above. Those are clean and non-polling solutions. The best way I think is to use select().
+Wolf&#8217;s implementation of SSL calls lwip_recv() from only one place (io.c). It shouldn&#8217;t be hard to replace that define into a call which is interruptible?
+Adding signal(2)/kill(2) to FreeRTOS sounds attractive. But you&#8217;d still have to know:
+<ul>
+<li>which socket is being used, that is encapsulated in a SSL object</li>
+<li>which <code>QueueHandle_t</code> that lwIP socket is using, that is encapsulated in the lwIP stack.</li>
+</ul>
+I&#8217;m not sure which way is more work 🙂
+FreeRTOS already has many possibilities to interrupt blocking calls. An extra kill() doesn&#8217;t add much attractiveness and it would be extremely complex to implement in a neat and Real-Time way.
+Best regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zradouch">zradouch</a> on August 16, 2015</div><div class="thread-post-content">Hi Hein,
+I am not sure what makes you say that LwIP is full duplex stack, unlessyou are playing with semantics and want to claim that the stack is full duplex, but its user interfcae is not. LwIP never suported multiple threads performing i/o ona socket. I was told (just within this last week) that there is an effort and pre-alpha code that attempts to fix that. I am deploying in half a million devices; I can&#8217;t afford using something that may or may not work. Still, it sounds like I may be missing something, so please feel free to tell me what it is.
+I suggest you try setting SO_RECVTIMEO to 20 ms (you seem to think &lt;10 would be a problem) and see what happens to your CPU usage on that particular task.
+Replacing Wolf&#8217;s call to something other than recv() is certainly a simple change, but it does not help unless I have an interruptible and semantically equivalent (to recv()) call I could make. I have experimented with that already &#8212; I had to rewrite the LwIP select() to make that possible. It took too much code and changes in both Wolf and LwIP. 
+Perhaps naively, but based on my limited experience with FreeRTOS internals, I am thinking a FreeRTOS solution would be much more maintainable.
+Note that there is a difference between modifying a third party code, and [ab]using a third party code by touching what should be private data structures (to retrieve sock, queue, etc). Also note that I don&#8217;t care which one is &#8220;more work&#8221;; I can afford to hire someone to make this work (if I could find them). What I care about is <em>maintainability</em> as this is deployed in a commercial product, and the maintenance will cost way more than any development that would be needed to make this work.
+Finally, you say:
+<blockquote>
+  it would be extremely complex to implement in a neat and Real-Time way
+</blockquote>
+Please explain this statement, especially in light of my suggestion of how it could work (in my previous post). Ultimately, this is the information I came to find here at the FreeRTOS forum. It appears to me that what I proposed is neither complex, nor does it carry any negative implications on the real-time aspects of the resulting implementation, so if I am wrong I want to know.
+Cheers,
+-Z
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 17, 2015</div><div class="thread-post-content">Hi Zdenek,
+<blockquote>
+  I am not sure what makes you say that LwIP is full duplex stack&#8230;
+</blockquote>
+To start with: most PHY&#8217;s and most network drivers are working full duplex, using DMA chains.
+In my opinion, if select() is being used, the Berkeley interface can be seen as full-duplex. But apparently you had to change things to make that working well under lwIP.
+A second way is to use two tasks, one for reading and one for writing. As far as I know that works without a problem (I&#8217;m now testing that continuously with lwIP on a Xilinx Zynq, looks good).
+( what I always miss in lwIP is a quick and easy way to find-out the status of a TCP connection )
+<blockquote>
+  I am deploying in half a million devices
+</blockquote>
+Lucky you
+<blockquote>
+  I can&#8217;t afford using something that may or may not work.
+</blockquote>
+I guess that the addition of kill/signal to FreeRTOS won&#8217;t make lwIP more reliable?
+<blockquote>
+  I suggest you try setting SO_RECVTIMEO to 20 ms (you seem to think &lt;10 would
+  be a problem) and see what happens to your CPU usage on that particular task.
+</blockquote>
+It depends on the platform of course. But compared to what it takes to calculate SSL, even a time-out of 1 ms won&#8217;t give much CPU usage.
+<blockquote>
+  I had to rewrite the LwIP select() to make that possible. It took too much code
+  and changes in both Wolf and LwIP.
+</blockquote>
+FreeRTOS+TCP will be easier to use: it takes full advantage of all FreeRTOS possibilities, not only semaphores and queues.
+Interesting: when +TCP was being developed (around 2013), we were thinking of introducing a signal(), it could have solved several problems.
+But in stead of signal(), Richard (Barry) came up with the new module &#8216;event_groups.c&#8217;.  The same instance of <code>EventGroupHandle_t</code> is now being used by several API&#8217;s:
+<ul>
+<li>FreeRTOS_recv() will wait for RX and ERR bits</li>
+<li>FreeRTOS_send() will wait for TX and ERR bits</li>
+<li>FreeRTOS_connect() will wait for TX and ERR bits</li>
+<li>FreeRTOS_accept() will wait for RX and ERR bits</li>
+</ul>
+If the IP-task will set the ERR bit of a socket, <em>all</em> API calls (<code>xEventGroupWaitBits()</code>) will abort simultaneously.
+The +TCP select() functions also use event groups, of course.
+<blockquote>
+  I am thinking a FreeRTOS solution would be much more maintainable.
+</blockquote>
+FreeRTOS indeed has a very good maintainer, of course, but he tends to be quite conservative 🙂
+And that is probably the reason that the source code is still so clean and comprehensible.
+<blockquote>
+  What I care about is maintainability as this is deployed in a commercial product
+  and the maintenance will cost way more than any development that would be needed to make this work.
+</blockquote>
+What do you mean with maintenance? Once a product is tested and sold, should it change in the future? Are you expecting new &#8216;issues&#8217; once it is in the field?
+Are you planning to keep on upgrading the libraries used?
+<blockquote>
+  Finally, you say:
+  <blockquote>
+    it would be extremely complex to implement in a neat and Real-Time way
+    Please explain this statement, especially in light of my suggestion of how it could work (in my previous post).
+  </blockquote>
+</blockquote>
+If you think it is doable, give it a try!
+I am mostly concentrated on other FreeRTOS products like +TCP and +FAT.
+Regards, Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need a primitive to abort a queue wait (force return from xQueueReceive())</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 18, 2015</div><div class="thread-post-content">Hi,
+For anyone who is interested: I attached sources for two quick-and-dirty echo servers:
+<ul>
+<li>lwip_webserver.c for lwIP</li>
+<li>plus_webserver.c for FreeRTOS+TCP</li>
+</ul>
+For each new client, two tasks will be started: <code>echo_recv_task</code> and <code>echo_send_task</code>.
+I must say that in the lwIP version, the tasks sometimes get stuck: they get no more cycles and they never return. The +TCP echo server still runs OK and it has no orphans.
+If you compare the sources, you&#8217;ll see some differences between the two TCP stacks, both in style and naming.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

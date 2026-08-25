@@ -1,0 +1,233 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pxDuplicateNetworkBufferWithDescriptor sometimes asserts - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2019/freertos_pxDuplicateNetworkBufferWithDescriptor_sometimes_asserts_890f0895e9j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="pxDuplicateNetworkBufferWithDescriptor sometimes asserts - FreeRTOS" />
+<meta property="og:description" content="pxDuplicateNetworkBufferWithDescriptor sometimes assertsPosted by alager12345 on March 5, 2019I&#8217;m using BufferAllocation_1.c in an LPC1788 project. After some random time, I get an assert error in pxDuplicateNetworkBufferWithDescriptor(). It looks like sometimes pxGetNetworkBufferWithDescriptor() will return a valid buffer but the pointer inside that points to pucEthernetBuffer is NULL. This case is not checked, and so the memcpy &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2019/freertos_pxDuplicateNetworkBufferWithDescriptor_sometimes_asserts_890f0895e9j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="pxDuplicateNetworkBufferWithDescriptor sometimes assertsPosted by alager12345 on March 5, 2019I&#8217;m using BufferAllocation_1.c in an LPC1788 project. After some random time, I get an assert error in pxDuplicateNetworkBufferWithDescriptor(). It looks like sometimes pxGetNetworkBufferWithDescriptor() will return a valid buffer but the pointer inside that points to pucEthernetBuffer is NULL. This case is not checked, and so the memcpy [&hellip;]" />
+<meta name="twitter:title" content="pxDuplicateNetworkBufferWithDescriptor sometimes asserts - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203082' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203082' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203082' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203082' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147622' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2019%2Ffreertos_pxDuplicateNetworkBufferWithDescriptor_sometimes_asserts_890f0895e9j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2019%2Ffreertos_pxDuplicateNetworkBufferWithDescriptor_sometimes_asserts_890f0895e9j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147622">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2019_freertos_support_forum_archive_index.html/">March 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">pxDuplicateNetworkBufferWithDescriptor sometimes asserts</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alager12345">alager12345</a> on March 5, 2019</div><div class="thread-post-content">I&#8217;m using BufferAllocation_1.c in an LPC1788 project.  After some random time, I get an assert error in <code>pxDuplicateNetworkBufferWithDescriptor()</code>. It looks like sometimes <code>pxGetNetworkBufferWithDescriptor()</code> will return a valid buffer but the pointer inside that points to <code>pucEthernetBuffer</code> is <code>NULL</code>.    This  case is not checked, and so the memcpy asserts a hard fault.
+I&#8217;ve turned on some debugging which shows the gets and puts, and it can be seen that the <code>pucEthernetBuffer</code> is NULL on multiple occasions, but it&#8217;s only the last one where the code assersted.
+~~~
+BUF<em>GET[15]: 000000001000ac68 (0000000020004c58)
+BUF</em>GET[16]: 000000001000ac94 (0000000020005258)
+BUF<em>GET[17]: 000000001000acc0 (0000000020004058)
+BUF</em>PUT[14]: 000000001000ac3c (0000000020004058) (now 28)
+BUF<em>PUT[15]: 000000001000ac68 (0000000020004658) (now 29)
+BUF</em>PUT[16]: 000000001000ac94 (0000000020004c58) (now 30)
+BUF<em>PUT[17]: 000000001000acc0 (0000000020005258) (now 31)
+BUF</em>GET[18]: 000000001000acec (0000000020004658)
+BUF<em>PUT[18]: 000000001000acec (0000000000000000) (now 31)
+BUF</em>GET[21]: 000000001000ad70 (0000000020004c58)
+BUF<em>GET[23]: 000000001000adc8 (0000000020005258)
+BUF</em>PUT[21]: 000000001000ad70 (0000000020004658) (now 30)
+BUF<em>PUT[23]: 000000001000adc8 (0000000020004c58) (now 31)
+BUF</em>GET[19]: 000000001000ad18 (0000000020004058)
+BUF<em>PUT[19]: 000000001000ad18 (0000000020005258) (now 31)
+BUF</em>GET[20]: 000000001000ad44 (0000000020004658)
+BUF<em>PUT[20]: 000000001000ad44 (0000000020004058) (now 31)
+BUF</em>GET[27]: 000000001000ae78 (0000000020004c58)
+TCP: No active socket on port 443 (a030052ip:52509)
+BUF<em>GET[22]: 000000001000ad9c (0000000020004058)
+BUF</em>PUT[25]: 000000001000ae20 (0000000000000000) (now 29)
+BUF<em>PUT[27]: 000000001000ae78 (0000000020004658) (now 30)
+TCP: No active socket on port 443 (a030052ip:52510)
+BUF</em>GET[24]: 000000001000adf4 (0000000000000000)
+~~~
+In case it is related, here is my <code>xNetworkInterfaceOutput()</code> function
+~~~
+BaseType<em>t xNetworkInterfaceOutput( NetworkBufferDescriptor</em>t * const pxNetworkBuffer , BaseType<em>t xReleaseAfterSend )
+{
+    BaseType</em>t xReturn = pdFAIL;
+    int32_t x;
+<pre><code>/* Attempt to obtain access to a Tx buffer. */
+for( x = 0; x &lt; niMAX_TX_ATTEMPTS; x++ )
+{
+    if( EMAC_CheckTransmitIndex() == TRUE )
+    {
+        /* Will the data fit in the Tx buffer? */
+        if( pxNetworkBuffer-&gt;xDataLength &lt; EMAC_ETH_MAX_FLEN ) /*_RB_ The size needs to come from FreeRTOSIPConfig.h. */
+        {
+            /* copy the buffer to the Tx DMA descriptor. */
+            EMAC_PACKETBUF_Type TXBuffer;
+            TXBuffer.ulDataLen = pxNetworkBuffer-&gt;xDataLength;
+            TXBuffer.pbDataBuf = (uint32_t *)pxNetworkBuffer-&gt;pucEthernetBuffer;
+            EMAC_WritePacketBuffer( &amp;TXBuffer );
+            EMAC_UpdateTxProduceIndex();
+            /* The EMAC now owns the buffer. */
+            pxNetworkBuffer-&gt;pucEthernetBuffer = NULL;
+            iptraceNETWORK_INTERFACE_TRANSMIT();
+            /* The Tx has been initiated. */
+            xReturn = pdPASS;
+        }
+        break;
+    }
+    else
+    {
+        vTaskDelay( niTX_BUFFER_FREE_WAIT );
+    }
+}
+/* Finished with the network buffer. */
+if( xReleaseAfterSend != pdFALSE )
+    vReleaseNetworkBufferAndDescriptor( pxNetworkBuffer );
+return xReturn;
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">pxDuplicateNetworkBufferWithDescriptor sometimes asserts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 6, 2019</div><div class="thread-post-content">Hi,
+The problem is this line:
+~~~
+    /* The EMAC now owns the buffer. */
+    pxNetworkBuffer->pucEthernetBuffer = NULL;
+~~~
+There is a small difference between BufferAllocation 1 and 2:
+When using <code>BufferAllocation_1.c</code>, the pointer <code>pucEthernetBuffer</code> will never get set again, so that is why it becomes and remains NULL.
+<code>BufferAllocation_2.c</code> is different: <code>pucEthernetBuffer</code> will get set when calling <code>pxGetNetworkBufferWithDescriptor()</code>.
+Still you can use BufferAllocation_1 in combination with zero-copy transmissions as here above:
+~~~
+     /* Will the data fit in the Tx buffer? <em>/
+     if( pxNetworkBuffer->xDataLength &lt; EMAC_ETH_MAX_FLEN )
+     {
+         /</em> copy the buffer to the Tx DMA descriptor. */
+         EMAC_PACKETBUF_Type TXBuffer;
+         TXBuffer.ulDataLen = pxNetworkBuffer->xDataLength;
+         TXBuffer.pbDataBuf = (uint32_t *)pxNetworkBuffer->pucEthernetBuffer;
+         EMAC_WritePacketBuffer( &amp;TXBuffer );
+         EMAC_UpdateTxProduceIndex();
+<pre><code>     /* The EMAC now owns the buffer. */
+</code></pre>
+&#8211;        pxNetworkBuffer->pucEthernetBuffer = NULL;
++         /* Do not release it until it has been sent. */
++        xReleaseAfterSend = pdFALSE;
+<pre><code>     iptraceNETWORK_INTERFACE_TRANSMIT();
+     /* The Tx has been initiated. */
+     xReturn = pdPASS;
+ }
+ break;
+</code></pre>
+~~~
+In the above code, the pxNetworkBuffer will not be released.
+It has to be released later: as soon as the DMA reports that the packet has been sent.
+At that moment you need to know the address of the buffer, and call the following function to get the original <code>NetworkBufferDescriptor_t</code>:
+~~~
+    NetworkBufferDescriptor<em>t *pxBuffer = pxPacketBuffer</em>to_NetworkBuffer( pvDMABuffer );
+    configASSERT( pxBuffer != NULL );
+    vReleaseNetworkBufferAndDescriptor( pxBuffer );
+~~~
+Also, make sure that this is defined in your FreeRTOSIPConfig.h :
+~~~
+<h1>define ipconfigZERO<em>COPY</em>TX_DRIVER    1</h1>
+~~~
+In <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/11f944864b/2731/attachment/STM32Fxx_tcp_driver_7_Oct_2018.7z">this STM32Fx driver</a> you see an example of this technique.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

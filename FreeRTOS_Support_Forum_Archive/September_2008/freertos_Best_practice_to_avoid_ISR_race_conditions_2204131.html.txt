@@ -1,0 +1,201 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Best practice to avoid ISR race conditions - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2008/freertos_Best_practice_to_avoid_ISR_race_conditions_2204131.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Best practice to avoid ISR race conditions - FreeRTOS" />
+<meta property="og:description" content="Best practice to avoid ISR race conditionsPosted by enginayd on September 3, 2008Hello, I have an ISR to handle UART input. It pushes the data it receives into a buffer. On the other hand, I have t o parse that buffer and extract each meaningfull message &#040;each message is wrapped with a rn in this &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2008/freertos_Best_practice_to_avoid_ISR_race_conditions_2204131.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Best practice to avoid ISR race conditionsPosted by enginayd on September 3, 2008Hello, I have an ISR to handle UART input. It pushes the data it receives into a buffer. On the other hand, I have t o parse that buffer and extract each meaningfull message &#040;each message is wrapped with a rn in this [&hellip;]" />
+<meta name="twitter:title" content="Best practice to avoid ISR race conditions - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201655' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201655' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201655' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201655' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141835' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2008%2Ffreertos_Best_practice_to_avoid_ISR_race_conditions_2204131.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2008%2Ffreertos_Best_practice_to_avoid_ISR_race_conditions_2204131.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141835">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2008_freertos_support_forum_archive_index.html/">September 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Best practice to avoid ISR race conditions</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/enginayd">enginayd</a> on September 3, 2008</div><div class="thread-post-content">Hello,
+I have an ISR to handle UART input. It pushes the data it receives into a buffer. On the other hand, I have t o parse that buffer and extract each meaningfull message &#40;each message is wrapped with a rn in this case&#41;.
+I&#8217;m planning to parse the buffer and extract messages in a task but I need to make sure that during that parsing the buffer shouldn&#8217;t be modified.
+What would be the safest solution ?
+From the docs it looks like I cannot LOCK a mutex in ISR but only release it. On the other hand, using ENTER&#95;CRITICAL might be a simple solution but I don&#8217;t think it is intended for this purpose.
+I&#8217;d love to hear best practices about the subject in the FreeRTOS world.
+Kind regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">Best practice to avoid ISR race conditions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/enginayd">enginayd</a> on September 3, 2008</div><div class="thread-post-content">Maybe this might be a possible solution ?
+void ISR&#40;void&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; xQueueSendFromISR&#40;&#8230;&#41;; /&#42; Append a &quot;lock&quot; &#42;/
+&nbsp;&nbsp;&nbsp; &#8230;
+&nbsp;&nbsp;&nbsp; xQueueReceiveFromISR&#40;&#8230;&#41;; /&#42; Remove the &quot;lock&quot; &#42;/
+&#125;
+void task&#40;void&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; if&#40; xQueuePeek&#40;&#8230;&#41; &#41; return; /&#42; Check if there&#8217;s any lock &#42;/
+&nbsp;&nbsp;&nbsp; &#8230;
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Best practice to avoid ISR race conditions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/enginayd">enginayd</a> on September 3, 2008</div><div class="thread-post-content">I&#8217;ve also seen Richard Barry doing this;
+&#45;&#8212;- taken from emac.c &#8212;&#8211;
+void FOO&#95;ISR&#40;void&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; xSemaphoreGiveFromISR&#40;&#41;;
+&nbsp;&nbsp;&nbsp; DISABLE&#95;FOO&#95;INTERRUPTS&#40;&#41;;
+&nbsp;&nbsp;&nbsp; portEND&#95;SWITCHING&#95;ISR;
+&#125;
+void task&#40;void&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; xSemaphoreTake&#40;&#41;;
+&nbsp;&nbsp;&nbsp; // do stuff
+&nbsp;&nbsp;&nbsp; ENABLE&#95;FOO&#95;INTERRUPT&#40;&#41;;
+&#125;
+&#45;&#8212;&#8212;&#8212;-
+First of all, task never gives the semaphore back. Second, isn&#8217;t disabling an interrupt can cause data loss on the peripheral if the hardware buffer is full ?
+Now that I&#8217;ve looked into FreeRTOS source I&#8217;ve noticed that queue thread-safety is done by vPortEnterCritical. I thought it would be with an atomic assembly instruction.
+If Queue infrastructure uses vPortEnterCritical to ensure thread-safety I think I can safely use that as my lock without ever using Queues, since Queues looks like just a fancy way of vPortEnterCritical.
+What am I missing ?
+Kind regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">Best practice to avoid ISR race conditions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chaalar">chaalar</a> on September 3, 2008</div><div class="thread-post-content">Merhaba :&#41;
+When you have long chunks of data, like in ethernet, in order to get rid of extra copy
+you may use semaphore especially if dma is involved. On the other hand, if you have
+relatively small data source queues will provide better programming practice.
+In my uart interrupt, I send data to a queue and then process queue in a task. If you use
+portENTERCRITICAL you will lose data if you can not process character in a timely manner.
+But with the queues, you can wait as long as you want provided that your queue size is adequate
+for your data rate.
+Caglar
+</div></div><div class="thread-post"><h3 class="thread-post-title">Best practice to avoid ISR race conditions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 3, 2008</div><div class="thread-post-content">Just as a summary of posts in this thread &#8211;
+Note that between a task and an interrupt the mutual exclusion is normally in one direction only.&nbsp; An interrupt can interrupt a task, but a task cannot interrupt an interrupt.&nbsp; Therefore it is very rare to need to take a semaphore in an ISR.
+If you place received data in a circular buffer then the ISR can access the write pointer, and the task the read pointer, with little potential for a conflict.&nbsp; You are only writing to the pointers from one place &#8211; the write pointer from the ISR and the read pointer from the task.
+Another method is to use an array of buffers.&nbsp; The ISR can use one buffer, when it has filled it or a complete message has arrived, it then moves onto the next buffer leaving the task to process the first buffer without fear of a conflict.&nbsp; The ISR and task are always working on different buffers.&nbsp; This is how many DMA systems work, especially on Ethernet controllers.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Best practice to avoid ISR race conditions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/enginayd">enginayd</a> on September 3, 2008</div><div class="thread-post-content">Thank you very much for your prompt responses, but answer to my questions are still not clear to me.
+Cağlar:
+Queues also uses vPortEnterCritical to lock the queue, i.e. each time you append a char to the queue it will enter and exit critical region. This is not true if you use FromISR relatives though, they don&#8217;t disable interrupts since it is apparently assumed that they won&#8217;t be preempted which I don&#8217;t know if it is true.
+I&#8217;ve though of vPortEnterCritical to only lock and release a mutex &#40;in traditional sense&#41;, so it would a little time and I&#8217;d just use that ensure the atomicity of the mutex operation.
+Richard Barry:
+My platform is cortex-m3. Can&#8217;t interrupts in this MCU be preempted by other interrupts ? Say if SYSTICK interrupt has occured, won&#8217;t it interrupt a perihperal interrupt and do a FreeRTOS stuff such as context switching.
+If we can assume that the UART ISR won&#8217;t be interrupt by anything else my problem is easy to fix. As you suggested I&#8217;d just use double buffering, and we are good to go. Is that the case ?
+Kind regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">Best practice to avoid ISR race conditions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 3, 2008</div><div class="thread-post-content">&gt; My platform is cortex-m3. Can&#8217;t interrupts in this MCU be 
+&gt; preempted by other interrupts ? 
+Yes &#8211; full interrupt nesting is supported, however&#8230;.
+&gt; Say if SYSTICK interrupt has 
+&gt; occured, won&#8217;t it interrupt a perihperal interrupt and do a 
+&gt; FreeRTOS stuff such as context switching.
+&#8230;. SYSTICK operates at the lowest priority so will never interrupt a peripheral ISR &#40;assuming you have not changed the value of configKERNEL&#95;INTERRUPT&#95;PRIORITY from 255&#41;.&nbsp; SYSTICK can itself be interrupted by a peripheral ISR but this is ok, the design will allow this safely.
+You can use queues from interrupts provided the interrupt priority is equal to or below portMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY &#8211; note that on Cortex M3 the lowest priority is the highest numeric value, so 255 has lower priority than 254.&nbsp; Again this is safe as the kernel is designed to allow this.
+See http://www.freertos.org/a00110.html&#35;kernel&#95;priority.
+&gt; If we can assume that the UART ISR won&#8217;t be interrupt by 
+&gt; anything else my problem is easy to fix. As you suggested I&#8217;d 
+&gt; just use double buffering, and we are good to go. Is that the case ?
+Hopefully I have answered that.&nbsp; They wont get interrupted by the kernel but I cannot say whether any other interrupts using the same buffers will interrupt your UART interrupt because this depends how you have designed your system and set your interrupt priorities.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Best practice to avoid ISR race conditions</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/enginayd">enginayd</a> on September 9, 2008</div><div class="thread-post-content">Hello Richard,
+Thank you very much for taking time to explain these. I really appreciate it.
+I have a question about your ethernet driver implementation in Luminary example. In the ethernet interrupt routine &#40;vEMAC&#95;ISR&#41; you just give a semaphore and in the vMACHandleTask takes that semaphore and process the incoming data. During this processing you disable interrupts to ethernet port. Now, I know that this code works fine because I&#8217;m using it for a few months now but I wonder how come it never happens to cause hardware buffer overruns. i.e. what if the processing took long during that time interrupts are disabled. Wouldn&#8217;t that cause a buffer overrun and loss of data permenantly ?
+You rely on TCP to recover that ?
+Kind regards,
+Engin
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

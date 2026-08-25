@@ -1,0 +1,307 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Still puzzling over nasty stack corruption - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2006/freertos_Still_puzzling_over_nasty_stack_corruption_1554347.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Still puzzling over nasty stack corruption - FreeRTOS" />
+<meta property="og:description" content="Still puzzling over nasty stack corruptionPosted by chris_koerber on August 14, 2006Hi, I&#8217;m still puzzling over my corrupted stack. I have tracked the issue down until the portRESTORE&#095;CONTEXT becomes expanded:&nbsp; System Info: &#045; Atmel SAM7s256 64k RAM, 256k ROM &#045; Everything in ThUMB mode but startup, ARM7 parts of FreeRTOS &nbsp; and possibly interrupts &#045; &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2006/freertos_Still_puzzling_over_nasty_stack_corruption_1554347.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Still puzzling over nasty stack corruptionPosted by chris_koerber on August 14, 2006Hi, I&#8217;m still puzzling over my corrupted stack. I have tracked the issue down until the portRESTORE&#095;CONTEXT becomes expanded:&nbsp; System Info: &#045; Atmel SAM7s256 64k RAM, 256k ROM &#045; Everything in ThUMB mode but startup, ARM7 parts of FreeRTOS &nbsp; and possibly interrupts &#045; [&hellip;]" />
+<meta name="twitter:title" content="Still puzzling over nasty stack corruption - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201383' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201383' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201383' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201383' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141468' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2006%2Ffreertos_Still_puzzling_over_nasty_stack_corruption_1554347.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2006%2Ffreertos_Still_puzzling_over_nasty_stack_corruption_1554347.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141468">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2006_freertos_support_forum_archive_index.html/">August 2006 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Still puzzling over nasty stack corruption</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chris_koerber">chris_koerber</a> on August 14, 2006</div><div class="thread-post-content">Hi,
+I&#8217;m still puzzling over my corrupted stack. I have tracked
+the issue down until the portRESTORE&#95;CONTEXT becomes expanded:&nbsp; 
+System Info:
+&#45; Atmel SAM7s256 64k RAM, 256k ROM
+&#45; Everything in ThUMB mode but startup, ARM7 parts of FreeRTOS 
+&nbsp; and possibly interrupts
+&#45; The stack of the first TASK is inspected with
+&nbsp; void MemTrace&#40; u32&#42; adress, short nElements&#41;
+&nbsp; &#123;
+&nbsp; for&#40; unsigned int i = 0; i &lt; nElements; i++ &#41;
+&nbsp;&nbsp;&nbsp;&nbsp; TRACE&#40;&quot;0x%lx + %d: 0x%lxrn&quot;, adress, i &#42; 4, adress&#91;i&#93; &#41;;&nbsp;&nbsp; 
+&nbsp; &#125;
+The stack looks fine after creation of the task.
+The order of the functions which are called before the
+first task is started is, to my knowledge:
+Function&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Stack
+vTaskStartScheduler&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp; tasks.c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; THUMB&nbsp;&nbsp;&nbsp;&nbsp; OK&nbsp;&nbsp;&nbsp; 
+xPortStartScheduler&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp; port.c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; THUMB&nbsp;&nbsp;&nbsp;&nbsp; OK
+vPortISRStartFirstTask&#40;&#41;&nbsp; portISR.c&nbsp;&nbsp;&nbsp; ARM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?
+portRESTORE&#95;CONTEXT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portmacro.h&nbsp; ARM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?
+vATaskMCP&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Task&#95;MCP.c&nbsp;&nbsp; THUMB&nbsp;&nbsp;&nbsp;&nbsp; NOK
+Note that vPortISRStartFirstTask&#40;&#41; is just expanding
+the portRESTORE&#95;CONTEXT assembler macro.&nbsp;&nbsp;&nbsp; 
+So directly before vPortISRStartFirstTask&#40;&#41; the stack 
+looks like:
+0x209e4c + 0: 0xa5a5a5a5
+0x209e4c + 4: 0xa5a5a5a5
+&#8230;
+0x209e4c + 1924: 0xa5a5a5a5
+0x209e4c + 1928: 0x0
+0x209e4c + 1932: 0x3f
+0x209e4c + 1936: 0x0
+0x209e4c + 1940: 0x1010101
+0x209e4c + 1944: 0x2020202
+0x209e4c + 1948: 0x3030303
+0x209e4c + 1952: 0x4040404
+0x209e4c + 1956: 0x5050505
+0x209e4c + 1960: 0x6060606
+0x209e4c + 1964: 0x7070707
+0x209e4c + 1968: 0x8080808
+0x209e4c + 1972: 0x9090909
+0x209e4c + 1976: 0x10101010
+0x209e4c + 1980: 0x11111111
+0x209e4c + 1984: 0x12121212
+0x209e4c + 1988: 0x20a618
+0x209e4c + 1992: 0xaaaaaaaa
+0x209e4c + 1996: 0x10e035
+I understand that the portRESTORE&#95;CONTEXT macro does, 
+in this case, nothing else but start the first
+task. Since all tasks but the one I&#8217;m inspecting were 
+suspended, execution should resume in this task. 
+The first thing I do in this task is looking at my
+stack. Doing this must alter the stack to some degree
+of course, but in, ahem, an ordered manner &#40;sorry,
+can&#8217;t put it any better&#41;?
+Now the stack looks like this:
+0x209e4c + 0: 0xa5a5a5a5
+0x209e4c + 4: 0xa5a5a5a5
+&#8230;
+0x209e4c + 132: 0xa5a5a5a5
+0x209e4c + 136: 0x2
+0x209e4c + 140: 0x78
+0x209e4c + 144: 0x113f59
+0x209e4c + 148: 0x2004e8
+0x209e4c + 152: 0xa5a5a5a5
+0x209e4c + 156: 0x20a450
+0x209e4c + 160: 0x78
+0x209e4c + 164: 0x20a5d0
+0x209e4c + 168: 0x6
+0x209e4c + 172: 0x20a408
+0x209e4c + 176: 0x2
+0x209e4c + 180: 0x20a3a8
+0x209e4c + 184: 0x121443
+0x209e4c + 188: 0x11278d
+0x209e4c + 192: 0x121443
+0x209e4c + 196: 0x11307b
+0x209e4c + 200: 0xa5a5a5a5
+0x209e4c + 204: 0x2004ec
+0x209e4c + 208: 0x0
+0x209e4c + 212: 0x20a407
+0x209e4c + 216: 0x10
+0x209e4c + 220: 0x16
+0x209e4c + 224: 0x0
+0x209e4c + 228: 0xffffffff
+0x209e4c + 232: 0x1217a8
+0x209e4c + 236: 0x0
+0x209e4c + 240: 0xffffffff
+0x209e4c + 244: 0x20a5d0
+0x209e4c + 248: 0xa5a5a5a5
+&#8230;
+0x209e4c + 1360: 0xa5a5a5a5
+0x209e4c + 1364: 0x121441
+0x209e4c + 1368: 0x2
+0x209e4c + 1372: 0x20a407
+0x209e4c + 1376: 0x6
+0x209e4c + 1380: 0xa5a5a5a5
+&#8230;
+0x209e4c + 1456: 0xa5a5a5a5
+0x209e4c + 1460: 0x35613561
+0x209e4c + 1464: 0x31363533
+0x209e4c + 1468: 0x20a3a0
+0x209e4c + 1472: 0x0
+0x209e4c + 1476: 0x0
+0x209e4c + 1480: 0xa5a5a5a5
+0x209e4c + 1484: 0xa5a5a5a5
+0x209e4c + 1488: 0xa5a5a5a5
+0x209e4c + 1492: 0xa5a5a5a5
+0x209e4c + 1496: 0xa5a5a5a5
+0x209e4c + 1500: 0xa5a5a5
+0x209e4c + 1504: 0x8080808
+0x209e4c + 1508: 0x9090909
+0x209e4c + 1512: 0x10101010
+0x209e4c + 1516: 0x11111111
+0x209e4c + 1520: 0x121430
+0x209e4c + 1524: 0x209e4c
+0x209e4c + 1528: 0x1f4
+0x209e4c + 1532: 0x7070707
+0x209e4c + 1536: 0x113463
+0x209e4c + 1540: 0x20a4cf
+0x209e4c + 1544: 0xa5a5a5a5
+0x209e4c + 1548: 0x7fffffe2
+0x209e4c + 1552: 0xffff0208
+0x209e4c + 1556: 0x20a4b4
+0x209e4c + 1560: 0x7fffffff
+0x209e4c + 1564: 0xa5a5a5a5
+&#8230;
+0x209e4c + 1628: 0xa5a5a5a5
+0x209e4c + 1632: 0x197
+0x209e4c + 1636: 0x10efb9
+0x209e4c + 1640: 0x30327830
+0x209e4c + 1644: 0x63346539
+0x209e4c + 1648: 0x31202b20
+0x209e4c + 1652: 0x3a383436
+0x209e4c + 1656: 0x33783020
+0x209e4c + 1660: 0x33383733
+0x209e4c + 1664: 0xd333337
+0x209e4c + 1668: 0xa5a50000
+0x209e4c + 1672: 0xa5a5a5a5
+&#8230;
+0x209e4c + 1856: 0xa5a5a5a5
+0x209e4c + 1860: 0x38
+0x209e4c + 1864: 0x36
+0x209e4c + 1868: 0x34
+0x209e4c + 1872: 0x3a
+0x209e4c + 1876: 0x40
+0x209e4c + 1880: 0x4016
+0x209e4c + 1884: 0x0
+0x209e4c + 1888: 0x3a0c
+0x209e4c + 1892: 0x0
+0x209e4c + 1896: 0x20a5c4
+0x209e4c + 1900: 0x1da
+0x209e4c + 1904: 0x110407
+0x209e4c + 1908: 0x121430
+0x209e4c + 1912: 0x209e4c
+0x209e4c + 1916: 0x778
+0x209e4c + 1920: 0x778
+0x209e4c + 1924: 0x4040404
+0x209e4c + 1928: 0x5050505
+0x209e4c + 1932: 0x6060606
+0x209e4c + 1936: 0x10e03f
+0x209e4c + 1940: 0x2020202
+0x209e4c + 1944: 0x3030303
+0x209e4c + 1948: 0x4040404
+0x209e4c + 1952: 0x5050505
+0x209e4c + 1956: 0x6060606
+0x209e4c + 1960: 0x7070707
+0x209e4c + 1964: 0x8080808
+0x209e4c + 1968: 0x9090909
+0x209e4c + 1972: 0x10101010
+0x209e4c + 1976: 0x4040404
+0x209e4c + 1980: 0x5050505
+0x209e4c + 1984: 0x6060606
+0x209e4c + 1988: 0x7070707
+0x209e4c + 1992: 0xaaaaaaaa
+0x209e4c + 1996: 0x10e035
+I am clueless abou what is going on here.
+To me it looks as if something was
+hijacking my stack, but I have not the
+slightest hint who could be this.
+Any advices are appreciated.
+regards,
+Christian
+&nbsp;&nbsp; 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Still puzzling over nasty stack corruption</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 14, 2006</div><div class="thread-post-content">Which compiler are you using?
+Can you zip up your project and send it to me?&nbsp; Use the email address from the FreeRTOS.org contact WEB page &#40; r &#95;&#95;dot~ barry &#42;AT&#42; freertos ~dot org&#41; rather than the sourceforge email address, otherwise the attachment will get stripped off.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

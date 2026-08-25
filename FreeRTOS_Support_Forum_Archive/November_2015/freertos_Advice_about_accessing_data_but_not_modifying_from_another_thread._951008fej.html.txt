@@ -1,0 +1,178 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advice about accessing data (but not modifying) from another thread. - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2015/freertos_Advice_about_accessing_data_but_not_modifying_from_another_thread._951008fej.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Advice about accessing data (but not modifying) from another thread. - FreeRTOS" />
+<meta property="og:description" content="Advice about accessing data (but not modifying) from another thread. Posted by dibosco on November 10, 2015I&#8217;m trying to understand what is good practice in terms of accessing data created/modified in another thread. It seems that a queue is obviously the safest way of passing data from one thread to another, but what about when &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2015/freertos_Advice_about_accessing_data_but_not_modifying_from_another_thread._951008fej.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Advice about accessing data (but not modifying) from another thread. Posted by dibosco on November 10, 2015I&#8217;m trying to understand what is good practice in terms of accessing data created/modified in another thread. It seems that a queue is obviously the safest way of passing data from one thread to another, but what about when [&hellip;]" />
+<meta name="twitter:title" content="Advice about accessing data (but not modifying) from another thread. - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202577' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202577' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202577' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202577' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145435' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2015%2Ffreertos_Advice_about_accessing_data_but_not_modifying_from_another_thread._951008fej.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2015%2Ffreertos_Advice_about_accessing_data_but_not_modifying_from_another_thread._951008fej.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145435">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2015_freertos_support_forum_archive_index.html/">November 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Advice about accessing data (but not modifying) from another thread. </h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on November 10, 2015</div><div class="thread-post-content">I&#8217;m trying to understand what is good practice in terms of accessing data created/modified in another thread. 
+It seems that a queue is obviously the safest way of <em>passing</em> data from one thread to another, but what about when one thread merely needs to know about the status of somehting in another thread? 
+Is it acceptable to have an accessor function that reads a static variable in the module the other thread is contained in, to read and return, say, a flag?
+For example:
+I have a thread that parses an XML file and puts together which of the sixteen DALI scenarios are valid. 
+I have another thread that receives UDP packets in, with one of the fields in the UDP packet a request to switch to a new DALI scenario. If the DALI scenario is not valid, according to the XML thread, the scenario should not be requested over the DALI bus.
+In this case, I have created a static variable in the XML parsing module that is a bit map, each bit set or cleared to define whether a scenario is valid. Is it acceptable for the UDP thread just to request that bit map and find out whether a particular scenario is valid? Or must I send that bit map to the UDP thread via a queue? If so. must, or should, that bit map be sent to the UDP thread or is it acceptable just to have a static variable accessible by the whole of the module that contains the UDP thread?
+I have in the past (in other projects) had a queue of just length of one 32-bit variable &#8211; which is 32 flags &#8211; and just written to and read/peeked from/at that queue from lots of threads so all threads can at any time just look at the flags or read them out, modify them and restore them. In the end this is more of a faff. However, it may be that it is the only really thread-safe way of doing things? 
+Or is there a third way I have not thought of?
+Having a separate queue for all different types of data for different threads to access like this soon really eats into precious RAM. 
+Many thanks 🙂
+</div></div><div class="thread-post"><h3 class="thread-post-title">Advice about accessing data (but not modifying) from another thread. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 10, 2015</div><div class="thread-post-content">Hi DiBosco,
+In most cases, I would share that kind of information without any protection, as long as it is clear that there is only one task allowed to change the data.
+I&#8217;m sure you know about this potential optimisation problem:
+~~~~~
+    extern BaseType_t isReady;
+    /* Here it is not clear for the compiler that &#8216;isReady&#8217;
+    may be changed by another task.
+    The test may be performed only once and the loop
+    might never end. */
+    while( isReady == pdFALSE )
+    {
+        // Do something
+    }
+<pre><code>/* This construction forces the compiler to fetch
+'isReady' in every loop. */
+while( *( ( volatile BaseType_t * )&amp;isReady ) == pdFALSE )
+{
+    // Do something
+}
+</code></pre>
+~~~~~
+But normally, all variables that you test will be fetched when required. The loop here above would be an exception.
+If your data may also be changed by an interrupt, you&#8217;ll need a critical section.
+~~~~~
+    taskENTER<em>CRITICAL()
+    // change the data
+    isReady = isReady + 1;
+    taskEXIT</em>CRITICAL();
+~~~~~
+The interrupt which changes the data does <strong>not</strong> need a critical section, because the interrupt normally won&#8217;t get interrupted by an interrupt touching the same data.
+If your data may only be changed by another task (not by an  interrupt), you may suspend the scheduler:
+~~~~~
+    vTaskSuspendAll();
+    // change the data
+    isReady = isReady + 1;
+    xTaskResumeAll();
+~~~~~
+If changing the data is an atomic action (i.a. a single assembler instruction), no protection is needed.
+~~~~~
+    /* &#8216;isready&#8217; is accessed by a single instruction. */
+    isReady = 0;
+~~~~~
+But as said, in your application the common data is managed by a single task, so it doesn&#8217;t need any protection.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Advice about accessing data (but not modifying) from another thread. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 10, 2015</div><div class="thread-post-content">Hein, the answer to the optimization problem is to mark the variable &#8216;volatile&#8217;, which is designed to prevent this type of optimization and require the compiler to access the variable fresh each time it is used (Some C Purest will point out that volatile might not be quite enough, as it might not force cache coherency, but this is normally only a problem on multi-processor systems, for which FreeRTOS really isn&#8217;t designed).
+As to accessing the data, as long as you can make the accesses act &#8216;atomic&#8217; then there is no problem. If only one thing writes to the data, and it is a simple small variable, this is normally not a big problem. If not, then you will need some sort of protection to make the actions act atomic. This can be critical sections, stoping the scheduler, or using a mutex/semaphore depending on the need.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Advice about accessing data (but not modifying) from another thread. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on November 11, 2015</div><div class="thread-post-content">Thanks folks, that&#8217;s most helpful 🙂
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

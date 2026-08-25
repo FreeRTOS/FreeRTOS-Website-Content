@@ -1,0 +1,520 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three tasks bug - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2008/freertos_Three_tasks_bug_1968669.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Three tasks bug - FreeRTOS" />
+<meta property="og:description" content="Three tasks bugPosted by brenodee on March 13, 2008Hi all, I&#8217;m posting a huge code that&nbsp; I&#8217;m using to control an cc motor and adjust the positions of wheels in a car. The bug occurs when I start 3 threads to run. It works fine on pairs &#040;ex. control&#095;velocity and other&#041; but it completely stuck &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2008/freertos_Three_tasks_bug_1968669.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Three tasks bugPosted by brenodee on March 13, 2008Hi all, I&#8217;m posting a huge code that&nbsp; I&#8217;m using to control an cc motor and adjust the positions of wheels in a car. The bug occurs when I start 3 threads to run. It works fine on pairs &#040;ex. control&#095;velocity and other&#041; but it completely stuck [&hellip;]" />
+<meta name="twitter:title" content="Three tasks bug - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201586' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201586' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201586' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201586' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141319' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2008%2Ffreertos_Three_tasks_bug_1968669.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2008%2Ffreertos_Three_tasks_bug_1968669.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141319">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/a00104.html" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/FAQ.html" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2008_freertos_support_forum_archive_index.html/">March 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Three tasks bug</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/brenodee">brenodee</a> on March 13, 2008</div><div class="thread-post-content">Hi all, I&#8217;m posting a huge code that&nbsp; I&#8217;m using to control an cc motor and adjust the positions of wheels in a car. The bug occurs when I start 3 threads to run. It works fine on pairs &#40;ex. control&#95;velocity and other&#41; but it completely stuck when a got 3 tasks created.
+I&#8217;m not sure if it&#8217;s a memory issue or processor capacity problem.
+I&#8217;m using Atmega128 my configTOTAL&#95;HEAP&#95;SIZE is 4&#42;1024. 
+To sum up, I have three tasks, one to run the velocity control law, another one to adjust the direction of the wheels and another one to catch the value of AD converter. I used some mechanism to synchronization with tasks and interruptions
+I hope find someone patient to take a look.
+// &#42;&nbsp; Definitions
+/&#42; Includes &#42;/
+&#35;include &lt;stdio.h&gt;
+&#35;include &lt;avr/io.h&gt;
+&#35;include &lt;stdlib.h&gt;
+&#35;include &lt;avr/interrupt.h&gt;
+&#35;include &lt;math.h&gt;
+&#35;ifdef GCC&#95;MEGA&#95;AVR
+&nbsp;&nbsp;&nbsp; /&#42; EEPROM routines used only with the WinAVR compiler. &#42;/
+&nbsp;&nbsp;&nbsp; &#35;include &lt;avr/eeprom.h&gt; 
+&#35;endif
+/&#42; Scheduler include files. &#42;/
+&#35;include &quot;FreeRTOS.h&quot;
+&#35;include &quot;task.h&quot;
+&#35;include &quot;semphr.h&quot;
+&#35;include &lt;avr/interrupt.h&gt;
+&#35;include &lt;avr/sleep.h&gt;
+/&#42; Demo file headers. &#42;/
+&#35;include &quot;serial.h&quot;
+float get&#95;velocity&#40;void&#41;;
+/&#42; Priority definitions for most of the tasks in the demo application.&nbsp; Some
+tasks just use the idle priority. &#42;/
+/&#42; Baud rate used by the serial port&#42;/
+&#35;define mainCOM&#95;TEST&#95;BAUD&#95;RATE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; unsigned portLONG &#41; 38400 &#41;
+&#35;define TwoTasks
+//&#35;define OneTask
+&#35;define VelocidadeCFiltro
+&#35;define filtroRef
+//&#35;define ContagemTicks
+&#35;define adc
+//void transmit&#95;value &#40;float var&#41;;
+//void transmit&#95;value &#40;float var,float ref&#41;;
+float get&#95;velocity&#40; void &#41;;
+void adjust&#95;PH&#95;vel&#40;char direction&#41;;
+void adjust&#95;DutyPWM&#95;vel&#40;float duty&#41;;
+void vApplicationIdleHook&#40; void &#41;;
+void control&#95;velocity&#40; void &#41;;
+&#35;ifdef TwoTasks
+static void adjust&#95;DirPos&#40;void&#41;;
+&#35;endif
+&#35;ifdef OneTask
+void adjust&#95;DirPos&#40;float pos&#41;;
+&#35;endif
+&#35;ifdef adc
+static void getDistanciaObstaculo&#40;&#41;;
+&#35;endif
+/&#42;
+&#42; Global variables
+&#42;/
+int pulse;
+float ref&#95;pos = 6.7;
+float ref&#95;vel = 80;
+int iterations = 0;
+unsigned char ccc=0;
+char ini&#91;&#93; = &quot;Programa Iniciado&#33;&#33;&#33;nr&quot;;
+unsigned char buffer&#91;5&#93;;
+&#35;ifdef adc
+xSemaphoreHandle semaforoADC = NULL;
+&#35;endif
+int main&#40; void &#41;
+&#123;
+&nbsp;&nbsp;&nbsp; DDRA = 0xFF;
+&nbsp;&nbsp;&nbsp; xSerialPortInitMinimal&#40; mainCOM&#95;TEST&#95;BAUD&#95;RATE, 1 &#41;;
+&nbsp;&nbsp;&nbsp; 
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42; CONFIG INT&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+&nbsp;&nbsp;&nbsp; DDRB&nbsp; = 0xFF;
+&nbsp;&nbsp;&nbsp; DDRC = 0xFF;
+&nbsp;&nbsp;&nbsp; DDRE |= 0b00001000;
+&nbsp;&nbsp;&nbsp; MCUCR = 0x03;
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;PWM&#8217;s&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+//Configuracao da saida de PWM A, B e C do Timer1&#40;PB5&#41; e 3&#40;PE3&#41;
+//Configs Velo &#8211; PWM0, POS &#8211; PWM1 
+&nbsp;&nbsp;&nbsp; TCCR0 = 0b01101010;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; TCCR3A = 0b10000010; 
+&nbsp;&nbsp;&nbsp; TCCR3B = 0b00010010;
+&nbsp;&nbsp;&nbsp; 
+//Configs Velo &#8211; PWM3, Pos &#8211; PWM0
+//&nbsp;&nbsp;&nbsp; TCCR0 = 0b01100110;
+//&nbsp;&nbsp;&nbsp; TCCR3A = 0b10000010;
+//&nbsp;&nbsp;&nbsp; TCCR3B = 0b00011010;
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;Set Freq&nbsp; PWM1 to 2khz and PWM3 6khz&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; OCR0 = 0x00;
+//configs para velocidade a 4 khz
+&nbsp;&nbsp;&nbsp; ICR3 = 0x2710;
+//configs para velocidade a 6khz
+//&nbsp;&nbsp;&nbsp; ICR3 = 0xA5; //==165 -&gt; 166 cont&#8217;s
+// &#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;ADC CONFIG.&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+&nbsp;&nbsp;&nbsp; ADMUX = 0x00;
+//&nbsp;&nbsp;&nbsp; //Habilita ADC
+&nbsp;&nbsp;&nbsp; ADCSRA = 0x88;
+// &#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&nbsp;&nbsp;&nbsp; 
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;Interruptions&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+&nbsp;&nbsp;&nbsp; SREG&nbsp; = 0x80;
+&nbsp;&nbsp;&nbsp; EICRA = 0x03; // 3 &#8211; 0
+&nbsp;&nbsp;&nbsp; EICRB = 0x00; // 7 &#8211; 4
+&nbsp;&nbsp;&nbsp; EIMSK = 0x01;
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42; END of conf.&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+&nbsp;&nbsp;&nbsp; string&#95;transmit&#40;ini&#41;;
+&#35;ifdef adc
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vSemaphoreCreateBinary&#40; semaforoADC &#41;;
+&#35;endif
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ref&#95;vel = 80;
+&nbsp;&nbsp;&nbsp; adjust&#95;PH&#95;vel&#40;0&#41;;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; xTaskCreate &#40; control&#95;velocity, &quot;Vel&quot;, configMINIMAL&#95;STACK&#95;SIZE, NULL, 2, NULL &#41;;
+&#35;ifdef TwoTasks
+&nbsp;&nbsp;&nbsp; xTaskCreate &#40;adjust&#95;DirPos, &quot;Dir&quot;, 30, NULL, 2 , NULL&#41;;
+&#35;endif
+&#35;ifdef adc
+&nbsp; //&nbsp; xTaskCreate &#40;getDistanciaObstaculo,&quot;obs&quot;, 30, NULL,2,NULL&#41;;&nbsp;&nbsp; 
+&#35;endif
+&nbsp;&nbsp;&nbsp; vTaskStartScheduler&#40;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; return 0;
+&#125;
+void control&#95;velocity&#40; void &#41;
+&#123;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; char firstTime = 1;
+&nbsp;&nbsp;&nbsp; float control&#91;2&#93;,control2;
+&nbsp;&nbsp;&nbsp; float error&#91;2&#93;,new&#95;velocity&#91;4&#93;,final&#95;velocity&#91;4&#93;;
+&#35;ifdef filtroRef
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; float referencia&#91;2&#93;;
+&#35;endif
+&#35;ifdef ContagemTicks
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; char tick;
+&#35;endif
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; while&#40;1&#41;
+&nbsp;&nbsp;&nbsp; &#123;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+ /&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42; Initializations&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;firstTime ==1&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new&#95;velocity&#91;0&#93;=get&#95;velocity&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; error&#91;0&#93;=ref&#95;vel-new&#95;velocity&#91;0&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; control&#91;0&#93;=&nbsp;&nbsp; 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; control&#91;1&#93; =&nbsp; 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; error&#91;1&#93;=error&#91;0&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new&#95;velocity&#91;1&#93;=new&#95;velocity&#91;0&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new&#95;velocity&#91;2&#93;=new&#95;velocity&#91;0&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new&#95;velocity&#91;3&#93;=new&#95;velocity&#91;0&#93;;
+&#35;ifdef&nbsp;&nbsp; VelocidadeCFiltro&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; final&#95;velocity&#91;1&#93;=new&#95;velocity&#91;0&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; final&#95;velocity&#91;2&#93;=new&#95;velocity&#91;0&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; final&#95;velocity&#91;3&#93;=new&#95;velocity&#91;0&#93;;
+&#35;endif
+&#35;ifdef filtroRef
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; referencia&#91;0&#93; = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; referencia&#91;1&#93; = 0;
+&#35;endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; firstTime = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42; Control Law&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new&#95;velocity&#91;3&#93;=new&#95;velocity&#91;2&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new&#95;velocity&#91;2&#93;=new&#95;velocity&#91;1&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new&#95;velocity&#91;1&#93;=new&#95;velocity&#91;0&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //GET Velocity
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new&#95;velocity&#91;0&#93;=get&#95;velocity&#40;&#41;;
+&#35;ifdef ContagemTicks
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tick = xTaskGetTickCount &#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tick = TCNT1;
+&#35;endif
+&#35;ifdef VelocidadeCFiltro
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; final&#95;velocity&#91;3&#93;=final&#95;velocity&#91;2&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; final&#95;velocity&#91;2&#93;=final&#95;velocity&#91;1&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; final&#95;velocity&#91;1&#93;=final&#95;velocity&#91;0&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //Filtro de terceira ordem na leitura
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; final&#95;velocity&#91;0&#93;=0.332&#42;new&#95;velocity&#91;0&#93;+0.995&#42;new&#95;velocity&#91;1&#93;+0.995&#42;new&#95;velocity&#91;2&#93;+0.332&#42;new&#95;velocity&#91;3&#93;-1.15&#42;final&#95;velocity&#91;1&#93;-0.44&#42;final&#95;velocity&#91;2&#93;-0.057&#42;final&#95;velocity&#91;3&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; final&#95;velocity&#91;0&#93;=0.4&#42;new&#95;velocity&#91;0&#93;+0.6&#42;final&#95;velocity&#91;1&#93;;
+&#35;endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //Calculo do Erro
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; error&#91;1&#93; = error&#91;0&#93;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#35;ifdef VelocidadeCFiltro
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#35;ifndef filtroRef&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; error&#91;0&#93;=ref&#95;vel-final&#95;velocity&#91;0&#93;;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#35;endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#35;ifdef filtroRef
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; referencia&#91;1&#93; = referencia&#91;0&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; referencia&#91;0&#93; = 0.2&#42;ref&#95;vel+0.8&#42;referencia&#91;1&#93;;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; error&#91;0&#93;=referencia&#91;0&#93;-final&#95;velocity&#91;0&#93;;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#35;endif&nbsp;&nbsp;&nbsp; 
+&#35;endif
+&#35;ifndef VelocidadeCFiltro
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; error&#91;0&#93;=ref&#95;vel-new&#95;velocity&#91;0&#93;;
+&#35;endif&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; control&#91;1&#93; = control&#91;0&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //Calculo do Controle &#40;PI discreto&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; control&#91;0&#93;=&#40;2.25&#42;error&#91;0&#93;&#41;-&#40;1.95&#42;error&#91;1&#93;&#41;+control&#91;1&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //Aproximacao da Look-up Table &#40;tensao por velocidade&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; control2=0.015&#42;control&#91;0&#93;+5.013;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; control2=control2&#42;13.88;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;abs&#40;control2&#41;&gt;100&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adjust&#95;DutyPWM&#95;vel&#40;100&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adjust&#95;DutyPWM&#95;vel&#40;abs&#40;control2&#41;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#35;ifdef ContagemTicks
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tick = xTaskGetTickCount&#40;&#41; -tick;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tick = TCNT1 &#8211; tick;
+&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; transmit&#95;value&#40;&#40;float&#41;tick&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itoa&#40;&#40;int&#41;tick,buffer,10&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; string&#95;transmit&#40;buffer&#41;;
+&#35;endif&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PORTA = ~0x01;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+&#35;ifdef TwoTasks
+static void adjust&#95;DirPos&#40;void&#41;
+&#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while&#40;1&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OCR3A = 100&#42;ref&#95;pos;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vTaskDelay&#40;50&#41;;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#125;
+&#35;endif
+&#35;ifdef OneTask
+void adjust&#95;DirPos &#40;float pos&#41;
+&#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;pos&lt;6.7&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;OCR3A = 670;&#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;pos&gt;7.9&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;OCR3A = 790;&#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;OCR3A = 100&#42;pos;&#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#125;
+&#35;endif
+float get&#95;velocity&#40;&#41;
+&#123;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp; pulse =0;
+&nbsp;&nbsp;&nbsp;&nbsp; EIMSK = 0x01; 
+&nbsp;&nbsp;&nbsp;&nbsp; vTaskDelay&#40;&#40; portTickType &#41; 300/ portTICK&#95;RATE&#95;MS&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp; EIMSK = 0x00;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; return &#40;pulse&#42;3.78&#41;;
+&#125;
+void adjust&#95;DutyPWM&#95;vel&#40;float duty&#41;
+&#123;
+//config to velocity at 4khz
+&nbsp;&nbsp;&nbsp; OCR0 = 2.55&#42;duty; 
+//config to velocity at 6khz
+//&nbsp;&nbsp;&nbsp; OCR3A = 1.65&#42;duty;
+&#125;
+void adjust&#95;PH&#95;vel&#40;char direction&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; //1 &#8211; backward
+&nbsp;&nbsp;&nbsp; //0 &#8211; forward
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; if&#40;direction==1&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PORTB = &#40;PORTB&amp;&#40;0b11111100&#41;&#41;|&#40;0b10&#41;;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PORTB = &#40;PORTB&amp;&#40;0b11111100&#41;&#41;|&#40;0b01&#41;;
+&#125;
+&#35;ifdef adc
+static void getDistanciaObstaculo&#40;&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; static int adcValue&nbsp; = 0;
+&nbsp;&nbsp;&nbsp; static float distancia = 0;
+&nbsp;&nbsp;&nbsp; while&#40;1&#41;&#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADCSRA = 1&lt;&lt;6|ADCSRA;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40; xSemaphoreTake&#40; semaforoADC, 10 &#41; == pdTRUE &#41;&#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adcValue = ADCL;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adcValue |= ADCH&lt;&lt;8;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; distancia = &#40;adcValue/204.8&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;distancia &lt;0.7&#41;&#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PORTA&nbsp; = ~0x01;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;else&#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PORTA&nbsp; = ~0x80;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;&nbsp;&nbsp;&nbsp; 
+&#35;endif
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;Tratadores de Interrupcao&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+&#35;ifdef adc
+ISR&#40;ADC&#95;vect&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; xSemaphoreGiveFromISR&#40; semaforoADC, pdFALSE &#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#125; 
+&#35;endif
+ISR&#40;INT0&#95;vect&#41;
+&#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pulse++;
+&#125;
+ISR&#40;USART0&#95;RX&#95;vect&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; ccc = UDR0;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; switch&#40;ccc&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case &#8216;a&#8217;:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ref&#95;vel = 100;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case &#8216;b&#8217;:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ref&#95;vel = 70;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case &#8216;c&#8217;:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ref&#95;vel = 120;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case &#8216;A&#8217;:
+&#35;ifdef OneTask&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adjust&#95;DirPos&#40;7&#41;;
+&#35;endif
+&#35;ifdef TwoTasks
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ref&#95;pos = 7;
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xTaskResumeFromISR&#40;dirHandle&#41;;
+&#35;endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case &#8216;B&#8217;:
+&#35;ifdef OneTask&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adjust&#95;DirPos&#40;6.7&#41;;
+&#35;endif
+&#35;ifdef TwoTasks
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ref&#95;pos = 6.7;
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xTaskResumeFromISR&#40;dirHandle&#41;;
+&#35;endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case &#8216;C&#8217;:
+&#35;ifdef OneTask&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adjust&#95;DirPos&#40;7.9&#41;;
+&#35;endif
+&#35;ifdef TwoTasks
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ref&#95;pos = 7.9;
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xTaskResumeFromISR&#40;dirHandle&#41;;
+&#35;endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; default:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#125;
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42; USART&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+void string&#95;transmit&#40;unsigned char str&#91;&#93;&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; int counter = 0;
+&nbsp;&nbsp;&nbsp; while&#40;str&#91;counter&#93;&#33;=&#8217; &#8217;&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Wait for empty transmit buffer &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp; while &#40; &#33;&#40;UCSR0A &amp; &#40;1&lt;&lt;UDRE0&#41;&#41; &#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Start transmittion &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp; UDR0 = str&#91;counter&#93;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; counter++;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;TRANSMISSÃO DE DADOS&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;
+void transmit&#95;value &#40;float var,float ref&#41;
+&#123;
+&nbsp;&nbsp;&nbsp;&nbsp; static char buffer&#91;5&#93;;
+//&nbsp;&nbsp;&nbsp;&nbsp; itoa&#40;&#40;int&#41;ref&#95;vel,buffer,10&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp; itoa&#40;&#40;int&#41;ref,buffer,10&#41;;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp; string&#95;transmit&#40;buffer&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp; string&#95;transmit&#40;&quot;t&quot;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp; itoa&#40;&#40;int&#41;var,buffer,10&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp; string&#95;transmit&#40;buffer&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp; string&#95;transmit&#40;&quot;nr&quot;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp; 
+&#125;
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;IDLE TASK&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+void vApplicationIdleHook&#40; void &#41;
+&#123;
+&nbsp;&nbsp;&nbsp; vCoRoutineSchedule&#40;&#41;;
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Three tasks bug</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/picmeup">picmeup</a> on March 13, 2008</div><div class="thread-post-content">I think that is a big ask for someone to look through that. I suppose you have checked you are not overflowing the stack though.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Three tasks bug</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmr1972">jmr1972</a> on March 13, 2008</div><div class="thread-post-content">Hi,
+A huge bit of code&#33;&#33;&#33; It&#8217;s generaly a good idea to try and create a minimal program that demonstrates the problem.
+As you pointed out you have a memory problem.
+You defined the heap to be 4kB which is OK. The RTOS will allocate memory from this when creating tasks or queues.
+When you&#8217;re creating your tasks however you are only giving a stack of 30 bytes. Way less than required. Try giving each task at east 100bytes. That should cure the problem.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Three tasks bug</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/brenodee">brenodee</a> on March 16, 2008</div><div class="thread-post-content">Thank you guys&#33;&#33;&#33; I had to set less heap size &#40;about 1000 bytes&#41; to get it working.
+Now I&#8217;m running it with four threads without any problem until now. 
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/RTOS.html" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

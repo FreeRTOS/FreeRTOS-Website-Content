@@ -1,0 +1,145 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generic ISR dispatch routine - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/December_2006/freertos_Generic_ISR_dispatch_routine_1637839.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Generic ISR dispatch routine - FreeRTOS" />
+<meta property="og:description" content="Generic ISR dispatch routinePosted by *anonymous on December 24, 2006In order to have a single generic ISR dispatch routine, I have added a function to tasks.c that returns the priority of the highest priority ready task. unsigned portBASE&#095;TYPE TopPriority&#040;void&#041; &#123; &nbsp;&nbsp;&nbsp; return uxTopReadyPriority; &#125; My generic dispatch routine captures this priority before dispatching to the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/December_2006/freertos_Generic_ISR_dispatch_routine_1637839.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Generic ISR dispatch routinePosted by *anonymous on December 24, 2006In order to have a single generic ISR dispatch routine, I have added a function to tasks.c that returns the priority of the highest priority ready task. unsigned portBASE&#095;TYPE TopPriority&#040;void&#041; &#123; &nbsp;&nbsp;&nbsp; return uxTopReadyPriority; &#125; My generic dispatch routine captures this priority before dispatching to the [&hellip;]" />
+<meta name="twitter:title" content="Generic ISR dispatch routine - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201418' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201418' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201418' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201418' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141715' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2006%2Ffreertos_Generic_ISR_dispatch_routine_1637839.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2006%2Ffreertos_Generic_ISR_dispatch_routine_1637839.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141715">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/December_2006_freertos_support_forum_archive_index.html/">December 2006 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Generic ISR dispatch routine</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on December 24, 2006</div><div class="thread-post-content">In order to have a single generic ISR dispatch routine, I have added a function to tasks.c that returns the priority of the highest priority ready task.
+unsigned portBASE&#95;TYPE TopPriority&#40;void&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; return uxTopReadyPriority;
+&#125;
+My generic dispatch routine captures this priority before dispatching to the proper ISR. When the ISR returns, it tests whether the highest priority has changed. If so, it calls for a context switch, else it doesn&#8217;t.
+void PortIRQDispatch&#40;void&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; portENTER&#95;SWITCHING&#95;ISR&#40;&#41;;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; unsigned&nbsp;&nbsp;&nbsp; portBASE&#95;TYPE prevTopPriority = TopPriority&#40;&#41;;
+&nbsp;&nbsp;&nbsp; ISRDispatch&#40;&#41;;
+&nbsp;&nbsp;&nbsp; portEXIT&#95;SWITCHING&#95;ISR&#40;prevTopPriority&lt;TopPriority&#40;&#41;&#41;;
+&#125;
+I wonder if anyone has any comments on issues/problems this may raise.
+One point is that this subverts time slicing between tasks of equal priority. Using &lt;= rather than &lt; in the final test would be similar to time slicing, although not quite the same. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Generic ISR dispatch routine</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on December 24, 2006</div><div class="thread-post-content">I&#8217;m not sure I follow the object of this code, what you are trying to achieve?&nbsp; 
+If you want to only cause a switch to another task when there is a task of higher priority than the running task then you could add the code to vTaskSwitchContext in tasks.c to only execute the while loop if the top ready priority is greater than the running priority.
+If this is just to have commonality in your IRQs and to prevent the application writer having to use the ENTER/EXIT macros then I think the code is good.&nbsp; You of coarse have a few little expenses in an extra layer of indirection.&nbsp; Also you are going to save and restore the context even when the task does not need it saved and restored.&nbsp; Each IRQ in the system will save the context.
+Different ports handle this in different ways.&nbsp; Some only save the context when a switch is actually required which is really nice as this is the most optimal.&nbsp; From the macros you quote I assume you are using the ARM port.&nbsp; This itself uses two different techniques.&nbsp; Looking at the STR750 &#40;and I think the ARM9&#41; ports you will see that there is an IRQ wrapper&nbsp; written in assembler that saves the context before calling the IRQ C function, then restores it again prior to exiting the ASM wrapper &#40;on completion of the interrupt&#41;.&nbsp; The portEND&#95;SWITCHING&#95;ISR macro then becomes a simple call to vTaskSwitchContext&#40;&#41; if a switch is required.&nbsp; Take a look at the port page for STR750/RIDE at the section &quot;Interrupt service routines&quot;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Generic ISR dispatch routine</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on December 24, 2006</div><div class="thread-post-content">I am using an LPC2xxx. The VIC priority vectored interrupts and the FIQ interrupt are handled separately and each in there own way. In my case, they all operate outside the realm of FreeRTOS, never triggering context switches.
+My PortIRQDispatch&#40;&#41; is the common routine entered off of the VIC default IRQ. All of these have to go through such a common handler. So it can perform operations common to all of the default vector ISRs. I was looking for a common way of determining if a context switch was required on exiting the ISR.
+I really don&#8217;t like to tamper with FreeRTOS, so I look for ways to work with it with as few changes as possible. My TopPriority&#40;&#41; function added into tasks.c seemed like a pretty inocuous change that gave me what I wanted. But I wonder if others might have tried a similar stunt and run into some subtle &#8216;gotcha&#8217;.
+In this particular case, I&#8217;m not sure tampering vTaskSwitchContext&#40;&#41; would be a good thing to do. I think it would mean that taskYIELD&#40;&#41; wouldn&#8217;t perform as expected.
+Thanks for the feedback.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

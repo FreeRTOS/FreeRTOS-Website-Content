@@ -1,0 +1,193 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Still locking after portEND_SWITCHING_ISR - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2012/freertos_Still_locking_after_portEND_SWITCHING_ISR_5113026.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Still locking after portEND_SWITCHING_ISR - FreeRTOS" />
+<meta property="og:description" content="Still locking after portEND_SWITCHING_ISRPosted by *anonymous on March 13, 2012Yesterday I asked a question about eternal lock after context switch &#040;here https://sourceforge.net/projects/freertos/forums/forum/382005/topic/5111217&#041; But unfortunately, even right procedure of serving interrupt still causes eternal lock&#033; It looks like this: static portBASE_TYPE xHigherPriorityTaskWoken; xHigherPriorityTaskWoken=pdFALSE; EXTI_ClearITPendingBit(EXTI_Line10); irq++; //for debug purposes if(irq==2) __asm(&quot;NOP&quot;); //here I can place a break, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2012/freertos_Still_locking_after_portEND_SWITCHING_ISR_5113026.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Still locking after portEND_SWITCHING_ISRPosted by *anonymous on March 13, 2012Yesterday I asked a question about eternal lock after context switch &#040;here https://sourceforge.net/projects/freertos/forums/forum/382005/topic/5111217&#041; But unfortunately, even right procedure of serving interrupt still causes eternal lock&#033; It looks like this: static portBASE_TYPE xHigherPriorityTaskWoken; xHigherPriorityTaskWoken=pdFALSE; EXTI_ClearITPendingBit(EXTI_Line10); irq++; //for debug purposes if(irq==2) __asm(&quot;NOP&quot;); //here I can place a break, [&hellip;]" />
+<meta name="twitter:title" content="Still locking after portEND_SWITCHING_ISR - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202099' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202099' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202099' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202099' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141528' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2012%2Ffreertos_Still_locking_after_portEND_SWITCHING_ISR_5113026.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2012%2Ffreertos_Still_locking_after_portEND_SWITCHING_ISR_5113026.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141528">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2012_freertos_support_forum_archive_index.html/">March 2012 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Still locking after portEND_SWITCHING_ISR</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on March 13, 2012</div><div class="thread-post-content">Yesterday I asked a question about eternal lock after context switch &#40;here <a href="https://sourceforge.net/projects/freertos/forums/forum/382005/topic/5111217">https://sourceforge.net/projects/freertos/forums/forum/382005/topic/5111217</a>&#41;<br />
+But unfortunately, even right procedure of serving interrupt still causes eternal lock&#33;  
+It looks like this:  
+<pre><code>static portBASE_TYPE xHigherPriorityTaskWoken;
+    xHigherPriorityTaskWoken=pdFALSE;
+    EXTI_ClearITPendingBit(EXTI_Line10);
+    irq++; //for debug purposes
+    if(irq==2)
+        __asm("NOP"); //here I can place a break, after that all tasks remain blocked forever
+    xSemaphoreGiveFromISR(IRQSemph, &amp;xHigherPriorityTaskWoken);
+    portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+</code></pre>
+There are two tasks, one for actual serving this interrupt, high-priority, which starts with xSemaphoreTake&#40;IRQSemph, portMAX&#95;DELAY&#41;;<br />
+and another, with lower priority, which is blocked, waiting signal form high-priority task.  
+I suppose, that when breakpoint is reached &#40;irq count == 2&#41;, ISR interrupts this high priority task, while it is processing last ISR &#40;irq == 1&#41;. But I don&#8217;t understand, why this is causing this lock&#33;  
+When I am entering xSemaphoreGiveFromISR, I can see that it&#8217;s pxQueue-&gt;xTxLock is 0, so no actions with even list is taken, just data copy, inctement of xTxLock and return of&nbsp; FALSE;  
+Also pxQueue-&gt;xTasksWaitingToReceive-&gt;uxNumberOfItems = 2.  
+What does this mean, why there is two tasks, waiting for receive? The only one task, that uses this semaphore is my high-priority routine…  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Still locking after portEND_SWITCHING_ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 13, 2012</div><div class="thread-post-content">I&#8217;m not sure I understand your problem, but could the issue be in your task implementation?&nbsp; Are you doing something like leaving the scheduler locked, or calling API functions with the scheduler locked?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Still locking after portEND_SWITCHING_ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on March 13, 2012</div><div class="thread-post-content">No-no.<br />
+This is just a driver for radio tranciever.<br />
+Here is my high-priority task:  
+static void taskDriverIRQHandler&#40;void &#42;pvParameters&#41;<br />
+&#123;<br />
+u8 Status;<br />
+while&#40;1&#41;<br />
+&#123;<br />
+xSemaphoreTake&#40;IRQSemph, portMAX&#95;DELAY&#41;;<br />
+xSemaphoreTake&#40;SPI&#95;DMA&#95;Tx, portMAX&#95;DELAY&#41;;<br />
+Status=ResetIRQ&#40;&#41;;<br />
+if&#40;Status&amp;TX&#95;DS&#41;<br />
+&#123;<br />
+xSemaphoreGive&#40;TxFIFOFree&#41;;<br />
+&#125;<br />
+xSemaphoreGive&#40;SPI&#95;DMA&#95;Tx&#41;;<br />
+&#125;<br />
+&#125;  
+I want it work in such way:<br />
+transmitter task &#40;low priority&#41; blocks on TxFIFOFree. Radio module asserts it&#8217;s irq pin, causing external interrupt &#8211; it&#8217;s isr is in my first post. ISR gives IRQSemph, also clearing EXIT bit.<br />
+taskDriverIRQHandler task unblocks, waits for all DMA transfers to be complete &#40;actualy, they are all complete much earlier, I checked that&#41;, then sends to transiever SPI command to clear it&#8217;s internal interrupt status &#8211; without that there will be no more interrupts, as EXTI handles high-to-low transition, and IRQ pin remains constant low.<br />
+Then taskDriverIRQHandler should give one more slot in TxFIFOFree, unblocking Tx task again.<br />
+But it doesn&#8217;t work in that way&#33;  
+What I know, is that Tx task finishes it&#8217;s DMA transfers and blocks waiting TxFIFOFree. After some time, data is being sent by module and it asserts IRQ pin. ISR serves it, unblocks taskDriverIRQHandler, wich defenitly resets module&#8217;s IRQ status.<br />
+Than some black magic happens, which I can not understand or even debug &#40;because braking or even adding some tracing causes functions to execute slower and second interrupts does not ruin everything&#41;.<br />
+All I know is that second interrupt arrives, my system enters ISR, but tracing internals of xSemaphoreGive call, shows that IRQSemph is considered to be locked, it&#8217;s pxQueue-&gt;xTxLock is 0, not queueUNLOCKED.<br />
+So, semaphore does not unblock it, just increment lock counter &#8211; but there is no other tasks running to unblock it either.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">Still locking after portEND_SWITCHING_ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on March 13, 2012</div><div class="thread-post-content">I just found this damned bug.<br />
+Sorry for my questions, it is really stupid mistake.<br />
+Obviously, I shouldn&#8217;t use NVIC-configuration routines like this:  
+<pre><code>NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel5_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_KERNEL_INTERRUPT_PRIORITY-3;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init( &amp;NVIC_InitStructure );
+     NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
+     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_KERNEL_INTERRUPT_PRIORITY-2;
+     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+     NVIC_Init(&amp;NVIC_InitStructure);
+</code></pre>
+I wanted to set priorities to<br />
+configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY-3;<br />
+configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY-2;<br />
+but I think i missed somethin in documentation on theese functions, so both priorities were set to 0&#33; Highest possible priority, yeah.  
+When I checked it and replaced theese calls with conventional CMSIS   
+<pre><code> NVIC_SetPriority(DMA1_Channel5_IRQn,configLIBRARY_KERNEL_INTERRUPT_PRIORITY-3);
+     NVIC_SetPriority(EXTI15_10_IRQn,configLIBRARY_KERNEL_INTERRUPT_PRIORITY-2);
+</code></pre>
+all began to work.  
+Still really&nbsp; appreciate your help, big thanks&#33;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Still locking after portEND_SWITCHING_ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on March 13, 2012</div><div class="thread-post-content">NVIC<em>PriorityGroupConfig(NVIC</em>PriorityGroup_4);
+This is the line I missed, btw&#41;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

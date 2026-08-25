@@ -1,0 +1,276 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Stuck Inside Timer Callback - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2018/freertos_Getting_Stuck_Inside_Timer_Callback_afebbc7cj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Getting Stuck Inside Timer Callback - FreeRTOS" />
+<meta property="og:description" content="Getting Stuck Inside Timer CallbackPosted by masoandro on June 5, 2018Hello! First time poster, long time lurker. I&#8217;m getting a bit lost trying to track down a callback issue I am having. Basically, after a short time (not right away), I get stuck inside the callback and it loops indefinitely through the callback function. I&#8217;m &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2018/freertos_Getting_Stuck_Inside_Timer_Callback_afebbc7cj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Getting Stuck Inside Timer CallbackPosted by masoandro on June 5, 2018Hello! First time poster, long time lurker. I&#8217;m getting a bit lost trying to track down a callback issue I am having. Basically, after a short time (not right away), I get stuck inside the callback and it loops indefinitely through the callback function. I&#8217;m [&hellip;]" />
+<meta name="twitter:title" content="Getting Stuck Inside Timer Callback - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202961' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202961' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202961' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202961' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147161' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2018%2Ffreertos_Getting_Stuck_Inside_Timer_Callback_afebbc7cj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2018%2Ffreertos_Getting_Stuck_Inside_Timer_Callback_afebbc7cj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147161">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2018_freertos_support_forum_archive_index.html/">June 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Getting Stuck Inside Timer Callback</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/masoandro">masoandro</a> on June 5, 2018</div><div class="thread-post-content">Hello!
+First time poster, long time lurker.
+I&#8217;m getting a bit lost trying to track down a callback issue I am having. Basically, after a short time (not right away), I get stuck inside the callback and it loops indefinitely through the callback function. I&#8217;m using RTOS 7.3.0 on an ARM processor.
+I am using a timer to switch between a task, much like in <a href="https://www.freertos.org/a00124.html">this example</a>. 
+I create the timer using xTimerCreate and the callback function is called successfully after taking the semaphore in the parent function. Inside the callback function, I am also calling other functions that take semaphores. The way I understand it, taking an additional semaphore, even in the callback, should allow a queue of the taken processes to form. This is because I have multiple functions communicating over the same bus &#8211; they have to wait their turn.
+When, during the callback, the function is called, there is a xSemaphoreTake() followed by instructions, and then xSemaphoreGive(). It then returns to the callback function and &#8211; shoud &#8211; return to the parent function after I call xTimerStopFromISR(xTimer, &amp;xHigherPriorityTaskWoken) and xSemaphoreGiveFromISR(parentSemaphore, &amp;HigherPriorityTaskWoken).
+One of my guesses is that, somewhere along the line, the semaphore address is being written over. But I don&#8217;t see a change in the semaphore that would indicate this behavior.
+My other guess is that there is some kind of race condition where the routine I am calling from within my callback is trying to take a semaphore while a same priority semaphore is being taken elsewhere (all of my semaphores/tasks have the same priority).
+Can anyone speak to this issue as to why the callback loops without ever returning back  to its parent function?
+Thank you!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Getting Stuck Inside Timer Callback</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 5, 2018</div><div class="thread-post-content"><blockquote>
+  First time poster, long time lurker.
+</blockquote>
+Welcome.
+<blockquote>
+  I&#8217;m getting a bit lost trying to track down a callback issue I am 
+  having. Basically, after a short time (not right away), I get stuck 
+  inside the callback and it loops indefinitely through the callback 
+  function. I&#8217;m using RTOS 7.3.0 on an ARM processor.
+  I am using a timer to switch between a task, much like in this example 
+  <a href="https://www.freertos.org/a00124.html">https://www.freertos.org/a00124.html</a>.
+</blockquote>
+So, to be clear, you are using a semaphore from a HARDWARE timer to 
+switch tasks, but the problem you are having is in the callback function 
+of a SOFTWARE timer &#8211; correct?
+<blockquote>
+  I create the timer using xTimerCreate and the callback function is 
+  called successfully after taking the semaphore in the parent function. 
+</blockquote>
+It is not clear how taking the semaphore relates to the software timer 
+callback function.
+<blockquote>
+  Inside the callback function, I am also calling other functions that 
+  take semaphores.
+</blockquote>
+Timer callback functions are not supposed to do anything that could 
+cause the calling task (in this case, the timer task, in which all 
+software timer callback functions execute).  Taking a semaphore inside a 
+timer callback function is ok provided the block time (the last 
+parameter in the function that takes the semaphore) is zero.
+<blockquote>
+  The way I understand it, taking an additional 
+  semaphore, even in the callback, should allow a queue of the taken 
+  processes to form. This is because I have multiple functions 
+  communicating over the same bus &#8211; they have to wait their turn.
+</blockquote>
+I don&#8217;t really understand that part.
+<blockquote>
+  When, during the callback, the function is called, there is a 
+  xSemaphoreTake() followed by instructions, and then xSemaphoreGive(). It 
+  then returns to the callback function and &#8211; shoud &#8211; return to the parent 
+  function after I call xTimerStopFromISR(xTimer, 
+  &amp;xHigherPriorityTaskWoken) and xSemaphoreGiveFromISR(parentSemaphore, 
+  &amp;HigherPriorityTaskWoken).
+</blockquote>
+I&#8217;m afraid I am not following this.  Timer callback functions are 
+executed when a timer expires, do not loop, and do not return to a 
+caller (at least, not as viewed by anything).
+<blockquote>
+  One of my guesses is that, somewhere along the line, the semaphore 
+  address is being written over. But I don&#8217;t see a change in the semaphore 
+  that would indicate this behavior.
+  My other guess is that there is some kind of race condition where the 
+  routine I am calling from within my callback is trying to take a 
+  semaphore while a same priority semaphore is being taken elsewhere (all 
+  of my semaphores/tasks have the same priority).
+  Can anyone speak to this issue as to why the callback loops without ever 
+  returning back to its parent function?
+</blockquote>
+Perhaps if you posted some pseudo code that shows the structure of what 
+you are describing &#8211; in particular the software timer callback function 
+and the task woken by the semaphore &#8211; I might understand better.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Getting Stuck Inside Timer Callback</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/masoandro">masoandro</a> on June 5, 2018</div><div class="thread-post-content"><blockquote>
+  So, to be clear, you are using a semaphore from a HARDWARE timer to
+  switch tasks, but the problem you are having is in the callback function
+  of a SOFTWARE timer &#8211; correct?
+</blockquote>
+Yes, that is correct.
+<blockquote>
+  Perhaps if you posted some pseudo code
+</blockquote>
+That will be easiest I think&#8230;
+Definitions in main:
+~~~
+volatile portBASE<em>TYPE commTaskHandle;
+volatile xSemaphoreHandle commTaskSemaphore;
+volatile portBASE</em>TYPE anotherTaskHandle;
+volatile xSemaphoreHandle anotherTaskSemaphore;
+volatile xTimerHandle xTimer;
+~~~
+Then during setup:
+~~~
+/* xTimerCreate ( text name, timer period in ticks, auto-reload timer, timer ID ) */
+xTimer = xTimerCreate( (const signed char *) &#8220;Comm Timer&#8221;, 
+        1, 
+        pdTRUE,<br />
+        (void *)  0),
+        vTimerCallback);
+/* Start the timer with no block time */
+xTimerStart( xTimer, 0 )
+/* Create the commTask */
+commTaskHandle = xTaskCreate(comm_task, &#8220;Comm&#8221;, 2024, NULL, 1, NULL);
+anotherTaskHandle = xTaskCreate(another_task, &#8220;Another&#8221;, 2024, NULL, 1, NULL);
+/* Now set up the tasks */
+vSemaphoreCreateBinary(commTaskSemaphore);
+vSemaphoreCreateBinary(anotherTaskSemaphore);
+/* Start the scheduler */
+vTaskStartScheduler();
+void comm_task(void * arg){
+    while(1){
+        xSemaphoreGive(anotherTaskSemaphore);
+        xSemaphoreTake(commTaskSemaphore);
+        comm(&#8230;);
+    }
+}
+void another_task(void * arg){
+    while(1){
+        /* &#8230; */
+    }
+}
+~~~
+Then,  the comm() code is what switches back and forth between the timer
+~~~
+BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+volatile xTimerHandle commTimer; /*used for the vTimerCallback*/
+volatile xSemaphoreHandle commSemaphore; /*synch between comm() and vTimerCallback()*/
+/* initialize the semaphore */
+vSemaphoreCreateBinary(commSemaphore);
+xSemaphoreTake(commSemaphore, portMAX_DELAY);
+/* Now the callback function <em>/
+void vTimerCallback(xTimerHandle xTimer){
+    /</em> &#8230; <em>/
+    /</em> calls to other semaphore controlled tasks <em>/
+    /</em> &#8230; <em>/
+    /</em> End of callback task, should only run once */
+    xTimerStopFromISR( xTimer, &amp;xHigherPriorityTaskWoken );
+<pre><code>/* Event has occured, unblock the caller task now */
+xSemaphoreGiveFromISR( sensorSemaphore, &amp;xHigherPriorityTaskWoken);
+</code></pre>
+}
+/* And the parent function (called from main)
+void comm(&#8230;){
+    xSemaphoreTake(commSemaphore, portMAX_DELAY);
+    /* &#8230; */
+    /* uses data from the callback */
+    /* &#8230; */
+    xTimerStart( commTimer, 0 );
+}
+~~~
+The switching occurs just fine for about a minute into the operation before looping exclusively inside vTimerCallback, which includes the calls to other semaphore-controlled functions.
+<blockquote>
+  Timer callback functions are executed when a timer expires, do not loop, and do not return to a caller
+</blockquote>
+That is why I am confused as to why the vTimerCallback does not complete and give the semaphore back to comm(), causing it to resume to where it was set up in the first place. I don&#8217;t see any change in the semaphore or the timer in memory but somehow it loses the association.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Getting Stuck Inside Timer Callback</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/masoandro">masoandro</a> on June 6, 2018</div><div class="thread-post-content">Ok I tracked it down&#8230;very carefully. Here are my thoughts: my code elsewhere in the program was using vTaskDelay during the execution of the timer code. I&#8217;m not sure if this would be considered a race condition, but if vTaskDelay was called during the timerCallback, the return address was somehow corrupted by the delay and it simply restarts at the top of function memory pointer. I changed to a standard hardware delay and it is no longer an issue.
+Does this analysis make sense? What would be a way to modify vTaskDelay to properly switch and restore the timer&#8217;s location?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

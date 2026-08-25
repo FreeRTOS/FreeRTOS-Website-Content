@@ -1,0 +1,192 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mutex Semaphores Failing After Multiple xSemaphoreTake - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2018/freertos_Mutex_Semaphores_Failing_After_Multiple_xSemaphoreTake_4f05ae19j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Mutex Semaphores Failing After Multiple xSemaphoreTake - FreeRTOS" />
+<meta property="og:description" content="Mutex Semaphores Failing After Multiple xSemaphoreTakePosted by masoandro on July 14, 2018Hello, I am using FreeRTOS 7.3 on an ARM processor. I am trying to create a semaphore mutex to protect some hardware devices, but I am not currently having a whole lot of success as the mutex&#8217;s are not holding the state like they &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2018/freertos_Mutex_Semaphores_Failing_After_Multiple_xSemaphoreTake_4f05ae19j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Mutex Semaphores Failing After Multiple xSemaphoreTakePosted by masoandro on July 14, 2018Hello, I am using FreeRTOS 7.3 on an ARM processor. I am trying to create a semaphore mutex to protect some hardware devices, but I am not currently having a whole lot of success as the mutex&#8217;s are not holding the state like they [&hellip;]" />
+<meta name="twitter:title" content="Mutex Semaphores Failing After Multiple xSemaphoreTake - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202980' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202980' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202980' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202980' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147234' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2018%2Ffreertos_Mutex_Semaphores_Failing_After_Multiple_xSemaphoreTake_4f05ae19j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2018%2Ffreertos_Mutex_Semaphores_Failing_After_Multiple_xSemaphoreTake_4f05ae19j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147234">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2018_freertos_support_forum_archive_index.html/">July 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Mutex Semaphores Failing After Multiple xSemaphoreTake</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/masoandro">masoandro</a> on July 14, 2018</div><div class="thread-post-content">Hello,
+I am using FreeRTOS 7.3 on an ARM processor.
+I am trying to create a semaphore mutex to protect some hardware devices, but I am not currently having a whole lot of success as the mutex&#8217;s are not holding the state like they should and multiple access to the same hardware device is causing a bus collision.
+I declare them
+~~~
+volatile xSemaphoreHandle Sema1;
+volatile xSemaphoreHandle Sema2;
+~~~
+And then initialize with
+~~~
+Sema1 = xSemaphoreCreateMutex();
+Sema2 = xSemaphoreCreateMutex();
+~~~
+As seen in the example https://www.freertos.org/a00122.html
+I then want to check that they have been initialized and I should be able to take the semaphore right away.
+~~~
+int sema<em>init(void){
+  if( Sema1 == NULL ){
+    /* Insufficient FreeRTOS heap to create */
+    return -1;
+  } else {
+    /* Semaphore can now be used */
+    xSemaphoreTake(Sema1, portMAX</em>DELAY);
+  }
+  if( Sema2 == NULL ){
+     /* Insufficient FreeRTOS heap to create <em>/
+    return -1;
+  } else {
+    /</em> Semaphore can now be used */
+    xSemaphoreTake(Sema1, portMAX_DELAY);
+  }
+}
+~~~
+In my code, I then call an open routine in order to &#8220;hold&#8221; each device and prevent the other one from carrying out its task on that hardware device.
+~~~
+void device<em>open(int device){
+  switch(device){
+    case device1:
+      xSemaphoreTake(Sema1, portMAX</em>DELAY);
+      break;
+    case device2:
+      xSemaphoreTake(Sema2, portMAX_DELAY);
+      break;
+  }
+}
+~~~
+And the close routine:
+~~~
+void device_close(int device){
+  switch(device){
+    case device1:
+      xSemaphoreGive(Sema1);
+      break;
+    case device2:
+      xSemaphoreGive(Sema2);
+      break;
+  }
+}
+~~~
+After following this <a href="https://www.freertos.org/FreeRTOS_Support_Forum_Archive/September_2008/freertos_taking_a_mutex_multiple_times_2258181.html">discussion</a>, I thought I could take the mutex multiple times. With this solution, the code crashes immediately on the second take. That is, when I switch on <code>device1</code> in the <code>device_open()</code> routine it fails.
+However, when I leave out the xSemaphoreTake() in the initialization, the semaphores do not hold the device properly and allow for bus interference!
+What is the proper way to implement these mutex semaphores so that <code>device2</code> cannot initialize until <code>device1</code> has finished its routine?
+Thank you for your time!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex Semaphores Failing After Multiple xSemaphoreTake</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 14, 2018</div><div class="thread-post-content">If you want to be able to take a given mutex multiple times by the same thread and succeed (and then give it back the same number of times) you need to use a Recursive Mutex.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex Semaphores Failing After Multiple xSemaphoreTake</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/masoandro">masoandro</a> on July 14, 2018</div><div class="thread-post-content">Sorry for the beginner question but how does this differ from the functionality of a binary semaphore?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex Semaphores Failing After Multiple xSemaphoreTake</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 14, 2018</div><div class="thread-post-content">A Binary Semaphore is an object that has a flag that says it is either ready or not (or Full or Empty). A take operation will wait for the flag to be &#8216;ready&#8217; and then make it not ready. A put operation will wait for it to be not ready and then make it ready. This can be used as a method of exclusive access by starting the flag ready and then when a task wants the resource it takes the flag, and when done if gives the flag. It can also be used to syncronize a task with anther task (or ISR), by the task waiting for the flag, and then the other task (or ISR) giving it. 
+One issue with using a semaphore for mutual exclusion is if a low priority task takes the mutex, and then a high priority want it, it must wait, and even if a task with a middle priority starts to run, the middle priority task will run, delaying the high priority task, this is called priority inversion.
+A mutex is a specialization on this to solve this issue. A mutex should only be used for mutual exclusion (which is what its name is a contraction of). A task wanting that resource takes the flag, and when done it gives the flag back. Unlike a semaphore, the mutex remembers who has the flag, and that is who is supposed to give it back, so it can&#8217;t be used in the second sort of operation. It gets around the priority inversion condition by when the high priority task requests the mutex, the low priority task is temporarily given the priority of the high priority task.
+With a reqular mutex, when a task takes the flag, the mutex is not ready, even if the same task ask for the flag again, so it will wait/deadlock. A modification on this is a recursive mutex. The recursive mutex will always be ready for the task that currently has the flag, and the flag is only actually given back when that task has given the flag back as many times as it was taken.
+This is not the default behavior in FreeRTOS due to the way they are implemented.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex Semaphores Failing After Multiple xSemaphoreTake</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/masoandro">masoandro</a> on July 16, 2018</div><div class="thread-post-content">Thank you for your explanation. It definitely makes sense given the priorities since this is a shared hardware bus. It doesn&#8217;t matter whether a higher priority task comes along if a lower priority task is currently on the bus &#8211; it is to prevent the corruption of this kind of information. This solution worked and I did not have to use a recursive mutex &#8211; just a single mutex for the hardware application.
+Thank you!
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

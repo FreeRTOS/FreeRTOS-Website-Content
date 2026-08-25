@@ -1,0 +1,207 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARM_CM3 port and optimization - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2009/freertos_ARM_CM3_port_and_optimization_3258018.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="ARM_CM3 port and optimization - FreeRTOS" />
+<meta property="og:description" content="ARM_CM3 port and optimizationPosted by amieska on May 2, 2009Hi all, this is my first post here, so forgive me if I violate a rule. I&#8217;ve encountered a strange behavior when compiling the CM3 port &#042;without&#042; optimization. My first build was a release build with -O2 optimization and it worked perfectly. Then I turned to &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2009/freertos_ARM_CM3_port_and_optimization_3258018.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="ARM_CM3 port and optimizationPosted by amieska on May 2, 2009Hi all, this is my first post here, so forgive me if I violate a rule. I&#8217;ve encountered a strange behavior when compiling the CM3 port &#042;without&#042; optimization. My first build was a release build with -O2 optimization and it worked perfectly. Then I turned to [&hellip;]" />
+<meta name="twitter:title" content="ARM_CM3 port and optimization - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201739' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201739' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201739' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201739' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141351' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2009%2Ffreertos_ARM_CM3_port_and_optimization_3258018.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2009%2Ffreertos_ARM_CM3_port_and_optimization_3258018.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141351">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2009_freertos_support_forum_archive_index.html/">May 2009 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">ARM_CM3 port and optimization</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amieska">amieska</a> on May 2, 2009</div><div class="thread-post-content">Hi all,
+this is my first post here, so forgive me if I violate a rule. 
+I&#8217;ve encountered a strange behavior when compiling the CM3 port &#42;without&#42; optimization. 
+My first build was a release build with -O2 optimization and it worked perfectly. Then I turned to the debug version &#40;with -g3 an -O0&#41; and I got a HardFaultException after some msec.&nbsp;&nbsp; I couldn&#8217;t get the exact reason or position of the crash because the link register is pointing to 0xfffffffc :&#40;
+I made plenty of tests with the result that, whenever I turn on a kind of optimization the code works. -O1 is enough.
+The compiler was the CodeWork 2008q3-66 release. Any hints?
+regards
+Andreas
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/spacewrench">spacewrench</a> on May 2, 2009</div><div class="thread-post-content">CM3 automatically pushes a set of registers on exception, and the LR of 0xfffffffc is a magic value indicating something like the exception-return requirements.&nbsp; You can find the actual return address &#40;or exception address&#41; by looking on the stack &#40;which is pointed to by SP&#41;.&nbsp; IIRC, the automatically-pushed registers are R0-R3 and LR.
+I can&#8217;t help you with your compiler optimization problem, though.&nbsp; Perhaps you&#8217;re running out of memory and/or stack if the compiler doesn&#8217;t optimize its usage?
+d.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 2, 2009</div><div class="thread-post-content">I&#8217;ve never heard of CodeWord, but presume this is a GCC build?&nbsp; If so then I would also assume it is based on the CodeSourcery as that is the only source of CM3 GCC that I am aware of.
+Is your startup code written in C or ASM?&nbsp; If C then can you ascertain whether or not main&#40;&#41; is ever called.&nbsp; If the code crashed before main is called on a CM3 then the most likely cause is a loop that clears the RAM being corrupted.&nbsp; If the loop is written in C then without optimisation the loop variables will be read from and written back to RAM on each iteration of the loop &#8211; and the loop will most likely zero out these variables.&nbsp; When optimisation is on the loop variables will be held in registers so zeroing out the RAM does not corrupt the loop variables.
+One easy solution to this is to keep optimisation on just for the startup code, even when the rest of the code uses zero optimisation.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 2, 2009</div><div class="thread-post-content">Missing the obvious point &#8211; check you are not just overflowing a stack when the optimisation if off.
+http://www.freertos.org/Stacks-and-stack-overflow-checking.html
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amieska">amieska</a> on May 2, 2009</div><div class="thread-post-content">Thanks for the answers&#33;
+Sorry, I meant CodeSourcery, my fault. 
+The stack&nbsp; seems to be OK, I&#8217;ve filled all the memory with a pattern, checked it&nbsp; and additionaly watched the sbrk&#40;&#41; result &#40;using the heap&#95;3 implementation&#41;. 
+I will read the CM3 manual, check the exception cause and post the results tomorrow 
+Thanks&#33;
+Andreas
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on May 2, 2009</div><div class="thread-post-content">Side note: I use the vanilla GCC &#40;from gcc.gnu.org&#41; on CM3 and it has been working just fine so far, using both 4.4.0 and 4.5.0-SVN.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amieska">amieska</a> on May 3, 2009</div><div class="thread-post-content">No luck so far. 
+The LR contenet of 0xfffffffx signalizes the type of exception return. Then I checked the state of the &quot;Configurable fault status register&quot; the cause of the exception was this:
+&quot;INVSTATE: Invalid state usage fault:
+When this bit is set to 1, the PC value stacked for the exception return points to the instruction that attempted the illegal use of the EPSR. ..&quot;
+But the stacked PC value already points to a non memory location :&#40;
+I might get a Lauterbach with ETM memory next week, but I&#8217;m not sure if it works with Cortex nor if it is licenced for Cortex.
+I assume a fault in my code or build environment, I don&#8217;t think it&#8217;s a problem with the compiler or FreeRTOS, but I will try a different compiler.
+To answer the other questions:
+the startup code is written in &#8216;C&#8217;, memory fill and dump for the stack check was made via JTAG. 
+The whole project consists of my code, the STM32 firmware lib and FreeRTOS. The only portion of code which requires the optimization is FreeRTOS. All other parts are build with -O0. 
+The behavior also occurs when I just start one LED flash task.&nbsp; I can observe one scheduler call &#40;SVCHandler&#41; before I get the exception. 
+I let you know further results..
+regards
+Mathias
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amieska">amieska</a> on May 3, 2009</div><div class="thread-post-content">Now I tried the second free gcc compiler, from Raisonance&#40; 4.3.2, http://www.mcu-raisonance.com/index.php?alias=mcu&#95;downloads&#41;. -&gt; same behavior :&#40;
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on May 3, 2009</div><div class="thread-post-content">The demo in DemoCORTEX&#95;LM3Sxxxx&#95;EclipseRTOSDemo works fine with 0 optimization and uses the same code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amieska">amieska</a> on May 3, 2009</div><div class="thread-post-content">Which compiler&nbsp; did you use?
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/stf12">stf12</a> on May 4, 2009</div><div class="thread-post-content">Hi to all,
+I&#8217;m working with STM32 + CodeSourcery v. 2008q3-66 and it woks fine using -g3 and -O0 compiler options.
+Which startup code and linker script are you using?
+Regards,
+Stefano
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amieska">amieska</a> on May 4, 2009</div><div class="thread-post-content">Hi Stefano,
+thanks for pointing to my startup code. 
+I&#8217;ve stubbed all exceptions and marked them for weak linking, like: 
+void PendSVC&#40;void&#41; &#95;&#95;attribute&#95;&#95; &#40;&#40;weak&#41;&#41;; 
+The default implementation calls some code indicating an unhandled exception. Three handlers are overloaded by RTOS calls.
+This might be the only difference between the RTOS code and the rest of my App &#40;I removed all other interrupt handlers&#41;.
+I will check this later.&nbsp; 
+May I post the linkerfile and the two source files here?
+regards
+andreas
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/stf12">stf12</a> on May 4, 2009</div><div class="thread-post-content">Hi Andreas,
+I don&#8217;t know if is possible to post files in this forum.
+I can provide my files to you. If it could be useful for you e-mail me at:
+software &#40;AT&#41; stf12.net
+Regards,
+Stefano
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hooverphonique">hooverphonique</a> on May 4, 2009</div><div class="thread-post-content">why not use a pastebin for posting snippets of code?
+e.g. http://pastebin.com
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amieska">amieska</a> on May 4, 2009</div><div class="thread-post-content">Got it&#33;
+Startup was written in &#8216;C&#8217;. The vector table looks like this:
+http://pastebin.com/mffbef15
+The code itself was pretty straight forward:
+http://pastebin.com/m26270dfa
+The issue arises with my declaration of all the exception handlers:
+void SVCHandler&#40;void&#41; &#95;&#95;attribute&#95;&#95; &#40;&#40;weak&#41;&#41;;
+void PendSVC&#40;void&#41; &#95;&#95;attribute&#95;&#95; &#40;&#40;weak&#41;&#41;;
+void SysTickHandler&#40;void&#41; &#95;&#95;attribute&#95;&#95; &#40;&#40;weak&#41;&#41;;
+&#8230;
+All functions are implemented like this:
+void PendSVC&#40;void&#41; &#123;DefaultHandler&#40;&#41;;&#125;
+The default handler ends in a loop with flashing LEDs to indicate an unhandeled exception.
+Normally the linker will create a weak binding and if he finds a non weak binding, he replaces the function pointer with the address of the non weak function.
+But, and I&#8217;m not clear why, it doesn&#8217;t work with naked functions like this:
+void PendSVHandler&#40; void &#41; &#95;&#95;attribute&#95;&#95; &#40;&#40; naked &#41;&#41;;
+I looked to some old arm code and I&#8217;m pretty much sure it worked with ARM. Anyway I removed the weak bindings
+Thanks again&#33;
+Andreas
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on May 4, 2009</div><div class="thread-post-content">Definitely do NOT use the naked attribute on CortexM3 interrupts. That will make it crash for sure. Use the examples in the download as a reference that can be copied.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARM_CM3 port and optimization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amieska">amieska</a> on May 4, 2009</div><div class="thread-post-content">You can use the naked attribute for sure. The only point is to take care of the stackframe. A scheduler usually doesn&#8217;t use normal &#8216;C&#8217; function stackframes because you don&#8217;t leave the scheduler like a normal function, you&#8217;re activating a different thread. There is no easy &#40;and generic&#41; way to restore the stack modified when entering the scheduler.
+Look at the file .FreeRTOSV5.2.0SourceportableGCCARM&#95;CM3port.c I guess you use it also :&#41;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

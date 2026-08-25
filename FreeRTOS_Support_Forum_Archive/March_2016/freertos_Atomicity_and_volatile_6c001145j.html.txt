@@ -1,0 +1,195 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atomicity and `volatile` - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2016/freertos_Atomicity_and_volatile_6c001145j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Atomicity and `volatile` - FreeRTOS" />
+<meta property="og:description" content="Atomicity and `volatile`Posted by mrkline on March 17, 2016FreeRTOS seems to take an&#8230; interesting approach to atomicity. Code in tasks.c and list.h use volatile in an apparent attempt to make some code safe from compiler optimizations that would &#8220;break&#8221; said code during inopportune context switches (either to another task or to an interrupt &#8220;beneath&#8221; the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2016/freertos_Atomicity_and_volatile_6c001145j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Atomicity and `volatile`Posted by mrkline on March 17, 2016FreeRTOS seems to take an&#8230; interesting approach to atomicity. Code in tasks.c and list.h use volatile in an apparent attempt to make some code safe from compiler optimizations that would &#8220;break&#8221; said code during inopportune context switches (either to another task or to an interrupt &#8220;beneath&#8221; the [&hellip;]" />
+<meta name="twitter:title" content="Atomicity and `volatile` - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202620' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202620' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202620' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202620' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145770' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2016%2Ffreertos_Atomicity_and_volatile_6c001145j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2016%2Ffreertos_Atomicity_and_volatile_6c001145j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145770">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2016_freertos_support_forum_archive_index.html/">March 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Atomicity and `volatile`</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mrkline">mrkline</a> on March 17, 2016</div><div class="thread-post-content">FreeRTOS seems to take an&#8230; interesting approach to atomicity. Code in <code>tasks.c</code> and <code>list.h</code> use <code>volatile</code> in an apparent attempt to make some code safe from compiler optimizations that would &#8220;break&#8221; said code during inopportune context switches (either to another task or to an interrupt &#8220;beneath&#8221; the OS). The smoking gun is the existence of <code>configLIST_VOLATILE</code> and its comment,
+<blockquote>
+  The list structure members are modified from within interrupts, and therefore by rights should be declared volatile.  However, they are only modified in a functionally atomic way (within critical sections of with [sic] the scheduler suspended) and are either passed by reference into a function or indexed via a volatile variable.  Therefore, in all use cases tested so far, the volatile qualifier can be omitted in order to provide a moderate performance improvement without adversely affecting functional behaviour.  The assembly instructions generated by the IAR, ARM and GCC compilers when the respective compiler&#8217;s options were set for maximum optimisation has been inspected and deemed to be as intended.  That said, as compiler technology advances[&#8230;] it is feasible that the volatile qualifier will be needed for correct optimisation[&#8230;] If this is ever experienced then the volatile qualifier can be inserted in the relevant places within the list structures by simply defining configLIST&#95;VOLATILE to volatile in FreeRTOSConfig.h (as per the example at the bottom of this comment block).
+</blockquote>
+This, along with a linter note in <code>tasks.c</code> that, &#8220;A manual analysis and inspection has been used to determine which static variables must be declared volatile.&#8221;, gives the impression that FreeRTOS authors believe declaring a variable <code>volatile</code> makes it safe to use in multiple, concurrent contexts. This misconception is as dangerous as it is old. <code>volatile</code> only guarantees that the compiler will not optimize away reads and writes to a given value, nor perform speculative reads ahead of time. It is only useful for accessing &#8220;special&#8221; addresses, such as MMIO. For lockless interaction between different contexts of execution, a set of ordering guarantees are also required, which <code>volatile</code> simply does not provide.
+This is so crucial to systems programming that the 2011 ISO standards for C and C++ spend great effort to define atomic semantics and the orderings needed (see <a href="http://en.cppreference.com/w/c/atomic">http://en.cppreference.com/w/c/atomic</a>). Unless I am mistaken, the only reason FreeRTOS doesn&#8217;t fall apart during untimely context switches is because most platforms which run it are single-core microprocessors where a write to an address is not buffered or cached in some way. In these cases, <code>volatile</code> has been &#8220;good enough&#8221; to stop breaking optimizations. However, this is a very poor safety net. Some architectures supported by FreeRTOS have instructions needed to properly order lockless code. (see <a href="http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0489c/CIHGHHIE.html">ARM&#8217;s <code>DSB</code></a>). These are emitted by C11 atomic reads and writes, but not by <code>volatile</code>. And as the comments for <code>configLIST_VOLATILE</code> note, optimizers could quickly ruin the assumptions FreeRTOS makes about these accesses.
+The obvious solution would be to use the C11 facilities for variables shared locklessly across several contexts of execution, but given that FreeRTOS supports many compilers (several of which can be charitably described as &#8220;stable&#8221; and uncharitably described as &#8220;archaic&#8221;), a different approach may be needed. One pre-C11 approach is to create port-specific inline functions or macros that perform various atomic operations (load, store, increment, decrement, compare and swap, etc.). This is the approach taken by Linux. At any rate, why is <code>volatile</code> being used in these places?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Atomicity and `volatile`</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on March 17, 2016</div><div class="thread-post-content"><blockquote>
+  At any rate, why is volatile being used in these places?
+</blockquote>
+?
+To ensure variables that are accessed and updated from more than one thread of execution are updated and written back to memory atomically as seen from other threads and so are always in a consistent state before another thread of execution accesses the same variable. The atomic behavior is achieved by the fact of having the updates performed in one form of critical section or another which is portable for every compiler and architecture.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Atomicity and `volatile`</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mrkline">mrkline</a> on March 18, 2016</div><div class="thread-post-content"><blockquote>
+  The atomic behavior is achieved by the fact of having the updates performed in one form of critical section or another which is portable for every compiler and architecture.
+</blockquote>
+Okay, and looking at the ports for architectures with multiple cores or out-of-order execution, I can see that critical sections are guarded with memory fences (<code>DSB</code> on ARM, to continue using that example). But if the memory barriers ensure that writes are &#8220;seen&#8221; by other threads of execution once leaving the critical section, what is the use of <code>volatile</code>? For reads on said values?
+If so,
+<ol>
+<li>Reading a <code>volatile</code> value doesn&#8217;t perform an <em>acquire</em> operation to ensure writes happened before the load from the persepctive of the current thread. (see <a href="http://en.cppreference.com/w/c/atomic/memory_order#Release-Acquire_ordering">http://en.cppreference.com/w/c/atomic/memory_order#Release-Acquire_ordering</a>)</li>
+<li><code>volatile</code> does not necessarily guarantee a &#8220;correct&#8221; ordering when reading a value outside a critical section. (One reading of the standard is that ordinary loads can move across a volatile load/store in either direction, but ordinary stores can’t. &#8211; see sources below)</li>
+<li><code>voltaile</code> can cause pessimizations unneded by correct lockless code.</li>
+</ol>
+Additionally, memory fences are quite pessimal on architectures that have loads and stores with built-in acquire and release semantics, such as ARMv8&#8217;s <code>LDRA</code> and <code>STRL</code>. (FreeRTOS supports several such chips.)
+In short, <code>volatile</code> is the wrong tool for atomicity and concurrent memory access.
+See:
+&#8211; Herb Sutter&#8217;s <em><code>atomic&lt;&gt;</code> Weapons</em> talk (<a href="https://channel9.msdn.com/Shows/Going+Deep/Cpp-and-Beyond-2012-Herb-Sutter-atomic-Weapons-1-of-2">Part 1</a>, <a href="https://channel9.msdn.com/Shows/Going+Deep/Cpp-and-Beyond-2012-Herb-Sutter-atomic-Weapons-2-of-2">Part 2</a>. While the talk is on C++, C has the same semantics (the ISO C people lifted it from the C++11 standard, more or less.)
+&#8211; http://en.cppreference.com/w/c/atomic
+</div></div><div class="thread-post"><h3 class="thread-post-title">Atomicity and `volatile`</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 18, 2016</div><div class="thread-post-content">This has been debated a lot, but not for a long time.  The discussions are always interesting, and thanks for the links, I will read through them.  We have also taken opinions from compiler vendors.
+The first thing to do is limit the discussion to the FreeRTOS use cases, as follows, it is very different to Linux!:
+1) Single core.  FreeRTOS is used more and more in multi-core, but predominantly in AMP mode, where any shared memory is treated specifically (cache flushes, etc.).  The SMP version of FreeRTOS was created by a third party, so not discussed here.
+2) Historically, and still predominantly, on cores that do not perform out of order operations.  This is changing quickly though, and as you point out, where appropriate memory barriers are used in the portable layer, rather than in the core code, where necessary.
+3) Supporting some 20+ &#8216;compilers&#8217;, where in many cases a 90&#8217;s version of C is a big ask, let alone C11, some aren&#8217;t really C compilers at all.  Add into the mix that on at least one occasion a premium compiler has required a volatile as a fix to an optimisation bug even when there was no conceivable &#8216;normal&#8217; reason for volatile to be used.
+4) Supporting some very basic processor architectures.
+5) Kernel data structures can change at any time, including <em>directly</em> from inside interrupts.
+6) The functions are genrally very short.
+The sequence:
+~~~~
+Enter<em>critical</em>section();
+Update<em>volatile</em>variable();
+Exit<em>critical</em>section();
+~~~~
+is taken as a &#8216;best compromise&#8217; approach that meets all the above constraints in a very portable way.  The variable is volatile to ensure it gets writen back to memory given the constaints above (especially point 5), and barriers can be added to the Exit<em>critical</em>section() function on architectures that need it without upsetting ports that have no equivalent.
+Now the disadvantage of the above is that all accesses to the variable within the critical section should be written back to memory, which is sub-optimal, as it is only absolutely necessary when the critical section is exited.  In most cases this not deemed an issue as the variable may only be accessed once where reading it from memory modifying it and writing it back to memory is exactly what is wanted, and generally critical sections are very small.  Some optimisations have been included where this is not the case &#8211; for example where the tick count is read more than once a local const version is created (it cannot be updated in the critical section, or when the scheduler is locked) so the compiler only takes a single bite at it.
+On architectures that support special atomic instructions, or using compilers that support the latest and greatest standard (?), some of the volatiles could be removed safely, and perhaps it is time to refactor accordingly, but to do so would require the introduction of a port specific volatile keyword so volatile and port specific volatiles could be mixed and matched within the same code.  However, performance gain would be minimal given the short function lengths (the data still has to be read from memory, modified, then written back to memory, then fenced if required).
+This page has been referenced a few times&#8230;
+https://www.kernel.org/doc/Documentation/volatile-considered-harmful.txt
+&#8230;which gives the example:
+~~~~
+    spin<em>lock(&amp;the</em>lock);
+    do<em>something</em>on(&amp;shared<em>data);
+    do</em>something<em>else</em>with(&amp;shared<em>data);
+    spin</em>unlock(&amp;the_lock);
+~~~~
+&#8230;but this is not something that is going to happen in a system where only one thing can be executing at a time.  Spinning in that situation is not going to work if the thing you are waiting for to unlock a resource cannot execute because you are spinning.  In FreeRTOS, and other similar systems, if a resource is locked then the currently executing thread must tell the scheduler it cannot proceed until the lock is released or a timeout occurs, at which time the scheduler will stop executing it.
+Thoughts?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Atomicity and `volatile`</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hs2sf">hs2sf</a> on March 18, 2016</div><div class="thread-post-content">OS things will surely get much more complicated with much more complicated e.g. multi-core processors. Also it&#8217;s pretty hard to fully support the variety of processor architectures and associated compilers. As far as I can see this doesn&#8217;t really apply to the currently, officially supported systems.
+Nethertheless it&#8217;s desirable to make use of enhancements some compilers do support today for some architectures. Hence I&#8217;m in contact with FreeRTOS concerning C(++)11 (std::)atomic support for 32 bit ARM / GCC4.9.3 environments. As mentioned by Matt this would allow implementing lockless data structures/algorithms for better performance/responsiveness than using higher order locking mechanisms.
+I hope the fairly simple patch gets integrated into V9. Well, realistically maybe in V9.1 😉
+</div></div><div class="thread-post"><h3 class="thread-post-title">Atomicity and `volatile`</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mrkline">mrkline</a> on March 21, 2016</div><div class="thread-post-content"><blockquote>
+  This page has been referenced a few times&#8230;
+  https://www.kernel.org/doc/Documentation/volatile-considered-harmful.txt
+  &#8230;which gives the example:
+</blockquote>
+<pre><code>spin_lock(&amp;the_lock);
+do_something_on(&amp;shared_data);
+do_something_else_with(&amp;shared_data);
+spin_unlock(&amp;the_lock);
+</code></pre>
+<blockquote>
+  &#8230;but this is not something that is going to happen in a system where only one thing can be executing at a time.
+</blockquote>
+The important point here is not that the code is surrounded by spinlocks (which as you correctly point out, are useless&#42; in a single-core machine with interrupts disabled), but that the spinlocks act as memory barriers. If you follow <code>spin_lock</code> through a few layers of macros, you find it calls <a href="http://lxr.free-electrons.com/ident?i=barrier"><code>barrier</code></a>, which tells the compiler not to make assumptions about the current values in memory. In GCC, this is done with <code>asm volatile("" ::: "memory");</code> (see <a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html#Clobbers">https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html#Clobbers</a>). By doing this instead of making all variables in the critical section <code>volatile</code>, the compiler is free to perform its normal optimizations <em>within</em> the critical section, but not make assumptions about a memory location&#8217;s contents before or after. I haven&#8217;t read much of Linux&#8217;s internals myself (nor do I have an ARMv7 build of Linux sitting around to disassemble), but I assume <code>spin_lock</code> also provides hardware memory fences (i.e. special instructions, such as ARM&#8217;s <code>DSB</code>) on systems that need it.
+Are variables modified inside critical sections accessed outside of one? If so, hardware memory fences may be needed on out-of-order or multiprocessor machines to ensure that all writes from thread <em>A</em> are &#8220;seen&#8221; by thread <em>B</em> when thread <em>B</em> performs its reads. This is where I am more concerned &#8211; using <code>volatile</code> variables inside the critical section is pessimal, but provides the needed ordering guarantees (by virtue of being in the critical section). Any reads outside the critical section, however, are not provided the needed ordering guarantees by virtue of being <code>volatile</code>.
+Also, it seems the C++ article for the C11/C++11 memory model explains things a bit more; hopefully you find it helpful: <a href="http://en.cppreference.com/w/cpp/atomic/memory_order">http://en.cppreference.com/w/cpp/atomic/memory_order</a>
+&#42; It&#8217;s also worth noting that <code>spin_lock</code> seems to expand to a critical section on single-processor machines: <a href="http://lxr.free-electrons.com/source/include/linux/spinlock_api_up.h#L58">http://lxr.free-electrons.com/source/include/linux/spinlock_api_up.h#L58</a>
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

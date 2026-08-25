@@ -1,0 +1,194 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIC port stack corruption/overflow - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2006/freertos_PIC_port_stack_corruption_overflow_1429126.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="PIC port stack corruption/overflow - FreeRTOS" />
+<meta property="og:description" content="PIC port stack corruption/overflowPosted by nobody on January 27, 2006I have just traced a bug in the PIC port. See my comments below. Ben Tucker MPC Data Limited. &#042; I have added the pxStackStart parameter that needs to be set to the start &#042; address of the stack to be used. This allows us to &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2006/freertos_PIC_port_stack_corruption_overflow_1429126.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="PIC port stack corruption/overflowPosted by nobody on January 27, 2006I have just traced a bug in the PIC port. See my comments below. Ben Tucker MPC Data Limited. &#042; I have added the pxStackStart parameter that needs to be set to the start &#042; address of the stack to be used. This allows us to [&hellip;]" />
+<meta name="twitter:title" content="PIC port stack corruption/overflow - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201337' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201337' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201337' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201337' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138866' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2006%2Ffreertos_PIC_port_stack_corruption_overflow_1429126.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2006%2Ffreertos_PIC_port_stack_corruption_overflow_1429126.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138866">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2006_freertos_support_forum_archive_index.html/">January 2006 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">PIC port stack corruption/overflow</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on January 27, 2006</div><div class="thread-post-content">I have just traced a bug in the PIC port. See my comments below.
+Ben Tucker
+MPC Data Limited.
+&#42; I have added the pxStackStart parameter that needs to be set to the start 
+ &#42; address of the stack to be used. This allows us to define a location for the
+ &#42; stack in the link script. This is needed to overcome a fundamental problem 
+ &#42; with the PIC port of FreeRTOS. 
+ &#42; Function call and return code loads the new stack pointer &#40;FSR1&#41; in
+ &#42; two operations: load FSR1L and then load FSR1H. The problem is that if the
+ &#42; stack crosses a page boundary, and a scheduler interrupt comes in-between
+ &#42; the update of the two halves of the stack pointer, then it will be corrupted
+ &#42; when running the task switch code.
+ &#42; Ben Tucker
+ &#42; 
+ &#42;/
+signed portBASE&#95;TYPE xTaskCreate&#40;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pdTASK&#95;CODE pvTaskCode, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; const signed portCHAR &#42; const pcName, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portSTACK&#95;TYPE &#42; pxStackStart, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unsigned portSHORT usStackDepth, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; void &#42;pvParameters, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unsigned portBASE&#95;TYPE uxPriority, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xTaskHandle &#42;pxCreatedTask &#41;;
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC port stack corruption/overflow</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 27, 2006</div><div class="thread-post-content">Hi Ben,
+Thanks for the info.&nbsp; It&#8217;s been a while since I looked at the PIC port &#8211; I would be grateful if you could send me the updated file so I can look in more detail.&nbsp; Can you send it to the email address on the Contacts page of the FreeRTOS site &#40;r dot barry at freertos dot &#95;&#95;&#95;org&#95;&#95;&#95;&#41;.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC port stack corruption/overflow</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on July 21, 2006</div><div class="thread-post-content">Hello Ben,
+I tried to understand your report of 2006-01-27, after being notified of it by Richard.
+I assume you use the microchip C18 compiler, since it isn´t specified in the post.
+I fail to see the supposed bug, since FSR1 is &#95;never&#95; changed in 2 operations during normal function calling.
+The compiler uses POSTINC1 and POSTDEC1 registers, which properly handle overflow of the lower byte of FSR1 into the high byte. The PIC18C reference manual says: &quot;Incrementing or decrementing an FSR affects all 12 bits. That is, when FSRnL overflows from an increment, FSRnH will be incremented automatically.&quot;
+FSR1 is the stack pointer, points to first UNused location
+FSR1L: adres 0xFE1
+FSR1H: adres 0xFE2
+PREINC: adres 0xFE4
+POSTDEC: adres 0xFE5
+POSTINC: adres 0xFE6
+FSR2 is the frame pointer
+FSR2H: adres 0xFDA
+FSR2L: adres 0xFD9
+Function call:
+140:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vStartIntegerMathTasks&#40; tskIDLE&#95;PRIORITY &#41;;
+&nbsp; 3DA8&nbsp;&nbsp;&nbsp; 6AE6&nbsp;&nbsp;&nbsp;&nbsp; CLRF 0xfe6, ACCESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Push parameter &#40;with value: 0&#41; on the stack through postinc1
+&nbsp; 3DAA&nbsp;&nbsp;&nbsp; EC88&nbsp;&nbsp;&nbsp;&nbsp; CALL 0x3b10, 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Call function
+&nbsp; 3DAC&nbsp;&nbsp;&nbsp; F01D&nbsp;&nbsp;&nbsp;&nbsp; NOP
+&nbsp; 3DAE&nbsp;&nbsp;&nbsp; 52E5&nbsp;&nbsp;&nbsp;&nbsp; MOVF 0xfe5, F, ACCESS&nbsp;&nbsp;&nbsp; // Discard parameter from stack hrough postdec1. 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // FSR1 is restored to value before calling the functions.
+Overhead inside a function:
+On entering function:
+Push old frame pointer FSR2 on stack and set FSR2 to FSR1
+&nbsp; 434C&nbsp;&nbsp;&nbsp; CFD9&nbsp;&nbsp;&nbsp;&nbsp; MOVFF 0xfd9, 0xfe6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Push FSR2L on stack and increase FSR1
+&nbsp; 434E&nbsp;&nbsp;&nbsp; FFE6&nbsp;&nbsp;&nbsp;&nbsp; NOP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // through indirect adressing through postinc1
+&nbsp; 4350&nbsp;&nbsp;&nbsp; CFDA&nbsp;&nbsp;&nbsp;&nbsp; MOVFF 0xfda, 0xfe6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Push FSR2H on stack and increase FSR1
+&nbsp; 4352&nbsp;&nbsp;&nbsp; FFE6&nbsp;&nbsp;&nbsp;&nbsp; NOP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // though indirect adressing through postinc1
+&nbsp; 4354&nbsp;&nbsp;&nbsp; CFE1&nbsp;&nbsp;&nbsp;&nbsp; MOVFF 0xfe1, 0xfd9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Copy FSR1L to FRS2L, FSR1 not modified
+&nbsp; 4356&nbsp;&nbsp;&nbsp; FFD9&nbsp;&nbsp;&nbsp;&nbsp; NOP
+&nbsp; 4358&nbsp;&nbsp;&nbsp; CFE2&nbsp;&nbsp;&nbsp;&nbsp; MOVFF 0xfe2, 0xfda&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Copy FSR1H to FRS2H, FSR1 not modified
+&nbsp; 435A&nbsp;&nbsp;&nbsp; FFDA&nbsp;&nbsp;&nbsp;&nbsp; NOP
+On exit function:
+Restore old frame pointer from stack
+&nbsp; 3F80&nbsp;&nbsp;&nbsp; 52E5&nbsp;&nbsp;&nbsp;&nbsp; MOVF 0xfe5, F, ACCESS&nbsp;&nbsp;&nbsp; // Discard unused top of stack through postdec1
+&nbsp; 3F82&nbsp;&nbsp;&nbsp; CFE5&nbsp;&nbsp;&nbsp;&nbsp; MOVFF 0xfe5, 0xfda&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Restore FSR2H through postdec1
+&nbsp; 3F84&nbsp;&nbsp;&nbsp; FFDA&nbsp;&nbsp;&nbsp;&nbsp; NOP
+&nbsp; 3F86&nbsp;&nbsp;&nbsp; CFE7&nbsp;&nbsp;&nbsp;&nbsp; MOVFF 0xfe7, 0xfd9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Restore FSR2L from IND1, do not decrement pointer&#33;
+&nbsp; 3F88&nbsp;&nbsp;&nbsp; FFD9&nbsp;&nbsp;&nbsp;&nbsp; NOP
+&nbsp; 3F8A&nbsp;&nbsp;&nbsp; 0012&nbsp;&nbsp;&nbsp;&nbsp; RETURN 0
+FSR1 &#40;FSR1L + FSR1H&#41; are always consistent during normal function calling.
+If there would be a problem it would be in FSR2, since FSR2 IS saved and restored from the stack in 2 steps.
+However, an inconsistent FSR2 &#40;through an interrupt in between the 2 assignments&#41; is never used in the interrupt context, since the interrupt function immediately sets a new frame pointer. Storage of an inconsistent FSR2 on the stack is no problem. On leaving the interrupt routine, the inconsistent FSR2L and FSR2H pair have been restored and the next instruction &#40;remember where we were?&#41; restores FSR2 to a consistent state.
+Maybe what you are referring to is the FSR1 save and restore by the FreeRTOS framework? since this does take 2 instructions.
+This is also safe since through a taskswitch, interrupts are always off:
+portSAVE&#95;CONTEXT clears the global interrupt pretty early, and interrupts aren´t enabled again until exiting portRESTORE&#95;CONTEXT&#40;&#41;
+I don´t think there is any need to change anything.
+Paul van der Hulst
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

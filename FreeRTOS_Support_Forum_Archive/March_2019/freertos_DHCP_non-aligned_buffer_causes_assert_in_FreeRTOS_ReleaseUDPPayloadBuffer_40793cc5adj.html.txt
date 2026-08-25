@@ -1,0 +1,269 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer() - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2019/freertos_DHCP_non-aligned_buffer_causes_assert_in_FreeRTOS_ReleaseUDPPayloadBuffer_40793cc5adj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer() - FreeRTOS" />
+<meta property="og:description" content="DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer()Posted by alager12345 on March 7, 2019I fired up DHCP and found that when the offer comes in to prvProcessDHCPReplies(), down at the bottom it calls FreeRTOS_ReleaseUDPPayloadBuffer() which in turn calls pxUDPPayloadBuffer_to_NetworkBuffer(). In this function it checks to see if the pointer to the buffer is aligned. This check &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2019/freertos_DHCP_non-aligned_buffer_causes_assert_in_FreeRTOS_ReleaseUDPPayloadBuffer_40793cc5adj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer()Posted by alager12345 on March 7, 2019I fired up DHCP and found that when the offer comes in to prvProcessDHCPReplies(), down at the bottom it calls FreeRTOS_ReleaseUDPPayloadBuffer() which in turn calls pxUDPPayloadBuffer_to_NetworkBuffer(). In this function it checks to see if the pointer to the buffer is aligned. This check [&hellip;]" />
+<meta name="twitter:title" content="DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer() - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203083' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203083' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203083' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203083' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147626' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2019%2Ffreertos_DHCP_non-aligned_buffer_causes_assert_in_FreeRTOS_ReleaseUDPPayloadBuffer_40793cc5adj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2019%2Ffreertos_DHCP_non-aligned_buffer_causes_assert_in_FreeRTOS_ReleaseUDPPayloadBuffer_40793cc5adj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147626">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2019_freertos_support_forum_archive_index.html/">March 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer()</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alager12345">alager12345</a> on March 7, 2019</div><div class="thread-post-content">I fired up DHCP and found that when the offer comes in to <code>prvProcessDHCPReplies()</code>,
+down at the bottom it calls <code>FreeRTOS_ReleaseUDPPayloadBuffer()</code>
+which in turn calls <code>pxUDPPayloadBuffer_to_NetworkBuffer()</code>.   In this function it checks to see if the pointer to the buffer is aligned.  This check is failing because the <code>pucBuffer is 0x2000524e</code>.
+I&#8217;m using BufferAllocation_1.c and I added <code>__attribute__ ((aligned (8)));</code> to both the <code>ucBuffers</code> and in <code>NetworkInterface.c</code> and to <code>xNetworkBuffers</code> in <code>BufferAllocation_1.c</code>, but to no avail.
+When I look at the contents of ram where pucBuffer is pointing, it looks correct for the DHCP packet just received, so I don&#8217;t think it&#8217;s memory corruption.
+I&#8217;m running on the LPC1788 and have 16.7k ram free at compile time.
+I don&#8217;t have these issues with the ARP module or with ping replies, those have been working great.
+What could be causing the buffers to be missaligned?
+Thanks for any ideas!
+</div></div><div class="thread-post"><h3 class="thread-post-title">DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 8, 2019</div><div class="thread-post-content">If the alignment test fails, and you are using BufferAllocation_1.c, I would suggest to recheck your implementation of <code>vNetworkInterfaceAllocateRAMToBuffers()</code>.
+You could try to remove the alignment test, but I&#8217;m afraid that the next instruction will crash.
+And if your CPU/compiler allows for 32-bits access on a 16-bit aligned location, that would be less efficient. Network Buffers are accessed with 32-bit instructions wherever possible.
+Here is an implementation ( from the Xilinx driver ), that is know to work well:
+~~~
+void vNetworkInterfaceAllocateRAMToBuffers( NetworkBufferDescriptor<em>t pxNetworkBuffers[ ipconfigNUM</em>NETWORK<em>BUFFER</em>DESCRIPTORS ] )
+{
+<h1>define niBUFFER<em>1</em>PACKET_SIZE      1536</h1>
+static uint8<em>t ucNetworkPackets[ ipconfigNUM</em>NETWORK<em>BUFFER</em>DESCRIPTORS * niBUFFER<em>1</em>PACKET<em>SIZE ] <strong>attribute</strong> ( ( aligned( 32 ) ) );
+uint8</em>t *ucRAMBuffer = ucNetworkPackets;
+uint32_t ul;
+<pre><code>for( ul = 0; ul &lt; ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS; ul++ )
+{
+    pxNetworkBuffers[ ul ].pucEthernetBuffer = ucRAMBuffer + ipBUFFER_PADDING;
+    *( ( unsigned * ) ucRAMBuffer ) = ( unsigned ) ( &amp;( pxNetworkBuffers[ ul ] ) );
+    ucRAMBuffer += niBUFFER_1_PACKET_SIZE;
+}
+</code></pre>
+}
+~~~
+It uses a 32-byte alignment, which has to do with the caching system.
+Note that <code>ipBUFFER_PADDING</code> has a value of 10.
+All EMACs that I&#8217;ve seen until now, know about the 2-byte offset: the first byte after the 12-byte Ethernet Header is 32-bits aligned.
+Some EMACs work with a pointer to the Ethernet Header, others want a pointer to 2 bytes before that header, and treat those 2 bytes as dummy.
+Things would have been easier if the Ethernet Header contained 16 bytes, in stead of 14.
+</div></div><div class="thread-post"><h3 class="thread-post-title">DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alager12345">alager12345</a> on March 8, 2019</div><div class="thread-post-content">Hmmm, something isn&#8217;t right.  I replaced my <code>vNetworkInterfaceAllocateRAMToBuffers()</code> with the one you just posted, with the minor change of <code>#define niBUFFER_1_PACKET_SIZE      1068</code> due to limited ram.  This value still fits the <code>(buff-28)/8=integer</code> rule.
+But when I run this, it still asserts due to the alignment.  The <code>pucBuffer is 0x2000404e</code>
+How can this be, if the attribute is for 32bit alignment?
+More information on this.  This is the second run through the routine.  The first time through <code>pucBuffer is 0x10006100</code>, so the test passes.  The second time through is when <code>pucBuffer is 0x2000404e</code>. 
+So the code that is picking the second buffer isn&#8217;t picking on the correct alignment maybe? 
+</div></div><div class="thread-post"><h3 class="thread-post-title">DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alager12345">alager12345</a> on March 8, 2019</div><div class="thread-post-content">Clue number two on those addresses.  The first one 0x10006100 ( which works) is in bss while the second one 0x2000404e (which fails) is located in the peripheral ram which is access by the ethernet module directly during RX.
+</div></div><div class="thread-post"><h3 class="thread-post-title">DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alager12345">alager12345</a> on March 8, 2019</div><div class="thread-post-content">Looking at this more, is this a fundamental error in how the buffers are used?
+<code>FreeRTOS_ReleaseUDPPayloadBuffer( ( void * ) pucUDPPayload );</code> contains a pointer to a UDP Payload.  On this hardware that is in the peripheral ram <code>0x2000404e</code>.  One can not simply subtract 10 from that address to get to the descriptor address back in 0x1000nnnn!
+</div></div><div class="thread-post"><h3 class="thread-post-title">DHCP non-aligned buffer causes assert in FreeRTOS_ReleaseUDPPayloadBuffer()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alager12345">alager12345</a> on March 9, 2019</div><div class="thread-post-content">Well I think I finally have this sorted!  The previous post is what sorted it for me.  On this platform, and the way FreeRTOS uses the buffers, I don&#8217;t see how a complete zero-copy driver can work.  I need one copy from the peripheral ram into the static buffers.  This, I beleive, applies equally to <code>BufferAllocation_2.c</code> on this platform.
+For anyone else trodding down this path, attached is the NetworkInterface.c that is working with the LPC1788.
+The main points of interest are below:
+In <code>prvEMACHandlerTask()</code>
+&#8220;`cpp
+if( xDataLength > 0U )
+{
+    // Obtain a network buffer to pass this data into the
+    // stack.  No storage allocation is required as the network buffer is already allocated.
+    pxNetworkBuffer = pxGetNetworkBufferWithDescriptor( 0, ( TickType_t ) 0 );
+<pre><code>if( pxNetworkBuffer != NULL )
+{
+    /* begin custom read code */
+    // get a temporary structure for reading from the MAC
+    EMAC_PACKETBUF_Type pRXBuff;
+    // it's buffer pointer goes to the same buffer we just got from above
+    pRXBuff.pbDataBuf = (uint32_t *)pxNetworkBuffer-&gt;pucEthernetBuffer;
+    // tell it how much data it's going to store
+    pRXBuff.ulDataLen = xDataLength;
+    pxNetworkBuffer-&gt;xDataLength = xDataLength;
+    // **   copy the data from the peripheral buffer to our static buffer
+    //      almost a zero copy driver...
+    EMAC_ReadPacketBuffer( &amp;pRXBuff );
+    /* end custom read code */
+    xRxEvent.pvData = ( void * ) pxNetworkBuffer;
+    /* Data was received and stored.  Send a message to the IP task to let it know. */
+    if( xSendEventStructToIPTask( &amp;xRxEvent, ( TickType_t ) 0 ) == pdFAIL )
+    {
+        vReleaseNetworkBufferAndDescriptor( pxNetworkBuffer );
+        iptraceETHERNET_RX_EVENT_LOST();
+    }
+}
+else
+{
+    iptraceETHERNET_RX_EVENT_LOST();
+}
+iptraceNETWORK_INTERFACE_RECEIVE();
+</code></pre>
+}
+&#8230;
+// check for TX buffers to release
+        if( txFreeCount )
+        {
+            while( txFreeCount )
+            {
+                txFreeCount&#8211;;
+                vClearTXBuffer();
+            }
+        }
+&#8220;`
+I then took the <code>vClearTXBuffer()</code> out of the ISR so it can clear the buffer AND the descriptor:
+&#8220;`cpp
+// release the buffer after the DMA transmitted it.
+static void vClearTXBuffer( void )
+{
+    NetworkBufferDescriptor<em>t *pxBuffer = trackNetworkBuffers[ trackTail++ ];
+    if( trackTail >= ipconfigNUM</em>NETWORK<em>BUFFER</em>DESCRIPTORS )
+    {
+        trackTail = 0;
+    }
+<pre><code>if( xTCPWindowLoggingLevel &gt; 2 )
+{
+    FreeRTOS_debug_printf( ( "Clearing buff %#xn", pxBuffer ) );
+}
+configASSERT( pxBuffer != NULL );
+vReleaseNetworkBufferAndDescriptor( pxBuffer );
+</code></pre>
+}
+&#8220;`
+The TX_DONE IRQ handler was simplified
+<code>cpp
+if( ( ulInterruptCause &amp; EMAC_INT_TX_DONE ) != 0UL )
+{
+    // keep track of how many buffers have been sent
+    txFreeCount++;
+}</code>
+And finally 
+<code>xNetworkInterfaceOutput()</code>
+&#8220;`cpp
+/* Will the data fit in the Tx buffer? <em>/
+if( pxNetworkBuffer->xDataLength &lt; EMAC_ETH_MAX_FLEN ) /</em><em>RB</em> The size needs to come from FreeRTOSIPConfig.h. <em>/
+{
+    /</em> format the data for the Tx DMA. */
+    TXBuffer.ulDataLen = pxNetworkBuffer->xDataLength;
+    TXBuffer.pbDataBuf = (uint32_t *)pxNetworkBuffer->pucEthernetBuffer;
+<pre><code> /* track the DMA buffer pointer for release later (in the ISR) */
+trackNetworkBuffers[ trackHead++ ] = pxNetworkBuffer;
+if( trackHead &gt;= ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS )
+{
+    trackHead = 0;
+}
+if( xTCPWindowLoggingLevel &gt; 2 )
+{
+    FreeRTOS_debug_printf( ( "Sending buff %#xn", pxNetworkBuffer ) );
+}
+/* copy the buffer to the Tx DMA descriptor. */
+EMAC_WritePacketBuffer( &amp;TXBuffer );
+EMAC_UpdateTxProduceIndex();
+ /* Do not release it until it has been sent. */
+xReleaseAfterSend = pdFALSE;
+iptraceNETWORK_INTERFACE_TRANSMIT();
+/* The Tx has been initiated. */
+xReturn = pdPASS;
+</code></pre>
+}
+&#8220;`
+Maybe this can get rolled into the supplied NetworkInterface.c file for LPC17xx?  It  is very incomplete.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

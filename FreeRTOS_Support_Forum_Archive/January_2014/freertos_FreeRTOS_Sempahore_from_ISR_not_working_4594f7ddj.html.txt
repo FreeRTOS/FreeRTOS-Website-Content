@@ -1,0 +1,187 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS Sempahore from ISR not working - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2014/freertos_FreeRTOS_Sempahore_from_ISR_not_working_4594f7ddj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS Sempahore from ISR not working - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS Sempahore from ISR not workingPosted by ableeldhose on January 23, 2014I need to make a data accusition device whose one task is to samples some GPIO&#8217;s and record the GPIO status and send it to PC via UART to display in PC. The algorithm i chose was (please correct me since iam very novice &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2014/freertos_FreeRTOS_Sempahore_from_ISR_not_working_4594f7ddj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS Sempahore from ISR not workingPosted by ableeldhose on January 23, 2014I need to make a data accusition device whose one task is to samples some GPIO&#8217;s and record the GPIO status and send it to PC via UART to display in PC. The algorithm i chose was (please correct me since iam very novice [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS Sempahore from ISR not working - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202345' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202345' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202345' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202345' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143679' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2014%2Ffreertos_FreeRTOS_Sempahore_from_ISR_not_working_4594f7ddj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2014%2Ffreertos_FreeRTOS_Sempahore_from_ISR_not_working_4594f7ddj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143679">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2014_freertos_support_forum_archive_index.html/">January 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS Sempahore from ISR not working</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ableeldhose">ableeldhose</a> on January 23, 2014</div><div class="thread-post-content">I need to make a data accusition device whose one task is to samples some GPIO&#8217;s and record the GPIO status and send it to PC via UART to display in PC. The algorithm i chose was (please correct me since iam very novice in RTOS) to create a timer running at 1us and then poll the status of all GPIO needed. For that i used a timer in the freertos demo.  And give a semaphore in the timer ISR which should call a task which do all the remaining job.
+Don&#8217;t know why but the code i edited dont work
+<strong>My main() is</strong>
+<pre><code>int main(void) {
+  /* Prepare the hardware to run this demo. */
+  prvSetupHardware();
+  vSemaphoreCreateBinary(SemaphoreTask);
+  if( SemaphoreTask != NULL )
+  {
+    xTaskCreate( SemaphoreTakeTask, "SemaphoreTakeTask", 240, NULL , 3, NULL );
+    vTaskStartScheduler();
+  }
+  for(;;);
+  return 0;
+}
+</code></pre>
+<strong>Task 1</strong> a dummy function i wrote just to try out if semaphore is working
+<pre><code>void SemaphoreTakeTask(void* parameter){
+  vSetupTimerTest(10);                 // Timer initialization function in FreeRtos DEMO
+  TRISEbits.TRISE6 = 0;                // Set the GPIO as Output
+  xSemaphoreTake( SemaphoreTask, 0 );  // As mentioned in user guide just take the semaphore once to clear the semaphore at start
+  for(;;){
+    xSemaphoreTake( SemaphoreTask, portMAX_DELAY );
+    LATEbits.LATE6 ^= 1;               // Toggle an IO to see whether its working
+  }
+}
+</code></pre>
+<strong>Timer ISR handler</strong>
+<pre><code>void vT2InterruptHandler(void) {
+  portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+  /* Clear the timer interrupt. */
+  IFS0CLR = _IFS0_T2IF_MASK;
+  xSemaphoreGiveFromISR(SemaphoreTask, &amp;xHigherPriorityTaskWoken);
+  if (xHigherPriorityTaskWoken != pdFALSE) {
+    portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+  }
+}
+</code></pre>
+When i put break point in the ISR handler it comes there but the GPIO is not toggling (which i placed in Task 1)
+Iam a novice in RTOS so please pardon me if i missed any basic things in the code
+I just need to give a semaphore from ISR handler
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS Sempahore from ISR not working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on January 23, 2014</div><div class="thread-post-content">I cant see anything wrong with your use of the FreeRTOS API. You dont need to test xHigherPriorityTaskWoken before callilng portEND<em>SWITCHING</em>ISR as the test is in the macro, but it wont cause you a problem.
+But do you really want to do this at 1uS. That is too fast to use a queue in this way. At that speed you need to do the IO sampling inside the interrupt handling function, even then it is very fast. You will need to pack the sampled bits into larger data variables to send at that rate over a uart.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS Sempahore from ISR not working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ableeldhose">ableeldhose</a> on January 24, 2014</div><div class="thread-post-content">@Medwards
+I added one extra task <strong>Task1</strong> which just <strong>blinks another LED1 using vTaskDelay</strong>. 
+Another task <strong>Task2</strong> which <strong>waits for the semaphore and toggles an LED2</strong> when recieved semaphore.
+When Semaphore is given from the  Task1 everything works fine.
+When that semaphore is given from ISR which occurs after 5 second
+Untill the xSemaphoreGiveFromISR is called the Task1 is working, but when it is called everything gets stuck and the code moves to a infinite loop in vAssertCalled(). So for 5 seconds LED1 will toggle and after that its does not.
+When i commented that xSemaphoreGiveFromISR in the ISR then Task1 is working without any issue
+I placed a breakpoint just below the xSemaphoreGiveFromISR and the control never  reach that line. When the xSemaphoreGiveFromISR is commented then control reaches there.
+I cant understand the issue since iam a starter in RTOS
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS Sempahore from ISR not working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 24, 2014</div><div class="thread-post-content">Each call to configASSERT() contains a condition that is tested to ensure the system status (variable values, hardware state, etc.) is valid.  As vAssertCalled() is being called then a condition passed to configASSERT() has been found to be invalid &#8211; which is presumably why your application is not working.
+Which call to configASSERT() is failing?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS Sempahore from ISR not working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ableeldhose">ableeldhose</a> on January 24, 2014</div><div class="thread-post-content">The configAssert() call from the below #define is found to get stuck
+<pre><code> portASSERT_IF_INTERRUPT_PRIORITY_INVALID();
+</code></pre>
+The #define expansion is
+<pre><code> #define portASSERT_IF_INTERRUPT_PRIORITY_INVALID() configASSERT( portCURRENT_INTERRUPT_PRIORITY &lt;= configMAX_SYSCALL_INTERRUPT_PRIORITY )
+</code></pre>
+After this function call everything gets stuck.
+No task is running after this
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS Sempahore from ISR not working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on January 24, 2014</div><div class="thread-post-content">You must set the priority of the interrupt to below your configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY setting. Read the Configuration section of the web page that details how to use the port. THe following page might help (or serve to confuse more) too http://www.freertos.org/RTOS-Cortex-M3-M4.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS Sempahore from ISR not working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ableeldhose">ableeldhose</a> on January 24, 2014</div><div class="thread-post-content">@Dave
+Thanks man
+It works
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STM32 HAL Tick Interrupt priority - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2016/freertos_STM32_HAL_Tick_Interrupt_priority_ca400abej.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="STM32 HAL Tick Interrupt priority - FreeRTOS" />
+<meta property="og:description" content="STM32 HAL Tick Interrupt priorityPosted by m-wagner on March 30, 2016Hi @all, I&#8217;ve come across a problem when using STM32 HAL library in combination with FreeRTOS. I think my problem is quite basic, but I didn&#8217;t find any explanation or solution on the web. I&#8217;ve read the Cortex M Interrupt explanation page (http://www.freertos.org/RTOS-Cortex-M3-M4.html), but this &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2016/freertos_STM32_HAL_Tick_Interrupt_priority_ca400abej.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="STM32 HAL Tick Interrupt priorityPosted by m-wagner on March 30, 2016Hi @all, I&#8217;ve come across a problem when using STM32 HAL library in combination with FreeRTOS. I think my problem is quite basic, but I didn&#8217;t find any explanation or solution on the web. I&#8217;ve read the Cortex M Interrupt explanation page (http://www.freertos.org/RTOS-Cortex-M3-M4.html), but this [&hellip;]" />
+<meta name="twitter:title" content="STM32 HAL Tick Interrupt priority - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202627' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202627' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202627' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202627' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145800' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2016%2Ffreertos_STM32_HAL_Tick_Interrupt_priority_ca400abej.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2016%2Ffreertos_STM32_HAL_Tick_Interrupt_priority_ca400abej.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145800">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2016_freertos_support_forum_archive_index.html/">March 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">STM32 HAL Tick Interrupt priority</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/m-wagner">m-wagner</a> on March 30, 2016</div><div class="thread-post-content">Hi @all,
+I&#8217;ve come across a problem when using STM32 HAL library in combination with FreeRTOS. I think my problem is quite basic, but I didn&#8217;t find any explanation or solution on the web.
+I&#8217;ve read the Cortex M Interrupt explanation page (http://www.freertos.org/RTOS-Cortex-M3-M4.html), but this also doesn&#8217;t help in my case.
+I&#8217;m using the ARM_CM4F Port for my STM32F303 Cortex M4F device, FreeRTOS8.2.3 and ST HAL Lib V1.4 for the F3 series. I&#8217;ve used the FreeRTOSConfig.h from the STM32F407 example and the one that comes with the HAL package as a starting point (they are the same except for some details). I&#8217;ve set up the NVIC to have 4 bit priorities and no subpriorities, as recommendet in the docs.
+The problem I&#8217;m having is that errorhandling within HAL lib <em>interrupt</em> functions doesn&#8217;t work in combination with FreeRTOS. 
+The HAL lib uses the tick interrupt for FreeRTOS as well as it&#8217;s own tick, which is then used to detect internal timeouts. This of course only works if the tick interrupt has a higher priority than the active interrupt.
+The default configuration of FreeRTOS is to set the tick interrupt priority to the lowest available priority (configKERNEL<em>INTERRUPT</em>PRIORITY). It even states that multiple times in the source code port.c (  xPortStartScheduler &#8211; /* Make PendSV and SysTick the lowest priority interrupts. <em>/ ;   xPortSysTickHandler &#8211; /</em> The SysTick runs at the lowest interrupt priority, so when this interrupt executes all interrupts must be unmasked.  There is therefore no need to save and then restore the interrupt mask value as its value is already known. */
+When I increase the tick priority, errorhandling works as expected. But is this a <strong>save</strong> way to go?
+Thanks for your help!
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL Tick Interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 30, 2016</div><div class="thread-post-content">This has been raised a few times before.
+First the FreeRTOS tick and PendSV handlers must have the lowest 
+possible interrupt priority because that assumption is made when the 
+tick handler enters and exits a critical section &#8211; rather than setting 
+the basepri register back to whatever value it had when it exits a 
+critical section it assumes basepri was clear and just sets it to zero. 
+  If the SysTick is running at the lowest priority then this assumption 
+is safe, as the SysTick would only execute in the first place if basepri 
+was clear (any other value would mask the interrupt out).
+Now you can edit the FreeRTOS source code so the SysTick saves and 
+restores the basepri register rather than just blindly setting it and 
+then clearing it back to zero &#8211; that will come with the overhead of more 
+asm instructions and more memory accesses on every tick interrupt though.
+However, I don&#8217;t understand your explanation of why the HAL tick needs 
+to be at the highest priority.  You say it is checking for timeouts that 
+won&#8217;t occur if the HAL tick is not the highest priority &#8211; does that 
+imply the SysTick is checking for timeouts in other interrupt service 
+routines.  If so, that would imply other interrupt service routines were 
+somehow busy waiting, which is not good in an ISR, and not needed if you 
+are using an OS anyway.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL Tick Interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/m-wagner">m-wagner</a> on March 31, 2016</div><div class="thread-post-content">Thank you for your answer!
+<blockquote>
+  HAL tick needs to be at the highest priority 
+</blockquote>
+not necessarily the highest priority. Only higher than interrupts calling the HAL library.
+<blockquote>
+   does that imply the SysTick is checking for timeouts in other interrupt service routines
+</blockquote>
+no, the SysTick itself is not checking for timeouts, but it&#8217;s value is used for this purpose.
+<blockquote>
+   other interrupt service routines were somehow busy waiting, which is not good in an ISR
+</blockquote>
+yes, that&#8217;s the case. Timeout values are hardcoded in HAL lib and are in the range of 10..100ms. I don&#8217;t think that I can get rid of those busy-waiting parts without writing my own drivers&#8230;
+I came across this after adding the HAL I2C DMA driver into my project. I wanted to see if communication errors are reported correctly and simulated an error by shorting the I2C wires. This caused my program to infinitely loop in one of some routines like this:
+~~~~
+static HAL<em>StatusTypeDef I2C</em>WaitOnSTOPFlagUntilTimeout(I2C<em>HandleTypeDef *hi2c, uint32</em>t Timeout)
+{<br />
+  uint32<em>t tickstart = 0x00;
+->tickstart = HAL</em>GetTick();
+->while(__HAL<em>I2C</em>GET<em>FLAG(hi2c, I2C</em>FLAG<em>STOPF) == RESET)
+  {
+    /* Check if a NACK is detected */
+    if(I2C</em>IsAcknowledgeFailed(hi2c, Timeout) != HAL<em>OK)
+    {
+      return HAL</em>ERROR;
+    }
+<pre><code>/* Check for the Timeout */
+</code></pre>
+&#8212;>if((Timeout == 0) || ((HAL<em>GetTick()-tickstart) > Timeout))
+    {
+      hi2c->ErrorCode |= HAL</em>I2C<em>ERROR</em>TIMEOUT;
+      hi2c->State= HAL<em>I2C</em>STATE_READY;
+<pre><code>  /* Process Unlocked */
+  __HAL_UNLOCK(hi2c);
+  return HAL_TIMEOUT;
+}
+</code></pre>
+  }
+  return HAL_OK;
+}
+~~~~
+Without calling the corresponding HAL_IncTick() function, the loop never exits. This construct exists many time within the HAL lib source code. However, I don&#8217;t know how many of those functions are called within an interrupt context.
+Do you think it&#8217;s a good solution to have separate timers for HAL and FreeRTOS tick function, with different interrupt priorities?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL Tick Interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on March 31, 2016</div><div class="thread-post-content"><blockquote>
+  &#8212;>if((Timeout == 0) || ((HAL_GetTick()-tickstart) > Timeout))
+</blockquote>
+If this is meant to be called in an interrupt then this is very very bad. Your system is not going to be real time if interrupts loop for 10s of ms. I doubt the function this line is in is meant to execute in an interrupt.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL Tick Interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/m-wagner">m-wagner</a> on March 31, 2016</div><div class="thread-post-content">This is called deeply inside the HAL<em>DMA</em>IRQHandler() function multiple times. So I think it&#8217;s save to say that I&#8217;m using it correctly.
+As this is code from ST, I can&#8217;t tell you if interrupt execution time was in their mind. It&#8217;s in the drivers many times, the only real solution would be to write my own drivers, which I would prefer not to do&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL Tick Interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 31, 2016</div><div class="thread-post-content">Thinking about this more, perhaps the SysTick can run at a higher 
+priority if it is being called by the ST SysTick interrupt handler, 
+rather than the FreeRTOS SysTick interrupt handler.
+The FreeRTOS SysTick handler is as follows:
+~~~~
+void xPortSysTickHandler( void )
+{
+     /* The SysTick runs at the lowest interrupt priority, so when this
+     interrupt executes all interrupts must be unmasked.  There is 
+     therefore no need to save and then restore the interrupt mask value 
+     as its value is already known. <em>/
+     portDISABLE_INTERRUPTS();
+     {
+         /</em> Increment the RTOS tick. <em>/
+         if( xTaskIncrementTick() != pdFALSE )
+         {
+             /</em> A context switch is required.  Context switching is 
+             performed in the PendSV interrupt.  Pend the PendSV interrupt. */
+             portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+         }
+     }
+     portENABLE_INTERRUPTS();
+}
+~~~~
+xPortSysTickHandler() is a port specific handler that creates a critical 
+section, then calls the generic xTaskIncrementTick() C function 
+(xTaskIncrementTick() is used by all FreeRTOS ports).  As can be seen in 
+the code comments, it is the port specific part that assumes it is 
+running at the lowest priority.  However, the ST code has its own 
+SysTick handler, so that port specific part will [presumably] not be 
+executing anyway.  If the ST SysTick handler just calls 
+xTaskIncrementTick() then it might be ok.  Also, if the SysTick handler 
+was running at the priority defined by 
+configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY then the critical section would not 
+be needed.
+Can you please post the code for the SysTick handler you are using.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL Tick Interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/m-wagner">m-wagner</a> on March 31, 2016</div><div class="thread-post-content">No problem
+SysTick ISR
+~~~~
+void SysTick<em>Handler(void)
+{
+  HAL</em>IncTick();
+  if (xTaskGetSchedulerState() != taskSCHEDULER<em>NOT</em>STARTED) {
+    xPortSysTickHandler();
+  }
+}
+~~~~
+HAL_IncTick()
+~~~~
+__weak void HAL_IncTick(void)
+{
+  uwTick++;
+}
+~~~~
+xPortSysTickHandler() (gcc CM4F Port)
+~~~~
+void xPortSysTickHandler( void )
+{
+    /* The SysTick runs at the lowest interrupt priority, so when this interrupt
+    executes all interrupts must be unmasked.  There is therefore no need to
+    save and then restore the interrupt mask value as its value is already
+    known. <em>/
+    ( void ) portSET_INTERRUPT_MASK_FROM_ISR();
+    {
+        /</em> Increment the RTOS tick. <em>/
+        if( xTaskIncrementTick() != pdFALSE )
+        {
+            /</em> A context switch is required.  Context switching is performed in
+            the PendSV interrupt.  Pend the PendSV interrupt. */
+            portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+        }
+    }
+    portCLEAR_INTERRUPT_MASK_FROM_ISR( 0 );
+}
+~~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL Tick Interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 31, 2016</div><div class="thread-post-content">So the SysTick<em>Handler() is calling the full FreeRTOS 
+xPortSysTickHandler(), rather than just xTaskIncrementTick().  However, 
+[thoughts evolving] I think this is still ok as the Cortex-M NVIC is an 
+intelligent thing and even though portCLEAR</em>INTERRUPT<em>MASK</em>FROM_ISR( 0 ) 
+is used (blindly setting to 0 rather than the previous value) the NVIC 
+won&#8217;t internally set the basepri below that of a pending 
+interrupt&#8230;&#8230;..so I think we have come a long way around in answering 
+your original question: yes, in fact it is probably fine after all at 
+the higher priority (although busy waiting in an ISR is still not a good 
+plan, it should not cause a crash).
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL Tick Interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/m-wagner">m-wagner</a> on April 4, 2016</div><div class="thread-post-content">Thank you for your answer!
+Do you have a reference for this behaviour? I can&#8217;t find anyting useful in the Cortex processor manual&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL Tick Interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/m-wagner">m-wagner</a> on October 19, 2016</div><div class="thread-post-content">In the end, we decided to drop ST drivers.
+They use blocking wait inside interrupts (which with I could live, as they are just wait until hardware module confirmes some action)
+They no not do proper error handling (at least in the version I tried in april &#8217;16). Try sending two bytes to the UART module while the driver isn&#8217;t in rx mode -> Hardware RX OV, but driver doesn&#8217;t detect that. And that&#8217;s just -one- example.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

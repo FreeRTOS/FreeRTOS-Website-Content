@@ -1,0 +1,296 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vTaskDelete understanding problem - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2019/freertos_vTaskDelete_understanding_problem_70ec521936j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="vTaskDelete understanding problem - FreeRTOS" />
+<meta property="og:description" content="vTaskDelete understanding problemPosted by mailgoe on January 7, 2019Hello, I&#8217;m new to FreeRTOS and trying to simulate a Garage Door Opener, using one button to iterate between 5 states. Usual behaviour for the garage door started by a button press would be: Open &#8211;&gt; Closing &#8211;&gt; Closed Closed &#8211;&gt; Opening &#8211;&gt; Open However while moving &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2019/freertos_vTaskDelete_understanding_problem_70ec521936j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="vTaskDelete understanding problemPosted by mailgoe on January 7, 2019Hello, I&#8217;m new to FreeRTOS and trying to simulate a Garage Door Opener, using one button to iterate between 5 states. Usual behaviour for the garage door started by a button press would be: Open &#8211;&gt; Closing &#8211;&gt; Closed Closed &#8211;&gt; Opening &#8211;&gt; Open However while moving [&hellip;]" />
+<meta name="twitter:title" content="vTaskDelete understanding problem - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203058' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203058' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203058' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203058' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147526' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2019%2Ffreertos_vTaskDelete_understanding_problem_70ec521936j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2019%2Ffreertos_vTaskDelete_understanding_problem_70ec521936j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147526">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2019_freertos_support_forum_archive_index.html/">January 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">vTaskDelete understanding problem</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mailgoe">mailgoe</a> on January 7, 2019</div><div class="thread-post-content">Hello,
+I&#8217;m new to FreeRTOS and trying to simulate a Garage Door Opener, using one button to iterate between 5 states.
+Usual behaviour for the garage door started by a button press would be:
+Open &#8211;> Closing &#8211;> Closed
+Closed &#8211;> Opening &#8211;> Open
+However while moving you can stop the garage door with another button press and start again moving in the opposite direction with another press:
+Closing / Opening &#8211;> Stopped
+Stopped &#8211;> Opening / Closing
+The button is handled with an interrupt. When the button gets pressed while moving, I want the previous opened task <em>button_callback</em>  to be deleted, since otherwise it will not stay in the state &#8220;stopped&#8221;.  Somehow I must use the xTaskCreate, xTaskDelete and the according TaskHandle wrong, since the serial console of my ESP8266 is giving the following errors:
+Console output:
+~~~
+Waiting for button press interrupt on gpio 10&#8230;
+Button pressed!
+State = OPENING
+State = OPEN
+Task exists!
+Fatal exception (28):
+epc1=0x40216e92
+0x40216e92: uxListRemove at /Volumes/case-sensitive/esp-open-rtos/FreeRTOS/Source/list.c:183
+epc2=0x00000000
+epc3=0x402035c1
+0x402035c1: prvIdleTask at /Volumes/case-sensitive/esp-open-rtos/FreeRTOS/Source/tasks.c:4687
+excvaddr=0x00000004
+depc=0x00000000
+excsave1=0x4020384f
+0x4020384f: vTaskDelete at /Volumes/case-sensitive/esp-open-rtos/FreeRTOS/Source/tasks.c:4687
+Registers:
+a0 4020384f a1 3fff4910 a2  3fff254c a3  00000000
+0x4020384f: vTaskDelete at /Volumes/case-sensitive/esp-open-rtos/FreeRTOS/Source/tasks.c:4687
+a4  3fff0e38 a5  3fff0e38 a6  00000000 a7  00000000
+a8  00000000 a9  60000000 a10 00000000 a11 0000000a
+a12 3fff2548 a13 3fff0fb4 SAR 00000000
+Stack: SP=0x3fff4910
+0x3fff4910: ffffff38 3fff123c 00003430 4021501c
+0x4021501c: button<em>task at /Volumes/case-sensitive/esp-homekit-demo/examples/sonoff</em>dual<em>garage</em>door/main.c:191
+0x3fff4920: 00003430 00000000 00000000 00000000
+0x3fff4930: 00000000 00000000 00000000 00000000
+0x3fff4940: 00000000 00000000 00000000 00000000
+0x3fff4950: 00000000 a5a5a5a5 0000014c fffffffc
+0x3fff4960: 3fff48c0 091c47b9 3fff0eb8 3fff0eb8
+0x3fff4970: 3fff4960 3fff0eb0 0000000d 3ffee50c
+0x3fff4980: 3ffee50c 3fff4960 00000000 00000002
+Free Heap: 49744
+<em>heap</em>start 0x3fff1688 brk 0x3fff6f78 supervisor sp 0x40000000 sp-brk 37000 bytes
+arena (total<em>size) 22768 fordblks (free</em>size) 12744 uordblocks (used_size) 10024
+~~~
+Code:
+~~~
+void gpio<em>intr</em>handler(uint8<em>t gpio</em>num);
+TaskHandle_t buttonTaskHandle = NULL;
+enum {OPEN, CLOSED, OPENING, CLOSING, STOPPED};
+bool lastState;
+/* initialize button */
+void button_init() {
+<pre><code>// enable button and enable pullup
+gpio_enable(button_gpio, GPIO_INPUT);
+gpio_set_pullup(button_gpio, true, true);
+// initialize queue which holds timestamp
+tsqueue = xQueueCreate(1, sizeof(uint32_t));
+// start button_task
+xTaskCreate(button_task, "buttonTask", 1024, &amp;tsqueue, 2, NULL);
+</code></pre>
+}
+static QueueHandle_t tsqueue;
+void gpio<em>intr</em>handler(uint8<em>t gpio</em>num)
+{
+    uint32_t now = xTaskGetTickCountFromISR();
+    xQueueSendToBackFromISR(tsqueue, &amp;now, NULL);
+}
+void button<em>task(void *pvParameters)
+{
+    printf(&#8220;Waiting for button press interrupt on gpio %d&#8230;rn&#8221;, button</em>gpio);
+    QueueHandle<em>t *tsqueue = (QueueHandle</em>t *)pvParameters;
+    gpio_set_interrupt(button_gpio, GPIO_INTTYPE_EDGE_NEG, gpio_intr_handler);
+<pre><code>uint32_t last = 0;
+while(1) {
+    uint32_t button_ts;
+    xQueueReceive(*tsqueue, &amp;button_ts, portMAX_DELAY);
+    button_ts *= portTICK_PERIOD_MS;
+    if (last &lt; button_ts-200) {
+        last = button_ts;
+        if (buttonTaskHandle != NULL) {
+            printf("Task exists!n");
+            vTaskDelete(buttonTaskHandle);
+        }
+        xTaskCreate(button_callback, "buttonCallback", 2048, NULL, 2, &amp;buttonTaskHandle);
+    }
+}
+</code></pre>
+}
+void button_callback() {
+<pre><code>if (local_current_state == OPEN) {
+    printf("Button pressed!nState = CLOSINGn");
+    local_current_state = CLOSING;
+    vTaskDelay(garage_runtime / portTICK_PERIOD_MS);
+    printf("State = CLOSEDnn");
+    local_current_state = CLOSED;
+}
+else if (local_current_state == CLOSED) {
+    printf("Button pressed!nState = OPENINGn");
+    local_current_state = OPENING;
+    vTaskDelay(garage_runtime / portTICK_PERIOD_MS);
+    printf("State = OPENnn");
+    local_current_state = OPEN;
+}
+else if (local_current_state == CLOSING || local_current_state == OPENING) {
+    lastState = local_current_state-2;
+    printf("Button pressed!nState = STOPPEDnn");
+    local_current_state = STOPPED;
+}
+else if (local_current_state == STOPPED) {
+    printf("Button pressed!nState = %dn", !lastState+2);
+    local_current_state = !lastState+2;
+    vTaskDelay(garage_runtime / portTICK_PERIOD_MS);
+    printf("State = OPENnn");
+    local_current_state = !lastState;
+}
+vTaskDelete(buttonTaskHandle);
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskDelete understanding problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 7, 2019</div><div class="thread-post-content">As far as I can see &#8211; you delete the task but never set its handle to NULL.
+vTaskDelete( buttonTaskHandle );
+buttonTaskHandle = NULL; // Add this line.
+Watch out for race conditions though.
+Creating and deleting tasks in this way would not be an optimal way of 
+implementing this, but I assume this is more of an academic exercise 
+rather than a real door opener.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskDelete understanding problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mailgoe">mailgoe</a> on January 7, 2019</div><div class="thread-post-content">Thank you for your answer. When I add your line, the first button click (after initialization of the door state to closed) as before opens the door. When I try to close it, e.g. press the button a second time I get the same error:
+~~~
+Waiting for button press interrupt on gpio 10&#8230;
+Button pressed!
+State = OPENING
+State = OPEN
+Task exists!
+Fatal exception (28):
+epc1=0x40216e96
+0x40216e96: uxListRemove at /Volumes/case-sensitive/esp-open-rtos/FreeRTOS/Source/list.c:183
+epc2=0x00000000
+epc3=0x402035c4
+0x402035c4: prvIdleTask at /Volumes/case-sensitive/esp-open-rtos/FreeRTOS/Source/tasks.c:4687
+excvaddr=0x00000004
+depc=0x00000000
+excsave1=0x4020384f
+0x4020384f: vTaskDelete at /Volumes/case-sensitive/esp-open-rtos/FreeRTOS/Source/tasks.c:4687
+Registers:
+a0 4020384f a1 3fff4910 a2  3fff254c a3  00000000
+0x4020384f: vTaskDelete at /Volumes/case-sensitive/esp-open-rtos/FreeRTOS/Source/tasks.c:4687
+a4  3fff0e38 a5  3fff0e38 a6  00000000 a7  00000000
+a8  00000000 a9  60000000 a10 00000000 a11 0000000a
+a12 3fff2548 a13 3fff0fb4 SAR 00000000
+Stack: SP=0x3fff4910
+0x3fff4910: ffffff38 3fff123c 00003d90 40215020
+0x40215020: button<em>task at /Volumes/case-sensitive/esp-homekit-demo/examples/sonoff</em>dual<em>garage</em>door/main.c:191
+0x3fff4920: 00003d90 00000000 00000000 00000000
+0x3fff4930: 00000000 00000000 00000000 00000000
+0x3fff4940: 00000000 00000000 00000000 00000000
+0x3fff4950: 00000000 a5a5a5a5 0000014c fffffffc
+0x3fff4960: 3fff48c0 091c47f9 3fff0eb8 3fff0eb8
+0x3fff4970: 3fff4960 3fff0eb0 0000000d 3ffee50c
+0x3fff4980: 3ffee50c 3fff4960 00000000 00000002
+Free Heap: 49744
+<em>heap</em>start 0x3fff1688 brk 0x3fff6f78 supervisor sp 0x40000000 sp-brk 37000 bytes
+arena (total<em>size) 22768 fordblks (free</em>size) 12744 uordblocks (used_size) 10024
+ets Jan  8 2013,rst cause:1, boot mode:(1,7)
+^CTraceback (most recent call last):
+  File &#8220;/Volumes/case-sensitive/esp-open-rtos//utils/filteroutput.py&#8221;, line 105, in <module>
+    main()
+  File &#8220;/Volumes/case-sensitive/esp-open-rtos//utils/filteroutput.py&#8221;, line 87, in main
+    line = port.readline()
+  File &#8220;/usr/local/lib/python2.7/site-packages/serial/serialposix.py&#8221;, line 483, in read
+    ready, _, _ = select.select([self.fd, self.pipe<em>abort</em>read<em>r], [], [], timeout.time</em>left())
+KeyboardInterrupt
+make: *** [test] Error 1
+~~~
+Do you know how to get rid of this? Or what other way would you suggest to implement a button interrupt, breaking the prior task / action?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

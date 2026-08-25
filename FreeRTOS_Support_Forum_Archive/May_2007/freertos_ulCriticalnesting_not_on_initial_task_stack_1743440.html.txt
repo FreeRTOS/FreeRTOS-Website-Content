@@ -1,0 +1,364 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ulCriticalnesting not on initial task stack? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2007/freertos_ulCriticalnesting_not_on_initial_task_stack_1743440.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="ulCriticalnesting not on initial task stack? - FreeRTOS" />
+<meta property="og:description" content="ulCriticalnesting not on initial task stack?Posted by wz2b on May 26, 2007I am trying to sort out why my LPC2129 / GCC system is not working.&nbsp; My port began life as GCC/ARM7&#095;LPC2000 modified to match my hardware and address map.&nbsp; In port.c I find a note that says: &nbsp;&nbsp;&nbsp; Changes from V2.5.2 &nbsp;&nbsp;&nbsp; + ulCriticalNesting &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2007/freertos_ulCriticalnesting_not_on_initial_task_stack_1743440.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="ulCriticalnesting not on initial task stack?Posted by wz2b on May 26, 2007I am trying to sort out why my LPC2129 / GCC system is not working.&nbsp; My port began life as GCC/ARM7&#095;LPC2000 modified to match my hardware and address map.&nbsp; In port.c I find a note that says: &nbsp;&nbsp;&nbsp; Changes from V2.5.2 &nbsp;&nbsp;&nbsp; + ulCriticalNesting [&hellip;]" />
+<meta name="twitter:title" content="ulCriticalnesting not on initial task stack? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201484' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201484' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201484' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201484' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138791' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2007%2Ffreertos_ulCriticalnesting_not_on_initial_task_stack_1743440.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2007%2Ffreertos_ulCriticalnesting_not_on_initial_task_stack_1743440.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138791">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2007_freertos_support_forum_archive_index.html/">May 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">ulCriticalnesting not on initial task stack?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wz2b">wz2b</a> on May 26, 2007</div><div class="thread-post-content">I am trying to sort out why my LPC2129 / GCC system is not working.&nbsp; My port began life as GCC/ARM7&#95;LPC2000 modified to match my hardware and address map.&nbsp; In port.c I find a note that says:
+&nbsp;&nbsp;&nbsp; Changes from V2.5.2
+&nbsp;&nbsp;&nbsp; + ulCriticalNesting is now saved as part of the task context, as is
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; therefore added to the initial task stack during pxPortInitialiseStack.
+However, examining pxPortInitialiseStack&#40;&#41; I do not see this happening.&nbsp; In fact, there is no other reference to ulCriticalNesting anywhere in that file.
+Second, I see that ulCriticalNesting defaults to 9999.&nbsp; In a different port I found a note that says that this is to ensure that FreeRTOS knows that interrupts are off during initialization.&nbsp; It indicates that this will be set to 0 once the first task is started.&nbsp; I do not see where this happens&#8230;it is not in any of these:
+&nbsp;&nbsp;&nbsp; vTaskStartScheduler&#40;&#41;
+&nbsp;&nbsp;&nbsp; xPortStartScheduler&#40;&#41;
+&nbsp;&nbsp;&nbsp; prvSetupTimerInterrupt&#40;&#41;
+&nbsp;&nbsp;&nbsp; vPortISRStartFirstTask&#40;&#41;
+I THINK that this should be in vPortISRStartFirstTask&#40;&#41; prior to calling the portRESTORE&#95;CONTEXT&#40;&#41; macro.
+Can anybody shed some light on what is going on here?
+&#45;-Chris
+</div></div><div class="thread-post"><h3 class="thread-post-title">ulCriticalnesting not on initial task stack?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 27, 2007</div><div class="thread-post-content">The critical section nesting depth is zero when the task first starts.&nbsp; It is the last thing placed onto the initial task stack in pxPortInitialiseStack&#40;&#41; with the following line:
+/&#42; Some optimisation levels use the stack differently to others.&nbsp; This 
+means the interrupt flags cannot always be stored on the stack and will
+instead be stored in a variable, which is then saved as part of the
+tasks context. &#42;/
+&#42;pxTopOfStack = portNO&#95;CRITICAL&#95;SECTION&#95;NESTING;
+The value is then popped off the stack and placed into the ulCriticalNesting within the macro portRESTORE&#95;CONTEXT&#40;&#41; with the following lines:
+/&#42; The critical nesting depth is the first item on the stack. &#42;/&nbsp;&nbsp;&nbsp; 
+/&#42; Load it into the ulCriticalNesting variable. &#42;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&quot;LDR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R0, =ulCriticalNesting&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nt&quot;&nbsp;&nbsp;&nbsp; 
+&quot;LDMFD&nbsp;&nbsp;&nbsp; LR&#33;, &#123;R1&#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nt&quot;&nbsp;&nbsp;&nbsp; 
+&quot;STR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R1, &#91;R0&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nt&quot;&nbsp;&nbsp;&nbsp; 
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ulCriticalnesting not on initial task stack?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wz2b">wz2b</a> on May 27, 2007</div><div class="thread-post-content">Thanks.&nbsp; I missed that.&nbsp; In light of this, there must be something else wrong with the initial stack, such that when it attempts to context switch to the first task it has an invalid LR and aborts.&nbsp; I will trace further.
+I was reflecting on this problem last night, and it got me wondering something more generic.&nbsp; My understanding of the purpose of keeping a critical nesting depth does not mesh with the idea of having to preserve that nesting depth across context switches.&nbsp; In other words, if you were to enter a critical section, then there should not even be a context switch until you have exited that critical section.&nbsp; Within that context, you may want to call functions that also have critical sections; the nesting depth prevents interrupts from being turned back on until you have exited the last of those, i.e. the outer-most; nesting depth goes to 0 and you are no longer in any critical section.
+Why, then, should the nesting depth be part of the task state, rather than a system-wide global?
+&#45;-C
+</div></div><div class="thread-post"><h3 class="thread-post-title">ulCriticalnesting not on initial task stack?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 27, 2007</div><div class="thread-post-content">99 times out of 100 this is because you are not in Supervisor mode when you attempt to start the scheduler.&nbsp; It is easiest to call main&#40;&#41; in Supervisor mode.&nbsp; Use the startup files provided with the port you based yours on.
+While a preemptive context switch will not occur from within a critical section, you still have the option to perform a switch if you want to.&nbsp; If you do this you can be assured that interrupts are disabled when the task starts running again &#40;but will not necessarily be disabled while other tasks are running&#41;.&nbsp; This makes for a very flexible system, more so that &#40;most?&#41; other systems?
+Dave.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ulCriticalnesting not on initial task stack?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wz2b">wz2b</a> on May 27, 2007</div><div class="thread-post-content">Yep look at that, I was ending in SYSTEM mode, not SUPERVISOR mode.&nbsp; Ha&#33;
+I make it all the way to the idle task now.&nbsp; For some reason when the idle task yields it puts me into a bad place &#40;instead of starting my first real task&#41;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ulCriticalnesting not on initial task stack?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 27, 2007</div><div class="thread-post-content">Are you &#8211; 
+Setting up stacks of Supervisor and IRQ modes?&nbsp; There is no need to setup stacks for User mode as this is done when the task is created.
+Vectoring directly to your SWI and IRQ handlers without going through some intermediary code?
+Dave.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ulCriticalnesting not on initial task stack?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wz2b">wz2b</a> on May 27, 2007</div><div class="thread-post-content">Good point.&nbsp; Yes I am setting up USR &#8212; I will fix that next.&nbsp; I also set up an abort stack that I probably also don&#8217;t need, since abort does nothing but loop to itself.&nbsp; &#40;Maybe later I will want abort to do something more useful&#41;.
+I noticed some questions about initialization elsewhere on the forums.&nbsp; I will post my startup for the LPC2129/GCC in case it is useful for others.&nbsp; There are two snippets attached: my startup.s as well as lpc2129.x &#40;linker script&#41;.&nbsp; I tried to make the linker configuration reasonably minimal.&nbsp; It allows for placement and location of initialized data at separate locations &#40;ram and flash&#41; and all of that seems to work well for me so far.
+&#45;&#8211; cut here &#8212;
+&#35;define RAM&#95;BASE 0x40000000
+&#35;define RAM&#95;SIZE 16&#42;1024
+&#35;define USR&#95;STACK&#95;SIZE&nbsp; 2048
+&#35;define USR&#95;STACK&#95;POINTER &#40;RAM&#95;BASE + RAM&#95;SIZE&#41;
+&#35;define Mode&#95;USR&nbsp;&nbsp;&nbsp; 0x10
+&#35;define Mode&#95;FIQ&nbsp;&nbsp;&nbsp; 0x11
+&#35;define Mode&#95;IRQ&nbsp;&nbsp;&nbsp; 0x12
+&#35;define Mode&#95;SVC&nbsp;&nbsp;&nbsp; 0x13
+&#35;define Mode&#95;ABT&nbsp;&nbsp;&nbsp; 0x17
+&#35;define Mode&#95;UNDEF&nbsp; 0x1B
+&#35;define Mode&#95;SYS&nbsp;&nbsp;&nbsp; 0x1F
+&#35;define I&#95;Bit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x80
+&#35;define F&#95;Bit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x40
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .text
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .global &#95;start
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .global undef&#95;routine
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .global data&#95;abort
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .global prefetch&#95;abort
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .global startup&#95;routine
+&#95;start:
+startup&#95;routine:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // set the SYS, I, and F bits in the CONTROL field of the CPU status register
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // I is the interrupt mask
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // F is the fast irq mask
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // T indicates if we are in thumb mode &#8230; it is bit 0x20
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // The lower 5 bits are the MODE bits.&nbsp; Mode 0x1F is System mode.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msr cpsr&#95;c, &#35;Mode&#95;SYS | I&#95;Bit | F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Load the static pointer to top of ram
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr SP,=USR&#95;STACK&#95;POINTER
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Call the low level initialization
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bl lowlevelinit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // switch to irq mode and set his stack pointer too
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msr cpsr&#95;c, &#35;Mode&#95;IRQ | F&#95;Bit | I&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr SP,=&#40;USR&#95;STACK&#95;POINTER-USR&#95;STACK&#95;SIZE-4&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // switch to undefined mode and set his stack pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msr cpsr&#95;c, &#35;Mode&#95;UNDEF | F&#95;Bit | I&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr SP,=&#40;USR&#95;STACK&#95;POINTER-USR&#95;STACK&#95;SIZE-USR&#95;STACK&#95;SIZE-4&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // switch to fast irq mode and set his stack pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msr cpsr&#95;c, &#35;Mode&#95;FIQ | F&#95;Bit | I&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr SP,=&#40;USR&#95;STACK&#95;POINTER-USR&#95;STACK&#95;SIZE-USR&#95;STACK&#95;SIZE-USR&#95;STACK&#95;SIZE-4&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // switch to abort mode and set his stack pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msr cpsr&#95;c, &#35;Mode&#95;ABT | F&#95;Bit | I&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr SP,=&#40;USR&#95;STACK&#95;POINTER-USR&#95;STACK&#95;SIZE-USR&#95;STACK&#95;SIZE-USR&#95;STACK&#95;SIZE-USR&#95;STACK&#95;SIZE-4&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // switch to supervisor&nbsp; mode and set his stack pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msr cpsr&#95;c, &#35;Mode&#95;SVC | F&#95;Bit | I&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr SP,=&#40;USR&#95;STACK&#95;POINTER-USR&#95;STACK&#95;SIZE-USR&#95;STACK&#95;SIZE-USR&#95;STACK&#95;SIZE-USR&#95;STACK&#95;SIZE-USR&#95;STACK&#95;SIZE-4&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Switch back to supervisor
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msr cpsr&#95;c, &#35;Mode&#95;SVC
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr SP,=USR&#95;STACK&#95;POINTER
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; clear&#95;bss
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; initialize&#95;sdata
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a2, &#35;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Fill value &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fp, a2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Null frame pointer &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r7, a2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Null frame pointer for Thumb &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r0, &#35;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; no arguments&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1, &#35;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; no argv either &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b main
+/////////////////////////////////////////////////////////////////////////////
+//
+// Clear BSS
+//
+/////////////////////////////////////////////////////////////////////////////
+clear&#95;bss:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r1, =&#95;&#95;bss&#95;start&#95;&#95;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r3, =&#95;&#95;bss&#95;end&#95;&#95;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; subs&nbsp;&nbsp;&nbsp; r3, r3, r1
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; beq&nbsp;&nbsp;&nbsp;&nbsp; .end&#95;clear&#95;loop
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp; r2, &#35;0
+.clear&#95;loop:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strb&nbsp;&nbsp;&nbsp; r2, &#91;r1&#93;, &#35;1
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; subs&nbsp;&nbsp;&nbsp; r3, r3, &#35;1
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bgt&nbsp;&nbsp;&nbsp;&nbsp; .clear&#95;loop
+.end&#95;clear&#95;loop:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp; pc, lr
+/////////////////////////////////////////////////////////////////////////////
+//
+// Initialize data section
+//
+/////////////////////////////////////////////////////////////////////////////
+initialize&#95;sdata:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r1, =&#95;etext
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r2, =&#95;&#95;data&#95;start&#95;&#95;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r3, =&#95;&#95;data&#95;end&#95;&#95;
+loopdat:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cmp r2, r3
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldrlo r0, &#91;r1&#93;, &#35;4
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strlo r0, &#91;r2&#93;, &#35;4
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blo loopdat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // done
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp; pc, lr
+&#45;&#8211; end &#8212;
+Now, in order to use this you have to have the corresponding linker configuration file, that defines the correct symbols for various pieces of memory.&nbsp; Here&#8217;s what I came up with:
+&#45;&#8211; cut here &#8212;
+/&#42; Default linker script, for normal executables &#42;/
+MEMORY
+&#123;
+&nbsp; /&#42;
+&nbsp;&nbsp; &#42; Code space is 256KB minus 8KB for the bootloader area
+&nbsp;&nbsp; &#42; that cannot be used
+&nbsp;&nbsp; &#42;/
+&nbsp; text&nbsp;&nbsp; &#40;rx&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : ORIGIN = 0x00000000,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LENGTH = 0x3E000
+&nbsp; /&#42;
+&nbsp;&nbsp; &#42; RealMonitor &#40;if present&#41; uses 0x40000040 &#8211; 0x4000011F
+&nbsp;&nbsp; &#42; In System Programming uses 0x40000120 &#8211; 0x400001FF
+&nbsp;&nbsp; &#42; Flash programming commands use the top 32 bytes of on-chip RAM.
+&nbsp;&nbsp; &#42;
+&nbsp;&nbsp; &#42; The resulting useful ram is 0x40000200 through 0x40003FE0
+&nbsp;&nbsp; &#42;/
+&nbsp; data&nbsp;&nbsp; &#40;rwx&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : ORIGIN = 0x40000200,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LENGTH = 0x3DE0
+&#125;
+/&#42; OUTPUT&#95;FORMAT&#40;&quot;elf32-littlearm&quot;&#41; &#42;/
+OUTPUT&#95;ARCH&#40;arm7tdmi&#41;
+ENTRY&#40;&#95;start&#41;
+SECTIONS
+&#123;
+&nbsp; .text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :
+&nbsp; &#123;
+&nbsp;&nbsp;&nbsp; &#95;start&#95;of&#95;text&#95; = .;
+&nbsp;&nbsp;&nbsp; &#42;&#40;.vectors&#41;
+&nbsp;&nbsp;&nbsp; &#42;&#40;.text .stub .text.&#42;&#41;
+&nbsp;&nbsp;&nbsp; &#42;&#40;.glue&#95;7t&#41; &#42;&#40;.glue&#95;7&#41;
+&nbsp;&nbsp;&nbsp; &#42;&#40;.rodata&#41;
+&nbsp; &#125; &gt; text
+&nbsp; &#95;etext = .;
+&nbsp; /&#42; RAM &#42;/
+&nbsp; .data : AT &#40; ADDR&#40;.text&#41; + SIZEOF&#40;.text&#41; &#41;
+&nbsp; &#123;
+&nbsp;&nbsp;&nbsp; &#95;&#95;data&#95;start&#95;&#95; = . ;
+&nbsp;&nbsp;&nbsp; . = ALIGN&#40;2&#41;;
+&nbsp;&nbsp;&nbsp; &#42;&#40;.data .data.&#42; .gnu.linkonce.d.&#42;&#41;
+&nbsp;&nbsp;&nbsp; SORT&#40;CONSTRUCTORS&#41;
+&nbsp;&nbsp;&nbsp; . = ALIGN&#40;2&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;data&#95;end&#95;&#95; = . ;
+&nbsp; &#125; &gt; data
+&nbsp; .data1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.data1&#41; &#125;
+&nbsp; .tdata&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.tdata .tdata.&#42; .gnu.linkonce.td.&#42;&#41; &#125;
+&nbsp; .tbss&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.tbss .tbss.&#42; .gnu.linkonce.tb.&#42;&#41; &#42;&#40;.tcommon&#41; &#125;
+&nbsp; .eh&#95;frame&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; KEEP &#40;&#42;&#40;.eh&#95;frame&#41;&#41; &#125;
+&nbsp; .gcc&#95;except&#95;table&nbsp;&nbsp; : &#123; &#42;&#40;.gcc&#95;except&#95;table&#41; &#125;
+&nbsp; .dynamic&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.dynamic&#41; &#125;
+&nbsp; &#95;edata = .;
+&nbsp; PROVIDE &#40;edata = .&#41;;
+&nbsp; /&#42; Uninitialized data &#42;/
+&nbsp; &#95;&#95;bss&#95;start = .;
+&nbsp; &#95;&#95;bss&#95;start&#95;&#95; = .;
+&nbsp; .bss&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :
+&nbsp; &#123;
+&nbsp;&nbsp; &#42;&#40;.dynbss&#41;
+&nbsp;&nbsp; &#42;&#40;.bss .bss.&#42; .gnu.linkonce.b.&#42;&#41;
+&nbsp;&nbsp; &#42;&#40;COMMON&#41;
+&nbsp;&nbsp; /&#42; Align here to ensure that the .bss section occupies space up to
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;end.&nbsp; Align after .bss to ensure correct alignment even if the
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .bss section disappears because there are no input sections.&nbsp; &#42;/
+&nbsp;&nbsp; . = ALIGN&#40;32 / 8&#41;;
+&nbsp; &#125;
+&nbsp; . = ALIGN&#40;32 / 8&#41;;
+&nbsp; &#95;end = .;
+&nbsp; &#95;bss&#95;end&#95;&#95; = . ; &#95;&#95;bss&#95;end&#95;&#95; = . ; &#95;&#95;end&#95;&#95; = . ;
+&nbsp; PROVIDE &#40;end = .&#41;;
+&nbsp; /&#42; Stabs debugging sections.&nbsp; &#42;/
+&nbsp; .stab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.stab&#41; &#125;
+&nbsp; .stabstr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.stabstr&#41; &#125;
+&nbsp; .stab.excl&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.stab.excl&#41; &#125;
+&nbsp; .stab.exclstr&nbsp; 0 : &#123; &#42;&#40;.stab.exclstr&#41; &#125;
+&nbsp; .stab.index&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.stab.index&#41; &#125;
+&nbsp; .stab.indexstr 0 : &#123; &#42;&#40;.stab.indexstr&#41; &#125;
+&nbsp; .comment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.comment&#41; &#125;
+&nbsp; /&#42; DWARF debug sections.
+&nbsp;&nbsp;&nbsp;&nbsp; Symbols in the DWARF debugging sections are relative to the beginning
+&nbsp;&nbsp;&nbsp;&nbsp; of the section so we begin them at 0.&nbsp; &#42;/
+&nbsp; /&#42; DWARF 1 &#42;/
+&nbsp; .debug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#41; &#125;
+&nbsp; .line&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.line&#41; &#125;
+&nbsp; /&#42; GNU DWARF 1 extensions &#42;/
+&nbsp; .debug&#95;srcinfo&nbsp; 0 : &#123; &#42;&#40;.debug&#95;srcinfo&#41; &#125;
+&nbsp; .debug&#95;sfnames&nbsp; 0 : &#123; &#42;&#40;.debug&#95;sfnames&#41; &#125;
+&nbsp; /&#42; DWARF 1.1 and DWARF 2 &#42;/
+&nbsp; .debug&#95;aranges&nbsp; 0 : &#123; &#42;&#40;.debug&#95;aranges&#41; &#125;
+&nbsp; .debug&#95;pubnames 0 : &#123; &#42;&#40;.debug&#95;pubnames&#41; &#125;
+&nbsp; /&#42; DWARF 2 &#42;/
+&nbsp; .debug&#95;info&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;info .gnu.linkonce.wi.&#42;&#41; &#125;
+&nbsp; .debug&#95;abbrev&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;abbrev&#41; &#125;
+&nbsp; .debug&#95;line&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;line&#41; &#125;
+&nbsp; .debug&#95;frame&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;frame&#41; &#125;
+&nbsp; .debug&#95;str&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;str&#41; &#125;
+&nbsp; .debug&#95;loc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;loc&#41; &#125;
+&nbsp; .debug&#95;macinfo&nbsp; 0 : &#123; &#42;&#40;.debug&#95;macinfo&#41; &#125;
+&nbsp; /&#42; SGI/MIPS DWARF 2 extensions &#42;/
+&nbsp; .debug&#95;weaknames 0 : &#123; &#42;&#40;.debug&#95;weaknames&#41; &#125;
+&nbsp; .debug&#95;funcnames 0 : &#123; &#42;&#40;.debug&#95;funcnames&#41; &#125;
+&nbsp; .debug&#95;typenames 0 : &#123; &#42;&#40;.debug&#95;typenames&#41; &#125;
+&nbsp; .debug&#95;varnames&nbsp; 0 : &#123; &#42;&#40;.debug&#95;varnames&#41; &#125;
+&nbsp; .stack 0x40003FDC :
+&nbsp; &#123;
+&nbsp;&nbsp;&nbsp; &#95;stack = .;
+&nbsp;&nbsp;&nbsp; &#42;&#40;.stack&#41;
+&nbsp; &#125;
+&nbsp; .note.gnu.arm.ident 0 : &#123; KEEP &#40;&#42;&#40;.note.gnu.arm.ident&#41;&#41; &#125;
+&nbsp; /DISCARD/ : &#123; &#42;&#40;.note.GNU-stack&#41; &#125;
+&nbsp; PROVIDE &#40;&#95;&#95;stack&#95;&#95; = 0xa00&#41; ;
+&#125;
+&#45;&#8211; end &#8212;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

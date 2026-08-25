@@ -1,0 +1,166 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vPortYield and barriers on Cortex M0 port - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2015/freertos_vPortYield_and_barriers_on_Cortex_M0_port_cb5095c5j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="vPortYield and barriers on Cortex M0 port - FreeRTOS" />
+<meta property="og:description" content="vPortYield and barriers on Cortex M0 portPosted by evading on March 9, 2015I have a question regarding vPortYield and the &#095;asm volatile( &#8220;dsb&#8221; ); instructions. As I understand it that is purely a hardware memory barrier that prevents the CPU from reordering instructions as it executes them. Shouldn&#8217;t there also be a &#095;asm volatile(&#8220;&#8221; ::: &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2015/freertos_vPortYield_and_barriers_on_Cortex_M0_port_cb5095c5j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="vPortYield and barriers on Cortex M0 portPosted by evading on March 9, 2015I have a question regarding vPortYield and the &#095;asm volatile( &#8220;dsb&#8221; ); instructions. As I understand it that is purely a hardware memory barrier that prevents the CPU from reordering instructions as it executes them. Shouldn&#8217;t there also be a &#095;asm volatile(&#8220;&#8221; ::: [&hellip;]" />
+<meta name="twitter:title" content="vPortYield and barriers on Cortex M0 port - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202490' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202490' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202490' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202490' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145580' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2015%2Ffreertos_vPortYield_and_barriers_on_Cortex_M0_port_cb5095c5j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2015%2Ffreertos_vPortYield_and_barriers_on_Cortex_M0_port_cb5095c5j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145580">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2015_freertos_support_forum_archive_index.html/">March 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">vPortYield and barriers on Cortex M0 port</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/evading">evading</a> on March 9, 2015</div><div class="thread-post-content">I have a question regarding vPortYield and the &#95;<em>asm volatile( &#8220;dsb&#8221; ); instructions. As I understand it that is purely a hardware memory barrier that prevents the CPU from reordering instructions as it executes them.
+Shouldn&#8217;t there also be a &#95;</em>asm volatile(&#8220;&#8221; ::: &#8220;memory&#8221;); (in the GCC case) to prevent the compiler from reordering instructions at compile time?
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortYield and barriers on Cortex M0 port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 9, 2015</div><div class="thread-post-content">I think in the case of the M0 the barrier instructions are not necessary &#8211; in fact that is true for the majority of M3 and M4 implementations on the market too.  Although barriers are required to be strictly in conformance with what a Cortex-M core could do, in a different implementation, it is only really now with the M7 cores that there are actual implementations that need them.
+<blockquote>
+  Shouldn&#8217;t there also be a __asm volatile(&#8220;&#8221; ::: &#8220;memory&#8221;); 
+  (in the GCC case) to prevent the compiler from reordering 
+  instructions at compile time?
+</blockquote>
+Please elaborate on your rationale for that &#8211; so we can determine if it is necessary, as your comment seems to be related more to the compiler than the hardware.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortYield and barriers on Cortex M0 port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/evading">evading</a> on March 9, 2015</div><div class="thread-post-content">I&#8217;m no sure about this but since the compiler could do instruction scheduling at compile time for some optimization levels, maybe a hardware barrier instruction is not sufficient in all cases. Or maybe the software barrier is implied when using a hardware barrier instruction?
+I&#8217;m sorry I can&#8217;t be more specific but I&#8217;m trying to figure this out myself.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortYield and barriers on Cortex M0 port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jasonrlund">jasonrlund</a> on March 9, 2015</div><div class="thread-post-content">I believe the &#8220;volatile&#8221; keyword in the ASM call signals the compiler to not reorder in such a way where causality is broken for that function.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortYield and barriers on Cortex M0 port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/evading">evading</a> on March 10, 2015</div><div class="thread-post-content">Yes, as I understand it (from this source for example http://www.ethernut.de/en/documents/arm-inline-asm.html) that is only for the asm instructions in that asm statement, without a memory barrier the setting of portNVIC<em>INT</em>CTRL could actually be moved (by the compiler) to after the asm instructions. Unless the compiler implicitly see the hardware barriers as a software barrier as well.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortYield and barriers on Cortex M0 port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andymcc0">andymcc0</a> on March 10, 2015</div><div class="thread-post-content">No, that is <strong>not</strong> what the <code>volatile</code> storage class qualifier <em>explicitly</em> does.  It tells the compiler that it cannot assume that a previously read value of the <code>volatile</code> variable is still valid, and so it must be re-read, so the second or subsequent read in the code must <strong>not</strong> be optimised out.  An obvious example is when the variable is a hardware status register that is being polled for a bit to change state.  It does not guarantee that &#8216;out of order execution&#8217; will not occur.
+The <code>dsb</code> and <code>dmb</code> ARM assembler instructions will guarantee that all memory accesses will happen before any subsequent memory accesses or instructions, respectively.  The <code>isb</code> instruction will guarantee that the subsequent instructions will be re-fetched, bypassing any pipeline.  None makes any guarantee about the order before or after.  The use of these instructions in relation to the <code>volatile</code> keyword is entirely compiler dependent, so if this is important for your application, you will have to include these instructions as required in your code.
+I clearly (even painfully) remember having to scatter <code>EIEIO</code>* instructions all over some PowerPC code that was heavily interractive with hardware via a bus-bridge with a posted write capability.  I have had no such problems (yet) with ARM Cortex-M based processors, but I&#8217;ve only used M3/4.
+<code>*</code> &#8482; Old MacDonald Farm Enterprises Inc.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortYield and barriers on Cortex M0 port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 10, 2015</div><div class="thread-post-content">Here is the docs on the use of volatile with an asm statement:
+https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html#Volatile
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortYield and barriers on Cortex M0 port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jasonrlund">jasonrlund</a> on March 11, 2015</div><div class="thread-post-content">Admittedly, although I understand the volatile storage class qualifier I did not understand the use of it as a qualifier to an ASM function and took a low-grade guess at it. Thank you for the clarification. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortYield and barriers on Cortex M0 port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/evading">evading</a> on March 11, 2015</div><div class="thread-post-content">Yes, and that doc contains the statement that &#8220;Note that the compiler can move even volatile asm instructions relative to other code, including across jump instructions.&#8221;
+So basically, unless the &#8220;dsb&#8221; and &#8220;isb&#8221; instructions imply a software barrier, the vPortYield code:
+<pre><code>/* Set a PendSV to request a context switch. */                                                       
+*( portNVIC_INT_CTRL ) = portNVIC_PENDSVSET;                                                          
+/* Barriers are normally not required but do ensure the code is completely                            
+within the specified behaviour for the architecture. */                                               
+__asm volatile( "dsb" );                                                                                                     
+__asm volatile( "isb" );   
+</code></pre>
+could potentially be rearanged by the optimizer to be equivalent to
+<pre><code>/* Barriers are normally not required but do ensure the code is completely                            
+within the specified behaviour for the architecture. */                                               
+__asm volatile( "dsb" );                                                                              
+__asm volatile( "isb" );
+/* Set a PendSV to request a context switch. */                                                       
+*( portNVIC_INT_CTRL ) = portNVIC_PENDSVSET;                                                          
+</code></pre>
+Or could it?
+A barrier like:
+    asm volatile(&#8220;&#8221;:::&#8221;memory&#8221;);
+would guarantee it, but I don&#8217;t know enough about GCC to say for sure that it is needed.
+I just noted that this is how linux kernel does it:
+<pre><code>173 #define isb() __asm__ __volatile__ ("isb" : : : "memory")
+174 #define dsb() __asm__ __volatile__ ("dsb" : : : "memory")
+</code></pre>
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

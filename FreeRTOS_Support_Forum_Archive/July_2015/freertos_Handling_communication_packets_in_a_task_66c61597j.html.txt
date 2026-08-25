@@ -1,0 +1,281 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Handling communication packets in a task - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2015/freertos_Handling_communication_packets_in_a_task_66c61597j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Handling communication packets in a task - FreeRTOS" />
+<meta property="og:description" content="Handling communication packets in a taskPosted by owaisfazal on July 9, 2015Hello everyone, I would like to have some advice regarding an application that I am building which requires handling data packets coming from an external device via USART. I should mention first that I am working with SAMD21 Microcontroller from Atmel and using Atmel &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2015/freertos_Handling_communication_packets_in_a_task_66c61597j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Handling communication packets in a taskPosted by owaisfazal on July 9, 2015Hello everyone, I would like to have some advice regarding an application that I am building which requires handling data packets coming from an external device via USART. I should mention first that I am working with SAMD21 Microcontroller from Atmel and using Atmel [&hellip;]" />
+<meta name="twitter:title" content="Handling communication packets in a task - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202540' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202540' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202540' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202540' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145323' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2015%2Ffreertos_Handling_communication_packets_in_a_task_66c61597j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2015%2Ffreertos_Handling_communication_packets_in_a_task_66c61597j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145323">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2015_freertos_support_forum_archive_index.html/">July 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Handling communication packets in a task</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/owaisfazal">owaisfazal</a> on July 9, 2015</div><div class="thread-post-content">Hello everyone,
+I would like to have some advice regarding an application that I am building which requires handling data packets coming from an external device via USART. I should mention first that I am working with SAMD21 Microcontroller from Atmel and using Atmel Studio for development.
+I am using a simple ring buffer to handle the incoming data over USART and once a message is received I set an event flag. Since the data packets are variable in length I am using a timeout on the packets so as soon as the timer runs out and no further data is received, the flag is set. Now, my task is waiting for port_MaxDelay on this event flag to be set, once the flag is set I read the ring buffer and evaluate the message. This is working as far as I can say until now.
+What I want to ask here is, since the task has a vtaskdelay which means that if the incoming messages are very fast lets say if the task delay is 500 then any messages coming in this duration will be lost. How can I handle this case so that a complete communication is done without any messages lost and what are the general practices for handling such communication?
+Thanks in advance. Hope to hear from someone soon.
+Regards,
+Owais.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Handling communication packets in a task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 9, 2015</div><div class="thread-post-content">I&#8217;m not sure I understand your question, but perhaps discussing will make it clearer.
+Which task is blocking using vTaskDelay()?  The one that is also reading from the ring buffer.  If so, could it not block on taking event group (with the appropriate timeout) rather than using vTaskDelay() and then using an infinite block time on the event group?
+The bytes are being sent to a ring buffer by an interrupt, so presumably provided the ring buffer is large enough, no messages will actually get missed even if the task reading then from the ring buffer is blocked &#8211; although it might be that the ring buffer contains more than one message at a time.
+Is the problem that the event group is only binary, yet the ring buffer might contain more than one message?  If that is the case could you using a counting semaphore instead of the event group?  Or use a task notification like a counting semaphore (which would be faster anyway).  The semaphore/notification value will then keep a count of the number of messages in the ring buffer.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Handling communication packets in a task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/owaisfazal">owaisfazal</a> on July 9, 2015</div><div class="thread-post-content">Yes you got it right.
+Yes, there is just one task reading from the ring buffer and waiting on the event flag for an infinite block time set by port_MaxDelay. I shall try this instead of a task delay so the task is ready whenever the flag becomes set.
+Yes correct, the bytes are being sent to the ring buffer from the interrupt handler. The size of the ring buffer is 128 at the moment, I think I should increase it as well so that it can hold more messages.
+Yes, the event group is binary, I have created 2 different binary flags in the event group, one indicates a message ready and the other one triggers a special action inside the task(configuring the external device to a different role). To be more specific, each messages ends with a <cr><lf>. If I understood correctly, you mean that I could use a counting semaphore instead of an event group bit and after receiving a <lf> I increase the count of semaphore which will then be a track keeper of the incoming messages, did I understand this correctly?
+Thanks for the quick response.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Handling communication packets in a task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 9, 2015</div><div class="thread-post-content">Yes &#8211; if each time a new message is received you &#8216;give&#8217; the semaphore, 
+and each time you process the message you &#8216;take&#8217; the semaphore then the 
+semaphore holds a count of the number of messages in the ring buffer.
+If there are no messages in the ring buffer, the semaphore count will be 
+zero (so it cannot be taken), and when you attempt to take the semaphore 
+you can enter the blocked state, and be unblocked immediately that the 
+semaphore is given (and therefore know the ring buffer contains a 
+message) or a timeout (the return value of the xSemaphoreTake() function 
+will be pdFALSE).
+If the semaphore count is already greater than zero when you attempt to 
+take the semaphore, because the buffer already contains one or more 
+messages, then the call to xSemaphoreTake() will return immediately.
+Using a semaphore for that is fine &#8211; but the same functionality can be 
+achieved in a lighter touch and faster way using the vTaskNotifyGive() 
+and ulTaskNotifyTake() API functions.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Handling communication packets in a task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/owaisfazal">owaisfazal</a> on July 9, 2015</div><div class="thread-post-content">Thanks for the detailed response.
+I shall give it a try. In the meantime, since I was using another event flag in the same group for triggering another action, can this also be handled using a semaphore in the same task which reads from the ring buffer?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Handling communication packets in a task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/owaisfazal">owaisfazal</a> on July 10, 2015</div><div class="thread-post-content">Any suggestion on the above post?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Handling communication packets in a task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 10, 2015</div><div class="thread-post-content">I think there are several ways you could do it.  For example&#8230;
+You could use the <a 
+href="http://www.freertos.org/xTaskNotifyFromISR.html">xTaskNotifyGiveFromISR()</a> 
+API function with the eSetBits action instead of the event group &#8211; but 
+then you are back to only have a binary indication that there is 
+something in the circular buffer, rather than an indication of how many 
+messages were in the circular buffer.  You would then need another 
+method of knowing how many messages were in the buffer.
+Would could use a counting semaphore to count the number of messages in 
+the buffer, but the task notification to unblock the task:
+<pre>
+if( <a 
+href="http://www.freertos.org/xTaskNotifyFromISR.html">xTaskNotifyWait( 
+. . . )</a> == pdPASS )
+{
+     /* Is the bit set that says there is something in the buffer? */
+     if( notification value & something in buffer bit )
+     {
+         while( xSemaphoreTake( xSemaphore, 0 ) /* no block time */
+         {
+             process message from buffer.
+         }
+     }
+     /* Is the bit set that says the other action needs performing? */
+     if( notification value & other action bit )
+     {
+         perform other action.
+     }
+}
+</pre>
+or more easily, as you are no longer using the semaphore for blocking, 
+just have the interrupt that places messages in the circular buffer 
+increment a variable each time a new message is placed into the buffer, 
+and have the task decrement the variable each time it removes a message 
+from the buffer.  The interrupt can increment the count without a 
+critical section, but the task would need to use a critical section when 
+it decremented the count.
+<pre>
+     while( message_count > 0 )
+     {
+         process message from buffer
+         taskENTER_CRITICAL();
+         message_count--;
+         taskEXIT_CRITICAL();
+</pre>
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Handling communication packets in a task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 10, 2015</div><div class="thread-post-content">The link to the xTaskNotifyWait() was wrong in the last post.  This is 
+the real link:
+http://www.freertos.org/xTaskNotifyWait.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Handling communication packets in a task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/owaisfazal">owaisfazal</a> on July 10, 2015</div><div class="thread-post-content">Thanks again for the response.
+I have some confusion regarding the xTicksToWait parameter in xSemaphoreTake, what exactly happens if the semaphore is not available and the xTicksToWait is set to portMaxDelay?
+I am still having trouble incorporating the counting semaphore into my application. the problem maybe that, I am writing a driver for the external module which communicates via USART with the microcontroller so in order to use the module I need to first configure it by sending some commands in the task setup (before the infinite loop of task). What I am using at the moment is as follows:
+<ol>
+<li>Receive a character from the module via the USART interrupt handler and put it in ring buffer</li>
+<li>Trigger a hardware counter from the USART handler after saving the received character</li>
+<li>If the counter reaches 0 and no further character is received from the module set an event flag bit.</li>
+<li>The task is blocked for portMaxDelay on the event group flag bit.</li>
+<li>As soon as the flag bit is set the task copies message from the ring buffer and does some action.</li>
+</ol>
+In the above mentioned method, I feel that the only thing I can include is the counting semaphore, which I can set in the USART handler after a complete message is received which is indicated by <lf>. Next coming to the task, I can take the semaphore before copying the message from the ring buffer and give the semaphore back this way I can keep track of the number of messages.
+please let me know if there is any fault in the above method or any reason where it might fail to do the job.
+Thanks again.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Handling communication packets in a task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 10, 2015</div><div class="thread-post-content">Probably the thing you are doing wrong is giving back the semaphore. 
+I&#8217;m not sure why you are doing that.  The interrupt should be the only 
+thing giving the semaphore as it is the only thing adding messages to 
+the buffer, and the task should be the only thing taking the semaphore 
+(and not giving it back) as it is the only thing removing messages from 
+the buffer.  That way the semaphore is a count of how many messages are 
+in the buffer.
+However, I can&#8217;t help thinking you are overcomplicating this problem. 
+I&#8217;m not sure why there is a hardware timer being used at all.  The 
+following pseudo code would seem the be something towards a workable 
+solution that is somewhat simpler.
+<pre>
+uint32_t ulMessagesWaiting = 0;
+void interrupt_handler( void )
+{
+char c;
+   c = read_character_from_uart();
+   place_character_in_ring_buffer( c );
+   /* Was the character the end of the
+    message. */
+   if( c == 'n' )
+   {
+     /* The buffer contains another
+     complete message. */
+     ulMessagesWaiting++;
+     /* Unblock the task using a
+     notification, or event group, or
+     whatever. */
+     unblock_task();
+   }
+}
+void vMyTask( void *pvParameters )
+{
+   /* Do whatever init is necessary
+   here. */
+   for( ;; )
+   {
+     /* Block to wait for the interrupt,
+     or any other event, using an event
+     group, task notification, or whatever. */
+     block();
+     /* The task has been unblocked, are
+     there any messages in the buffer?
+     If so, process them, and keep
+     processing them until there are no
+     more in the buffer. */
+     while( ulMessagesWaiting > 0 )
+     {
+       process_message_from_buffer();
+       /* Protect the ulMessagesWaiting variable
+       with a critical section because it is
+       updated from the interrupt. */
+       taskENTER_CRITICAL();
+       /* Message has been processed. */
+       ulMessagesWaiting--;
+       taskEXIT_CRITICAL();
+     }
+   }
+}
+</pre>
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

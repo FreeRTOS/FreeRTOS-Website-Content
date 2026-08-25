@@ -1,0 +1,442 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queue Problem - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2008/freertos_Queue_Problem_1971146.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Queue Problem - FreeRTOS" />
+<meta property="og:description" content="Queue ProblemPosted by davebryan on March 15, 2008Hi, I&#8217;ve implemented a queued UART Tx/Rx scheme based on the code in DemoCORTEX&#095;STM32F103&#095;IARserial.c file. I&#8217;m having intermittent problems with the Tx queue where the call to xQueueReceiveFromISR in the UART interrupt handler returns the incorrect data from the Tx queue. When incorrect data is returned I&#8217;ve found &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2008/freertos_Queue_Problem_1971146.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Queue ProblemPosted by davebryan on March 15, 2008Hi, I&#8217;ve implemented a queued UART Tx/Rx scheme based on the code in DemoCORTEX&#095;STM32F103&#095;IARserial.c file. I&#8217;m having intermittent problems with the Tx queue where the call to xQueueReceiveFromISR in the UART interrupt handler returns the incorrect data from the Tx queue. When incorrect data is returned I&#8217;ve found [&hellip;]" />
+<meta name="twitter:title" content="Queue Problem - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201587' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201587' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201587' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201587' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139949' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2008%2Ffreertos_Queue_Problem_1971146.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2008%2Ffreertos_Queue_Problem_1971146.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139949">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2008_freertos_support_forum_archive_index.html/">March 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Queue Problem</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davebryan">davebryan</a> on March 15, 2008</div><div class="thread-post-content">Hi,
+I&#8217;ve implemented a queued UART Tx/Rx scheme based on the code in DemoCORTEX&#95;STM32F103&#95;IARserial.c file. 
+I&#8217;m having intermittent problems with the Tx queue where the call to xQueueReceiveFromISR in the UART interrupt handler returns the incorrect data from the Tx queue. When incorrect data is returned I&#8217;ve found that the Tx queue &#8216;pcReadFrom&#8217; pointer equals the Tx queue &#8216;pcWriteTo&#8217; pointer. For correct operation the pcReadFrom pointer should be 1 or more bytes behind the pcWriteTo pointer.
+I only have a single task accessing the Tx/Rx queues. The fact that this behaviour happens intermittantly suggests some sort of timing issue but looking at the FreeRTOS queue.c code I can&#8217;t see how this can happen. 
+Has anyone come across this or have any clues ?
+Thanks
+Dave
+Code is as follows:
+void Uart&#95;init&#40;&#41;
+&#123;
+&nbsp; /&#42; create the receive &amp; transmit queues &#42;/
+&nbsp; hostRxQ = xQueueCreate&#40; 128, 1&#41;;
+&nbsp; hostTxQ = xQueueCreate&#40; 128, 1&#41;;
+&#125;
+portBASE&#95;TYPE Uart&#95;Tx&#40; unsigned char byte, portTickType timeout&#41;
+&#123;
+&nbsp; /&#42; try to queue the byte &#42;/
+&nbsp; portBASE&#95;TYPE txResult = xQueueSend&#40; hostTxQ, &amp;byte, timeout&#41;;
+&nbsp;&nbsp;&nbsp; 
+&nbsp; if &#40;txResult == pdTRUE&#41;
+&nbsp; &#123;
+&nbsp;&nbsp;&nbsp; /&#42; enable transmitter empty interrupts &#42;/
+&nbsp;&nbsp;&nbsp; USART&#95;ITConfig&#40;USART2, USART&#95;IT&#95;TXE, ENABLE&#41;;
+&nbsp; &#125;
+&nbsp; return txResult;
+&#125;
+void UART&#95;Interrupt&#95;Handler&#40;&#41;
+&#123;
+&nbsp; unsigned char ch;
+&nbsp; portBASE&#95;TYPE taskWokenByRxQAdd = pdFALSE;
+&nbsp; portBASE&#95;TYPE taskWokenByTxQRemove = pdFALSE;
+&nbsp; if &#40;USART&#95;GetITStatus&#40;USART2, USART&#95;IT&#95;TXE&#41; == SET&#41;
+&nbsp; &#123;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42; transmitter is ready for the next byte so see if there is more to transmit &#42;/
+&nbsp;&nbsp;&nbsp; if &#40;xQueueReceiveFromISR&#40; hostTxQ, &amp;ch, &amp;taskWokenByTxQRemove&#41; == pdTRUE&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; send the byte &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; USART&#95;SendData&#40;USART2, ch&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; disable further USART2 Transmit interrupts &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; USART&#95;ITConfig&#40;USART2, USART&#95;IT&#95;TXE, DISABLE&#41;;
+&nbsp;&nbsp;&nbsp; &#125;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42; Clear the USART2 transmit interrupt pending flag &#42;/
+&nbsp;&nbsp;&nbsp; USART&#95;ClearITPendingBit&#40;USART2, USART&#95;IT&#95;TXE&#41;; 
+&nbsp; &#125;
+&nbsp; if &#40;USART&#95;GetITStatus&#40;USART2, USART&#95;IT&#95;RXNE&#41; == SET&#41;
+&nbsp; &#123;
+&nbsp;&nbsp;&nbsp; /&#42; read the received byte from the receive data register &#42;/
+&nbsp;&nbsp;&nbsp; ch = USART&#95;ReceiveData&#40;USART2&#41;;
+&nbsp;&nbsp;&nbsp; taskWokenByRxQAdd = xQueueSendFromISR&#40; hostRxQ, &amp;ch, taskWokenByRxQAdd&#41;;
+&nbsp;&nbsp;&nbsp; /&#42; Clear the USART2 Receive interrupt &#42;/
+&nbsp;&nbsp;&nbsp; USART&#95;ClearITPendingBit&#40;USART2, USART&#95;IT&#95;RXNE&#41;;
+&nbsp; &#125;
+&nbsp; /&#42; see if we need to switch tasks &#42;/&nbsp;&nbsp;&nbsp; 
+&nbsp; portEND&#95;SWITCHING&#95;ISR&#40; taskWokenByRxQAdd || taskWokenByTxQRemove&#41;;
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davebryan">davebryan</a> on March 16, 2008</div><div class="thread-post-content">I found the problem: my UART interrupt handler was preempting xQueueSend&#40;&#41; &amp; interfering with the Tx queue manipulation. 
+I&#8217;m using a STM32 Cortex part &amp; the priority of my UART interrupt was greater than the FreeRTOS priority &#40;set using configKERNEL&#95;INTERRUPT&#95;PRIORITY&#41;. However, I&#8217;ve tried setting the UART interrupt to the same priority &#40;and lower&#41; as the OS but still UART interrupts preempt the critical section protected parts of xQueueSend&#40;&#41;.
+The only way I can stop this happening is to modify vPortSetInterruptMask&#40;&#41; to globally disable interrupts, using the &#8216;cpsid i&#8217; instruction, rather than setting a particular preemption level.
+Has anyone else come across this issue ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 16, 2008</div><div class="thread-post-content">&gt; However,
+&gt; I&#8217;ve tried setting the UART interrupt to the same priority 
+&gt; &#40;and lower&#41; as the
+&gt; OS but still UART interrupts preempt the critical section 
+&gt; protected parts of
+&gt; xQueueSend&#40;&#41;.
+I can&#8217;t see how that can be, unless there is a mistake somewhere with the priority masking.
+Are you doing something like this?
+NVIC&#95;InitStructure.NVIC&#95;IRQChannel = USART1&#95;IRQChannel;
+NVIC&#95;InitStructure.NVIC&#95;IRQChannelPreemptionPriority = configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY;
+NVIC&#95;InitStructure.NVIC&#95;IRQChannelSubPriority = 0;
+NVIC&#95;InitStructure.NVIC&#95;IRQChannelCmd = ENABLE;
+NVIC&#95;Init&#40; &amp;NVIC&#95;InitStructure &#41;;
+Where configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY is by default 15?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davebryan">davebryan</a> on March 16, 2008</div><div class="thread-post-content">Richard
+I had done exactly what you suggest in your reply and configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY is set to 15. I&#8217;ve also tried setting configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY to 0 but that made no difference. 
+As an experiement I added an extra line to vPortSetInterruptMask&#40;&#41; to read back the value written to the basepri register. When I stepped through the code I read 0 regardless of what ulKernelPriority is. 
+&#35;define vPortSetInterruptMask&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#95;&#95;asm volatile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &#40;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;&nbsp;&nbsp;&nbsp; push &#123; r0 &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n&quot;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;&nbsp;&nbsp;&nbsp; ldr r0, =ulKernelPriority&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n&quot;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;&nbsp;&nbsp;&nbsp; ldr r0, &#91;r0&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n&quot;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;&nbsp;&nbsp;&nbsp; msr basepri, r0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n&quot;&nbsp;&nbsp;&nbsp;&nbsp; 
+extra line -&gt;&nbsp;&nbsp;&nbsp; &quot;&nbsp;&nbsp;&nbsp; mrs r0, basepri&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n&quot;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#40;r0 always 0&#41;&nbsp;&nbsp;&nbsp; &quot;&nbsp;&nbsp;&nbsp; pop &#123; r0 &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &#41;
+It made me wonder whether the code runs in unpriviledged mode but that fact that &quot;cpsid i&quot; for vPortSetInterruptMask&#40;&#41; works suggests its running in priviledged mode, plus I can&#8217;t find any code to set unpriviledged mode.
+Do you have any other suggestions I can try ?
+Regards
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 16, 2008</div><div class="thread-post-content">I just tried your code on a Luminary Micro part &#40;also Cortex M3&#41; and it behaved as expected.
+Looking at the registers in the debugger I see that &quot; msr basepri, r0 n&quot; sets basepri to 0xe0.&nbsp; This is as expected as Luminary Micro only have 8 priority levels.
+&quot; msr basepri, r0 n&quot; loads 0xe0 into r0, then immediately &quot; pop &#123; r0 &#125; &quot; overwrites r0 again.
+Can you tell me where you placed the code to run your test?&nbsp; Before or after the scheduler is started, and, within an interrupt of within a task.
+I will have to dig out my STM32 to test this.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davebryan">davebryan</a> on March 16, 2008</div><div class="thread-post-content">Richard
+I put the code after the scheduler is started. I was stepping through the modified vPortSetInterruptMask&#40;&#41; code after the call to taskENTER&#95;CRITICAL&#40;&#41; in the xQueueGenericSend&#40;&#41; function &#40;line 504, queue.c&#41;
+Regards
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 16, 2008</div><div class="thread-post-content">Are you using IAR V5.xx?&nbsp; I just switched to IAR and find the same issue as you.&nbsp; It seams CONTROL&#91;0&#93; is clear when main&#40;&#41; is called so thread mode is not privileged.&nbsp; By default thread mode should be privileged.&nbsp; 
+I will get back to you on this.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davebryan">davebryan</a> on March 16, 2008</div><div class="thread-post-content">Richard
+I&#8217;m using GCC v4.2.1
+Regards
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 16, 2008</div><div class="thread-post-content">For some reason I thought you were using IAR.&nbsp; My original experiment was with GCC and it seemed to work ok.
+Which startup code are you using?&nbsp; Is the startup code setting handler mode to be non privileged &#40;what does reset jump to for the first position in the interrupt table&#41;?
+In your debugger, can you view bit 0 of the CONTROL register?&nbsp; Which debugger and JTAG interface are you using?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 17, 2008</div><div class="thread-post-content">I have come to the conclusion that the IAR debugger does not display the control registers correctly and that was a bit of a red herring.&nbsp; 
+I have tried a program that sets up a sys tick interrupt that toggles an LED every five seconds &#40;the tick frequency being 1KHz&#41;.&nbsp; main&#40;&#41; simply waits for 5 toggles, then disables interrupts, and sure enough the toggling LED stops, therefore the disabling of interrupts must be working correctly.&nbsp; Also, when doing this I can read back basepri during portDISABLE&#95;INTERRUPTS&#40;&#41; &#40;it is set to 0xff and is read back as 0xf0, which is expected, even though the IAR debugger shows its value as 0&#41;.
+I have tried this from both GCC and IAR.&nbsp; The IAR code for the STM32 is given below.&nbsp; I have also tried reading back the basepri from within the queue send function after the scheduler has been started &#40;as you did&#41;, and it seems to be working ok there too.
+There could potentially be an issue with the configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY setting, but without being able to read back the registers its a bit tricky to know.&nbsp; The ST library is somewhat confusing, but stepping through on the debugger it seems to set the priority to 0xF0 for the UART, which would I think be correct for the lowest priority available.
+Are you able to set up the smallest project possible that demonstrates the issue and send it to me?&nbsp; If so then send it to r &#40;dot&#41; barry &#95;at&#95; freertos.org.&nbsp; Also let me know the debug interface you are using.
+Regards.
+Test program follows:
+/&#42; Library includes. &#42;/
+&#35;include &quot;stm32f10x&#95;it.h&quot;
+&#35;include &quot;partest.h&quot;
+&#35;define configKERNEL&#95;INTERRUPT&#95;PRIORITY 255
+&#35;define portNVIC&#95;SYSTICK&#95;CTRL&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#40; &#40; volatile unsigned portLONG &#42;&#41; 0xe000e010 &#41;
+&#35;define portNVIC&#95;SYSTICK&#95;LOAD&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#40; &#40; volatile unsigned portLONG &#42;&#41; 0xe000e014 &#41;
+&#35;define portNVIC&#95;INT&#95;CTRL&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#40; &#40; volatile unsigned portLONG &#42;&#41; 0xe000ed04 &#41;
+&#35;define portNVIC&#95;SYSPRI2&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#40; &#40; volatile unsigned portLONG &#42;&#41; 0xe000ed20 &#41;
+&#35;define portNVIC&#95;SYSTICK&#95;CLK&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;0x00000004
+&#35;define portNVIC&#95;SYSTICK&#95;INT&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;0x00000002
+&#35;define portNVIC&#95;SYSTICK&#95;ENABLE&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;0x00000001
+&#35;define portNVIC&#95;PENDSVSET&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;0x10000000
+&#35;define portNVIC&#95;PENDSV&#95;PRI&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#40; &#40; &#40; unsigned portLONG &#41; configKERNEL&#95;INTERRUPT&#95;PRIORITY &#41; &lt;&lt; 16 &#41;
+&#35;define portNVIC&#95;SYSTICK&#95;PRI&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#40; &#40; &#40; unsigned portLONG &#41; configKERNEL&#95;INTERRUPT&#95;PRIORITY &#41; &lt;&lt; 24 &#41;
+unsigned portLONG ulToggleCount = 0;
+static void prvSetupHardware&#40; void &#41;;
+void vSysTickHandler&#40; void &#41;;
+void vSysTickHandler&#40; void &#41;
+&#123;
+static unsigned portLONG ulCount = 0;
+&#95;&#95;&#95;&#95;/&#42; Toggle the LED every 1000 ticks. &#42;/
+&#95;&#95;&#95;&#95;ulCount++;
+&#95;&#95;&#95;&#95;if&#40; ulCount &gt;= 1000 &#41;
+&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;ulCount = 0;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;/&#42; NOTE: Critical sections have been removed from this function. &#42;/
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;vParTestToggleLED&#40; 0 &#41;;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;ulToggleCount++;
+&#95;&#95;&#95;&#95;&#125;
+&#125;
+int main&#40; void &#41;
+&#123;
+&#35;ifdef DEBUG
+&nbsp; debug&#40;&#41;;
+&#35;endif
+&#95;&#95;&#95;&#95;prvSetupHardware&#40;&#41;;
+&#95;&#95;&#95;&#95;vParTestInitialise&#40;&#41;;
+&#95;&#95;&#95;&#95;/&#42; Set the system tick to be the lowest priority. &#42;/
+&#95;&#95;&#95;&#95;&#42;&#40;portNVIC&#95;SYSPRI2&#41; |= portNVIC&#95;SYSTICK&#95;PRI;
+&#95;&#95;&#95;&#95;
+&#95;&#95;&#95;&#95;portDISABLE&#95;INTERRUPTS&#40;&#41;;
+&#95;&#95;&#95;&#95;
+&#95;&#95;&#95;&#95;/&#42; Configure SysTick to interrupt at the requested rate. &#42;/
+&#95;&#95;&#95;&#95;&#42;&#40;portNVIC&#95;SYSTICK&#95;LOAD&#41; = 50000;
+&#95;&#95;&#95;&#95;&#42;&#40;portNVIC&#95;SYSTICK&#95;CTRL&#41; = portNVIC&#95;SYSTICK&#95;CLK | portNVIC&#95;SYSTICK&#95;INT | portNVIC&#95;SYSTICK&#95;ENABLE;
+&#95;&#95;&#95;&#95;
+&#95;&#95;&#95;&#95;/&#42; Start the sys tick &#8211; which will count up the ulToggleCount variable. &#42;/
+&#95;&#95;&#95;&#95;portENABLE&#95;INTERRUPTS&#40;&#41;;
+&#95;&#95;&#95;&#95;
+&#95;&#95;&#95;&#95;while&#40; ulToggleCount &lt; 5 &#41;
+&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;/&#42; Wait for five toggles of the LED.&nbsp; Toggling being performed
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;from within the sys tick handler. &#42;/
+&#95;&#95;&#95;&#95;&#125;
+&#95;&#95;&#95;&#95;
+&#95;&#95;&#95;&#95;/&#42; Disable interrupts should stop the sys tick from toggling the LED. &#42;/
+&#95;&#95;&#95;&#95;portDISABLE&#95;INTERRUPTS&#40;&#41;;
+&#95;&#95;&#95;&#95;
+&#95;&#95;&#95;&#95;for&#40; ;; &#41;;
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on March 17, 2008</div><div class="thread-post-content">Could this be a straight forward stack corruption problem? Do the task stacks need to be bigger?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davebryan">davebryan</a> on March 17, 2008</div><div class="thread-post-content">Richard
+I&#8217;ve looked through the startup code &amp; nothing meddles with the priviledge. I&#8217;m using OpenOCD/Insight &amp; looking at the CONTROL register, bit 0 is set to 0, i.e. unpriviledged, at the start of the reset vector. I&#8217;m not convinced that the OpenOCD Cortex-m3 system register read mechanism is working properly because the CPS instruction I&#8217;m using in vPortSetInterruptMask&#40;&#41; gets executed. This suggests that the code is running in priviledged mode.
+I have a workaround for now but I&#8217;ll have to do some more digging to get to the bottom of this.
+Regards
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/maxim79">maxim79</a> on March 17, 2008</div><div class="thread-post-content">Hi Dave, hi Richard,
+I had similar problem using queues with interrupts. My FreeRTOS tick is mapped to IRQ and all interrupts to FIQ. If I use the FreeRTOS implementation as is &#40;taskYield from SWI in queue.c&#41; I get a great jitter on the RTOS tick and miss interrupts. To overcome this problem I have made the following modifications:
+1&#46; immediate Yield from a critical section should be avoided:
+&#8230;.taskENTER&#95;CRITICAL&#40;&#41;;
+&#8230;&#8230;.
+&#8230;.taskYIELD&#40;&#41;;
+&#8230;&#8230;.
+&#8230;.taskEXIT&#95;CRITICAL&#40;&#41;;
+2&#46; the task switch should be safe against FIQ interrupts &#40;update of event lists&#33;&#41;:
+..add&nbsp;&nbsp;&nbsp; lr, lr, &#35;4
+..portSAVE&#95;CONTEXT
+..mrs&nbsp;&nbsp;&nbsp; r4, CPSR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //save CPSR in R4
+..orr&nbsp;&nbsp;&nbsp; r0, r4, &#35;0x40&nbsp;&nbsp; //disable FIQ &#40;set FIQ disable bit&#41;
+..msr&nbsp;&nbsp;&nbsp; CPSR&#95;cxsf, r0&nbsp;&nbsp; //update FIQ status
+..//Note: R4 is not currupted by the next C-function call
+..bl vTaskSwitchContext
+..msr&nbsp;&nbsp;&nbsp; CPSR&#95;cxsf, r4&nbsp;&nbsp; //restore CPSR
+..portRESTORE&#95;CONTEXT
+3&#46; the taskYield should be performed by an IRQ software interrupt using VIC, not by SWI&#33;
+4&#46; I use &quot;alternate&quot; functions to access queues &#40;the normal functions do not work with my modifications&#41;
+5&#46; Using software interrupts for taskYield will block after entering a critical section =&gt; the alternate functions &#40;xQueueAltGenericSend, xQueueAltGenericReceive&#41; should be modified as follows:
+&#8230;.taskENTER&#95;CRITICAL&#40;&#41;;
+&#8230;&#8230;.
+&#8230;.taskEXIT&#95;CRITICAL&#40;&#41;;
+&#8230;.taskYIELD&#40;&#41;;
+&#8230;.taskENTER&#95;CRITICAL&#40;&#41;;
+&#8230;&#8230;.
+&#8230;.taskEXIT&#95;CRITICAL&#40;&#41;;
+Regards
+Maxim
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mosert">mosert</a> on May 20, 2008</div><div class="thread-post-content">Hi Everyone,
+We are currently working on a project using the STM32 Part from ST with FreeRTOS 5.0.0 and are handling the 3 UARTS with 3 Tasks and 6 queues and have found the same problem that was described by davebryan. Has anybody went to the bottom of this because globally disabling
+the interrupts in the vPortMaskInterrupts ist probably not the best solution?
+Best regards
+Tim&nbsp; 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 20, 2008</div><div class="thread-post-content">I have not read through the entire thread again to see what the original problem was, so you might like to provide a quick summary.&nbsp; However, for what its worth the latest code &#40;not yet included in the download&#41; implements multi level interrupt priorities that allows queue API functions to be called from interrupts that have a priority above the kernel interrupt priority.&nbsp; It sounds like this might be useful in your case.&nbsp; I hope to have this code released within 2 weeks.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/daworm">daworm</a> on August 14, 2008</div><div class="thread-post-content">I think I may be having a similar problem.&nbsp; I&#8217;m using a Cortex M3 with IAR and just updated to the latest 5.0.3 code.&nbsp; What happens for me is that when I have more than one serial port ISR running, the whole RTOS locks up.&nbsp; The lockup is in vListInsert line 130.&nbsp; The iteration never ends.&nbsp; I&#8217;ve checked my stack depths with vTaskList and it doesn&#8217;t appear I&#8217;m overflowing any stacks &#40;and turning on the stack overflow detection code never triggers, either&#41;.&nbsp; My call stack shows I got into vListInsert via a call to xQueueReceive, which leads me to believe I&#8217;m having a similar problem as you.&nbsp; 
+I&#8217;m not sure I understand your workaround.&nbsp; I&#8217;m not familiar with M3 assembler.&nbsp; Also, do you also have to modify vPortClearInterruptMask as well?&nbsp; And if so, how?
+Thanks for any input.
+Jeff.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 14, 2008</div><div class="thread-post-content">When upgrading to V5.x.x you first need to make sure your usage of the xQueueSendFromISR&#40;&#41; &#40;and related semaphore &#8216;from isr&#8217;&#41; API functions is as per the new semantics.&nbsp; See http://www.freertos.org/upgrading.html.
+Depending on which version you are upgrading your Cortex port from, you may also need to consider your interrupt priorities.&nbsp; See http://www.freertos.org/a00110.html&#35;kernel&#95;priority.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/daworm">daworm</a> on August 14, 2008</div><div class="thread-post-content">Yes, I diffed the demos for the xQueueSendFromISR and fixed those straight away &#40;yes, some people do read those README files in the ZIP&#41;.&nbsp; I had the same problem on 4.7.3 and upgraded to 5.0.3 after reading this thread and seeing that M3 interrupts had been improved, hoping that it would fix my problem.&nbsp; Actually, it made it worse, in that with 4.7.3 it took a couple of hours to die rather than a couple of seconds.
+My config file settings for this were set as the demo:
+/&#42; This is the raw value as per the Cortex-M3 NVIC.&nbsp; Values can be 255
+&#40;lowest&#41; to 0 &#40;1?&#41; &#40;highest&#41;. &#42;/
+&#35;define configKERNEL&#95;INTERRUPT&#95;PRIORITY&nbsp;&nbsp;&nbsp; 255
+&#35;define configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY 191 /&#42; equivalent to 0xa0, or priority 5. &#42;/
+Originally, all of my ISR&#8217;s were set as follows:
+&nbsp; NVIC&#95;InitStructure.NVIC&#95;IRQChannelPreemptionPriority = 0;
+&nbsp; NVIC&#95;InitStructure.NVIC&#95;IRQChannelSubPriority = 0;
+I&#8217;ve also tried:
+&nbsp; NVIC&#95;InitStructure.NVIC&#95;IRQChannelPreemptionPriority = 0;
+&nbsp; NVIC&#95;InitStructure.NVIC&#95;IRQChannelSubPriority = 6;
+And: 
+&nbsp; NVIC&#95;InitStructure.NVIC&#95;IRQChannelPreemptionPriority = 1;
+&nbsp; NVIC&#95;InitStructure.NVIC&#95;IRQChannelSubPriority = 6;
+With more than one port enabled, all three configurations will lock within one second of operation.&nbsp; When locked, my task list looks like this:
+SCI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp; 184&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; // Task using UART3
+LED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp; 94&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp; // Simplified LED blink task from demo, stripped to only blink one LED
+IDLE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp; 118&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp; // Idle task
+LAB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp; 204&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp; // Task using UART2
+The two serial tasks are created as follows:
+&nbsp; xReturn = xTaskCreate&#40;sci1000Monitor,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40;signed portCHAR &#42;&#41; &quot;SCI&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configMINIMAL&#95;STACK&#95;SIZE &#42; 2,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NULL,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tskIDLE&#95;PRIORITY,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NULL&#41;;
+&nbsp; xReturn = xTaskCreate&#40;LaundryBackground,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40;signed portCHAR &#42;&#41; &quot;LAB&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configMINIMAL&#95;STACK&#95;SIZE &#42; 2,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NULL,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tskIDLE&#95;PRIORITY,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NULL&#41;;
+I will see if I can create a minimal project that will reproduce the error.&nbsp; It might be difficult with nothing to talk to on the other end, but maybe a dev board with two loopbacks will suffice.
+Jeff.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/daworm">daworm</a> on August 14, 2008</div><div class="thread-post-content">Oops, that last NVIC should have read like this:
+NVIC&#95;InitStructure.NVIC&#95;IRQChannelPreemptionPriority = 6; 
+NVIC&#95;InitStructure.NVIC&#95;IRQChannelSubPriority = 0; 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 14, 2008</div><div class="thread-post-content">Can you send me a simple project, that uses standard hardware I may have, that demonstrates your problem?&nbsp; With some instructions on how to build, and how to recognise the problem when it occurs?
+Hanging on the line stated somewhere in this thread is normally symptomatic of data corruption elsewhere in the project.
+Please don&#8217;t send to this SourceForge address as it will strip off any attachments.&nbsp; You can send files to r &#91;&#95;dot&#93; barry at freertos.org.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/daworm">daworm</a> on August 14, 2008</div><div class="thread-post-content">Working on that right now.&nbsp; I use this board:
+http://www.st.com/mcu/contentid-100-110-STM3210B&#95;EVAL.html
+All the demo will need to run on is two serial ports, I hope.&nbsp; Will let you know as soon as I get it built and verify it hangs in the same manner.
+Jeff.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/daworm">daworm</a> on August 14, 2008</div><div class="thread-post-content">Sample project sent via email.&nbsp; Thanks&#33;
+Jeff.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 16, 2008</div><div class="thread-post-content">Please see my notes at the end of this thread for at least part of a conclusion&#8230;
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 16, 2008</div><div class="thread-post-content">Having reviewed a project in which the use of multiple queues was causing a crash &#8211; it would seem that the immediate problem was in fact priority assignments caused by the counter intuitive way priorities are specified on Cortex M3 parts.&nbsp; I have just added the following note to the page: http://www.freertos.org/a00110.html&#35;kernel&#95;priority to beef up the documentation on this a bit:
+&quot;A special note for Cortex M3 users: Remember that Cortex M3 cores use numerically low priority numbers to represent HIGH priority interrupts, which can seem counter-intuitive and is easy to forget&#33; If you wish to assign an interrupt a low priority do NOT assign it a priority of 0 &#40;or other low numeric value&#41; as this can result in the interrupt actually having the highest priority in the system &#8211; and therefore potentially make your system crash if this priority is above configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY. 
+The lowest priority on a Cortex M3 core is in fact 255 &#8211; however different Cortex M3 vendors implement a different number of priority bits and supply library functions that expect priorities to be specified in different ways. For example, on the STM32 the lowest priority you can specify in an ST driver library call is in fact 15 &#8211; and the highest priority you can specify is 0.&quot;
+I will add similar text to each Cortex M3 port documentation page when I get the chance.
+Interrupt nesting and the use of multiple queues has been thoroughly tested on the Cortex M3 core through the use of the IntQueue.c standard demo tasks.&nbsp; This generates two queues that are then read from and written to by two interrupts and 2 tasks each &#8211; with both interrupts operating at different priorities and therefore nesting with each other.&nbsp; This test has run for many days without reporting any problems or crashing.&nbsp; While I can never guarantee the absence of bugs, the fact this test passes gives a high degree of confidence in this particular part of the code for Cortex M3 implementations.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/daworm">daworm</a> on August 18, 2008</div><div class="thread-post-content">&#42; Repeated from private email at Richard&#8217;s request &#42;
+&nbsp; This does indeed look like it fixed the problem &#40;boy, I 
+hate stupid user errors &lt;grin&gt;&#41;.&nbsp; However, it does bring up 
+an issue.&nbsp; Should configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY 
+default to the LOWEST priority, or should it be the HIGHEST 
+priority?&nbsp; Or some value in the middle?&nbsp; Also, I see that 
+only a small number of architectures support different 
+priority levels.&nbsp; Among them, should the mechanisms be hidden 
+in the portability modules?
+Thanks,
+&nbsp; Jeff.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 18, 2008</div><div class="thread-post-content">&gt;Should configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY&nbsp; 
+&gt;default to the LOWEST priority, or should it be the HIGHEST&nbsp; 
+&gt;priority? Or some value in the middle? 
+Probably neither &#8211; it should be set to whatever configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY is set to.&nbsp; However, configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY is set using a numeric value that the Cortex-M3 core understands &#40;interrupt priorities 0 to 255&#41;, whereas the ST libraries remap these interrupt priorities to 0 to 15 as only 4 bits of priority are implemented, therefore configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY is provided in an attempt to be helpful in showing what value should be used when making calls to the ST provided library&#8230;..confusing isn&#8217;t it, but this is how the ST libraries have been implemented so there is nothing I can do about it unfortunately.
+Please refer to http://www.freertos.org/a00110.html&#35;kernel&#95;priority &#8211; taking account of the fact that the diagram uses high numbers to denote high priorities which is the opposite way around to the Cortex M3.
+&gt;Also, I see that&nbsp; 
+&gt;only a small number of architectures support different&nbsp; 
+&gt;priority levels. Among them, should the mechanisms be hidden&nbsp; 
+&gt;in the portability modules? 
+The architectures that support it are more fully featured &#8211; providing users will great flexibility in how interrupt priorities are set.&nbsp; As always with flexibility comes complexity.&nbsp; If you don&#8217;t want to use full interrupt nesting then then simply set all interrupts that make API calls to the lowest priority value &#40;255 in Cortex speak, 15 in ST speak&#41;.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pjansen">pjansen</a> on May 22, 2011</div><div class="thread-post-content">I&#8217;m still having this problem,  
+when for the USART TX queue gets to pcWriteTo 0x200016CA pcReadFrom 0x200016CA things don&#8217;t work properly.  
+In FreeRTOSConfig.h I have  
+&#35;define configKERNEL&#95;INTERRUPT&#95;PRIORITY &#40;10 &#42; 16&#41;<br />
+&#35;define configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY &#40;14 &#42; 16&#41;  
+/&#42; This is the value being used as per the ST library which permits 16<br />
+&nbsp;&nbsp; priority values, 0 to 15.&nbsp; This must correspond to the<br />
+&nbsp;&nbsp; configKERNEL&#95;INTERRUPT&#95;PRIORITY setting.&nbsp; Here 15 corresponds to the lowest<br />
+&nbsp;&nbsp; NVIC value of 255. &#42;/<br />
+&#35;define configLIBRARY&#95;KERNEL&#95;INTERRUPT&#95;PRIORITY 10  
+I had tried the values in the Demo, but still get the same result, using the Demo FreeRTOSV7.0.0/Demo/CORTEX&#95;STM32F103&#95;IAR  
+I&#8217;m using GCC and most other things work, just the TX serial Queue has some problem.  
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>round-robin (time-slicing algo) - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2009/freertos_round-robin_time-slicing_algo_3469774.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="round-robin (time-slicing algo) - FreeRTOS" />
+<meta property="og:description" content="round-robin (time-slicing algo)Posted by bernd07 on November 25, 2009Hi, how is it possible to run two or more tasks with the same priority &#040;using configUSE&#095;PREEMPTION 1&#041;? I don&#096;t understand the time slicing algorithm. Task1: for&#040; ;; &#041; &#123; if&#040; xSerialGetChar&#040;&amp;cByteRxed, RX&#095;BLOCK&#095;TIME &#041; &#041; &#123; &nbsp; cByteRxed = cByteRxed; &nbsp; &#125; &nbsp; vTaskDelay&#040; 200 &#041;; &#125; &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2009/freertos_round-robin_time-slicing_algo_3469774.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="round-robin (time-slicing algo)Posted by bernd07 on November 25, 2009Hi, how is it possible to run two or more tasks with the same priority &#040;using configUSE&#095;PREEMPTION 1&#041;? I don&#096;t understand the time slicing algorithm. Task1: for&#040; ;; &#041; &#123; if&#040; xSerialGetChar&#040;&amp;cByteRxed, RX&#095;BLOCK&#095;TIME &#041; &#041; &#123; &nbsp; cByteRxed = cByteRxed; &nbsp; &#125; &nbsp; vTaskDelay&#040; 200 &#041;; &#125; [&hellip;]" />
+<meta name="twitter:title" content="round-robin (time-slicing algo) - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201824' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201824' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201824' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201824' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139535' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2009%2Ffreertos_round-robin_time-slicing_algo_3469774.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2009%2Ffreertos_round-robin_time-slicing_algo_3469774.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139535">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2009_freertos_support_forum_archive_index.html/">November 2009 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">round-robin (time-slicing algo)</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernd07">bernd07</a> on November 25, 2009</div><div class="thread-post-content">Hi,   
+how is it possible to run two or more tasks with the same priority &#40;using configUSE&#95;PREEMPTION 1&#41;? I don&#96;t understand the time slicing algorithm.   
+Task1:   
+for&#40; ;; &#41;  
+&#123;  
+if&#40; xSerialGetChar&#40;&amp;cByteRxed, RX&#95;BLOCK&#95;TIME &#41; &#41;  
+&#123;  
+&nbsp; cByteRxed = cByteRxed;   
+&nbsp; &#125;  
+&nbsp; vTaskDelay&#40; 200 &#41;;  
+&#125;  
+and the second task:   
+for&#40;;;&#41;  
+&#123;  
+vTaskDelayUntil&#40; &amp;xLastFlashTime, xFlashRate &#41;;  
+vParTestToggleLED&#40; uxLED &#41;;  
+vTaskDelayUntil&#40; &amp;xLastFlashTime, xFlashRate &#41;;  
+vParTestToggleLED&#40; uxLED &#41;;  
+&#125;  
+The configTICK&#95;RATE&#95;HZ is still 1000Hz &#40;RTOS tick&#41;. How is it possible to share the available processor time &#40;equal&#41; to both tasks?  
+best regards<br />
+Bernd  
+</div></div><div class="thread-post"><h3 class="thread-post-title">round-robin (time-slicing algo)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernd07">bernd07</a> on November 25, 2009</div><div class="thread-post-content">what will happen if both tasks &#40;equal priority&#41; don&#96;t have any vTaskDelay&#40;&#41; ?&nbsp; Is only the first task running the whole time? How is it possible to determine that both tasks should only use 50% of the processor time &#40;RTOS tick&#41;?  
+</div></div><div class="thread-post"><h3 class="thread-post-title">round-robin (time-slicing algo)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on November 25, 2009</div><div class="thread-post-content">A real-time system usually does not deal with time-sharing. A highest priority task runs until it either voluntarily relinguishes the processor &#40;to sleep for example&#41; or gets preempted by a higher priority task &#40;which gets created or unblocked&#41;.  
+This way, you make the best usage of the CPU since while your task is running you use 100% of it &#40;minus the IRQ handlers&#41; and do not spend any time switching context.
+</div></div><div class="thread-post"><h3 class="thread-post-title">round-robin (time-slicing algo)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernd07">bernd07</a> on November 25, 2009</div><div class="thread-post-content">ok, if 2 or more tasks have the same priority, only one task is running and only if this task has to sleep e.g. another task with the same or lower priority will be executed.   
+But in my example below, both tasks have a sleep time &#40;using vTaskDelay&#40;&#41; or vTaskDelayUntil&#40;&#41;:   
+At first both tasks were running, but after a short while only the idletask is running &#40;for the whole time&#41;… Which steps do I have to do to switch back to the flashled task &#40;second task&#41; for example?  
+</div></div><div class="thread-post"><h3 class="thread-post-title">round-robin (time-slicing algo)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernd07">bernd07</a> on November 25, 2009</div><div class="thread-post-content">could it be that both tasks are sleeping at the same time -&gt; therefore &#40;there&#96;s no other task running&#41; the idletask will be executed… and both task do not have any kind of mechanism to go back….   
+What will be a recommend way to start the flashtask &#40;second task&#41; again, after the vTaskDelayUntil&#40;&#41; is over?
+</div></div><div class="thread-post"><h3 class="thread-post-title">round-robin (time-slicing algo)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 25, 2009</div><div class="thread-post-content">First off &#8211; all this is explained &#40;hopefully&#41; very clearly in the e-book, if you don&#8217;t mind me giving it a plug.&nbsp; Also, the execution model is very traditional, and the behaviour similar to other systems.  
+The following only applies if you have configUSE&#95;PREEMPTION set to 1:  
+FreeRTOS is a priorities pre-emptive system and will always run the highest priority task that is able to run.&nbsp; By able to run I mean, not blocked waiting for a time &#40;vTaskDelay&#40;&#41;, etc.&#41; or blocked waiting for a queue or semaphore event.&nbsp; If a task become able to run and it has a priority above the currently running task it will pre-empt the currently running task and so run immediately.  
+Where you have two tasks of the same priority that are both able to run &#40;neither are blocked&#41; then the scheduler will share processing time between them &#8211; but only if there are no higher priority tasks.&nbsp; It does this by switching between them on each tick interrupt.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">round-robin (time-slicing algo)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on November 25, 2009</div><div class="thread-post-content">Reading Richard&#8217;s reply, I see that FreeRTOS does more than I thought. Is there a possibility to disable this time-sharing behaviour, and have the tick interrupt only deal with time-related issues?
+</div></div><div class="thread-post"><h3 class="thread-post-title">round-robin (time-slicing algo)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on November 25, 2009</div><div class="thread-post-content">Mmm, it looks like setting configUSE&#95;PREEMPTION to 0 does just that. I thought it was dealing with general priority-based preemption in FreeRTOS, but tasks.c shows that it is only for same-priority tasks. Withdrawing my former question then :&#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">round-robin (time-slicing algo)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernd07">bernd07</a> on November 26, 2009</div><div class="thread-post-content">in theory: everything is clear to me according to this subject &#40;&#8221;more tasks with the same priority&#8221;&#41;, but in practice it failed.   
+For example: I&#96;m using the unchanged version of the led&#95;flash task &#40;priority: 2&#41; from the demo application. If only this task is running, everthing works as expected.<br />
+But now I installed a second task with the same priority: This task is waiting for new characters received by the usart &#40;using a large blocking time&#41;. If I don&#96;t place an additional vTaskDelay&#40;&#41;, function within this task, only this task is running the whole time &#40;the led is not flashing&#33;&#41;  
+If I use the vTaskDelay&#40;&#41; function in the second task, then this task will be executed only once, and after that only the idle-task is running…. Although there are many pkts received by the usart.   
+task2:<br />
+for&#40; ;; &#41;  
+&#123;  
+/&#42; Block on the queue that contains received bytes until a byte is<br />
+available. &#42;/<br />
+if&#40; xSerialGetDmx0Char&#40;&amp;cByteRxed, dmxRX&#95;BLOCK&#95;TIME &#41; &#41;<br />
+&#123;<br />
+/&#42; character received&nbsp; &#42;/<br />
+cByteRxed = cByteRxed;<br />
+&#125;  
+// vTaskDelay&#40; 2000 &#41;;<br />
+printf&#40;&#8221;dmx&#95;taskn&#8221;&#41;;  
+&#125;  
+</div></div><div class="thread-post"><h3 class="thread-post-title">round-robin (time-slicing algo)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernd07">bernd07</a> on November 26, 2009</div><div class="thread-post-content">I found the error&#33;  
+In the usart task I&#96;m using this command:<br />
+if&#40; xQueueReceive&#40; xRxedDmx0Values, pcRxedChar, xBlockTime &#41; &#41;<br />
+with&nbsp; xBlockTime 0xffff   
+It seems that there is a error, because without this command, everything is working as expected.   
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

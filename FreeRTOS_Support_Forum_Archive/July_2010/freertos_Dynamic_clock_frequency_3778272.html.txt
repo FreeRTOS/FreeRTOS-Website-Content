@@ -1,0 +1,132 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic clock frequency - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2010/freertos_Dynamic_clock_frequency_3778272.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Dynamic clock frequency - FreeRTOS" />
+<meta property="og:description" content="Dynamic clock frequencyPosted by jakbird on July 20, 2010While working on some power saving routines I ran into a problem with FreeRTOS.&nbsp; The OS assumes the clock stays at a fixed frequency, set by configCPU&#095;CLOCK&#095;HZ.&nbsp;&nbsp; For the STM32 the system tick timer uses this value to calculate the timer reload.&nbsp; However the STM32 can vary &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2010/freertos_Dynamic_clock_frequency_3778272.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Dynamic clock frequencyPosted by jakbird on July 20, 2010While working on some power saving routines I ran into a problem with FreeRTOS.&nbsp; The OS assumes the clock stays at a fixed frequency, set by configCPU&#095;CLOCK&#095;HZ.&nbsp;&nbsp; For the STM32 the system tick timer uses this value to calculate the timer reload.&nbsp; However the STM32 can vary [&hellip;]" />
+<meta name="twitter:title" content="Dynamic clock frequency - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201925' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201925' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201925' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201925' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139443' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2010%2Ffreertos_Dynamic_clock_frequency_3778272.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2010%2Ffreertos_Dynamic_clock_frequency_3778272.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139443">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2010_freertos_support_forum_archive_index.html/">July 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Dynamic clock frequency</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jakbird">jakbird</a> on July 20, 2010</div><div class="thread-post-content">While working on some power saving routines I ran into a problem with FreeRTOS.&nbsp; The OS assumes the clock stays at a fixed frequency, set by configCPU&#95;CLOCK&#95;HZ.&nbsp;&nbsp; For the STM32 the system tick timer uses this value to calculate the timer reload.&nbsp; However the STM32 can vary the instruction clock &#40;SYSCLK&#41;&nbsp; anywhere from 4MHZ to 72MHZ with substantial power savings at lower frequencies, significant when running on batteries or off the USB Vbus power.  
+I&#8217;d like to suggest changing configCPU&#95;CLOCK&#95;HZ into a RAM location instead of a compile time option.&nbsp; And for the STM32 it would be nice if the SysTick timer load routine in port.c was exposed so that the clock frequency changes would affect the SysTick timer in one routine, instead of replacing the one in port.c.  
+The other question is where best to vary the frequency?&nbsp; My inclination is to post a change request, and then switch the CPU clock during the tick hook routine, so that &#40;on the STM32&#41; the Systick timer can be modified to keep to the expected tick rate with a minimal loss from resetting the timer.<br />
+&nbsp; Jack Peacock
+</div></div><div class="thread-post"><h3 class="thread-post-title">Dynamic clock frequency</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 20, 2010</div><div class="thread-post-content">One thing to note, is the as far as I know, the only thing that the FreeRTOS kernel does with the value of configCPU&#95;CLOCK&#95;HZ is us it with the tick rate parameter to set up the tick timer. If you want to change the cpu frequency on the fly, you are free to adjust the clock rate &#40;as well as any other perpetual that also need timing adjusted&#41;. Another point to consider is that FreeRTOS itself doesn&#8217;t need the timer tick to be at any given or constant rate. It is the requirements of the user program that control how accurate you need to keep the tick rate.&nbsp;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Dynamic clock frequency</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 21, 2010</div><div class="thread-post-content">When a task blocks on a temporal event &#40;calls something like vTaskDelayUntil&#40;&#41;, vTaskDelay&#40;&#41;, or a queue or semaphore function with a time out&#41; then the kernel will calculate the time at which the task should unblock.&nbsp; If you then change the tick frequency the calculated time will be wrong, and an error will occur &#40;the consequence of which could be significant or insignificant, depending on your application&#41;.  
+You can remove this problem by only every blocking for 0 ticks &#40;not blocking&#41; or blocking indefinitely &#40;using portMAX&#95;DELAY if configINCLUDE&#95;vTaskSuspend is also set to 1&#41;, but that severely restricts how you can write your code.  
+Another technique I believe is often used is to manually adjust how many times the tick value is incremented during each timer tick.&nbsp; For example, if you slow the timer down by a factor of ten, then you have to call vTaskIncrementTick&#40;&#41; ten times during each timer tick &#40;could potentially be lengthy&#33;&#41; until the timer is set back to its original frequency.  
+There are a few people doing interesting work on this issue at the moment and hopefully the results will be published soon.&nbsp; This often includes using special hardware though, with an external low frequency clock in addition to the main timer.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Dynamic clock frequency</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jakbird">jakbird</a> on July 21, 2010</div><div class="thread-post-content">Maintaining a constant rate for the system tick isn&#8217;t an issue per se, since the timer reload count can be adjusted at the same time the CPU frequency is changed &#40;with the assumption that the SysTick timer is tied to the CPU frequency&#41;.&nbsp; There is an issue of exactly when to change the frequency in order to keep the SysTick constant.&nbsp; I&#8217;m guessing that the system tick hook in FreeRTOS occurs soon after the SysTick timer generates an interrupt, so this would be the best place to change CPU speed and the SysTick counter/reload register.&nbsp; The question is, how soon is the hook called after the tick interrupt?&nbsp; Does the task rundown and context switching take place first?  
+Unfortunately ARM did miss on the design decision to make the SysTick timer dependent on the CPU instruction clock rather than the base oscillator.&nbsp; Not a big deal but it makes it harder to dynamically control clock rate and power consumption.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

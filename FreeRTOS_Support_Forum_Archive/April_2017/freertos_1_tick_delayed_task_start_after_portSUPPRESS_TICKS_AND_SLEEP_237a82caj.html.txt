@@ -1,0 +1,605 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2017/freertos_1_tick_delayed_task_start_after_portSUPPRESS_TICKS_AND_SLEEP_237a82caj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP - FreeRTOS" />
+<meta property="og:description" content="1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEPPosted by bernatikv on April 5, 2017Hello, I got nRF52 port of FreeRtos and there were tick bug. They called correctly vTaskStepTick(diff); but then they did not clear RTC-&gt;Compare Event flag. Thus they effectively jumped into RTC ISR and added extra tick. And thus effectively after every portSUPPRESS_TICKS_AND_SLEEP system &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2017/freertos_1_tick_delayed_task_start_after_portSUPPRESS_TICKS_AND_SLEEP_237a82caj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEPPosted by bernatikv on April 5, 2017Hello, I got nRF52 port of FreeRtos and there were tick bug. They called correctly vTaskStepTick(diff); but then they did not clear RTC-&gt;Compare Event flag. Thus they effectively jumped into RTC ISR and added extra tick. And thus effectively after every portSUPPRESS_TICKS_AND_SLEEP system [&hellip;]" />
+<meta name="twitter:title" content="1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202795' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202795' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202795' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202795' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146413' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2017%2Ffreertos_1_tick_delayed_task_start_after_portSUPPRESS_TICKS_AND_SLEEP_237a82caj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2017%2Ffreertos_1_tick_delayed_task_start_after_portSUPPRESS_TICKS_AND_SLEEP_237a82caj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146413">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2017_freertos_support_forum_archive_index.html/">April 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 5, 2017</div><div class="thread-post-content">Hello,
+I got nRF52 port of FreeRtos and there were tick bug. They called correctly <code>vTaskStepTick(diff);</code> but then they did not clear RTC->Compare Event flag. Thus they effectively jumped into RTC ISR and added extra tick. And thus effectively after every <code>portSUPPRESS_TICKS_AND_SLEEP</code> system tick was 1 tick faster and timing was wrong. I did fix that by clearing RTC Compare Event Flag. That fixed frequency when in my test code I was calling  function <code>vTaskDelayUntil( &amp;xLastWakeTime, xFrequency );</code> . But I noticed another problem. I noticed there is one tick delay &#8211; between CPU wake up <code>#define configPOST_SLEEP_PROCESSING( x ) nrf_gpio_pin_set(CPU_RUN_PIN);</code> and actually starting the task. I find out it is due to fact that adding delayed task from <code>pxDelayedTaskList</code> is happenning only in <code>xTaskIncrementTick()</code>. I assume that is not correct. I assume that it shall also happen in <code>vTaskStepTick()</code>. So I assume it is bug in FreeRTOS. I&#8217;m actually having old version FreeRTOS V8.2.1, but I downloaded later FreeRTOS V9.0.0 and I saw there is same <code>vTaskStepTick()</code>. I know how to workaround it. I just call <code>vTaskStepTick()</code> with update value 1 tick lower than should be and I keep RTC compare event flag. So I let <code>xTaskIncrementTick()</code> to count last tick and it is working fine. It just seems like bug that many people may not notice and could have 1 tick of CPU being in zombie mode where task is still in <code>pxDelayedTaskList</code> although it shall be running already. What do you think? Can <code>vTaskStepTick()</code> be updated with delayed task timeout expire check?
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 5, 2017</div><div class="thread-post-content">It is not clear, are you saying you can replicate this in the code 
+provided by us?  As I recall in the default tickless mode the step tick 
+function is passed one less than the expected idle time because when it 
+executes there is already a tick interrupt pending.
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 10, 2017</div><div class="thread-post-content">I have no platform to test your original distro. I&#8217;m observing the bug on Nordic SDK 12.0 and 13.0. I hate those Nordic guys for giving me buggy SDK so I&#8217;m biased against them. But frankly I think FreeRTOS is partially in fault here. If you look into documentation http://www.freertos.org/vTaskStepTick.html
+freeRTOS just say call this function and correct time. There shall be some warning (ideally with big red letters) that this function is not rescheduling tasks. And task are rescheduled only after xTaskIncrementTick() is actually called. So what you want to do is correct the time -1 and call xTaskIncrementTick(). This bug is hard to find because it only delays starting the task 1 tick. But if you do low power design and you let CPU run wait loop for one tick then it is not such banality as it may sound&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 10, 2017</div><div class="thread-post-content">I think free rtos shall modify documentation into this way:  into documentation http://www.freertos.org/vTaskStepTick.html
+~~~
+&#8230;
+/* Determine how long the microcontroller was actually in a low power state
+    for, which will be less than xExpectedIdleTime if the microcontroller was
+    brought out of low power mode by an interrupt other than that configured by
+    the vSetWakeTimeInterrupt() call.  Note that the scheduler is suspended
+    before portSUPPRESS<em>TICKS</em>AND<em>SLEEP() is called, and resumed when
+    portSUPPRESS</em>TICKS<em>AND</em>SLEEP() returns.  Therefore no other tasks will
+    execute until this function completes. */
+    ulLowPowerTimeAfterSleep = ulGetExternalTime();
+<pre><code>/* Correct the kernels tick count to account for the time the microcontroller
+spent in its low power state. 
+Subtract one as it will be counted by xTaskIncrementTick() later*/
+vTaskStepTick( ulLowPowerTimeAfterSleep – ulLowPowerTimeBeforeSleep -1);
+// call once tick so rescheduling is forced when xTaskResumeAll() is 
+//   called - otherwise task start one tick later,
+// and there is one tick of useless CPU consumption
+xTaskIncrementTick();
+/* Restart the timer that is generating the tick interrupt. */
+prvStartTickInterruptTimer();
+...
+</code></pre>
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 10, 2017</div><div class="thread-post-content">I&#8217;m still not really following what the problem is.  I know Nordic had a 
+bug in their implementation as it is mentioned on their forum some times 
+&#8211; at which time they also point the poster&#8217;s to the fix they provided.
+vTaskStepTick() is not something the application writer should be 
+calling directly.  It is only for use by tickless low power implementations.
+The tickless idle implementation does not switch to another task.  It 
+stops the tick, places the system into a low power state, correct the 
+time when it starts running again, and restarts the tick.  It is brought 
+out of low power mode by an interrupt.  If the interrupt handler (which 
+may be the timer interrupt set to mark the end of the idle period) 
+requests a context switch then the context switch will be held pending 
+until the &#8216;suppress ticks and sleep&#8217; function exits.  The &#8216;suppress 
+ticks and sleep&#8217; function is called with the scheduler suspended, so 
+when it exits the scheduler is unsuspended, and at which point any 
+pending context switches will occur.
+For the tickless idle function to perform a context switch itself would 
+be a logical error &#8211; besides which &#8211; it is called with the scheduler 
+suspended so it couldn&#8217;t even if it tried.  The context switch would 
+just pend until the scheduler was restarted.
+It sounds like you are describing what might be subtle bug, and maybe 
+you are right, but I&#8217;m afraid I don&#8217;t understand what it is you are 
+describing.  You say the suppress ticks and sleep function is not 
+switching tasks &#8211; which is right &#8211; it definitely should not.
+So please clearly describe the scenario where you think there is a 
+problem, something like this:
+1) The clock is programmed to wake in 10000 clock counts.
+2) Interrupts are disabled.
+3) Low power mode is entered.
+4) TBD interrupt occurs, bringing the MCU out of low power mode after 
+5000 clock counts.
+5) Etc.
+until I see the bit that you think is wrong.
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 10, 2017</div><div class="thread-post-content">Ok let&#8217;s go step by step:
+1. expect there is one task and that task will call <code>vTaskDelayUntil( ...);</code>
+2. FreeRTOS starts idle task <code>portTASK_FUNCTION( prvIdleTask, pvParameters )</code>
+3. Idle tasks calls <code>vTaskSuspendAll();</code>
+4. Then it put CPU to sleep calling: <code>portSUPPRESS_TICKS_AND_SLEEP( xExpectedIdleTime );</code>
+5. When CPU wakes up it will just correct time as is in free rtos help: <code>vTaskStepTick(diff);</code>
+6. Then it returns to idle task and it will call: <code>( void ) xTaskResumeAll();</code>
+But here is a problem. Nor <code>vTaskStepTick()</code> nor <code>xTaskResumeAll()</code> checks if tasks is unblocked. Someone has to call <code>BaseType_t xTaskIncrementTick( void )</code> which would place the task on ready list: <code>prvAddTaskToReadyList( pxTCB );</code>. Since no-one did that what is hapenning? CPU is in forever loop in idle task. Consumes energy and doing nothing for whole 1 tick. After tick finally happen ISR <code>void xPortSysTickHandler( void )</code> calls <code>xTaskIncrementTick();</code> and it will unblock task and put it to ready list. But 1 tick late!.
+How to fix it? In step 5 you can call instead of <code>vTaskStepTick(diff);</code> follwoing sequence:
+~~~
+vTaskStepTick(diff-1); // -1 because we will call tick event just in next command
+xTaskIncrementTick(); // this will actually use ++uxPendedTicks; because task sheduler is suspended
+~~~
+Now if you move to step 6 everything is going fine. <code>xTaskResumeAll();</code> restart scheduler, detects <code>uxPendedTicks</code>, thus calls <code>xTaskIncrementTick()</code> which will add task to <code>prvAddTaskToReadyList( pxTCB );</code> and retrun true so <code>xTaskResumeAll();</code> will call  <code>taskYIELD_IF_USING_PREEMPTION();</code>  and task is switched to right after CPU waking up Hurray! everything works now 🙂
+So what I think you shall do &#8211; either document this into <code>vTaskStepTick()</code> that it is developer responsibility to call <code>xTaskIncrementTick();</code> or better rewrite <code>vTaskStepTick()</code> to do:
+~~~
+xTickCount += xTicksToJump-1;
+xTaskIncrementTick();
+~~~
+Did I made myself clear enough this time??
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 11, 2017</div><div class="thread-post-content"><blockquote>
+  Ok let&#8217;s go step by step:
+</blockquote>
+This is good&#8230;
+<blockquote>
+  <ol>
+  <li>expect there is one task and that task will call |vTaskDelayUntil( &#8230;);|</li>
+  </ol>
+</blockquote>
+Lets say the call is vTaskDelay( 10 ), and to make it easy, that 10 
+means 10 milliseconds (1KHz tick).
+<blockquote>
+  <ol>
+  <li>FreeRTOS starts idle task |portTASK_FUNCTION( prvIdleTask,
+  pvParameters )|</li>
+  <li>Idle tasks calls |vTaskSuspendAll();|</li>
+  </ol>
+</blockquote>
+That will prevent context switches occurring, but will keep any 
+requested context switches pending.
+<blockquote>
+  <ol>
+  <li>Then it put CPU to sleep calling: |portSUPPRESS<em>TICKS</em>AND_SLEEP(
+  xExpectedIdleTime );|</li>
+  </ol>
+</blockquote>
+Lets say the MCU slept for the full 10ms, so it is the timer interrupt 
+(SysTick interrupt) that brings the CPU out of sleep mode.
+When the CPU comes out of sleep mode interrupts become enabled for a 
+short while, at which point the SysTick interrupt executes.  The SysTick 
+handler calls xTaskIncrementTick() &#8211; but the scheduler is suspended so 
+xTaskIncrementTick() just increments the uxPendedTicks variable to hold 
+the tick pending.
+<blockquote>
+  <ol>
+  <li>When CPU wakes up it will just correct time as is in free rtos help:
+  |vTaskStepTick(diff);|</li>
+  </ol>
+</blockquote>
+vTaskStepTick() should now be called with 9 as its parameter.  That is, 
+9 ticks are going to be stepped, one tick is already pending, making the 
+total of 10 ticks.  Therefore the tick count should be stepped forward 
+to the time the task that called vTaskDelay( 10 ) should unblock.
+<blockquote>
+  <ol>
+  <li>Then it returns to idle task and it will call: |( void )
+  xTaskResumeAll();|</li>
+  </ol>
+</blockquote>
+xTaskResumeAll() calls xTaskIncrementTick() once per count held pending 
+in the uxPendedTicks variable.  The tick count has already been stepped 
+forward 9, calling xTaskIncrementTick() increments the tick for the 10th 
+time, so the time reaches the time at which the task that called 
+vTaskDelay() should leave the blocked state, and the task is unblocked, 
+and a context switch pended.  The context switch will execute before 
+xTaskResumeAll() exits &#8211; as soon as xTaskResumeAll() exits its critical 
+section.
+<blockquote>
+  But here is a problem. Nor |vTaskStepTick()| nor |xTaskResumeAll()|
+  checks if tasks is unblocked.
+</blockquote>
+In the scenario above xTaskResumeAll() unblocks the task when it calls 
+xTaskIncrementTick().
+<blockquote>
+  Someone has to call |BaseType_t
+  xTaskIncrementTick( void )| which would place the task on ready list:
+  |prvAddTaskToReadyList( pxTCB );|. Since no-one did that what is
+  hapenning? CPU is in forever loop in idle task. Consumes energy and
+  doing nothing for whole 1 tick.
+</blockquote>
+It sounds like there is something else wrong in your code.  Do you have 
+the fixed code from Nordic?
+<blockquote>
+  How to fix it? In step 5 you can call instead of |vTaskStepTick(diff);|
+  follwoing sequence:
+  vTaskStepTick(diff-1); // -1 because we will call tick event just in next command
+  xTaskIncrementTick(); // this will actually use ++uxPendedTicks; because task sheduler is suspended
+</blockquote>
+That will result in the tick count being one ahead of where it should be.
+>
+<blockquote>
+  So what I think you shall do &#8211; either document this into
+  |vTaskStepTick()| that it is developer responsibility to call
+  |xTaskIncrementTick();| or better rewrite |vTaskStepTick()| to do:
+  xTickCount += xTicksToJump-1;
+  xTaskIncrementTick();
+  Did I made myself clear enough this time??
+</blockquote>
+Yes, understood this time, thanks, but the scenario you describe is not 
+the scenario I see in the code.  Can you determine where your observed 
+behaviour differs from the sequence I have described above?
+The sequence I describe above assumes it is the tick that brings the MCU 
+out of sleep mode.  If another interrupt brings the CPU out of sleep 
+mode then it is up to that interrupt to pend a context switch if one is 
+necessary &#8211; but that is true of all interrupts that perform an action 
+that brings a task out of the Blocked state.  Make sure your interrupt 
+handlers are doing that correctly if you have something other than the 
+tick bringing your CPU out of sleep mode.
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 11, 2017</div><div class="thread-post-content">Hello your sentence:
+&#8220;When the CPU comes out of sleep mode interrupts become enabled for a 
+ short while, at which point the SysTick interrupt executes.&#8221;
+ is not correct. Nordic goes to sleep with global interrupt disabled. The CPU is woken up on interrupts but would not go to ISR. 
+ Also such behavior might be quite dangerous from other point of view. Imagine that CPU is woken by other event. And imagine that ISR of that other even would ask to get sysTick from ISR. It might be very imprecise before correction is done. The CPU could have slept for minute and thus timestamp of event stored by such ISR would be totaly old and incorect. 
+Also nordic quite reasonably after correcting time using function vTaskStepTick() clears the RTC IRQ Flags, because they already fixed the time. And there was not written in documentation that vTaskStepTick() won&#8217;t reschedule delayed tasks into ready tasks (what in my opinion would be expectable and nice from that function). 
+You can see what they do in port<em>cmsis</em>systick.c:
+~~~
+void vPortSuppressTicksAndSleep( TickType<em>t xExpectedIdleTime )
+{
+    /*
+     * Implementation note:
+     *
+     * To help debugging the option configUSE</em>TICKLESS<em>IDLE</em>SIMPLE<em>DEBUG was presented.
+     * This option would make sure that even if program execution was stopped inside
+     * this function no more than expected number of ticks would be skipped.
+     *
+     * Normally RTC works all the time even if firmware execution was stopped
+     * and that may lead to skipping too much of ticks.
+     */
+    TickType</em>t enterTime;
+<pre><code>/* Make sure the SysTick reload value does not overflow the counter. */
+if ( xExpectedIdleTime &gt; portNRF_RTC_MAXTICKS - configEXPECTED_IDLE_TIME_BEFORE_SLEEP )
+{
+    xExpectedIdleTime = portNRF_RTC_MAXTICKS - configEXPECTED_IDLE_TIME_BEFORE_SLEEP;
+}
+/* Block all the interrupts globally */
+</code></pre>
+<h1>ifdef SOFTDEVICE_PRESENT</h1>
+<pre><code>do{
+    uint8_t dummy = 0;
+    uint32_t err_code = sd_nvic_critical_region_enter(&amp;dummy);
+    APP_ERROR_CHECK(err_code);
+}while(0);
+</code></pre>
+<h1>else</h1>
+<pre><code>__disable_irq();
+</code></pre>
+<h1>endif</h1>
+<pre><code>enterTime = nrf_rtc_counter_get(portNRF_RTC_REG);
+if ( eTaskConfirmSleepModeStatus() != eAbortSleep )
+{
+    TickType_t xModifiableIdleTime;
+    TickType_t wakeupTime = (enterTime + xExpectedIdleTime) &amp; portNRF_RTC_MAXTICKS;
+    /* Stop tick events */
+    nrf_rtc_int_disable(portNRF_RTC_REG, NRF_RTC_INT_TICK_MASK);
+    /* Configure CTC interrupt */
+    nrf_rtc_cc_set(portNRF_RTC_REG, 0, wakeupTime);
+    nrf_rtc_event_clear(portNRF_RTC_REG, NRF_RTC_EVENT_COMPARE_0);
+    nrf_rtc_int_enable(portNRF_RTC_REG, NRF_RTC_INT_COMPARE0_MASK);
+    __DSB();
+    /* Sleep until something happens.  configPRE_SLEEP_PROCESSING() can
+     * set its parameter to 0 to indicate that its implementation contains
+     * its own wait for interrupt or wait for event instruction, and so wfi
+     * should not be executed again.  However, the original expected idle
+     * time variable must remain unmodified, so a copy is taken. */
+    xModifiableIdleTime = xExpectedIdleTime;
+    configPRE_SLEEP_PROCESSING( xModifiableIdleTime );
+    if ( xModifiableIdleTime &gt; 0 )
+    {
+</code></pre>
+<h1>ifdef SOFTDEVICE_PRESENT</h1>
+<pre><code>        if (softdevice_handler_is_enabled())
+        {
+            uint32_t err_code = sd_app_evt_wait();
+            APP_ERROR_CHECK(err_code);
+        }
+        else
+</code></pre>
+<h1>endif</h1>
+<pre><code>        {
+            /* No SD -  we would just block interrupts globally.
+            * BASEPRI cannot be used for that because it would prevent WFE from wake up.
+            */
+            do{
+                __WFE();
+            } while (0 == (NVIC-&gt;ISPR[0] | NVIC-&gt;ISPR[1]));
+        }
+    }
+    configPOST_SLEEP_PROCESSING( xExpectedIdleTime );
+    nrf_rtc_int_disable(portNRF_RTC_REG, NRF_RTC_INT_COMPARE0_MASK);
+    nrf_rtc_event_clear(portNRF_RTC_REG, NRF_RTC_EVENT_COMPARE_0);
+    /* Correct the system ticks */
+    {
+        TickType_t diff;
+        nrf_rtc_event_clear(portNRF_RTC_REG, NRF_RTC_EVENT_TICK);
+        nrf_rtc_int_enable (portNRF_RTC_REG, NRF_RTC_INT_TICK_MASK);
+        /* check for overflow in TICK counter */
+        if(nrf_rtc_event_pending(portNRF_RTC_REG, NRF_RTC_EVENT_OVERFLOW))
+        {
+            nrf_rtc_event_clear(portNRF_RTC_REG, NRF_RTC_EVENT_OVERFLOW);
+            m_tick_overflow_count++;
+        }
+        diff = ((m_tick_overflow_count &lt;&lt; portNRF_RTC_BITWIDTH) + nrf_rtc_counter_get(portNRF_RTC_REG)) - xTaskGetTickCount();
+        /* It is important that we clear pending here so that our corrections are latest and in sync with tick_interrupt handler */
+        NVIC_ClearPendingIRQ(portNRF_RTC_IRQn);
+        if((configUSE_TICKLESS_IDLE_SIMPLE_DEBUG) &amp;&amp; (diff &gt; xExpectedIdleTime))
+        {
+            diff = xExpectedIdleTime;
+        }
+        if (diff &gt; 0)
+        {
+            vTaskStepTick(diff);
+        }
+    }
+}
+</code></pre>
+<h1>ifdef SOFTDEVICE_PRESENT</h1>
+<pre><code>uint32_t err_code = sd_nvic_critical_region_exit(0);
+APP_ERROR_CHECK(err_code);
+</code></pre>
+<h1>else</h1>
+<pre><code>__enable_irq();
+</code></pre>
+<h1>endif</h1>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 11, 2017</div><div class="thread-post-content"><blockquote>
+  &#8220;When the CPU comes out of sleep mode interrupts become enabled for
+  a short while, at which point the SysTick interrupt executes.&#8221;
+  is not correct.
+</blockquote>
+Umm, yes it is.  I can point to the lines of code that do it if you like.
+<blockquote>
+  Nordic goes to sleep with global interrupt disabled.
+  The CPU is woken up on interrupts but would not go to ISR.
+</blockquote>
+I am confused here.  I thought we had established that we were relating 
+to the FreeRTOS code, not code provided by a third party that we cannot 
+be expected to support or otherwise influence.  You seem to be looking 
+at Nordic code, but saying there are bugs in and suggesting updates to 
+the FreeRTOS mainline code.
+<blockquote>
+  You can see what they do in port<em>cmsis</em>systick.c:
+</blockquote>
+I don&#8217;t want to see what they do.  I just focus on what we do.  As I 
+told you before, there were bugs in their implementation, which they 
+claim to have fixed.  I asked you a couple of times if you have their 
+fixed code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 11, 2017</div><div class="thread-post-content">I have latest code from Nordic (From 2017 W11). There is nothing newer as far as I know. But obviously that code is not fixed. So no I have no fixed code, and I doubt such code exists. 
+I think we have reached an impasse.
+I told you that big company (claiming #1 at Bluetooth low energy) partialy fucked up porting of your OS. And as unbiased I&#8217;m telling you how you can improve your OS documentation or function to minimize chance that ppl will port it wrongly. For nordic it would help if vTaskStepTick() is actually checking if some task needs to be actually moved into ready queue, and architecturally it seems to me as a good thing that function which adjust time also checks if time is good for some task to be moved into ready queue. But I might be wrong because I&#8217;m totally newbee with FreeRtos. There might be good reason not to do it&#8230;
+Also I can not influence much Nordic to do better job, and implement port of FreeRTOS correctly. Which is possible and easy even with current state of FreeRTOS. And I admit it is more Nordic fault than yours&#8230; 
+Now it is up to you and Nordic. I&#8217;m in no position to tell either of you what to do. I reported to both of you what is not working I give you both working solutions how to solve it. The current situation is that port of FreeRTOS on Nordic has 1 tick idle loop every wakeup, so it is not much low power. If you are OK with it then be it. If you are not ok with it you can solve it actually only with nordic not with me 🙁 I can do my own fix, for my own product, and I will have competitive advantage to other developers who would not apply my fix&#8230; So for me it is actually best if there is bug for others, and I have it fixed inhouse&#8230; I just wanted be good guy and improve things&#8230; I have no reason to be pushy or in stress&#8230; And like I said it is mostly Nordic shit anyway so you can be calm also. 
+So have a nice day
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 11, 2017</div><div class="thread-post-content"><blockquote>
+  For nordic it would help if
+  vTaskStepTick() is actually checking if some task needs to be actually
+  moved into ready queue,
+</blockquote>
+&#8230;but it would be a logical error if it was to do that, as it is done 
+when the scheduler is unsuspended.  Even if vTaskStepTick() did do that 
+it is called with the scheduler suspended so the switch to the new task 
+would not occur until the scheduler was unsuspended &#8211; which is exactly 
+what it is doing now.
+<blockquote>
+  Now it is up to you and Nordic. I&#8217;m in no position to tell either of you
+  what to do. I reported to both of you what is not working I give you
+  both working solutions how to solve it.
+</blockquote>
+Please, understand, the FreeRTOS code is working.  I can&#8217;t comment on 
+the Nordic code as I&#8217;ve not looked at it, but as I have already 
+described the problem does NOT exist in the <em>official</em> FreeRTOS code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 18, 2017</div><div class="thread-post-content">Hello, 
+Please understand that even FeeRTOS code is not working. As you explained me above how freertos original port works I told you that I&#8217;m afraid that there will be problem with geting xTick from ISR. And unfortunatelly I was right. I just got my hands on F767ZI which is using original  FreeRTOS port for ARM M7 and the code does not work. It has correct sleep period and correct wakup time, but when you have for example interrupt from GPIO and ISR will call <code>xTaskGetTickCountFromISR()</code> then it will return wrong time. It will return the time when CPU went to sleep. But current time may be many hundreds of ticks different. The problem is that port.c is calling <code>enable_irq();</code> before <code>vTaskStepTick()</code> compensate for sleep time. I&#8217;m little bit frustrated to work with such libraries 🙁 Could you please fix your RTOS? 
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 18, 2017</div><div class="thread-post-content">You are right of course. If you stop the tick, then read the tick count, the value you read is the value it had when you stopped it. Then, after you have stepped the value forward to account for the time the tick was stopped, when you read the tick value the value you read is the value the tick would have had if it had never been stopped. I take it from your post you now agree with me the values read are as expected.
+<blockquote>
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 19, 2017</div><div class="thread-post-content">No &#8211; value read is not as expected. So once again try to hear me. I did simple app. It sleeps in loop for 1 second. The code can be also woken up by IRQ from GPIO. When I ask for tick in ISR triggered by GPIO toggle I get wrong time. So of course it is wrong. And it should not behave like that. I expect function get tick to give me always correct time. I do not care how you do your port and where you stop timer and where you compensate. I expect simply that kernel will works. And function for returning ticks will give me correct time &#8211; always. In your own specification is written that <code>xTaskGetTickCountFromISR()</code> returns: &#8220;The count of ticks since vTaskStartScheduler was called.&#8221; and it does not do that! So it is very wrong and devfinitelly not correct. Do you understand now?? The fix seems to be easy to me you can just call enable_irq(); after vTaskStepTick( ulCompleteTickPeriods ); compensation. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 19, 2017</div><div class="thread-post-content"><blockquote>
+  No &#8211; value read is not as expected. So once again try to hear me.
+</blockquote>
+This will be my last post on this thread, unless you can provide me a 
+clear sequence of events, step by step, with no ambiguity so I know 
+exactly the sequence you are describing, that shows there is a problem 
+that needs investigating:
+<blockquote>
+  I did
+  simple app. It sleeps in loop for 1 second. The code can be also woken
+  up by IRQ from GPIO. When I ask for tick in ISR triggered by GPIO toggle
+  I get wrong time.
+</blockquote>
+You get the wrong time?  Or you get the time at which the tick interrupt 
+was stopped?  As per my last post, if you read the tick count while it 
+is stopped then the EXPECTED value will be the value the tick count had 
+when you stopped it.  After you have stepped the tick count forward to 
+take into account the time it was stopped for then the value read will 
+be as if the tick hadn&#8217;t been stopped &#8211; and not before.  To state again, 
+if a value is incrementing, and you [deliberately] stop it incrementing, 
+then read the value, the value you read will be the value the variable 
+had at the time it stopped being updated.
+<blockquote>
+  So of course it is wrong. And it should not behave
+  like that. I expect function get tick to give me always correct time.
+</blockquote>
+The tick has been stopped.  It doesn&#8217;t change while it is stopped.  It 
+starts changing after you start it again.  Otherwise what would it mean 
+to stop it?
+<blockquote>
+  I
+  do not care how you do your port and where you stop timer and where you
+  compensate. I expect simply that kernel will works. And function for
+  returning ticks will give me correct time &#8211; always.
+</blockquote>
+Always&#8230;.other than when you have stopped it.
+In your own
+<blockquote>
+  specification is written that |xTaskGetTickCountFromISR()| returns: &#8220;The
+  count of ticks since vTaskStartScheduler was called.&#8221;
+</blockquote>
+I could update the documentation to say &#8220;unless you have done something 
+to stop it&#8221;, but I think the tickless idle documentation probably says 
+that while the tick is not incrementing its value does not change.
+and it does not do
+<blockquote>
+  that! So it is very wrong and devfinitelly not correct. Do you
+  understand now?? The fix seems to be easy to me you can just call
+  enable_irq(); after vTaskStepTick( ulCompleteTickPeriods ); compensation.
+</blockquote>
+Please re-read all this thread.  I have already stated why that would be 
+wrong.
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 20, 2017</div><div class="thread-post-content">We shall clear one thing. I do not do anything with tick. I&#8217;m user of your FreeRTOS. I&#8217;m using your original port &#8220;FreeRTOSv9.0.0FreeRTOSSourceportableRVDSARM<em>CM7r0p1port.c&#8221;.
+I only wrote simple user code:
+~~~
+while (1)  {
+   vTaskDelayUntil( &amp;xLastWakeTime, xFrequency );
+   chNum = sprintf(txt,&#8221;%drn&#8221;, xTaskGetTickCount());
+    HAL</em>UART<em>Transmit(&amp;huart2, (uint8</em>t<em>)txt, chNum, 1000);
+}
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    uint32_t chNum;
+    chNum = sprintf(txt,&#8221;btn: %drn&#8221;, xTaskGetTickCountFromISR( ));
+    HAL_UART_Transmit(&amp;huart2, (uint8_t</em>)txt, chNum, 1000);
+ }
+~~~
+Frequency is 1 second tick is every 1ms. When I configure my FreeRTOS to not be power saving:
+<code>#define configUSE_TICKLESS_IDLE 0</code>
+and run the code my test is working well it prints time every second and then it prints time when button was pressed:
+9001<cr><lf>
+10001<cr><lf>
+btn: 10611<cr><lf>
+11001<cr><lf>
+12001<cr><lf>
+I see the time when I pressed button. 
+When my only change is to confiogure FreeRTOS to be more power efficient and use tickless sleep
+<code>#define configUSE_TICKLESS_IDLE 1</code>
+my code stops working &#8211; because I do not see whn I pressed button but I see only last time that was printed by task:
+9001<cr><lf>
+10001<cr><lf>
+btn: 10001<cr><lf>
+11001<cr><lf>
+12001<cr><lf>
+You see that I do not see true time when I pressed button, but time when FreeRTOS went to sleep. 
+To me power saving feature shall ideally not have impact on code behavior.
+I nowhere see in documentation some note about the fact that tick is not reported correctly under some system configuration &#8211; please point me to the documentation where such information is written. 
+I looked here:
+http://www.freertos.org/a00021.html#xTaskGetTickCountFromISR
+here:
+http://www.freertos.org/a00110.html#configUSE<em>TICKLESS</em>IDLE
+and here:
+http://www.freertos.org/low-power-tickless-rtos.html
+and nowhere is information that xTaskGetTickCountFromISR() can under certain situation report other time than time passed since vTaskStartScheduler() was called. 
+If you insist on claim that this behavior is &#8220;AS EXPECTED&#8221;. Then to me it sounds crazy &#8211; but we have saying: &#8220;there can not be arguing about anyone taste&#8221;. I just hope that you are consistent in your opinions. I have personal question &#8211; when you go to sleep and set your alarm clock next to your bed to go off after 8 hours. Then when you wake up &#8211; do you prefer your alarm clock to show you time when you fall asleep? Or rather (as rest of the world) you like your alarm clock to show you current time? Another parallel would be &#8211; do you want your alarm clock next to your bed to show different times when you run it from power outlet and when you run it from battery? Or do you want it (as rest of the world) to show same times no mather what is the power source?
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on April 20, 2017</div><div class="thread-post-content">This thread is boring and stopped being useful to other FreeRTOs users after a few posts &#8211; is it just trolling? Can we lock the thread?
+I have a question for you. If you stop the tick, then read the value back while it is stopped, what value would <em>you</em> expect it to be? You seem to argue it should not be any different as if it hadnt been stopp, so then my question to you is what do you think stopping the tick does?
+If you really must read the time from an interrupt when you know the tick is not running then read a time you know is running. A hardware timer is still running, only the interrupt is stopped, so read the hardware timer to work out what the time is. Another way is to just unblock a task in the interrupt, then read the time in the task. The task will not read the time until after the tick has been corrected for the sleep time.
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 20, 2017</div><div class="thread-post-content">To me stopping the tick is power saving feature. RTOS should and partially does compensate ticks after wake up. The only problem is that it enables ISR sooner befgore it does the compensation. To me it seems as just a matter of enabling ISR few instruciotn later after the time compensation is done. Why not to do that if it seems easy? When I rewrite port.c and move <code>__enable_irq();</code> to the end of <code>vPortSuppressTicksAndSleep()</code> then everything works as expected.
+You are rgiht there is multiple other ways how to solve it, but those are workaround of wrong desing. 
+I would have accepted that they do not want to change port.c code for some reason. But at least I would like to force them to update documentation so users know that xTaskGetTickCountFromISR() is not working well sometimes when tickless mode is enabled. 
+And no I&#8217;m not trolling I&#8217;m offering working solution. And I&#8217;m open to hear arguemtns why on earth first ISR shall report wrong time?
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on April 20, 2017</div><div class="thread-post-content">Interrupts get enabled as soon as possible to maximize responsiveness. Coming out of a low power mode can take the hardware a long time and most people want the interrupt that woke the chip to execute as soon as physically possible. The latest version in SVN goes further, enabling interrupts so they can execute asap, then disabling them again while the catch up is done.
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 20, 2017</div><div class="thread-post-content">Dave thank you! now you said first reasonable response in this long and exhausting thread! If we prefer speed over correct tick reporting then it is understandable. But still we need to write in big red letters in documentation that we made this choice and that time reporting under this and that condition is not correct because we prefer speed. On my ARM M7 at 16MHz the time compensation takes around 1.5ms. Which is trully quite long&#8230; Perhaps this can be added as configurable option &#8211; if we prefer fast wake up from deep sleep or if we prefer code to work same as if tickless mode is disabled. I can imagine if some chip is anyway waking up 10ms from deep sleep the extra 1.5 ms is acceptable for user&#8230;  
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 20, 2017</div><div class="thread-post-content">I also looked to nordic &#8220;port<em>cmsis</em>systick.c&#8221; and they enable IRQ only after tick compensation (so their code behave correctly -> same in tickless enabled or disabled). I measured that their compensation time takes only 6us (partially due to the arm is using faster clock 64MHz) but mostly due to the fact they are not dividing. Instead of systick timer they used RTC hardware and it uses prescaler to have 1 counted value same as 1 tick. So if you have free RTC HW in your ARM that has Compare register and Prescaler you can write much faster port than is generic free rtos port. The problem is that generic systick needs division operation which is very slow operation. Also RTC with Compare register does not need to be stopped so other benefit of such approach would be that there is not event small time drift in tickless mode (standard free rtos arm port is stopping for while systick counter which creates small tick drift).
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bernatikv">bernatikv</a> on April 20, 2017</div><div class="thread-post-content">Hups I made a mistake in previous measurement of original free rtos port.c. I moved <code>__enable_irq();</code> at the end of <code>vPortSuppressTicksAndSleep()</code> but just now I noticed that ISR is enetered when <code>portEXIT_CRITICAL();</code> is called. Therefore I measured too long compensation time (I added time for my long demo ISR). When I put my pin toggle before <code>portEXIT_CRITICAL();</code> then I see that compensation time is not ~1.5ms but only ~18us!!! Division operation is actually fast it takes only ~2us.
+But that means that probably most users would prefer to delay first ISR after sleep by 18us and get consistent behavior in both modes (tickless enabled and disabled). If some user needs ISR to be run very quickly he/she probably would not use tickless mode at the first place anyway &#8211; because waking CPU up takes also some time (in my case waking Arm M7 CPU takes 5 us, but for example my nordic chip nRF52832 wakes up from sleep 43us). So back to original statement that port.c shall be changed to compensate tick before ISR is called. Or do you still think that 18us is more important that consistent behavior? (if yes then there is no point in arguing &#8211; this is up to everyone taste, just add this weird decision to documentation) 
+</div></div><div class="thread-post"><h3 class="thread-post-title">1 tick delayed task start after portSUPPRESS_TICKS_AND_SLEEP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tlafleur">tlafleur</a> on April 20, 2017</div><div class="thread-post-content">If you don&#8217;t understand how FreeRTOS work or don&#8217;t like the way it works.
+You have full source code, make the changes you need and be done with it!!!
+~~ _/) ~~~~ _/) ~~~~ _/) ~~~~ _/) ~~
+Tom Lafleur
+On Thu, Apr 20, 2017 at 7:49 AM, Vit Bernatik <a href="/FreeRTOS_Support_Forum_Archive/April_2017/&#x6d;&#97;&#x69;&#108;&#116;&#x6f;&#58;b&#x65;&#114;&#x6e;&#x61;&#116;&#x69;&#107;v&#x40;&#117;&#x73;&#x65;&#114;&#x73;&#46;&#115;&#x66;&#46;n&#x65;&#116;">b&#x65;&#114;&#x6e;&#x61;&#116;&#x69;&#107;v&#x40;&#117;&#x73;&#x65;&#114;&#x73;&#46;&#115;&#x66;&#46;n&#x65;&#116;</a>
+wrote:
+<blockquote>
+  I also looked to nordic &#8220;port<em>cmsis</em>systick.c&#8221; and they enable IRQ only
+  after tick compensation (so their code behave correctly -> same in tickless
+  enabled or disabled). I measured that their compensation time takes only
+  6us (partially due to the arm is using faster clock 64MHz) but mostly due
+  to the fact they are not dividing. Instead of systick timer they used RTC
+  hardware and it uses prescaler to have 1 counted value same as 1 tick. So
+  if you have free RTC HW in your ARM that has Compare register and Prescaler
+  you can write much faster port than is generic free rtos port. The problem
+  is that generic systick needs division operation which is very slow
+  operation. Also RTC with Compare register does not need to be stopped so
+  other benefit of such approach would be that there is not event small time
+  drift in tickless mode (standard free rtos arm port is stopping for while
+  <h2>systick counter which creates small tick drift).</h2>
+  1 tick delayed task start after portSUPPRESS<em>TICKS</em>AND_SLEEP
+  <h2><a href="https://sourceforge.net/p/freertos/discussion/382005/thread/237a82ca/?limit=25#47f0">https://sourceforge.net/p/freertos/discussion/382005/thread/237a82ca/?limit=25#47f0</a></h2>
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

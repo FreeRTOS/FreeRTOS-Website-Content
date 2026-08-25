@@ -1,0 +1,211 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Priority inheritance not working as expected - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2016/freertos_Priority_inheritance_not_working_as_expected_d66d2927j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Priority inheritance not working as expected - FreeRTOS" />
+<meta property="og:description" content="Priority inheritance not working as expectedPosted by alexanderw2 on January 28, 2016Hi, I&#8217;m using a STM32F429I-DISCO board with FreeRTOS V8.2.1 and am trying to understand how scheduling and priority inheritance work when using mutexes and queues. I&#8217;m using the BSPLCDDisplayStringAtLine() function to ouput what line just got executed or will get executed next. The output: &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2016/freertos_Priority_inheritance_not_working_as_expected_d66d2927j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Priority inheritance not working as expectedPosted by alexanderw2 on January 28, 2016Hi, I&#8217;m using a STM32F429I-DISCO board with FreeRTOS V8.2.1 and am trying to understand how scheduling and priority inheritance work when using mutexes and queues. I&#8217;m using the BSPLCDDisplayStringAtLine() function to ouput what line just got executed or will get executed next. The output: [&hellip;]" />
+<meta name="twitter:title" content="Priority inheritance not working as expected - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202598' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202598' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202598' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202598' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145609' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2016%2Ffreertos_Priority_inheritance_not_working_as_expected_d66d2927j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2016%2Ffreertos_Priority_inheritance_not_working_as_expected_d66d2927j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145609">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2016_freertos_support_forum_archive_index.html/">January 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Priority inheritance not working as expected</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alexanderw2">alexanderw2</a> on January 28, 2016</div><div class="thread-post-content">Hi, I&#8217;m using a STM32F429I-DISCO board with FreeRTOS V8.2.1 and am trying to understand how scheduling and priority inheritance work when using mutexes and queues. I&#8217;m using the BSP<em>LCD</em>DisplayStringAtLine() function to ouput what line just got executed or will get executed next.
+The output:
+high
+high before take mutex 1
+high after take mutex 1
+high before receive
+medium
+medium before take mutex 1
+low
+low before take mutex 2
+low before give mutex 1
+There&#8217;s no more output, but I&#8217;d expect the next lines to be
+medium after take mutex 1
+medium before send queue 1
+high before send
+Why doesn&#8217;t FreeRTOS switch back to the medium priority task, after it got blocked by the xSemaphoreTake( Mutex<em>1,  portMAX</em>DELAY) call and the Mutex_1 was given in the low priority task?
+Thanks
+~~~~
+int i = 0;
+uint32<em>t data[]={1,2,3,4};
+static void high (void *)
+{
+    BSP</em>LCD<em>DisplayStringAtLine (i++, (uint8</em>t <em>) &#8220;high&#8221;);
+    BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;high before take mutex 1&#8221;);
+    xSemaphoreTake( Mutex_1, portMAX_DELAY);
+    BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;high after take mutex 1&#8221;);
+    for( int * ptr = (int</em>)data; *ptr &lt;= 4; ++ptr)
+    {
+        BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;high before receive&#8221;);
+        xQueueReceive(  Queue_1, ptr, portMAX_DELAY);
+        BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;high before send&#8221;);
+        xQueueSend(     Queue_2, ptr, portMAX_DELAY);
+    }
+    vTaskSuspend(0);
+}
+static void medium( void <em>x)
+{
+    BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;medium&#8221;);
+    char *c;
+    uint32_t tmp[1];
+    for( c=&#8221;012345&#8243;;</em>c != 0 ;++c)
+    {
+        BSP<em>LCD</em>DisplayStringAtLine (i++, (uint8<em>t *) &#8220;medium before take mutex 1&#8221;);
+        xSemaphoreTake( Mutex</em>1,    portMAX<em>DELAY);
+        BSP</em>LCD<em>DisplayStringAtLine (i++, (uint8</em>t <em>) &#8220;medium after take mutex 1&#8221;);
+        *tmp = *c++;
+        BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;medium before send queue 1&#8221;);
+        xQueueSend( Queue_1, tmp,   portMAX_DELAY);
+        *tmp = *c++;
+        BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;medium before send queue 1&#8221;);
+        xQueueSend( Queue_1, tmp,   portMAX_DELAY);
+        BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;medium before take mutex 2&#8221;);
+        xSemaphoreTake( Mutex_2,    portMAX_DELAY);
+        BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;medium before give mutex 1&#8221;);
+        xSemaphoreGive( Mutex_1);
+        BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;medium before give mutex 2&#8221;);
+        xSemaphoreGive( Mutex_2);
+    }
+}
+uint32_t target[10];
+static void low( void *x)
+{
+    BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;low&#8221;);
+    for( uint32_t *data = target;</em>data &lt;= 9;data++)
+    {
+        BSP<em>LCD</em>DisplayStringAtLine (i++, (uint8<em>t *) &#8220;low before take mutex 2&#8221;);
+        xSemaphoreTake( Mutex</em>2, portMAX<em>DELAY);
+        BSP</em>LCD<em>DisplayStringAtLine (i++, (uint8</em>t <em>) &#8220;low before give mutex 1&#8221;);
+        xSemaphoreGive( Mutex_1);
+        BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;low after give mutex 1&#8221;);
+        BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;low before receive queue 2&#8221;);
+        while(pdTRUE==xQueueReceive( Queue_2, data++, portMAX_DELAY))
+            /</em> do<em>nothing */;
+        BSP</em>LCD<em>DisplayStringAtLine (i++, (uint8</em>t *) &#8220;low before take mutex 1&#8221;);
+        xSemaphoreTake( Mutex_1, portMAX_DELAY);
+        BSP_LCD_DisplayStringAtLine (i++, (uint8_t *) &#8220;low before give mutex 2&#8221;);
+        xSemaphoreGive( Mutex_2);
+    }
+    vTaskSuspend(0);
+}
+~~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Priority inheritance not working as expected</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 28, 2016</div><div class="thread-post-content">As far as I can see &#8211; and its not that easy to follow &#8211; your low priority task is attempting to give mutex 1 when mutex 1 is being held by the high priority task.  Stepping into the code, or pausing the debugger, will probably show you stopped on the following line:
+~~~~
+/* A task can only have an inherited priority if it holds the mutex.
+If the mutex is held by a task then it cannot be given from an
+interrupt, and if a mutex is given by the holding task then it must
+be the running state task. */
+configASSERT( pxTCB == pxCurrentTCB );
+~~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Priority inheritance not working as expected</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alexanderw2">alexanderw2</a> on January 30, 2016</div><div class="thread-post-content">Thanks for the quick response.
+It was assumed that Mutexes could be given back by a task other than the one that took it. Commenting out the configASSERT() &#8220;fixes&#8221; it, as well as switching to a binary semaphore. I&#8217;ll have to ask in class why this unsupported way of using mutexes was used.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

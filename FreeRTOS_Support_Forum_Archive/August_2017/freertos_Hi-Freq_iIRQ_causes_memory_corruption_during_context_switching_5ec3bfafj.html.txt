@@ -1,0 +1,230 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hi-Freq iIRQ causes memory corruption during context switching - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2017/freertos_Hi-Freq_iIRQ_causes_memory_corruption_during_context_switching_5ec3bfafj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Hi-Freq iIRQ causes memory corruption during context switching - FreeRTOS" />
+<meta property="og:description" content="Hi-Freq iIRQ causes memory corruption during context switchingPosted by rustrannik on August 11, 2017Hello, I am working on a project based on STM32F429 for quite a while now. Recently I&#8217;ve started noticing rare system hangs. I decided to check utilization of system resources and enabled the following: ~~~ extern volatile uint32t ClockCounter; extern void Init_TIM4(void); &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2017/freertos_Hi-Freq_iIRQ_causes_memory_corruption_during_context_switching_5ec3bfafj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Hi-Freq iIRQ causes memory corruption during context switchingPosted by rustrannik on August 11, 2017Hello, I am working on a project based on STM32F429 for quite a while now. Recently I&#8217;ve started noticing rare system hangs. I decided to check utilization of system resources and enabled the following: ~~~ extern volatile uint32t ClockCounter; extern void Init_TIM4(void); [&hellip;]" />
+<meta name="twitter:title" content="Hi-Freq iIRQ causes memory corruption during context switching - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202850' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202850' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202850' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202850' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146655' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2017%2Ffreertos_Hi-Freq_iIRQ_causes_memory_corruption_during_context_switching_5ec3bfafj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2017%2Ffreertos_Hi-Freq_iIRQ_causes_memory_corruption_during_context_switching_5ec3bfafj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146655">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2017_freertos_support_forum_archive_index.html/">August 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Hi-Freq iIRQ causes memory corruption during context switching</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rustrannik">rustrannik</a> on August 11, 2017</div><div class="thread-post-content">Hello,
+I am working on a project based on STM32F429 for quite a while now. Recently I&#8217;ve started noticing rare system hangs.
+I decided to check utilization of system resources and enabled the following:
+~~~
+extern volatile uint32<em>t Clock</em>Counter;
+extern void Init_TIM4(void);
+<h1>define configUSE<em>TRACE</em>FACILITY                1</h1>
+<h1>define configGENERATE<em>RUN</em>TIME_STATS           1</h1>
+<h1>define portCONFIGURE<em>TIMER</em>FOR<em>RUN</em>TIME<em>STATS()(Init</em>TIM4())</h1>
+<h1>define portGET<em>RUN</em>TIME<em>COUNTER</em>VALUE()        (Clock_Counter)</h1>
+~~~
+For the run time stats I use general purpose Timer4, which generates interruption at 10kHz (according to recommendation) and does the following:
+~~~
+void TIM4<em>IRQHandler(void) {
+    if (TIM</em>GetITStatus(TIM4, TIM<em>IT</em>Update)) {
+        TIM<em>ClearITPendingBit(TIM4,TIM</em>IT<em>Update);
+        ++Clock</em>Counter;
+    };//if (TIM<em>IT</em>Update)
+};//TIM4<em>IRQHandler()
+~~~
+IRQ priority was originally set to 1, which is very high, however, since no RTOS API used, so it shouldn&#8217;t matter.
+And that was the beginning of disaster: system started constantly hanging at random time (from 18ms to 18minutes) in random spots, causing random consequences (BusFault, HardFault, dropping to Default</em>Handler, all sorts of assert_failed() in different spots).
+I tried to set other priorities from 0 to F, but it had almost no effect, only hanging frequency changes a little bit.
+RTOS priorities are set as follows:
+~~~
+<h1>define configPRIO_BITS                         4</h1>
+<h1>define configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY         0xF</h1>
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY    5</h1>
+<h1>define configKERNEL<em>INTERRUPT</em>PRIORITY      ( configLIBRARY<em>LOWEST</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+<h1>define configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY     ( configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+~~~
+I updated FreeRTOS to v9.0.0 -> No effect
+I removed all other functionality and tasks, only 1 task with 1 semaphore left and 1 timer IRQ, and it still hangs all the time. Disabling one of them (Task Scheduler or IRQ) leaves system 100% stable, but useless.
+Task code:
+~~~
+void Task<em>USART2</em>Comm (void *par) {
+    xSemaphoreGive(SemId_USART2_Tx);
+    for(;;) {
+        if (xSemaphoreTake(SemId_USART2_Rx,500) == pdPASS) {
+            //all removed
+        } else {//if (msg received successfully)
+            //all removed
+        };//else if (msg received successfully)
+        LedTog(LED_BLUE1);
+    };//inf loop
+};//UART2_Comm_Task()
+~~~
+main() code:
+~~~
+int main(void) {
+    Init_Clock();
+    Init_LEDs();
+    Init_Buttons();
+<pre><code>SCB-&gt;SHCSR |= SCB_SHCSR_BUSFAULTENA_Msk; // Enabling BusFault hook
+SystemInit();
+SystemCoreClockUpdate();
+NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
+if ((SemId_USART2_Rx    = xSemaphoreCreateCounting(16,0)) == NULL) { goto InitFailed; };//;//
+if ((SemId_USART2_Tx    = xSemaphoreCreateBinary()) == NULL) { goto InitFailed; };
+xTaskCreate(Task_USART2_Comm,       "U2C",  8*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, &amp;TaskHandler);
+if (TaskHandler == NULL) { goto InitFailed; };
+vTaskStartScheduler();
+// normally should never get here
+</code></pre>
+InitFailed:
+    for(int i=0;;) {
+        if (++i >= 1000000) { i=0; LedTog(LED_RED2); };
+    };//inf loop trap
+};//main()
+~~~
+Debugging showed that system crashes right after leaving timer irq.
+Any thoughts?
+Thanks in advance&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hi-Freq iIRQ causes memory corruption during context switching</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 12, 2017</div><div class="thread-post-content">There is a bit much code to look through there, but a couple of points:
+1) As no RTOS calls are made in the high frequency interrupt the 
+priority doesn&#8217;t matter (as you stated in your post).
+2) In some of the FreeRTOS demos there is a run time stats 
+implementation that just reads the systetick clock count value, which is 
+always running anyway.  It is quite complex as the count is very fast so 
+needs scaling, and it counts down rather than up, but it avoids the need 
+for a fast interrupt.  The other thing you could do is set the timer to 
+a frequency that allows you to read its count value directly, rather 
+than count the interrupts it generates.  You would of course need to 
+take care of overflows.
+3) Are you using the ST Cube/HAL software?  If so then the HAL tick and 
+the RTOS tick need to share the SysTick interrupt &#8211; and as the HAL 
+drivers sometimes poll the tick count value from inside the ISR (yes, I 
+know) then the SysTick interrupt has to be the HIGHEST possible value, 
+rather than the lowest.  Keep the PendSV interrupt at the lowest though.
+Hope that helps.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hi-Freq iIRQ causes memory corruption during context switching</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rustrannik">rustrannik</a> on August 14, 2017</div><div class="thread-post-content">Thank you for advices and sorry for the excessive code! I thought I might have made a very stupid mistake which I can&#8217;t see, since I look at it for months, but a new person would immediatelly tell &#8220;aha! there is a typo!&#8221; or something like that.
+As for stats, I measured utilization, which showed that >90% of resources are still free, so the stats by themselves are not needed anymore, howerver, I have plenty of other interruptions, like 3 UARTS, ADC, CAN, DMA, I2C, SPI, 1 more timer, etc., but they just happen not as frequently as Timer4, so hangs were very rare, but still happened, and I cannot reset system at random times, so I need to find a way to make it 100% stable.
+I use latest standard peripheral drivers, so Cube/HAL are not the case.
+Currently, I am suspicious about the hardware, so I will replace the chip and compile the same code for other device and other platform and post the results here.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hi-Freq iIRQ causes memory corruption during context switching</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rustrannik">rustrannik</a> on August 14, 2017</div><div class="thread-post-content">Found that my 16MHz crystall was somehow causing this instability on the chip. Everything started working flawlessly after the replacement&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hi-Freq iIRQ causes memory corruption during context switching</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 14, 2017</div><div class="thread-post-content">Thanks for taking the time to report back.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hi-Freq iIRQ causes memory corruption during context switching</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gezab">gezab</a> on August 14, 2017</div><div class="thread-post-content">I am really curious how such a hw change can effect functionality in such a
+way. Can you explain?
+On 14 Aug 2017 11:14 pm, &#8220;Real Time Engineers ltd.&#8221; <a href="/FreeRTOS_Support_Forum_Archive/August_2017/&#x6d;&#97;&#x69;&#108;&#116;&#x6f;&#58;r&#x74;&#101;&#x6c;&#x40;&#117;&#x73;&#101;r&#x73;&#46;&#x73;&#x66;&#46;&#x6e;&#101;&#116;">r&#x74;&#101;&#x6c;&#x40;&#117;&#x73;&#101;r&#x73;&#46;&#x73;&#x66;&#46;&#x6e;&#101;&#116;</a>
+wrote:
+<blockquote>
+  <h2>Thanks for taking the time to report back.</h2>
+  Hi-Freq iIRQ causes memory corruption during context switching
+  <h2><a href="https://sourceforge.net/p/freertos/discussion/382005/thread/5ec3bfaf/?limit=25#b1d5/cce4">https://sourceforge.net/p/freertos/discussion/382005/thread/5ec3bfaf/?limit=25#b1d5/cce4</a></h2>
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hi-Freq iIRQ causes memory corruption during context switching</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 15, 2017</div><div class="thread-post-content">If the crystall was causing to processor to work outside its operating limits, and thus &#8216;making mistakes&#8217; it is quite possible.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tick ISR curiosity - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2007/freertos_tick_ISR_curiosity_a4edc7efj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="tick ISR curiosity - FreeRTOS" />
+<meta property="og:description" content="tick ISR curiosityPosted by *anonymous on January 11, 2007FreeRTOS 4.1.1, GCC, LPC2&#8230; In an attempt to eliminate round-robin scheduling of tasks of equal priority, I wrote my own tick ISR. It calls vTaskIncrementTick&#040;&#041;, but then it calls vTaskSwitchContext&#040;&#041; only if a task of higher priority gets scheduled. To do this, it exits the ISR with &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2007/freertos_tick_ISR_curiosity_a4edc7efj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="tick ISR curiosityPosted by *anonymous on January 11, 2007FreeRTOS 4.1.1, GCC, LPC2&#8230; In an attempt to eliminate round-robin scheduling of tasks of equal priority, I wrote my own tick ISR. It calls vTaskIncrementTick&#040;&#041;, but then it calls vTaskSwitchContext&#040;&#041; only if a task of higher priority gets scheduled. To do this, it exits the ISR with [&hellip;]" />
+<meta name="twitter:title" content="tick ISR curiosity - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201426' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201426' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201426' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201426' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140674' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2007%2Ffreertos_tick_ISR_curiosity_a4edc7efj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2007%2Ffreertos_tick_ISR_curiosity_a4edc7efj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140674">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2007_freertos_support_forum_archive_index.html/">January 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">tick ISR curiosity</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on January 11, 2007</div><div class="thread-post-content">FreeRTOS 4.1.1, GCC, LPC2&#8230;
+In an attempt to eliminate round-robin scheduling of tasks of equal priority, I wrote my own tick ISR. It calls vTaskIncrementTick&#40;&#41;, but then it calls vTaskSwitchContext&#40;&#41; only if a task of higher priority gets scheduled. To do this, it exits the ISR with
+portEXIT&#95;SWITCHING&#95;ISR&#40;NeedTickSwitch&#40;&#41;&#41;;
+where NeedTickSwitch&#40;&#41; answers the question regarding relative priorities &#40;I put it in tasks.c so it can compare uxTopReadyPriority to pxCurrentTCB-&gt;uxPriority&#41;.
+This trick didn&#8217;t work. But I can&#8217;t quite get a handle on what is going wrong. My testing seems to imply vTaskSwitchContext&#40;&#41; must always be called after vTaskIncrementTick&#40;&#41;. I don&#8217;t see why, but is this true?
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/embeddedc">embeddedc</a> on January 12, 2007</div><div class="thread-post-content">How about this, leave all other stuff unmodified and just change vTaskSwitchContext&#40;&#41; as follows:
+void vTaskSwitchContext&#40; void &#41;
+&#123;
+static unsigned portBASE&#95;TYPE uxLastTopReadyPriority = 0;
+&#95;&#95;&#95;&#95;if&#40; uxSchedulerSuspended &#33;= &#40; unsigned portBASE&#95;TYPE &#41; pdFALSE &#41;
+&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;xMissedYield = pdTRUE;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;return;
+&#95;&#95;&#95;&#95;&#125;
+&#95;&#95;&#95;&#95;while&#40; listLIST&#95;IS&#95;EMPTY&#40; &amp;&#40; pxReadyTasksLists&#91; uxTopReadyPriority &#93; &#41; &#41; &#41;
+&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#8211;uxTopReadyPriority;
+&#95;&#95;&#95;&#95;&#125;
+&#95;&#95;&#95;&#95;if&#40; uxTopReadyPriority &gt; uxLastTopReadyPriority &#41;
+&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;listGET&#95;OWNER&#95;OF&#95;NEXT&#95;ENTRY&#40; pxCurrentTCB, &amp;&#40; pxReadyTasksLists&#91; uxTopReadyPriority &#93; &#41; &#41;;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;uxLastTopReadyPriority = uxTopReadyPriority;
+&#95;&#95;&#95;&#95;&#125;
+&#125;
+Would that do what you want?&nbsp; I have not actually tried it, but the idea is to only select a new task to run if the top priority ready task is higher than the last time the selection function was called.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on January 12, 2007</div><div class="thread-post-content">I think that would mean taskYIELD&#40;&#41; would not perform as expected. I don&#8217;t know what other ill effects it might have. In fact, it was this explicit control between tasks of equal priority that I was looking for.
+My understanding is that ISRs are supposed to have the capability to determine whether or not they trigger a context switch using portEXIT&#95;SWITCHING&#95;ISR&#40;&#41;. I would rather use a prescibed mechanism than change the kernel. But portEXIT&#95;SWITCHING&#95;ISR&#40;&#41; doesn&#8217;t seem to work with the tick ISR.
+Richard, can you shed any light?
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 12, 2007</div><div class="thread-post-content">I think you are right about the not yielding with the suggested code.
+I could not think of a reason why vTaskSwitchContext&#40;&#41; would have to be called after incrementing the tick, in fact when running with configUSE&#95;PREEMPTION set to 0 it is not.&nbsp; So your results are suprising.
+&#43; What do you find happens?&nbsp; The system crashes or just still round robins when you don&#8217;t want it to?
+&#43; What are you calling when you enter the tick ISR?&nbsp; portSAVE&#95;CONTEXT&#40;&#41; of portENTER&#95;SWITCHING&#95;ISR&#40;&#41;?
+Some of the other ARM7 ports have a different IRQ handling mechanism where the context is saved automatically prior to vectoring to the handler.&nbsp; This prevents you having to use the ENTER/EXIT&#95;SWITCHING&#95;ISR&#40;&#41; macros.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on January 12, 2007</div><div class="thread-post-content">Richard
+I have a common ISR that handles all &#40;VIC default vector&#41; IRQs, including the tick interrrupt.
+extern void&nbsp; &#95;&#95;attribute&#95;&#95; &#40;&#40;naked&#41;&#41; PortIRQDispatch&#40;void&#41;;
+void PortIRQDispatch&#40;void&#41;
+&#123;
+&#95;&#95;portENTER&#95;SWITCHING&#95;ISR&#40;&#41;;
+&#95;&#95;ISRDispatch&#40;&#41;;
+&#95;&#95;portEXIT&#95;SWITCHING&#95;ISR&#40;NeedTaskSwitch&#40;&#41;&#41;;
+&#125;
+ISRDispatch&#40;&#41; does a table lookup to properly dispatch to the correct ISR. NeedTaskSwitch&#40;&#41; is implemented in tasks.c as:
+short&nbsp;&nbsp;&nbsp; NeedTaskSwitch&#40;void&#41;
+&#123;
+&#95;&#95;static portTickType lastCount;
+&#95;&#95;short&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; didTick = lastCount&#33;=xTickCount;
+&#95;&#95;lastCount = xTickCount;
+&#95;&#95;return didTick || uxTopReadyPriority&gt;pxCurrentTCB-&gt;uxPriority;
+&#125;
+The above version works as I had hoped. The &#8216;didTick&#8217; trick ensures that true is returned whenever vTaskIncrementTick&#40;&#41; is called in the ISR. The following version does not work as expected.
+short&nbsp;&nbsp;&nbsp; NeedTaskSwitch&#40;void&#41;
+&#123;
+&#95;&#95;return uxTopReadyPriority&gt;pxCurrentTCB-&gt;uxPriority;
+&#125;
+The test has a lower priority task in an infinite loop. A higher priority task delays for a certain period. It never appears to run after the delay period. But then I have some difficulty with debugging. I see NeedTaskSwitch&#40;&#41; return true at the appropriate time, but I can&#8217;t seem to properly step out of the restoring of the context to see what is happening. I don&#8217;t know if the stepping out issue is an artifact of the actual
+problem, or if it is just an artifact of my debugging tools. Visually, during the final
+&#95;&#95;SUBS&nbsp;&nbsp;&nbsp; PC, LR, &#35;4
+the LR has the same value as the PC, so it just steps back 1 instruction and appears to be looping infinitely. But this is inconsistent with the free-running behaviour so I tend to suspect the debug tools rather than think this is the actual problem. Free-running, a breakpoint after the delay in the higher priority task never triggers, and the lower priority task continues looping.
+The truth be told, I never examined the registers of the restored context to try to figure out which of the 2 tasks was being restored. I may take some time to do this some time in the future. Or, if you are willing to look at it&#8230;
+Glen
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 14, 2007</div><div class="thread-post-content">Not 100% sure about this but I think it might be to do with a mismatch between the IRQ and SWI stack frames.
+Could you give this a go.
+void &#95;&#95;attribute&#95;&#95; &#40;&#40;naked&#41;&#41; PortIRQDispatch&#40;void&#41;; 
+void PortIRQDispatch&#40;void&#41; 
+&#123; 
+&#95;&#95;portSAVE&#95;CONTEXT&#40;&#41;;
+&#95;&#95;&#123; 
+&#95;&#95;&#95;&#95;ISRDispatch&#40;&#41;; 
+&#95;&#95;&#95;&#95;if&#40; NeedTaskSwitch&#40;&#41;&#41;
+&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;vTaskSwitchContext&#40;&#41;;
+&#95;&#95;&#95;&#95;&#125;
+&#95;&#95;&#125;
+&#95;&#95;portRESTORE&#95;CONTEXT&#40;&#41;; 
+&#125; 
+Keep the brackets between the SAVE/RESTORE to start with, I don&#8217;t think they are needed unless you declare a stack variable in the function, but they won&#8217;t do any harm.
+Regards.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on January 14, 2007</div><div class="thread-post-content">Bingo.
+I have absolutely no idea why this has solved the problem nor how what you have suggested differs in any significant way from the original, but it does seem to have solved the problem. And no, the extra brackets are not required.
+Does this mean that there is something not quite right about the ARM port that we should be aware of?
+Thanks, Richard. I&#8217;ll maybe look it more closely tomorrow.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 15, 2007</div><div class="thread-post-content">The portENTER&#95;SWITCHING&#95;ISR&#40;&#41; macro contains one extra line &#40;to change the stack frame&#41; when compared to the portSAVE&#95;CONTEXT&#40;&#41; macro as they are intended for use in slightly different situations.&nbsp; The code I suggested matched the way the original tick ISR was written.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on January 15, 2007</div><div class="thread-post-content">Sorry about continuing to beat this dead horse, but I would like to understand the implications of this for my future use of FreeRTOS.
+1&#46; Is the only downside of using the portSAVE&#95;CONTEXT&#40;&#41;/portRESTORE&#95;CONTEXT&#40;&#41; version the fact that the main ISR function can&#8217;t have local variables?
+2&#46; Does the fact that the tick ISR had a problem with the portENTER&#95;SWITCHING&#95;ISR&#40;&#41;/portEXIT&#95;SWITCHING&#95;ISR&#40;&#41; version mean that other ISRs could also have problems with these macros, or is this problem specifically related to the use of vTaskIncrementTick&#40;&#41; in the ISR?
+Cheers
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 16, 2007</div><div class="thread-post-content">Not sure &#8211; I need to look into this in more detail.
+I recently updated the demo makefiles in the download to include the -fomit-fame-pointer options.&nbsp; Are you using this?&nbsp; I am wondering if it has caused a problem.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on January 16, 2007</div><div class="thread-post-content">Oh&#8230; no, I found the -fomit-fame-pointer interfered too much much with debugging, so I &#8216;fixed&#8217; the GCC problem within FreeRTOS. Could that be the problem? Have you actually reproduced the my ISR problem, or have you just been relying on my description?
+Here is what I did for the problem of GCC emitting ARM/Thumb code incompatible with context switching:
+In portSAVE&#95;CONTEXT&#40;&#41;
+&#95;&#95;&#95;&#95;&quot;SUB&nbsp;&nbsp;&nbsp; SP, SP, &#35;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#95;&#95;&#95;&#95;&quot;LDMIA&nbsp; SP&#33;,&#123;R0&#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+/&#42;gb &#8211; step over possible GCC stacked items &#40;GCC bug&#41;&#42;/
+&#95;&#95;&#95;&#95;&quot;SUB&nbsp;&nbsp;&nbsp; R0, R0, &#35;8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Push the return address onto the stack. &#42;/
+&#95;&#95;&#95;&#95;&quot;STMDB&nbsp; R0&#33;, &#123;LR&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 16, 2007</div><div class="thread-post-content">Glen &#8211; would it be possible for you to send me a zip file containing a mini project that exhibits the behaviour?&nbsp; It does not really have to do anything.&nbsp; I will then merge your FreeRTOS specific files into an LPC2000 demo project and run it in CrossWorks so I can step through the code to see exactly what is what.&nbsp; You can send the file to the email address on the WEB site rather than SourceForge as the latter strips off binary attachments &#40;r +++dot+++ barry &#33;&#33;&#33;at&#33;&#33;&#33; freertos.org&#41;.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on January 17, 2007</div><div class="thread-post-content">Sorry, I won&#8217;t be able put together a mini app for some time. I&#8217;ll get back to you. Thanks for the time you have put on it so far.
+Glen
+</div></div><div class="thread-post"><h3 class="thread-post-title">tick ISR curiosity</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on January 17, 2007</div><div class="thread-post-content">Oh, oh. I have discovered the problem was mine. The actual strategy I was using is fine. My blunder was misinterpreting what I was seeing.
+My deepest apologies , Richard. As I trimmed things down I discovered my blunder. &#40;Good strategy on your part&#33;&#41; I even got it wrong when I said that the change you suggested fixed the problem. Well, in fact there was no problem.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

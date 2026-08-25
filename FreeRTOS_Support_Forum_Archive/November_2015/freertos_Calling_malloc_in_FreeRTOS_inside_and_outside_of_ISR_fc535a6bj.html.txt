@@ -1,0 +1,238 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calling malloc in FreeRTOS inside and outside of ISR - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2015/freertos_Calling_malloc_in_FreeRTOS_inside_and_outside_of_ISR_fc535a6bj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Calling malloc in FreeRTOS inside and outside of ISR - FreeRTOS" />
+<meta property="og:description" content="Calling malloc in FreeRTOS inside and outside of ISRPosted by pugglewuggle on November 23, 2015I need to dynamically allocate some memory 1) from in a task, and 2) from in an ISR. Should I always use pvPortMalloc or is there any instance where I should used regular malloc from stdlib? Also, I need to dynamically &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2015/freertos_Calling_malloc_in_FreeRTOS_inside_and_outside_of_ISR_fc535a6bj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Calling malloc in FreeRTOS inside and outside of ISRPosted by pugglewuggle on November 23, 2015I need to dynamically allocate some memory 1) from in a task, and 2) from in an ISR. Should I always use pvPortMalloc or is there any instance where I should used regular malloc from stdlib? Also, I need to dynamically [&hellip;]" />
+<meta name="twitter:title" content="Calling malloc in FreeRTOS inside and outside of ISR - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202579' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202579' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202579' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202579' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145695' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2015%2Ffreertos_Calling_malloc_in_FreeRTOS_inside_and_outside_of_ISR_fc535a6bj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2015%2Ffreertos_Calling_malloc_in_FreeRTOS_inside_and_outside_of_ISR_fc535a6bj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145695">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/a00104.html" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/FAQ.html" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2015_freertos_support_forum_archive_index.html/">November 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Calling malloc in FreeRTOS inside and outside of ISR</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pugglewuggle">pugglewuggle</a> on November 23, 2015</div><div class="thread-post-content">I need to dynamically allocate some memory 1) from in a task, and 2) from in an ISR.
+Should I always use pvPortMalloc or is there any instance where I <em>should</em> used regular malloc from stdlib?
+Also, I need to dynamically allocate some memory in an ISR to create an item for a queue. Is it okay/a good idea to call some form of malloc/pvPortMalloc (depending on ths answer to my first question) inside an ISR? (is it thread-safe, too slow, etc?). I&#8217;m using heap_4 right now.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Calling malloc in FreeRTOS inside and outside of ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 23, 2015</div><div class="thread-post-content">Hi Pugglewuggle
+<blockquote>
+  I need to dynamically allocate some memory 1) from in a task, and 2) from in an ISR.
+</blockquote>
+Personally I would not recommend dynamically allocate memory from an ISR because:
+<ul>
+<li>Most allocators are not written to be called from an ISR.</li>
+<li>ISR&#8217;s must be fast and most calls to [pvPort]malloc() have a variable processing time</li>
+</ul>
+Most people will use a queue and feed it with xQueueSendFromISR(). That will also wake-up a task which is waiting for data.
+<strong>Volume data:</strong>
+If the ISR produces bigger quantities of data, and if there is <strong>only one</strong> consumer-task of that data, then I would prefer to use a circular buffer, such as <code>FreeRTOS-Plus-TCPFreeRTOS_Stream_Buffer.c</code>. This can be accompanied with a call to <code>vTaskNotifyGiveFromISR()</code> (or <code>xSemaphoreGiveFromISR()</code> etc) which will wake-up the task.
+<blockquote>
+  Should I always use pvPortMalloc or is there any instance
+  where I should used regular malloc from stdlib?
+</blockquote>
+I would not mix the use of both allocators. But if you want you can use the <code>malloc()</code> and <code>free()</code> from stdlib, and make those thread-aware with the wrap-arounds.
+I tend to prefer using:
+<ul>
+<li>heap_4.c In case I have 1 block of contiguous RAM data available</li>
+<li>heap_5.c In case there are several non-contiguous blocks of RAM</li>
+</ul>
+The algorithm used is safe and very fast.
+<blockquote>
+  Also, I need to dynamically allocate some memory in an ISR to create an item
+  for a queue. Is it okay/a good idea to call some form of malloc/pvPortMalloc
+  (depending on ths answer to my first question) inside an ISR? (is it
+  thread-safe, too slow, etc?). I&#8217;m using heap_4 right now.
+</blockquote>
+Please have a look at:
+<pre><code>FreeRTOS-Plus-TCPincludeFreeRTOS_Stream_Buffer.h
+</code></pre>
+As a simple example:
+~~~~~
+<h1>define    UART<em>DMA</em>BUFFER_SIZE    2048</h1>
+StreamBuffer_t *pxBuffer;
+void create<em>buffer()
+{
+size</em>t uxLength = UART<em>DMA</em>BUFFER<em>SIZE;
+size</em>t uxSize;
+<pre><code>/* Add an extra 4 (or 8) bytes. */
+uxLength += sizeof( size_t );
+/* And make the length a multiple of sizeof( size_t ). */
+uxLength &amp;= ~( sizeof( size_t ) - 1u );
+uxSize = sizeof( *pxBuffer ) - sizeof( pxBuffer-&gt;ucArray ) + uxLength;
+pxBuffer = ( StreamBuffer_t * )pvPortMalloc( uxSize );
+if( pxBuffer != NULL )
+{
+    /* Clear the header data. */
+    memset( pxBuffer, ' ', sizeof( *pxBuffer ) - sizeof( pxBuffer-&gt;ucArray ) );
+    /* Treat the 'LENGTH' member (all capitals) as a 'const member' */
+    pxBuffer-&gt;LENGTH = uxLength;
+}
+</code></pre>
+}
+void uart<em>isr()
+{
+BaseType</em>t xHigherPriorityTaskWoken = pdFALSE;
+<pre><code>reset__flags();
+uxStreamBufferAdd( pxBuffer, 0, &amp;xDMA[ dma_index ], sizeof( xDMA[ dma_index ] ) );
+vTaskNotifyGiveFromISR( xDMATask, &amp;xHigherPriorityTaskWoken );
+portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+</code></pre>
+}
+void uart<em>task()
+{
+    create</em>buffer();
+    install_isr();
+<pre><code>for( ;; )
+{
+size_t uxCount;
+    ulTaskNotifyTake( pdFALSE, ulMaxBlockTime );
+    for( ;; )
+    {
+        uxCount = uxStreamBufferGet( pxBuffer, 0, uart_buffer, sizeof( uart_buffer ), pdFALSE );
+        if( uxCount == 0 )
+        {
+            /* All data ave been read. */
+            break;
+        }
+        /* Process uxCount bytes. */
+    }
+}
+</code></pre>
+}
+~~~~~
+I hope that the example is clear and useful.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Calling malloc in FreeRTOS inside and outside of ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 23, 2015</div><div class="thread-post-content">In addition to Hein&#8217;s post &#8211; when using an RTOS you can always defer the 
+interrupt processing to a task.
+Have a task block to wait for the interrupt, then unblock the task from 
+the interrupt.  If the task has a high priority it will execute 
+immediately after the interrupt &#8211; so processing occurs contiguous in 
+time just as if it had all happened in the interrupt.  Once in the task 
+you can call any API functions you like.
+The fastest way of doing this is to use a direct to task notification. 
+See 
+http://www.freertos.org/RTOS<em>Task</em>Notification<em>As</em>Binary_Semaphore.html 
+for a full example.
+A more restricted method that requires fewer tasks is to use the 
+centralised deferred interrupt processing feature:
+http://www.freertos.org/xTimerPendFunctionCallFromISR.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Calling malloc in FreeRTOS inside and outside of ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 23, 2015</div><div class="thread-post-content">I showed the stream buffer as an example of how to &#8220;allocate memory&#8221; from within an ISR, but the method described by Richard is better, more efficient.
+The function <code>uxStreamBufferAdd()</code> will call <code>memcpy()</code> one or two times, depending on the position within the buffer.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Calling malloc in FreeRTOS inside and outside of ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pugglewuggle">pugglewuggle</a> on November 23, 2015</div><div class="thread-post-content">How does this work if the task also is pending on a queue? (The direct task notification)
+</div></div><div class="thread-post"><h3 class="thread-post-title">Calling malloc in FreeRTOS inside and outside of ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 23, 2015</div><div class="thread-post-content">If you REALLY want to use malloc in an ISR, you need to create a version of pvPortMalloc that uses a critical section (that disables interrupts) during the malloc/free call, and if interrupts nest, you need a pvPortMallocFromISR that blocks nesting during the call to malloc/free. Note, this has significant implicatons, and is really not recomended.
+The alternative (and prefered method), is to use one of the methods provided in FreeRTOS to push the data allocation to a task. In my mind, whenever possible, I try to avoid using malloc once the system has completed its initialization phase, and our coding standards require this unless STRONG justification can be provided, as there are a lot of issues that need to be dealed with when you use dynamic memory in real time systems.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Calling malloc in FreeRTOS inside and outside of ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pugglewuggle">pugglewuggle</a> on November 24, 2015</div><div class="thread-post-content">Honestly I have no desire to use malloc at all 😉 but how can implement the alternative solution used here: <a href="http://www.freertos.org/Pend-on-multiple-rtos-objects.html#alternative_design_pattern">http://www.freertos.org/Pend-on-multiple-rtos-objects.html#alternative<em>design</em>pattern</a> without malloc in an ISR? Do you have a suggestion about how to do this?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Calling malloc in FreeRTOS inside and outside of ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pugglewuggle">pugglewuggle</a> on November 25, 2015</div><div class="thread-post-content">Anybody?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Calling malloc in FreeRTOS inside and outside of ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 26, 2015</div><div class="thread-post-content">I&#8217;m afraid that your last question isn&#8217;t clear. I&#8217;m not sure why you would need to malloc() in order to use these mechanisms.
+Looking at the mentioned FreeRTOS page: a server expects messages of type &#8216;IPStackEvent_t&#8217;. Do you want to malloc() space for these messages before sending them?
+In the given example, malloc is not necessary: the <code>xNetworkEventQueue</code> has been created with an element size of &#8216;sizeof( IPStackEvent_t )&#8217;.
+An interrupt will declare one <code>IPStackEvent_t</code> on stack, fill it, and send it (in fact copying it) to the queue.
+If this is not the answer that you&#8217;re looking for, please explain more, or give an example which does use malloc()
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/RTOS.html" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

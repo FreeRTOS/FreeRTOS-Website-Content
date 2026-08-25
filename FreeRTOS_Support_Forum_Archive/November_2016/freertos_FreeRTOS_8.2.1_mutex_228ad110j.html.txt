@@ -1,0 +1,426 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS 8.2.1 mutex - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_FreeRTOS_8.2.1_mutex_228ad110j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS 8.2.1 mutex - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS 8.2.1 mutexPosted by rzingler on November 19, 2016Hi, I&#8217;m having problems with a mutex, used to protect the access to an external Flash memory. Randomly, a task that uses the mutex (I don&#8217;t know if only one or more than one), for an unknown reason, accesses the external Flash memory without first taking the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_FreeRTOS_8.2.1_mutex_228ad110j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS 8.2.1 mutexPosted by rzingler on November 19, 2016Hi, I&#8217;m having problems with a mutex, used to protect the access to an external Flash memory. Randomly, a task that uses the mutex (I don&#8217;t know if only one or more than one), for an unknown reason, accesses the external Flash memory without first taking the [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS 8.2.1 mutex - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202734' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202734' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202734' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202734' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146197' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_FreeRTOS_8.2.1_mutex_228ad110j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_FreeRTOS_8.2.1_mutex_228ad110j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146197">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2016_freertos_support_forum_archive_index.html/">November 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS 8.2.1 mutex</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rzingler">rzingler</a> on November 19, 2016</div><div class="thread-post-content">Hi,
+I&#8217;m having problems with a mutex, used to protect the access to an external Flash memory. Randomly, a task that uses the mutex (I don&#8217;t know if only one or more than one), for an unknown reason, accesses the external Flash memory without first taking the mutex, and, consequently, corrupts the memory data. I discover that by turning on a LED immediately after taking the mutex, and turning the LED off again before giving the mutex. When any task, after taking the mutex, detect the LED already ON, I show an error message, indicating the error (I made it on all tasks that access the mutex/external Flash). 
+I have already activated stack overflow detection, an all the tasks are OK, even after the problem occurs. 
+The problem sometimes appears in less than 1 hour, sometimes after almost a day. 
+The project characteristics are as follows:
+<ul>
+<li>FreeRTOS 8.2.1</li>
+<li>KEIL uVision4 IDE</li>
+<li>LPC2138 (ARM7) microcontroller</li>
+<li>768 bytes of stack in Supervisor and IRQ modes (all other modes have 8 bytes stack sizes).</li>
+<li>Level 0 optimization (-O0)</li>
+<li>ARM/Thumb Interworking enabled</li>
+<li>Thumb-mode code generation</li>
+<li>Macros taskENTER<em>CRITICAL() and taskEXIT</em>CRITICAL() are called on the application code (can they corrupt/alter the stack?).</li>
+<li>Memory management with heap_1.c.</li>
+</ul>
+Here is the task used to take the mutex and store the data on external Flash.
+~~~
+static void taskStoreReadings( void *pvParameters ){<br />
+    unsigned char<br />
+        *ptr;<br />
+    unsigned short<br />
+        indice, 
+        sectorNumber,
+        vectorIndex;
+    unsigned int
+        memAddr;
+    struct elecSensorData
+        elecSensor; 
+    struct rainWindLightData
+        mecSensor;
+    struct sensorLogData<br />
+        sensorLog;          
+<pre><code>(void) pvParameters;    
+for(;;){
+    //
+    while( xQueueReceive(elecSensorQueue, &amp;elecSensor, portMAX_DELAY) == pdFALSE );         
+    while( xQueueReceive(rainWindLightQueue, &amp;mecSensor, portMAX_DELAY) == pdFALSE );   
+    //
+    while( xSemaphoreTake(spiSemaphore, portMAX_DELAY) == pdFALSE );
+    sensorLog.elecSensor= elecSensor;
+    sensorLog.mecLightSensor= mecSensor;
+    sensorLog.rtc= rtcData;     
+    //calcula endereco de inicio do log na flash externa    
+    memAddr= (unsigned int)ptrProd * SENSOR_LOG_SIZE;
+    memAddr += SENSOR_LOG_ADDR_INI;             
+    //calcula o indice de inicio do log dentro do array
+    vectorIndex= memAddr % SPIMEM_SECTOR_SIZE;  
+    //calcula a qual setor o endereco pertence
+    sectorNumber= memAddr / SPIMEM_SECTOR_SIZE; 
+    //
+    spiMemReadSector( sectorNumber, extMemBuf );    
+    //copia os dados do registro p/ o vetor 
+    ptr= (unsigned char *)&amp;sensorLog;
+    for( indice= 0; indice &lt; sizeof(sensorLog); indice++ ){
+        extMemBuf[vectorIndex++]= *ptr;
+        ptr++;
+    }
+    //
+    spiMemEraseSector( sectorNumber );
+    spiMemWriteSector( sectorNumber, extMemBuf );       
+    //atualiza ponteiro de fim de fila
+    ptrProd++;
+    if( ptrProd == MAX_LOGS_SENSORES )
+        ptrProd= 0;         
+    //
+    xSemaphoreGive( spiSemaphore );                 
+}
+</code></pre>
+}  
+~~~
+Any help would be appreciated.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS 8.2.1 mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 20, 2016</div><div class="thread-post-content">Thanks for providing the detailed information &#8211; I wish more posters 
+would do that!
+The cost you posted does not show where the LED is set and cleared.  Am 
+I correct in assuming you set it immediately after the following line:
+while( xSemaphoreTake(spiSemaphore, portMAX_DELAY) == pdFALSE );
+and clear it again immediately before the line:
+xSemaphoreGive( spiSemaphore );
+Which other tasks use the mutex?  Is it more instances of 
+taskStoreReadings(), or different implementations.  If the latter could 
+you show the other tasks too (cut down if necessary).
+Is the mutex used from an interrupt at all?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS 8.2.1 mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rzingler">rzingler</a> on November 20, 2016</div><div class="thread-post-content">Thanks for the quick response.
+I&#8217;ve already removed the lines that sets/clears the microcontroller&#8217;s LED pin (it was just a test to indicate me something goes wrong). But, yes, they were placed as you presume (setting immediatley after taking the mutex and clearing immediately before giving the mutex back).
+There are not more instances of taskStoreReadings().
+The mutex is not used from any interrupt.
+Below are the other tasks that uses the mutex.
+~~~
+static void taskBlinkLed( void *pvParameters ){ 
+    unsigned short
+        seconds= 0; 
+    unsigned int
+        opTime;
+<pre><code>for(;;){            
+    //descomentar depois de terminar o debug
+    prvToggleOnBoardLED();  
+    if( BIT_TEST(RUNLED_VAL_REG, RUNLED_BIT) ){
+        seconds++;
+        if( seconds == 3600 ){
+            seconds= 0;
+            while( xSemaphoreTake(spiSemaphore, portMAX_DELAY) == pdFALSE );
+            spiMemReadSector( 0, extMemBuf );
+            //extrai o tempo atual do buffer lido da memoria externa
+            opTime= (unsigned int)extMemBuf[ADDR_OP_TIME + 0] &lt;&lt; 24;
+            opTime |= (unsigned int)extMemBuf[ADDR_OP_TIME + 1] &lt;&lt; 16;
+            opTime |= (unsigned int)extMemBuf[ADDR_OP_TIME + 2] &lt;&lt; 8;
+            opTime |= (unsigned int)extMemBuf[ADDR_OP_TIME + 3] &lt;&lt; 0;
+            //incrementa em 60 minutos
+            opTime += 60;
+            //
+            extMemBuf[ADDR_OP_TIME + 0]= opTime &gt;&gt; 24;
+            extMemBuf[ADDR_OP_TIME + 1]= opTime &gt;&gt; 16;
+            extMemBuf[ADDR_OP_TIME + 2]= opTime &gt;&gt; 8;
+            extMemBuf[ADDR_OP_TIME + 3]= opTime &gt;&gt; 0;
+            spiMemEraseSector( 0 );
+            spiMemWriteSector( 0, extMemBuf );
+            xSemaphoreGive( spiSemaphore );
+        }
+    }
+    vTaskDelay( (TickType_t)500 / portTICK_PERIOD_MS );     
+}
+</code></pre>
+}
+~~~
+~~~
+static void taskSendLog( void *pvParameters ){
+    unsigned char
+        mac[6],
+        index,<br />
+        *ptr,<br />
+        count;<br />
+    char
+        strMac[12 + 1];<br />
+    unsigned short<br />
+        regLength,
+        logsToSend,
+        id,
+        ptrConsumidor;
+    unsigned int
+        regAddr;
+    signed int
+        lcdValue;<br />
+    struct httpPacket
+        packet,
+        *httpPacketPtr;
+    struct sensorLogData<br />
+        sensorLog;
+<pre><code>(void) pvParameters;
+//
+httpPacketPtr= &amp;packet;
+//
+ds2411GetSerialNum( mac );
+regLength= 0;
+for( index= 0; index &lt; 6; index++ )
+    regLength += sprintf( strMac + regLength, "%02X", mac[index] );             
+//
+packet.method= HTTP_POST;   
+packet.port= 80;    
+packet.data= httpData;  
+//
+for(;;){
+    //
+    while( xSemaphoreTake(spiSemaphore, portMAX_DELAY) == pdFALSE );
+    index= 0;
+    do{
+        packet.url[index]= spiMemReadByte( ADDR_URL + index );
+        index++;
+    }
+    while( packet.url[index - 1] );   
+    //verifica quantos logs irá enviar desta vez        
+    logsToSend= ptrProd &gt;= ptrCons? ptrProd - ptrCons: (MAX_LOGS_SENSORES - ptrCons) + ptrProd;
+    if( logsToSend &gt; 5 )
+        logsToSend= 5;                          
+    //usa o valor do TC1 para gerar o ID da requisicao
+    id= T1TC % 1000;                
+    //              
+    regLength= sprintf( httpData, "{"method":"gravaLogWN","params":["%s",{"ident":"%s","opTime":%u,"reg":[", chaveLogin, strMac, spiMemRead32Bits(ADDR_OP_TIME) / 60 );
+    //      
+    ptrConsumidor= ptrCons;   
+    //loop p/ montar o pacote com os logs
+    for( count= 1; count &lt;= logsToSend; count++ ){           
+        //le o registro da Flash externa
+        ptr= (unsigned char *)&amp;sensorLog;
+        regAddr= (unsigned int) SENSOR_LOG_ADDR_INI + (ptrConsumidor * SENSOR_LOG_SIZE);
+        for( index= 0; index &lt; sizeof(sensorLog); index++ ){
+            *ptr= spiMemReadByte( regAddr );                
+            regAddr++;
+            ptr++;
+        }            
+        ptrConsumidor++;
+        if( ptrConsumidor == MAX_LOGS_SENSORES )
+            ptrConsumidor= 0;   
+        regLength += sprintf( httpData + regLength, "{"dthr":"%u-%02u-%02u %02u:%02u:%02u",", 
+        sensorLog.rtc.year + 2000, sensorLog.rtc.month, sensorLog.rtc.date, sensorLog.rtc.hour, sensorLog.rtc.minute, sensorLog.rtc.second );
+        lcdValue= sensorLog.elecSensor.humidity * 10;                   
+        regLength += sprintf( httpData + regLength, ""hum":%u.%u,", lcdValue / 10, lcdValue % 10 );
+        lcdValue= sensorLog.elecSensor.pressure * 10;                       
+        regLength += sprintf( httpData + regLength, ""press":%u.%u,", lcdValue / 10, lcdValue % 10 );
+        lcdValue= sensorLog.elecSensor.radiation * 10;                  
+        regLength += sprintf( httpData + regLength, ""rad":%u.%u,", lcdValue / 10, lcdValue % 10 );
+        lcdValue= sensorLog.elecSensor.temp * 10;   
+        if( lcdValue &lt; 0 ){
+            lcdValue *= -1;
+            regLength += sprintf( httpData + regLength, ""temp":-%u.%u,", lcdValue / 10, lcdValue % 10 );     
+        }
+        else
+            regLength += sprintf( httpData + regLength, ""temp":%u.%u,", lcdValue / 10, lcdValue % 10 );      
+        lcdValue= sensorLog.elecSensor.co2Level * 10;       
+        regLength += sprintf( httpData + regLength, ""CO2":%u.%u,", lcdValue / 10, lcdValue % 10 );
+        lcdValue= sensorLog.elecSensor.tvocLevel * 10;  
+        regLength += sprintf( httpData + regLength, ""TVOC":%u.%u,", lcdValue / 10, lcdValue % 10 );  
+        lcdValue= sensorLog.elecSensor.batVoltage * 10; 
+        regLength += sprintf( httpData + regLength, ""bat":%u.%u,", lcdValue / 10, lcdValue % 10 );
+        lcdValue= sensorLog.mecLightSensor.rainFall * 10;               
+        regLength += sprintf( httpData + regLength, ""rainFall":%u.%u,", lcdValue / 10, lcdValue % 10 );
+        regLength += sprintf( httpData + regLength, ""lightDist":%u,", sensorLog.mecLightSensor.lightDist );
+        regLength += sprintf( httpData + regLength, ""lightCount":%u,", sensorLog.mecLightSensor.lightCount );
+        lcdValue= sensorLog.mecLightSensor.windAvgSpeed * 10;               
+        regLength += sprintf( httpData + regLength, ""wAvgSpeed":%u.%u,", lcdValue / 10, lcdValue % 10 );
+        lcdValue= sensorLog.mecLightSensor.windPeakSpeed * 10;              
+        regLength += sprintf( httpData + regLength, ""wPeakSpeed":%u.%u,", lcdValue / 10, lcdValue % 10 );        
+        regLength += sprintf( httpData + regLength, "%s", ""wDir":[" );           
+        for( index= 0; index &lt; 8; index++ ){
+            if( index != 7 )
+                regLength += sprintf( httpData + regLength, "%u,", sensorLog.mecLightSensor.windDirectionCount[index] );
+            else
+                regLength += sprintf( httpData + regLength, "%u", sensorLog.mecLightSensor.windDirectionCount[index] );
+        }
+        regLength += sprintf( httpData + regLength, "%s", "]}" );
+        if( count != logsToSend )
+            regLength += sprintf( httpData + regLength, "%s", "," );
+        else
+            regLength += sprintf( httpData + regLength, "]}],"id":%u}n", id );               
+    }         
+    //devolve o mutex de acesso à Flash externa
+    xSemaphoreGive( spiSemaphore );     
+    //somente executa se existe(m) log(s) pendente(s)
+    if( logsToSend ){       
+        while( xQueueReceive(serverRxQueue, &amp;ptr, 0) == pdTRUE );
+        //fica em loop para ter certeza de que o item foi postado na fila com sucesso.
+        //O processo que gerencia o modem irá processar este item, pois fica "escutando" a fila.
+        while( xQueueSend(sendHttpQueue, &amp;httpPacketPtr, portMAX_DELAY) != pdTRUE );
+        //salva numa variavel global o indice de consumo.
+        //Este indice será usado na funcao que processa a resposta. A variavel global "ptrCons" irá assumir o valor de "logConsumeIndex" caso resposta com sucesso.
+        /*
+        rzingler: 
+            - talvez passar a variavel local "ptrConsumidor" como parametro para a funcao httpProcessServerResponse().
+            - Evitaria a necessidade de usar uma variavel global p/ manter o valor.
+        */
+        logConsumeIndex= ptrConsumidor; 
+        //funcao que processa a resposta do servidor
+        httpProcessServerResponse();        
+    }
+    //intervalo entre uma e outra verificacao por logs pendentes
+    vTaskDelay( 10000 / portTICK_PERIOD_MS );               
+}
+</code></pre>
+}
+~~~
+The last two tasks are defined in a different file, so the mutex created in main.c is passed as a parameter, as below (in the third line inside the function, the local variable spiSemaphore points to the same place as the mutex created in main.c):
+~~~
+void httpRequestInit( QueueHandle<em>t *serverResponseQueue, QueueHandle</em>t *lcdQueue, SemaphoreHandle_t *spiSem ){     
+<pre><code>ptrModemConf= &amp;modemConf;
+serverRxQueue= *serverResponseQueue;    
+spiSemaphore= *spiSem;    
+//obtem a fila de envio criada pelo arquivo do modem
+sendHttpQueue= modemGetSendDataQueue();                 
+//
+ptrMsg= &amp;msg;
+lcdMsgQueue= *lcdQueue;
+//  
+xTaskCreate( taskLogin, "login", configMINIMAL_STACK_SIZE * 2, NULL, 1, &amp;loginHandle );
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS 8.2.1 mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on November 20, 2016</div><div class="thread-post-content">A lot of data is being written into httpData. Could it overflow?
+Which TCP/IP stack are you using? Does it try and free memory (noting you use heap_1 which cant free memory).
+Maybe the mutex is getting corrupted. Try adding a new global variable:
+TaskHandle_t Holder = NULL;
+After every call to take the mutex (xSemaphoreTake) add the following:
+// No other task should have the mutex
+configASSERT(Holder==NULL);
+// Set Holder to show a task has the mutex
+Holder = xTaskGetCurrentTaskHandle();
+// Check the mutex agrees who the holder is
+configASSERT(Holder==xSemaphoreGetMutexHolder(spiSemaphore));
+// The mutex should be empty
+configASSERT(uxSemaphoreGetCount(spiSemaphore)==0);
+// Should not be able to take the mutex again (unless its a recursive mutex)
+configASSERT(xSemaphoreTake(spiSemaphore, 0)==pdFAIL);
+Clear Holder again immediately before giving the mutex back:
+Holder = NULL;
+Do any of the configASSERT() calls fail? If so, look at the spiSemaphore structure in the debugger. Does it look sane? You might have to cast spiSemaphore to:
+<pre>
+((xQUEUE*)spiSemaphore)
+</pre>
+to view it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS 8.2.1 mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rzingler">rzingler</a> on November 26, 2016</div><div class="thread-post-content">Hi, Dave.
+I included the configASSERT macro calls as you suggested, and they haven&#8217;t failed when the problem appears. Could it be perhaps a stack overflow in any of the ARM7 modes? The task stacks are not overflowing (I&#8217;ve the overflow detection enabled).
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS 8.2.1 mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on November 26, 2016</div><div class="thread-post-content">If the asserts dont fail then its probably not the mutex and something else is happening. It could be one of the other stacks, IRQ or SVC, its easy enough to increase those to see if the behavior changes.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS 8.2.1 mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rzingler">rzingler</a> on December 12, 2016</div><div class="thread-post-content">Hi, Dave.
+It´s working now. The problem was generated by some macros used to set/clear variables and registers bits. These macros did read-modify-write operations, and sometimes, due to the multi-task environment, a call was made after the current call has ending its work, and so corrupted some GPIO´s (perhaps the pin used to control the CS signal of the external memory). This behavior deceived me also in the case of the debug LED I mentioned. 
+Thanks for the help.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

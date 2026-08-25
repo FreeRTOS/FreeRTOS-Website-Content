@@ -1,0 +1,151 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution (?): FreeRTOS+PIC32MZEF-Harmony floating point crash - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2019/freertos_Solution_FreeRTOS_PIC32MZEF-Harmony_floating_point_crash_3e3f6254c0j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Solution (?): FreeRTOS+PIC32MZEF-Harmony floating point crash - FreeRTOS" />
+<meta property="og:description" content="Solution (?): FreeRTOS+PIC32MZEF-Harmony floating point crashPosted by andrewgt on February 8, 2019Recently I encountered a problem with a math and interrupts-intensive application running under FreeRTOS: it appears that at least one thread somehow crash the floating-point processing after some (normally few hours) operation, long double variables, both local and once-written globals, became corrupted on-the-fly. Unfortunately, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2019/freertos_Solution_FreeRTOS_PIC32MZEF-Harmony_floating_point_crash_3e3f6254c0j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Solution (?): FreeRTOS+PIC32MZEF-Harmony floating point crashPosted by andrewgt on February 8, 2019Recently I encountered a problem with a math and interrupts-intensive application running under FreeRTOS: it appears that at least one thread somehow crash the floating-point processing after some (normally few hours) operation, long double variables, both local and once-written globals, became corrupted on-the-fly. Unfortunately, [&hellip;]" />
+<meta name="twitter:title" content="Solution (?): FreeRTOS+PIC32MZEF-Harmony floating point crash - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203070' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203070' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203070' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203070' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147576' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2019%2Ffreertos_Solution_FreeRTOS_PIC32MZEF-Harmony_floating_point_crash_3e3f6254c0j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2019%2Ffreertos_Solution_FreeRTOS_PIC32MZEF-Harmony_floating_point_crash_3e3f6254c0j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147576">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2019_freertos_support_forum_archive_index.html/">February 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Solution (?): FreeRTOS+PIC32MZEF-Harmony floating point crash</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andrewgt">andrewgt</a> on February 8, 2019</div><div class="thread-post-content">Recently I encountered a problem with a math and interrupts-intensive application running under FreeRTOS: it appears that at least one thread somehow crash the floating-point processing after some (normally few hours) operation, long double variables, both local and once-written globals, became corrupted on-the-fly. 
+Unfortunately, I have no time to produce a stripped barebone application to reproduce the situation for your reference, but the problem exist for sure.
+The problem reveals mostly after 4-5 hours of (200 MHz) operation, however, increasing the external hardware baudrate sometimes helps to encounter the crash (unfortunately, not reboot ) in a few munites.
+The debugging tools at hand (ICD4, RealIce) hardly helped to locate the error, in particular, the h/w debugger data access breakpoint for some reason don&#8217;t fire (it fires quite good in initialisation phase, but when  someone writing the wrong value &#8211; no [BTW, it might be noone writes the wrong values, may be the stack pointer itself points the wrong way?, hardly &#8211; neighbouring variables where quite normal]). Stopping and inspecting the suspect variable after the problem reveals at debugging output (to debug I use RS-232 port with my own printf-like routines) confirms the wrong values:
+x = y = 2.0;
+z = x * y;
+next statement; <breakpoint>
+<debugger data watch: z=1.e-20 or whatever value>
+was quite normal.
+I should state that all threads:
+1) Are equipped with generous stack (increasing it+doubling the interrupt stack was the first attempt to cure).
+2) Call portTASK<em>USES</em>FLOATING_POINT(); as the first statement (I am afraid that at the end all threads, even not using FPU, do so).
+In the meantime I upgraded the entire toolchain to the latest releases: MPLAB-X 5.1, FreeRTOS 10.1.1, XC32 2.15, &#8211; no help.
+Manupulation with interrupt priorities (all h/w interrupts (UARTx, SPIx, CANx, ETH) where initialised to priotiy 1, subprio 1) &#8211; no help. 
+Suspecting a problem wth stack manupulation being done by FreeRTOS scheduler, I came to a solution which, at least, will bear no harm to anybody, but apparentely cures the issue:
+I propose to cease using heap allocation for any thread stack, declare stack storage static and align  to 8-byte boundary (ISR stack follows this in FreeRTOS source). It is accomplished in the following manner:
+StaticTask<em>t UDPServTCB;
+<strong>attribute</strong> ((aligned(8))) StackType</em>t  UDPServSTK[DISIZE];
+&#8230;
+h = xTaskCreateStatic(UDPServer,&#8221;UDPS&#8221;,DISIZE,NULL,5,UDPServSTK,&amp;UDPServTCB);
+configASSERT(h);
+Yours
+Andy
+</div></div><div class="thread-post"><h3 class="thread-post-title">Solution (?): FreeRTOS+PIC32MZEF-Harmony floating point crash</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 8, 2019</div><div class="thread-post-content">Thanks for the information.
+Checking the PIC32MZ port I notice that portBYTE_ALIGNMENT is already 
+set to 8 for the PIC32MZ port, and the alignment is checked with an 
+assert within the kernel code.  Could your problem be something to do 
+with where in memory the stack is being placed?  Allocating statically 
+would move the stack some way away from the FreeRTOS heap where perhaps 
+the characteristics of the memory is different, or perhaps something 
+that was clobbering the memory now just missing anything vital.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

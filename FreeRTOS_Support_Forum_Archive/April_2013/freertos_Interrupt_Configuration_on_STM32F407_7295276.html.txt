@@ -1,0 +1,527 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interrupt Configuration on STM32F407 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2013/freertos_Interrupt_Configuration_on_STM32F407_7295276.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Interrupt Configuration on STM32F407 - FreeRTOS" />
+<meta property="og:description" content="Interrupt Configuration on STM32F407 Posted by kronanberg on April 3, 2013Dear all, I&#8217;m using a board &#040;Core407V&#041; based on a STM32F407 &#040;Cortex M4&#041; and I &#8216;m having problems. I use FreeRTOS V7.1.0 with Keil uVision 4. My project consist to achieve a data acquisition system. The system receives : &#045; data provided by the GPS &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2013/freertos_Interrupt_Configuration_on_STM32F407_7295276.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Interrupt Configuration on STM32F407 Posted by kronanberg on April 3, 2013Dear all, I&#8217;m using a board &#040;Core407V&#041; based on a STM32F407 &#040;Cortex M4&#041; and I &#8216;m having problems. I use FreeRTOS V7.1.0 with Keil uVision 4. My project consist to achieve a data acquisition system. The system receives : &#045; data provided by the GPS [&hellip;]" />
+<meta name="twitter:title" content="Interrupt Configuration on STM32F407 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202249' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202249' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202249' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202249' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144781' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2013%2Ffreertos_Interrupt_Configuration_on_STM32F407_7295276.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2013%2Ffreertos_Interrupt_Configuration_on_STM32F407_7295276.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144781">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2013_freertos_support_forum_archive_index.html/">April 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Interrupt Configuration on STM32F407 </h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kronanberg">kronanberg</a> on April 3, 2013</div><div class="thread-post-content">Dear all,  
+I&#8217;m using a board &#40;Core407V&#41; based on a STM32F407 &#40;Cortex M4&#41; and I &#8216;m having problems. I use FreeRTOS V7.1.0 with Keil uVision 4. My project consist to achieve a data acquisition system.   
+The system receives :<br />
+&#45; data provided by the GPS throught UART3&nbsp;<br />
+&#45; data provided by the Inertial Measurement Unit through UART4<br />
+&#45; data provided by wind sensor through analog inputs  
+Then, the system stores these data on Sd card and sends them throught UART1 on a computer. My work is divided is several main tasks &#40;Acquisition Task, Compute Task, Store Task and Send Task&#41; and two others task to recept the GPS and IMU data.   
+But I think, I have an error in my interrupt initialization because there is crash which often occurs when receiving data throught UART after few minutes or hours running. In the UART ISR, I give a semaphore to unblock an other task &#40;_when the frame is completed _&#41;. I think I have similary problem describ on the other post &#40;<a href="http://sourceforge.net/projects/freertos/forums/forum/382005/topic/4059693%29">http://sourceforge.net/projects/freertos/forums/forum/382005/topic/4059693&#41;</a> but I don&#8217;t find my error.  
+Here is my NVIC configuration :   
+<pre><code>/*------------------------------------------------------------------------
+ * Peripheral       NVIC - Nested Vectored Interrupt Controller
+ * -----------------------------------------------------------------------
+ * function         Enable Interrupt and Configure the Priority
+ * -----------------------------------------------------------------------*/
+void NVIC_Config(void)
+{
+  NVIC_InitTypeDef NVIC_InitStructure;
+    /* Selectionne la priorite du group */
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+    /* Enable the DMA2 Stream0 Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = DMA2_Stream0_IRQn ;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);
+      /* Enable the TIM1 global Interrupt - FreqMHU*/
+  NVIC_InitStructure.NVIC_IRQChannel = TIM1_CC_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);
+  /* Enable the TIM1 Interrupt - Overflow TIM1*/
+  NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);
+  /* Enable the TIM2 Interrupt - Overflow TIM2 */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure); 
+    /* Enable the UART4 Interrupt IMU */
+  NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);
+  /* Enable the USART3 Interrupt GPS */
+  NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);
+}
+</code></pre>
+Here is my NVIC configuration :   
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;<br />
+&#42; INT.GLO UART3<br />
+&#42; &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;<br />
+&#42; Int. USART3 &#8211; USART&#95;IT&#95;RXNE<br />
+&#42; When Each byte come from GPS is received<br />
+&#42; &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/  
+Here is the ISR code for USART3 :  
+<pre><code>/* Public variables ------------------------------------------------------*/
+extern xSemaphoreHandle xBinarySemaphoreGPS;
+extern char GPSPacket[MAX_GPS_PACKET_SIZE];     // Used in USART3 Interrup (Receipt Frame)
+extern unsigned char StateBufGps;;                      // Used in USART3 Interrup (Receipt State)
+extern uint16_t RxCounterGps;                                   // Used in USART3 Interrup (byte counter)
+/* Function ------------------------------------------------------------------*/
+void USART3_IRQHandler(void)
+{
+    unsigned char RxBufGps;
+    portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+    /* Reception GPS - USART3 */
+    if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+    {
+        /*  Lecture de l'octet transmit */
+        RxBufGps = (USART_ReceiveData(USART3) &amp; 0xFF);
+        /* Test si il n'y a pas de depassement du compteur du buffer -------------*/
+        if(RxCounterGps&lt;=(MAX_GPS_PACKET_SIZE-2))
+        {               
+            /*  Lecture de l'octet transmit */
+            GPSPacket[RxCounterGps++] = RxBufGps;
+            /* Si il y a plus de 2 caracteres lu */
+            if(RxCounterGps&gt;2)
+            {
+                /* Verifie que l'on a pas le caractere de fin de trame Cr Lf */
+                if((GPSPacket[RxCounterGps-2]==0x0D) &amp; (GPSPacket[RxCounterGps-1]==0x0A))
+                {
+                    /* Donne le semaphore */
+                    xSemaphoreGiveFromISR(xBinarySemaphoreGPS,&amp;xHigherPriorityTaskWoken);
+                    /* Force à changer de tache */
+                    portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+                    /* Reset du compteur  */
+                    RxCounterGps = 0;
+                }
+            }
+        }
+        /* Si il y a depassement du buffer, reinitialise la compteur Buffer GPS --*/
+        else
+        {
+            #ifdef USE_DEBUG_INT_USART  
+                    printf("Overflow RxCounterGPS : %d n",RxCounterGps);
+            #endif
+            RxCounterGps = 0;
+        }
+    }
+}
+[code]
+Here is the code at the task associated to this interrupt:
+[code]
+/*------------------------------------------------------------------------
+ * Task         GPS
+ * -----------------------------------------------------------------------
+ * Descr            Parse GPS Frame
+ * Priority     tskIDLE_PRIORITY + 5
+ * Size             configMINIMAL_STACK_SIZE*2
+ * -----------------------------------------------------------------------*/
+void TaskGps(void * pvParameters)
+{
+    /* The parameters are not used. */
+    ( void ) pvParameters;
+    /* If Use Log Tick Counter, enable TIM2 counter */
+    #ifdef USE_CNT_TASKGPS
+        TIM_Cmd(TIM2,ENABLE);
+    #endif
+    /* Prend le semaphoreGPS 1 fois au depart */
+    xSemaphoreTake(xBinarySemaphoreGPS, portMAX_DELAY);
+    for(;;)
+    {
+        /* Prend le semaphoreGPS */
+        xSemaphoreTake(xBinarySemaphoreGPS, portMAX_DELAY);
+        /* Disable Interrupts */
+        #ifdef USE_NOPREMP
+            DisableInterrupts();
+            taskDISABLE_INTERRUPTS();                       
+        #endif
+        /* Debug Task GPS*/
+        #ifdef USE_DEBUG_TASK
+            //printf("nTASK GPSt");
+            strcpy(SecondLastDebugTask,LastDebugTask);
+            sprintf(LastDebugTask,"TASK GPS");
+        #endif
+        /* Get Cnt Tm2 */
+        #ifdef USE_CNT_TASKGPS
+            CntStart = TIM_GetCounter(TIM2);
+        #endif
+        /* Analyse la trame GPS */
+        parseGPSPacket(GPSPacket,&amp;GPSData);
+        /* Mise à jour de l'horloge temps reel avec l'heure GPS (une fois au depart) */
+        if((GPSData.UTC_time != 0)&amp;&amp;(FirstUpdateTime == 1))
+        {
+            /* Mise à jour de l'heure */
+            UpdateTime(GPSData.UTC_time);
+            /* Reset FirstUpdateTime*/
+            FirstUpdateTime=0;
+        }
+        if((GPSData.date != 0)&amp;&amp;(FirstUpdateDate == 1))
+        {
+                /* Mise à jour de la date */
+                UpdateDate(GPSData.date);
+                /* Reset FirstUpdateTime*/
+                FirstUpdateDate=0;
+        }
+        /* Get Cnt Tm2 and computime task tick execute */
+        #ifdef USE_CNT_TASKGPS
+            CntStop = TIM_GetCounter(TIM2);
+            if(CntStop&gt;CntStart) TickTask = CntStop - CntStart;
+            else TickTask = (65535-CntStart) + CntStop  ;
+        #endif
+        /* Enable Interrupts */
+        #ifdef USE_NOPREMP
+            EnableInterrupts();
+            taskENABLE_INTERRUPTS();                        // Reactive les interruptions
+        #endif  
+        /* Enable the USART3 Receive interrupt */
+        //USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+    }
+}
+[code]
+Many thanks in advance for your assistance.
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Configuration on STM32F407 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kronanberg">kronanberg</a> on April 3, 2013</div><div class="thread-post-content">Sorry for the bad layout  
+Here is the ISR code for USART3 :  
+<pre><code>/*------------------------------------------------------------------------
+ * INT.GLO      UART3
+ * -----------------------------------------------------------------------
+ * Int.             USART3 - USART_IT_RXNE
+ * When             Each byte come from GPS is received
+ * -----------------------------------------------------------------------*/
+/* Public variables ------------------------------------------------------*/
+extern xSemaphoreHandle xBinarySemaphoreGPS;
+extern char GPSPacket[MAX_GPS_PACKET_SIZE]; // Used in USART3 Interrup (Receipt Frame)
+extern unsigned char StateBufGps;;      // Used in USART3 Interrup (Receipt State)
+extern uint16_t RxCounterGps;           // Used in USART3 Interrup (byte counter)
+/* Function ------------------------------------------------------------------*/
+void USART3_IRQHandler(void)
+{
+    unsigned char RxBufGps;
+    portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+    /* Reception GPS - USART3 */
+    if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+    {
+        /*  Lecture de l'octet transmit */
+        RxBufGps = (USART_ReceiveData(USART3) &amp; 0xFF);
+        /* Test si il n'y a pas de depassement du compteur du buffer ---------*/
+        if(RxCounterGps&lt;=(MAX_GPS_PACKET_SIZE-2))
+        {               
+            /*  Lecture de l'octet transmit */
+            GPSPacket[RxCounterGps++] = RxBufGps;
+            /* Si il y a plus de 2 caracteres lu */
+            if(RxCounterGps&gt;2)
+            {
+             /* Verifie que l'on a pas le caractere de fin de trame Cr Lf */
+             if((GPSPacket[RxCounterGps-2]==0x0D) &amp; (GPSPacket[RxCounterGps-1]==0x0A))
+             {
+              /* Donne le semaphore */
+              xSemaphoreGiveFromISR(xBinarySemaphoreGPS,&amp;xHigherPriorityTaskWoken);
+              /* Force à changer de tache */
+              portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+              /* Reset du compteur  */
+              RxCounterGps = 0;
+             }
+            }
+        }
+        /* Si il y a depassement du buffer, reinitialise la compteur Buffer GPS --*/
+        else
+        {
+            #ifdef USE_DEBUG_INT_USART  
+                    printf("Overflow RxCounterGPS : %d n",RxCounterGps);
+            #endif
+            RxCounterGps = 0;
+        }
+    }
+}
+</code></pre>
+Here is the code at the task associated to this interrupt:  
+<pre><code>/*------------------------------------------------------------------------
+ * Task         GPS
+ * -----------------------------------------------------------------------
+ * Descr            Parse GPS Frame
+ * Priority     tskIDLE_PRIORITY + 5
+ * Size             configMINIMAL_STACK_SIZE*2
+ * -----------------------------------------------------------------------*/
+void TaskGps(void * pvParameters)
+{
+    /* The parameters are not used. */
+    ( void ) pvParameters;
+    /* If Use Log Tick Counter, enable TIM2 counter */
+    #ifdef USE_CNT_TASKGPS
+        TIM_Cmd(TIM2,ENABLE);
+    #endif
+    /* Prend le semaphoreGPS 1 fois au depart */
+    xSemaphoreTake(xBinarySemaphoreGPS, portMAX_DELAY);
+    for(;;)
+    {
+        /* Prend le semaphoreGPS */
+        xSemaphoreTake(xBinarySemaphoreGPS, portMAX_DELAY);
+        /* Disable Interrupts */
+        #ifdef USE_NOPREMP
+            DisableInterrupts();
+            taskDISABLE_INTERRUPTS();                       
+        #endif
+        /* Debug Task GPS*/
+        #ifdef USE_DEBUG_TASK
+            //printf("nTASK GPSt");
+            strcpy(SecondLastDebugTask,LastDebugTask);
+            sprintf(LastDebugTask,"TASK GPS");
+        #endif
+        /* Get Cnt Tm2 */
+        #ifdef USE_CNT_TASKGPS
+            CntStart = TIM_GetCounter(TIM2);
+        #endif
+        /* Analyse la trame GPS */
+        parseGPSPacket(GPSPacket,&amp;GPSData);
+        /* Mise à jour de l'horloge temps reel avec l'heure GPS (une fois au depart) */
+        if((GPSData.UTC_time != 0)&amp;&amp;(FirstUpdateTime == 1))
+        {
+            /* Mise à jour de l'heure */
+            UpdateTime(GPSData.UTC_time);
+            /* Reset FirstUpdateTime*/
+            FirstUpdateTime=0;
+        }
+        if((GPSData.date != 0)&amp;&amp;(FirstUpdateDate == 1))
+        {
+                /* Mise à jour de la date */
+                UpdateDate(GPSData.date);
+                /* Reset FirstUpdateTime*/
+                FirstUpdateDate=0;
+        }
+        /* Get Cnt Tm2 and computime task tick execute */
+        #ifdef USE_CNT_TASKGPS
+            CntStop = TIM_GetCounter(TIM2);
+            if(CntStop&gt;CntStart) TickTask = CntStop - CntStart;
+            else TickTask = (65535-CntStart) + CntStop  ;
+        #endif
+        /* Enable Interrupts */
+        #ifdef USE_NOPREMP
+            EnableInterrupts();
+            taskENABLE_INTERRUPTS();    // Reactive les interruptions
+        #endif  
+        /* Enable the USART3 Receive interrupt */
+        //USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+    }
+}
+</code></pre>
+Many thanks in advance for your assistance.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Configuration on STM32F407 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 3, 2013</div><div class="thread-post-content"><blockquote>
+  /&#42; Enable the USART3 Interrupt GPS &#42;/<br />
+  &nbsp; NVIC&#95;InitStructure.NVIC&#95;IRQChannel = USART3&#95;IRQn;<br />
+  &nbsp; NVIC&#95;InitStructure.NVIC&#95;IRQChannelPreemptionPriority = 5;<br />
+  &nbsp; NVIC&#95;InitStructure.NVIC&#95;IRQChannelSubPriority = 0;<br />
+  &nbsp; NVIC&#95;InitStructure.NVIC&#95;IRQChannelCmd = ENABLE;<br />
+  &nbsp; NVIC&#95;Init&#40;&amp;NVIC&#95;InitStructure&#41;;
+</blockquote>
+This interrupt priority is being set to 5 &#8211; is configLIBRARY&#95;MAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY also set to 5?&nbsp; So something like this in FreeRTOSConfig.h:  
+<pre><code>#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY 15
+#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY 5
+#define configKERNEL_INTERRUPT_PRIORITY     
+        ( configLIBRARY_LOWEST_INTERRUPT_PRIORITY &lt;&lt; (8 - configPRIO_BITS) )
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY           
+        ( configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY &lt;&lt; (8 - configPRIO_BITS) )
+</code></pre>
+Is USE&#95;DEBUG&#95;INT&#95;USART defined?&nbsp; printf&#8217;ing from an interrupt could cause you problems.  
+Do you have stack overflow detection turned on?  
+Is the interrupt stack large enough?&nbsp; Stack overflow detection will only detect stack overflows in the tasks.&nbsp; The stack used by interrupts is the same stack used by main&#40;&#41; &#8211; so the stack set up by the linker script/project configuration.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Configuration on STM32F407 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kronanberg">kronanberg</a> on April 3, 2013</div><div class="thread-post-content">Thank for your response.  
+In my projet, The configLIBRARY&#95;MAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY set to 15  
+<pre><code>#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY         0xf
+#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    15
+#define configKERNEL_INTERRUPT_PRIORITY         ( configLIBRARY_LOWEST_INTERRUPT_PRIORITY &lt;&lt; (8 - configPRIO_BITS) )
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY    ( configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY &lt;&lt; (8 - configPRIO_BITS) )
+</code></pre>
+Otherwise for the moment, the stack overflown detection is turn off &#40;for the tasks&#41;.  
+I think the interrupt stack is large enough because I increased the stack size and heap size in the&nbsp; &#8220;startup&#95;stm32f4xx.s&#8221; file.  
+I &#8216;ll configLIBRARY&#95;MAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY set to 5 and try if it works. If it doen&#8217;t work I add&nbsp; stack overflow detection.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Configuration on STM32F407 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 3, 2013</div><div class="thread-post-content"><blockquote>
+  configLIBRARY&#95;MAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY set to 15
+</blockquote>
+That is definitely an error then, and will lead to intermittent crashes if you have an interrupt that uses the interrupt safe FreeRTOS API &#40;those functions that end in FromISR&#41; from an interrupt of priority 5.&nbsp; Remember that on a Cortex-M priority 5 will preempt priority 15.  
+<a href="http://www.freertos.org/RTOS-Cortex-M3-M4.html">http://www.freertos.org/RTOS-Cortex-M3-M4.html</a>  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Configuration on STM32F407 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kronanberg">kronanberg</a> on April 3, 2013</div><div class="thread-post-content">Thank you Richard,  
+But I have one more questions because I still have crashes with this configuration :   
+<pre><code>#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY         15
+#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    15
+#define configKERNEL_INTERRUPT_PRIORITY         ( configLIBRARY_LOWEST_INTERRUPT_PRIORITY &lt;&lt; (8 - configPRIO_BITS) )
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY    ( configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY &lt;&lt; (8 - configPRIO_BITS) )
+</code></pre>
+NVIC configuration :  
+<pre><code>/*------------------------------------------------------------------------
+ * Peripheral       NVIC - Nested Vectored Interrupt Controller
+ * -----------------------------------------------------------------------
+ * function         Enable Interrupt and Configure the Priority
+ * -----------------------------------------------------------------------*/
+void NVIC_Config(void)
+{
+  NVIC_InitTypeDef NVIC_InitStructure;
+    /* Selectionne la priorite du group */
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+    /* Enable the DMA2 Stream0 Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = DMA2_Stream0_IRQn ;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_LOWEST_INTERRUPT_PRIORITY - 5;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);
+      /* Enable the TIM1 global Interrupt - FreqMHU */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM1_CC_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_LOWEST_INTERRUPT_PRIORITY - 4;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);
+  /* Enable the TIM1 Interrupt - Overflow TIM1 */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_LOWEST_INTERRUPT_PRIORITY - 3;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);
+  /* Enable the TIM2 Interrupt - Overflow TIM2 */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_LOWEST_INTERRUPT_PRIORITY - 2;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure); 
+    /* Enable the UART4 Interrupt IMU */
+  NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_LOWEST_INTERRUPT_PRIORITY - 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);
+  /* Enable the USART3 Interrupt GPS */
+  NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_LOWEST_INTERRUPT_PRIORITY;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);
+  }
+</code></pre>
+So what are the interrupts used by FreeRTOS and what are their priority level ? because I don&#8217;t see where they are configured.  
+Thank you very much for your help.  
+Regards,  
+Ronan.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt Configuration on STM32F407 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 3, 2013</div><div class="thread-post-content">The handlers used by FreeRTOS are listed as part of the answer to FAQ item 1 on this page: <a href="http://www.freertos.org/FAQHelp.html">http://www.freertos.org/FAQHelp.html</a> &#45; they run at the priority set by configKERNEL&#95;INTERRUPT&#95;PRIORITY, which should always be the lowest priority available.  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AT91SAM7X, uIP Demo, Interrupts - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2007/freertos_AT91SAM7X_uIP_Demo_Interrupts_1736585.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="AT91SAM7X, uIP Demo, Interrupts - FreeRTOS" />
+<meta property="og:description" content="AT91SAM7X, uIP Demo, InterruptsPosted by dercmdr on May 16, 2007Hi&#033; I am using the uIP Demo as a base for my project. Now I have to use two interrupts. I wrote isr Routines similar to the EMAC routine. Now I have the problem, that sometimes the interrupts doesn&#8217;t work. For Example: When I trigger the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2007/freertos_AT91SAM7X_uIP_Demo_Interrupts_1736585.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="AT91SAM7X, uIP Demo, InterruptsPosted by dercmdr on May 16, 2007Hi&#033; I am using the uIP Demo as a base for my project. Now I have to use two interrupts. I wrote isr Routines similar to the EMAC routine. Now I have the problem, that sometimes the interrupts doesn&#8217;t work. For Example: When I trigger the [&hellip;]" />
+<meta name="twitter:title" content="AT91SAM7X, uIP Demo, Interrupts - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201481' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201481' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201481' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201481' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140487' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2007%2Ffreertos_AT91SAM7X_uIP_Demo_Interrupts_1736585.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2007%2Ffreertos_AT91SAM7X_uIP_Demo_Interrupts_1736585.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140487">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2007_freertos_support_forum_archive_index.html/">May 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 16, 2007</div><div class="thread-post-content">Hi&#33;
+I am using the uIP Demo as a base for my project. Now I have to use two interrupts. I wrote isr Routines similar to the EMAC routine. Now I have the problem, that sometimes the interrupts doesn&#8217;t work. For Example: When I trigger the interrupt on a PIO several times, it suddenly doesn&#8217;t work anymore. When I then trigger another PIO interrupt, which ist handled by the same routine, the first interrupt works again a few times, and so on. What happens when I post an item in a queue in an isr while the queue is full? Is it a problem if I use a semaphore in an isr and the isr has to wait for it? I checked all the registers and everything except the interrupt pending register looks ok. I have no idea how to solve this problem and hope someone can help me.
+Thx&#33;
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on May 16, 2007</div><div class="thread-post-content">Definitely do not use blocking API calls in interrupts.&nbsp; In fact, don&#8217;t use any API calls that do not end in FromISR.
+Sometimes it is best to get the interrupts working in a basic proejct without the freertos.&nbsp; Then when that works add in the freertos.&nbsp; This way you limit the source of the problem to make it easier to find where it is.
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 16, 2007</div><div class="thread-post-content">I tested the interrupts without freertos and they work without problems. So they should work.
+In the interrupts I only use xQueueSendFromISR, which should be no problem. I think it is possible that the task which receives the queue item is not fast enough so the queue is not empty at the next isr call. Could that cause such a problem?
+In fact the blocking interrupt remains even after a debugger reset. It disappears when I cut the power. Seems to be some hardware thing or something that remains while a debugger reset.
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chaalar">chaalar</a> on May 16, 2007</div><div class="thread-post-content">It sounds like you are having problems about handling PIO interrupts. Can you post your interrupt routine so that someone may figure out what&#8217;s going on.
+xQueueSendFromISR should not cause something strange in your interrupt routine in case queue is full.
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 16, 2007</div><div class="thread-post-content">OK here is the code of the isr which is called from the asm wrapper:
+&#123;
+&nbsp; unsigned int unSend&#91;2&#93;=&#123;0,0&#125;; 
+&nbsp; portBASE&#95;TYPE xSwitchRequired = pdFALSE;
+&nbsp; unSend&#91;0&#93;=AT91C&#95;BASE&#95;PIOA-&gt;PIO&#95;ISR; 
+&nbsp; unSend&#91;1&#93;=AT91C&#95;BASE&#95;PIOB-&gt;PIO&#95;ISR; 
+&nbsp; 
+&nbsp; xSwitchRequired = xQueueSendFromISR&#40;gqhDIIRQ,unSend,pdFALSE&#41;;
+&nbsp; portEND&#95;SWITCHING&#95;ISR&#40; xSwitchRequired &#41;; 
+&nbsp; 
+&nbsp; AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;EOICR = 0; 
+&#125;
+The rest of the work is done in a high priority task as recommended, which is woken by the queue.
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on May 16, 2007</div><div class="thread-post-content">Which compiler are you using?
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 16, 2007</div><div class="thread-post-content">IAR Embedded Workbench
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 18, 2007</div><div class="thread-post-content">I now found out that the same error occurs without freertos. I wrote comparable code for use without an operating system, which produces exactly the same behaviour.
+Further I found out that when an interrupt gets disabled, it is disabled for the whole port and not just for the one PIO line. Only an interrupt on the other port can reenable interrupts on the port. Anyone familiar with this behaviour?
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/embeddedc">embeddedc</a> on May 18, 2007</div><div class="thread-post-content">Are you clearing the EIC &#40;interrupt controller&#41; as well as the actual interrupt source?
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 18, 2007</div><div class="thread-post-content">I read PIO-&gt;ISR which should clear the PIO interrupt and I write AIC&#95;EOICR at the end of the isr. Is there anything else to clean?
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chaalar">chaalar</a> on May 20, 2007</div><div class="thread-post-content">On Sam7X you can not disable only one PIO line. All the pio lines are ORed to the interrupt controller. You should definitely re-enable interrupts before leaving ISR.&#40;or some other appropriate place&#41;
+I guess you are having very short burst of interrupts. I mean it seems like there are pulses on your PIO line which have durations comparable 5-10 microseconds. Can you verify this?
+If this is the case, since you will have two PIO interrupts for one pulse, your interrupt routine can be called more frequently then you expected which may cause you some trouble for the interrupt handling.
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 21, 2007</div><div class="thread-post-content">I got an interrupt approximately every 10 ms &#40;according to the mains frequency&#41;.
+I tried re-enabling and disabling / re-enabling interrupts at the end of the interrupt routine but it did not change anything, although I don&#8217;t see why the interrupts should become disabled, because I do not disable them in my program.
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 21, 2007</div><div class="thread-post-content">I think I finally found it, but no solution till now. Heres the problem:
+In my ISR I read PIOA-&gt;PIO&#95;ISR and PIOB-&gt;PIO&#95;ISR. The I put the values in a queue and end the isr with writing to AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;EOICR.
+I think that the AIC interrupt pending bit is only set when PIO&#95;ISR changes from 0 to 1. PIO&#95;ISR is resettet when read. Now when I am reading PIO&#95;ISR in my isr it is resettet to 0. If another interrupt occurs before writing to AIC&#95;EOICR, the bit in PIO&#95;ISR changes from 0 to 1. Since the isr is still running, the interrupt pending bit is still there. Now when I write to AIC&#95;EOICR, the pending bit gets resettet and since the PIO&#95;ISR bit ist still on 1, no new pending bit is being generated, so no more interrupts from the peripherial. When I generate an interrupt on the other PIO controller, both PIO&#95;ISR registers are being read and after it the interrupts work again until the error happens again. This would explain everything. Only thing is I am not sure if an interrupt pending bit for a PIO Controller is only generated when PIO&#95;ISR goes from 0 to 1, but I think this is the case from what I saw while debugging.
+Now how can I prevent this error? I tried disabling interrupts, but the same error occurs. Only thing that seems to work is reading PIO&#95;ISR directly before writing AIC&#95;EOICR. But in doing this I can miss interrupts. I thought of writing some irq disabling and enabling code in the asm wrapper, but I am unsure what exactly I would have to write there.
+Has anyone an idea which could fix this problem?
+Thx&#33;
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/peter_z">peter_z</a> on May 25, 2007</div><div class="thread-post-content">Hello Torben,
+I think you should clear the interrupt before calling portEND, like this:
+AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;EOICR = 0;
+portEND&#95;SWITCHING&#95;ISR&#40; xSwitchRequired &#41;;
+But why do a &#8216;switch ISR&#8217;? This is just an interrupt during a running task and we can continue this task after handling the interrupt.
+I think a &#8216;port restore&#8217; is adequate:
+portRESTORE&#95;CONTEXT&#40;&#41;;
+Regards,
+Peter
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 30, 2007</div><div class="thread-post-content">Hi Peter,
+portRESTORE&#95;CONTEXT is being called in the asm wrapper after the isr hast finished. So I call portEND&#95;SWITCHING&#95;ISR in the isr and portRESTORE&#95;CONTEXT after the isr. This is the way it is done in the uIP example in the EMAC isr. I was wondering why portEND&#95;SWITCHING&#95;ISR is necessary. As far as I understand it allows a woken task to get in the running state directly after the isr. Is this wrong? What is the difference if I do not use portEND&#95;SWITCHING&#95;ISR?
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 30, 2007</div><div class="thread-post-content">Coincidentally we were just discussing that in the thread https://sourceforge.net/forum/forum.php?thread&#95;id=1744949&amp;forum&#95;id=382005 &#8211; look toward the end.&nbsp; The macros are only needed if you want the task to run immediately.
+Dave.
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 30, 2007</div><div class="thread-post-content">So portEND&#95;SWITCHING&#95;ISR switches directly to the activated task, lets it do its work and returns to the isr? Or does it set the activated task to be the next activated task after leaving the isr? I am slightly confused about this now.
+The macro portRESTORE&#95;CONTEXT is used in the asm wrapper and I didn&#8217;t change this. As far as I understood from other FreeRTOS ports, a asm wrapper is needed, or would it also work without any asm wrapper at all?
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 30, 2007</div><div class="thread-post-content">I&#8217;m jumping into this thread without reading the whole thing so maybe am confusing things.
+The macros at the end of the ISR allow the scheduler to select the next task to run.&nbsp; In this way it is possible for the ISR to interrupt one task, but then return to another task.&nbsp; 
+This is useful if the ISR wakes a high priority task.&nbsp; If the ISR wakes a task of lower priority than the task that was originally interrupted, then the ISR will return to the originally interrupted task.&nbsp; 
+Also if interrupts require a lot of processing it permits you to perform the processing within an ISR handler task rather than in the interrupt itself.&nbsp; This has the advantage of allowing interrupts to remain enabled while the processing is performed &#8211; thus the ISR can be very quick and interrupt nesting is not required.&nbsp; But maybe I&#8217;m getting too far of topic here ;-&#41;
+In any case, the asm wrapper is only needed if you want a context switch to occur within the ISR.&nbsp; If this is not the case then you can write the ISR just as a normal ISR using the syntax required by your compiler.
+Dave.
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 31, 2007</div><div class="thread-post-content">Hi Dave&#33;
+Thanks for your explanations. Unfortunately I am unsure of a few things concerning interrupt handling and I am hoping you can help me on this.
+At the moment I am using isrs the following way: An interrupt activates an interrupt handler, which runs portSAVE&#95;CONTEXT and then jumps to a c interrupt handler, which puts an item in a queue, which activates a high priority task. After the c interrupthandler returns to the asm wrapper, portRESTORE&#95;CONTEXT is being run. In my c interrupthandler I use portEND&#95;SWITCHING&#95;ISR to activate the high priority task. All interrupts have the same priority, so no nested interrupts should occur. Now there are two things which I do not understand:
+Does portEND&#95;SWITCHING&#95;ISR immediately switch to the activated high priority task, which makes its work, and then returns to the c interrupthandler or does it make sure that after the c interrupthandler and the asm wrapper the high priority task gets activated?
+What exactly do the portSAVE&#95;CONTEXT and portRESTORE&#95;CONTEXT macros do? Since I am using an AT91SAM7X and the uIP demo, I have only the EMAC interrupt as an example and in this it is done exactly as I do it now. Maybe I can have the interrupts handled faster without the asm wrapper or the portEND&#95;SWITCHING&#95;ISR macro? I think I read in the description of another port that interrupts have to be handled with an asm wrapper but in this port there is no really explanation of the interrupts other than the EMAC example.
+Best regards.
+Torben
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 31, 2007</div><div class="thread-post-content">&gt; Hi Dave&#33;
+&gt; Thanks for your explanations. Unfortunately I am unsure of a 
+&gt; few things concerning
+&gt; interrupt handling and I am hoping you can help me on this.
+&gt; At the moment I am using isrs the following way: An interrupt 
+&gt; activates an interrupt
+&gt; handler, which runs portSAVE&#95;CONTEXT and then jumps to a c 
+&gt; interrupt handler,
+&gt; which puts an item in a queue, which activates a high 
+&gt; priority task. After the
+&gt; c interrupthandler returns to the asm wrapper, 
+&gt; portRESTORE&#95;CONTEXT is being
+&gt; run. 
+From this snippet it sounds like you are using IAR, as GCC does not require the asm wrappers.&nbsp; If so your description is correct.
+&gt; In my c interrupthandler I use portEND&#95;SWITCHING&#95;ISR to 
+&gt; activate the high
+&gt; priority task. All interrupts have the same priority, so no 
+&gt; nested interrupts
+&gt; should occur. Now there are two things which I do not understand:
+&gt; Does portEND&#95;SWITCHING&#95;ISR immediately switch to the 
+&gt; activated high priority
+&gt; task, which makes its work, and then returns to the c 
+&gt; interrupthandler 
+Again, assuming IAR, then the answer is really no.&nbsp; portEND&#95;SWITCHING&#95;ISR just tells the scheduler that it might need to select a new task to run, as the interrupt itself has unblocked a task.&nbsp; In this case portEND&#95;SWITCHING&#95;ISR is just a sequential function call, its just like calling any other function from within an interrupt.
+If the unblocked task has the highest priority of all ready tasks then the scheduler will decide that this is the task that should be executed next.
+&gt; or does
+&gt; it make sure that after the c interrupthandler and the asm 
+&gt; wrapper the high
+&gt; priority task gets activated?
+That is correct.&nbsp; portEND&#95;SWITCHING&#95;ISR has told the scheduler to check which is the highest priority ready task.&nbsp; The asm wrapper at the end of the interrupt causes the processor to start executing the task selected by the scheduler.
+Say task A has a priority of 0 and is running, task b a priority of 1 and is blocked:
+1&#41; An interrupt executes, interrupting task A.&nbsp; The asm wrapper saves the context of task A and the interrupt C code then runs.
+2&#41; The interrupt C code wakes task b, which has a priority higher than A.
+3&#41; portEND&#95;SWITCHING&#95;ISR&#40;&#41; is called, this causes the scheduler to recognise that task A is now in the ready state, and that it has a priority higher than task b.
+4&#41; The asm wrapper executes, causing the ISR to restore the context of &#40;and start running&#41; task B.
+&gt; What exactly do the portSAVE&#95;CONTEXT and portRESTORE&#95;CONTEXT 
+&gt; macros do? Since
+&gt; I am using an AT91SAM7X and the uIP demo, I have only the 
+&gt; EMAC interrupt as
+&gt; an example and in this it is done exactly as I do it now. 
+&gt; Maybe I can have the
+&gt; interrupts handled faster without the asm wrapper or the 
+&gt; portEND&#95;SWITCHING&#95;ISR
+&gt; macro? I think I read in the description of another port that 
+&gt; interrupts have
+&gt; to be handled with an asm wrapper but in this port there is 
+&gt; no really explanation
+&gt; of the interrupts other than the EMAC example.
+The asm wrapper is only required if you want to return directly into another task.&nbsp; In the example above, the interrupt interrupted task B, but returned to task A.&nbsp; This is what you want if task A is urgent.&nbsp; 
+If task A is not urgent then the asm wrapper can be removed and the interrupt written as per the IAR documentation.&nbsp; In this case task A is put into the ready state and, as the higher priority task, will get selected the next time the tick interrupt occurs or task b blocks or yields.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">AT91SAM7X, uIP Demo, Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dercmdr">dercmdr</a> on May 31, 2007</div><div class="thread-post-content">Hi&#33;
+Thanks for this very good explanation. Now everything is clear to me.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

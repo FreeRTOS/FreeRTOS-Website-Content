@@ -1,0 +1,586 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug in the Win32 Port - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2019/freertos_Bug_in_the_Win32_Port_d8a09bc895j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Bug in the Win32 Port - FreeRTOS" />
+<meta property="og:description" content="Bug in the Win32 PortPosted by davidefer on April 9, 2019Hi Richard I open a new topic to emphasize the problem. The vPortExitCritical function in the Win32 port has a major bug: void vPortExitCritical( void ) { int32_t lMutexNeedsReleasing; /* The interrupt event mutex should already be held by this thread as it was obtained &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2019/freertos_Bug_in_the_Win32_Port_d8a09bc895j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Bug in the Win32 PortPosted by davidefer on April 9, 2019Hi Richard I open a new topic to emphasize the problem. The vPortExitCritical function in the Win32 port has a major bug: void vPortExitCritical( void ) { int32_t lMutexNeedsReleasing; /* The interrupt event mutex should already be held by this thread as it was obtained [&hellip;]" />
+<meta name="twitter:title" content="Bug in the Win32 Port - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203101' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203101' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203101' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203101' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147692' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2019%2Ffreertos_Bug_in_the_Win32_Port_d8a09bc895j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2019%2Ffreertos_Bug_in_the_Win32_Port_d8a09bc895j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147692">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2019_freertos_support_forum_archive_index.html/">April 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Bug in the Win32 Port</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on April 9, 2019</div><div class="thread-post-content">Hi Richard
+I open a new topic to emphasize the problem.
+The vPortExitCritical function in the Win32 port has a major bug:
+void vPortExitCritical( void )
+{
+int32_t lMutexNeedsReleasing;
+<pre><code>/* The interrupt event mutex should already be held by this thread as it was
+obtained on entry to the critical section. */
+lMutexNeedsReleasing = pdTRUE;
+if( ulCriticalNesting &gt; portNO_CRITICAL_NESTING )
+{
+    if( ulCriticalNesting == ( portNO_CRITICAL_NESTING + 1 ) )
+    {
+        ulCriticalNesting--;
+        /* Were any interrupts set to pending while interrupts were
+        (simulated) disabled? */
+        if( ulPendingInterrupts != 0UL )
+        {
+            configASSERT( xPortRunning );
+            SetEvent( pvInterruptEvent );
+            /* Mutex will be released now, so does not require releasing
+            on function exit. */
+            lMutexNeedsReleasing = pdFALSE;
+            ReleaseMutex( pvInterruptEventMutex );
+        }
+    }
+    else
+    {
+        /* Tick interrupts will still not be processed as the critical
+        nesting depth will not be zero. */
+        ulCriticalNesting--;
+       &gt;&gt;&gt;&gt;&gt; lMutexNeedsReleasing = pdFALSE;  // this operation is missing!!!
+    }
+}
+if( pvInterruptEventMutex != NULL )
+{
+    if( lMutexNeedsReleasing == pdTRUE )
+    {
+        configASSERT( xPortRunning );
+        ReleaseMutex( pvInterruptEventMutex );
+    }
+}
+</code></pre>
+}
+lMutexNeedsReleasing = pdFALSE; is missing, when the ulCriticalNesting is not one.
+The mutex is released when nested vPortEnterCritical calls are done, allowing other tasks to interrupt even if they are not allowed to.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on April 9, 2019</div><div class="thread-post-content">And here is another problem:
+vPortGenerateSimulatedInterrupt is used to generate a context switch(yield) from within vPortEnter/ExitCritical. 
+The original version of vPortGenerateSimulatedInterrupt released unconditionally the mutex, allowing other tasks to pre-empt while the original task was still in a critical section.
+So the releas mutex call goes in the if.
+The change forces also to check for the critical nesting before acquiring the mutex.
+Here is the fixed version (I&#8217;ve replaced zero with portNO<em>CRITICAL</em>NESTING):
+void vPortGenerateSimulatedInterrupt( uint32_t ulInterruptNumber )
+{
+    configASSERT( xPortRunning );
+<pre><code>if( ( ulInterruptNumber &lt; portMAX_INTERRUPTS ) &amp;&amp; ( pvInterruptEventMutex != NULL ) )
+{
+    // we do need a test on critical nesting!
+    if (ulCriticalNesting == portNO_CRITICAL_NESTING)
+    {
+        WaitForSingleObject(pvInterruptEventMutex, INFINITE);
+    }
+    ulPendingInterrupts |= ( 1 &lt;&lt; ulInterruptNumber );
+    /* The simulated interrupt is now held pending, but don't actually
+    process it yet if this call is within a critical section.  It is
+    possible for this to be in a critical section as calls to wait for
+    mutexes are accumulative. */
+    if( ulCriticalNesting == portNO_CRITICAL_NESTING )
+    {
+        SetEvent( pvInterruptEvent );
+        &gt;&gt;&gt; ReleaseMutex( pvInterruptEventMutex ); // this must go here
+    }
+}
+</code></pre>
+}
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on April 10, 2019</div><div class="thread-post-content">We have discovered another problem in the port that causes tasks deadlocks, particularly in the function ulTaskNotifyTake :
+<pre><code>                /* All ports are written to allow a yield in a critical
+                section (some will yield immediately, others wait until the
+                critical section exits) - but it is not something that
+                application code should ever do. */
+                portYIELD_WITHIN_API();
+            }
+            else
+            {
+                mtCOVERAGE_TEST_MARKER();
+            }
+        }
+        else
+        {
+            mtCOVERAGE_TEST_MARKER();
+        }
+    }
+    taskEXIT_CRITICAL();
+    taskENTER_CRITICAL();
+    {
+</code></pre>
+The original taskEXIT<em>CRITICAL was assuming that windows performed a task switch allowing the FreeRTOS interrupts management to take place and swap out the current task. 
+Well, at least in our simulation, sometimes it didn&#8217;t happen! 
+It seems that sometimes Windows has some delays in the context switch. 
+The taskENTER</em>CRITICAL was immediately performed, thus blocking the context switch and causing a deadlock of the current task.
+The solution is to wait that Windows performs the context switch. I&#8217;ve tried with Sleep(0) but it didn&#8217;t work.  Sleep(1) worked but it would mess up the FreeRTOS scheduler.
+The only solution I&#8217;ve found was just to wait the interupts management to occur.
+(see also this thread: https://stackoverflow.com/questions/5848448/forcing-context-switch-in-windows).
+I attach our current port implementation.
+I&#8217;ve fixed all the problems mentioned above and marked the changes with #PORTCHANGE
+I hope that these changes will be revised and if eligible integrated in the FreeRTOS official release.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dukb">dukb</a> on April 10, 2019</div><div class="thread-post-content">Which version of file You showed here ? 
+Orginal source of the 10.2.0 port.c file for MSVC-MingW  I copied below. It different to the code You posted.
+Are You going to include all changes in next FreeRTOS version?
+OR
+<em>Can You gather all changes You currently working on in patch (or branch from repo)?</em>
+Sorry I&#8217;ve just found out that whole port.c is in next post 🙂
+void vPortGenerateSimulatedInterrupt( uint32_t ulInterruptNumber )
+{
+    configASSERT( xPortRunning );
+<pre><code>if( ( ulInterruptNumber &lt; portMAX_INTERRUPTS ) &amp;&amp; ( pvInterruptEventMutex != NULL ) )
+{
+    /* Yield interrupts are processed even when critical nesting is
+    non-zero. */
+    WaitForSingleObject( pvInterruptEventMutex, INFINITE );
+    ulPendingInterrupts |= ( 1 &lt;&lt; ulInterruptNumber );
+    /* The simulated interrupt is now held pending, but don't actually
+    process it yet if this call is within a critical section.  It is
+    possible for this to be in a critical section as calls to wait for
+    mutexes are accumulative. */
+    if( ulCriticalNesting == 0 )
+    {
+        SetEvent( pvInterruptEvent );
+    }
+    ReleaseMutex( pvInterruptEventMutex );
+}
+</code></pre>
+}
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on April 10, 2019</div><div class="thread-post-content">I have taken the port of version  V10.2.0 and made my modifications. Actually we are still working with V10.0.1 but the port is compatible.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dukb">dukb</a> on April 16, 2019</div><div class="thread-post-content">I found one bug in port.c davidefer posted:
+In <em>void vPortExitCritical(void)</em> there right now <em>pvInterruptEventMutex</em> is not release if <em>ulCriticalNesting</em>  is above 1 (nestig is allowed so &#8220;Enable Interrupts&#8221; only when it&#8217;s equal 0 ). 
+It&#8217;s in line number 659:
+<em>lMutexNeedsReleasing = pdFALSE; // #PORTCHANGE mutex cannot be released in critical section</em>
+BUT 
+in* vPortEnterCritical* this mutex is locked more than once (in case of nesting critical sections). Line number 605:
+*   if( xPortRunning == pdTRUE )
+    {
+        / The interrupt event mutex is held for the entire critical section,
+        effectively disabling (simulated) interrupts. /
+        WaitForSingleObject( pvInterruptEventMutex, INFINITE );
+        ulCriticalNesting++;
+    }
+*
+So whenever nesting critical occurs there is deadlock.
+Solution is:
+       *
+        if (ulCriticalNesting == portNOCRITICALNESTING)
+        {
+            WaitForSingleObject( pvInterruptEventMutex, INFINITE );
+        }
+        ulCriticalNesting++;
+*
+Other thing is question if change in ExitCritical section is needed. Based on <em>ResumeThread</em> documentation https://docs.microsoft.com/en-us/windows/desktop/api/synchapi/nf-synchapi-releasemutex
+<em>A thread can specify a mutex that it already owns in a call to one of the wait functions without blocking its execution. This prevents a thread from deadlocking itself while waiting for a mutex that it already owns. However, to release its ownership, the thread must call ReleaseMutex one time for each time that it obtained ownership (either through CreateMutex or a wait function).</em>
+It looks like nesting mechanism is implemented inside the mutex already.
+So in previous version it could work correctly since every call of <em>vPortEnterCritical</em>  make lock attempt on mutex and every <em>vPortExitCritical</em> made unlock attempt.
+Does anyone know if the changes will be included in next official FreeRTOS release?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on April 16, 2019</div><div class="thread-post-content">So according to what you say, the whole ulCriticalNesting management could be deleted. (?) Or at least in vPortGenerateSimulatedInterrupt.
+Anyway it is quite strange because I&#8217;ve let my app run for hours without deadlocks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dukb">dukb</a> on April 16, 2019</div><div class="thread-post-content">@davidefer I think there is still  <em>ulCriticalNesting</em> needed to inform <em>vPortGenerateSimulatedInterrupt</em> that interrupts are disabled and not to wait for mutex in the case. I think increasing it every <em>vPortEnterCritical</em> is not necessary and it could be bool. 
+But it needs to be tested since it&#8217;s not described clearly in MS documentation. 
+Look for example on https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-resumethread 
+It is clearly said that ResumeThread decrease suspend count and return value before change. Thread is running again if suspend count is equal 0.
+You didn&#8217;t observe it&#8230; hmmm
+Are You sure You called at least 2 times <em>vPortEnterCritical</em> in raw (without calling <em>vPortExitCritical</em>)?
+Could You place breakpoint in else section to 
+<em>if( ulCriticalNesting == ( portNOCRITICALNESTING + 1 ) )</em>  statement ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on April 16, 2019</div><div class="thread-post-content">it seems you are right,  i have no nesting. I&#8217;ll let a test run overnight with your mod. Thank you!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on April 17, 2019</div><div class="thread-post-content">It seems that most of the changes I&#8217;ve done concerning the mutex management are useless, thanks to @dukb.
+Here attached is my current port version. I&#8217;ve removed the useless changess but left my bug fixes.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 17, 2019</div><div class="thread-post-content">Thanks &#8211; there are quite a few changes to look through here.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wtodd">wtodd</a> on April 18, 2019</div><div class="thread-post-content">I also noticed the problem of portYIELD not yielding immediately, causing the scheduler to lock up, but my fix uses a different approach than davidefer.
+First, I made each task store its thread state in a thread-local storage slot. This allows the task to access its own thread state  and lets you check if a thread is a FreeRTOS task or just a normal Windows thread. 
+I then added a Windows Event object to xThreadState. When a task exits a critical section with interrupts pending, it waits on this event object until prvProcessSimulatedInterrupts signals that it is done processing the interrupts. If an interrupt triggers a context switch, the task will continue to wait on this event until it is scheduled to run again.
+Then, I modified vPortGenerateSimulatedInterrupt so it just enters a critical section, sets the interrupt flag and event, then exits the critical section. Now when a task calls vPortGenerateSimulatedInterrupt, it will wait for interrupts to finish before returning from the finall call to portEXIT_CRITICAL.
+I also added a tickless idle implementation that reduces the cpu usage of the windows port.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 6, 2019</div><div class="thread-post-content">Sorry been a while.  Looking at the code now I&#8217;m not sure I see issues.  There is however an issue in the port.c you posted as the loop waiting for the interrupt counter to change in the exit critical function is causing a hang when the trace recorder is used from the tick interrupt &#8211; as that uses critical sections inside the tick.
+There is a call to GetThreadContext() in prvProcessSimulatedInterrupts() designed to wait until the thread that was suspended is actually in the suspended state.  I have tried setting that to a loop to ensure it does indeed wait until the subject thread is suspended but the only time I&#8217;ve seen GetThreadContext() fail is when the subject thread has deleted itself &#8211; so the handle passed to GetThreadContext() is NULL.
+I will continue looking at this.
+[EDIT] See https://sourceforge.net/p/freertos/discussion/382005/thread/d8a09bc895/#4231
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 7, 2019</div><div class="thread-post-content">Ok &#8211; I think I can replicate now.  Curiously it was having the trace recorder code included in the build that was masking the issue &#8211; presumably because that has its own critical sections.
+I&#8217;m prety confident that the latest simply update (which will be checked in soon, but at the time of wrting SVN is not allowing a secure connection) fixes the issue.  The update just allocates an event for each task, then each time the task leaves the blocked state by means other than the tick interrupt the first thing it does next is block on its own event.  If the task continues running (because the SuspendThread() is asynchronous) for a bit then it won&#8217;t get past blocking on the event.  When the task is resume the event is signalled, freeing the the task again.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on July 8, 2019</div><div class="thread-post-content">ok thank you, we will check your solution a soon as checked in
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 8, 2019</div><div class="thread-post-content">So it turns out that when I thought I had managed to replicate the issue reported here it was actually a bug in the application code I was testing &#8211; once that was fixed I&#8217;m back not being able to replicate the issue.  Can you please tell me which version of Windows you are using, and also confirm that you are not making ANY windows system calls from inside a FreeRTOS task (including writes to disk and writes to the console &#8211; although you can get away with these if they are infrequent and only done from one task as per the demo app).
+However the changes I made to the port.c file are probably valuable to keep just in case.  I&#8217;m not going to check them in yet because the soak test failed last night &#8211; I&#8217;m almost certain the failure was a false positive but nonetheless I will continue to test before checking in.  I have attached the updated port.c file to this post &#8211; you can compare it with the head revision in SourceForge to see the changes.  Please let me know if it solves your problem (assuming the problem is not caused by using Windows system calls).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on July 9, 2019</div><div class="thread-post-content">Hi Richard, concerning the Win32 calls, as stated <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/540a06eb07/#75c1">here</a> we do actually perform them but protected by the taskENTER<em>CRITICAL(); Win32call; taskEXIT</em>CRITICAL(); sequence.
+Your port seems good until now, it has run for some hours without problems. I&#8217;ll check it with a different project and let you know  tomorrow the results.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wtodd">wtodd</a> on July 9, 2019</div><div class="thread-post-content">Richard, I have some concerns about the solution you posted.
+<ol>
+<li>It only fixes the problem for the yield interrupt. If any other simulated interrupt causes a context switch, the suspended thread could continue to run for a while after the call to vPortGenerateSimulatedInterrupt.</li>
+<li>You&#8217;re using ulPendingInterrupts to check if you should wait on the yield event object AFTER releasing the mutex. If the simulated interrupt handler preempts the thread and clears the flags before you reach the check, the task will never actually wait on the event. You should either make a local copy before releasing the mutex, or create a boolean indicating that the thread should wait on the event.</li>
+<li>Why do you wait on the event in a loop with a 0 timeout? You can just use ResetEvent, right?</li>
+<li>The fix assumes that the thread calling vPortGenerateSimulatedInterrupt or vPortExitCritical is the currently scheduled FreeRTOS task. If it&#8217;s a normal Windows thread instead, it will access the yield event of the currently scheduled FreeRTOS task, which could cause it to unblock that FreeRTOS task early. This is why I used a thread-local storage slot in my solution. It allows you to access the thread state of the currently executing thread (not just the currently scheduled thread), which ensures you&#8217;re using the correct yield event object. And, in the case of a normal Windows thread, it will be NULL, so you know not to wait on an event. It also provides an easy way to check if a thread is running when it shouldn&#8217;t be (the thread state is different than pxCurrentTCB).</li>
+<li>There is no need to duplicate the yield event waiting code in vPortGenerateSimulatedInterrupt and vPortExitCritical. Just wrap the code inside vPortGenerateSimulatedInterrupt with vPortEnterCritical/vPortExitCritical instead of manually taking the mutex.</li>
+<li>You don&#8217;t call CloseHandle on the yield event when deleting the thread.</li>
+</ol>
+In regards to calling Windows system calls from a FreeRTOS task. I know your official position is to just don&#8217;t do that, but at the same time you break this rule in your own demos. From what I can tell, it&#8217;s not safe to call any external function (even standard c library functions) that could make a system call, without first entering a critical section. Otherwise, the FreeRTOS scheduler could try to suspend the thread during the syscall, which can cause SuspendThread to fail (or not suspend immediately). If it actually does suspend the thread successfully, it can cause a deadlock if another thread calls an system function before the first has a chance to finish (if the first had acquired a mutex before being suspended).
+I suspect that SuspendThread can fail even when the program does not call system functions from FreeRTOS tasks, because the Windows port itself does so. Namely, when entering/exiting a critical section, it acquires and releases the interrupt mutex. If the scheduler tries to suspend the thread at the wrong point inside WaitForSingleObject or ReleaseMutex, it can cause the call to SuspendThread to either fail to suspend the thread immediatly, or in some cases, fail to suspend the thread at all. That&#8217;s why it is important to block the FreeRTOS task on an event inside vPortExitCritical if any interrupt is pending, in case the interrupt causes a context switch and SuspendThread fails.
+From my testing, with my fix in place and with all system calls wrapped in a critical section, we can safely interact with standard Windows threads, without relying on lockless data structures or using the Windows thread priority as synchronization mechanism. We can safely call taskENTER<em>CRITICAL/taskEXIT</em>CRITICAL from Windows threads to synchronize access to memory that is shared with a FreeRTOS task. We can interract with Windows threads from FreeRTOS tasks by calling Windows API functions from a critical section. We can interract with FreeRTOS tasks from Windows threads using the ISR FreeRTOS api functions (provided we enter a critical section first and manually call portYIELD if it is requested).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 9, 2019</div><div class="thread-post-content"><blockquote>
+  Richard, I have some concerns about the solution you posted.
+</blockquote>
+Thanks for your feedback.
+<blockquote>
+  <ol>
+  <li>It only fixes the problem for the yield interrupt. If any other
+  simulated interrupt causes a context switch, the suspended thread
+  could continue to run for a while after the call to
+  vPortGenerateSimulatedInterrupt.</li>
+  </ol>
+</blockquote>
+Skipping this one for now as will need more thought.
+[edit1] This is basically the same case as a tick interrupt resulting in a context switch.  When making the changes posted above I decided not to consider the tick as a critical case as a tick interrupt can occur at any time &#8211; and therefore if the context switch (the task being suspended) occured a little late it would not cause a fatal error because the task being interrupted is unaware of it anyway.  This is a very different scenario to a task yielding because it is entering the blocked state &#8211; if a task fails to enter the blocked state because it is yielding then there will be logic errors in the program that are critical.  For example, if a task is blocking on a queue but continues past the block point then the queue logic won&#8217;t work and anything might happen.   The Win32 port is not &#8216;real time&#8217; in any case, but an approximation that should behave logically the same, but not necessarily temporaraly the same.
+<blockquote>
+  <ol>
+  <li>You&#8217;re using ulPendingInterrupts to check if you should wait on the
+  yield event object AFTER releasing the mutex. If the simulated
+  interrupt handler preempts the thread and clears the flags before
+  you reach the check, the task will never actually wait on the event.
+  You should either make a local copy before releasing the mutex, or
+  create a boolean indicating that the thread should wait on the event.</li>
+  </ol>
+</blockquote>
+Can you please give me a line number (from the file I posted).
+[edit 1] Fixed.
+<blockquote>
+  <ol>
+  <li>Why do you wait on the event in a loop with a 0 timeout? You can
+  just use ResetEvent, right?</li>
+  </ol>
+</blockquote>
+&#8230;.because I didn&#8217;t know about ResetEvent(), will change.
+<blockquote>
+  <ol>
+  <li>The fix assumes that the thread calling
+  vPortGenerateSimulatedInterrupt or vPortExitCritical is the
+  currently scheduled FreeRTOS task. If it&#8217;s a normal Windows thread
+  instead, it will access the yield event of the currently scheduled
+  FreeRTOS task,</li>
+  </ol>
+</blockquote>
+If I understand you correctly here &#8211; that you are describing something
+it is not valid to do.  Normally scheduled windows threads cannot access
+FreeRTOS scheduler operations, and Windows threads that are running
+FreeRTOS tasks cannot make Windows system calls &#8211; the two are just not
+compatible logically.
+<blockquote>
+  which could cause it to unblock that FreeRTOS task
+      early. This is why I used a thread-local storage slot in my
+      solution. It allows you to access the thread state of the currently
+      executing thread (not just the currently scheduled thread), which
+      ensures you&#8217;re using the correct yield event object. And, in the
+      case of a normal Windows thread, it will be NULL, so you know not to
+      wait on an event. It also provides an easy way to check if a thread
+      is running when it shouldn&#8217;t be (the thread state is different than
+      pxCurrentTCB).
+</blockquote>
+Maybe I&#8217;m just not following this properly, but doing this kind of thing
+could be the route cause of your issues, and be why I can&#8217;t replicate them.
+<blockquote>
+  <ol>
+  <li>There is no need to duplicate the yield event waiting code in
+  vPortGenerateSimulatedInterrupt and vPortExitCritical. Just wrap the
+  code inside vPortGenerateSimulatedInterrupt with
+  vPortEnterCritical/vPortExitCritical instead of manually taking the
+  mutex.</li>
+  <li>You don&#8217;t call CloseHandle on the yield event when deleting the thread.</li>
+  </ol>
+</blockquote>
+Will fix.
+<blockquote>
+  In regards to calling Windows system calls from a FreeRTOS task. I know
+  your official position is to just don&#8217;t do that, but at the same time
+  you break this rule in your own demos.
+</blockquote>
+In the standard demo we get away with this because we write to stdout
+very infrequently and from only one task.  You will note that the call
+to kbhit() is normally commented out, because that causes issues too.
+The TCP/IP examples on the other hand write to the console rapidly, so
+we don&#8217;t use printf() at all as it will soon crash if we do.  Instead we
+send the strings to print to a Windows thread that is not under the
+control of the FreeRTOS kernel and print them out from there.  In that
+case the strings are sent in a circular RAM buffer to avoid sharing any
+FreeRTOS primitives with the Windows thread.  I think the thread running
+kernel code does signal the Windows thread somehow (forget how) but in
+non blocking way.
+<blockquote>
+  From what I can tell, it&#8217;s not
+  safe to call any external function (even standard c library functions)
+  that could make a system call, without first entering a critical
+  section. 
+</blockquote>
+Entering a critical section may work, but I don&#8217;t know enough about the
+inner workings of Windows to know.
+<blockquote>
+  Otherwise, the FreeRTOS scheduler could try to suspend the
+  thread during the syscall, which can cause SuspendThread to fail (or not
+  suspend immediately). If it actually does suspend the thread
+  successfully, it can cause a deadlock if another thread calls an system
+  function before the first has a chance to finish (if the first had
+  acquired a mutex before being suspended).
+  I suspect that SuspendThread can fail even when the program does not
+  call system functions from FreeRTOS threads, because the Windows port
+  itself does so. Namely, when entering/exiting a critical section, it
+  acquires and releases the interrupt mutex. If the scheduler tries to
+  suspend the thread at the wrong point inside WaitForSingleObject or
+  ReleaseMutex, it can cause the call to SuspendThread to either fail to
+  suspend the thread immediatly, or in some cases, fail to suspend the
+  thread at all. That&#8217;s why it is important to block the FreeRTOS task on
+  an event inside vPortExitCritical if any interrupt is pending, in case
+  the interrupt causes a context switch and SuspendThread fails.
+</blockquote>
+Again need to consider this point more.
+<blockquote>
+  From my testing, with my fix in place and with all system calls wrapped
+  in a critical section, we can safely interact with standard Windows
+  threads, without relying on lockless data structures or using the
+  Windows thread priority as synchronization mechanism. We can safely call
+  taskENTER<em>CRITICAL/taskEXIT</em>CRITICAL from Windows threads to synchronize
+  access to memory that is shared with a FreeRTOS task. We can interract
+  with Windows threads from FreeRTOS tasks by calling Windows API
+  functions from a critical section. We can interract with FreeRTOS tasks
+  from Windows threads using the ISR FreeRTOS api functions.
+</blockquote>
+I only tried the code posted by davidefer &#8211; which for me locked up right
+away, I think because the trace recorder code was calling critical
+sections from inside the interrupt.  I need to study your code in more
+detail as it sounds like it has some goodness &#8211; I did diff your file
+with the released code over the weekend but there were too many changes
+to look through.
+Good discussions &#8211;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wtodd">wtodd</a> on July 9, 2019</div><div class="thread-post-content">I have also found a related bug in the Windows port. The scheduler can cause a deadlock if it suspends a thread before it has fully initialized (i.e. before it calls into the specified thread function). I suspect that the Windows thread initialization code acquires some mutex, which other system functions also try to acquire. If the thread is suspended after acquiring the mutex but before releasing it, and then another thread tries to acquire the same mutex, the program will deadlock.
+I&#8217;ll attach my solution, which is just to wait for the thread to fully initialize before returning from pxPortInitialiseStack. It also includes my previous changes and some changes to fix the tick accuracy, which you may find useful.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wtodd">wtodd</a> on July 9, 2019</div><div class="thread-post-content"><blockquote>
+  Can you please give me a line number (from the file I posted).
+</blockquote>
+Line 666
+<blockquote>
+  If I understand you correctly here &#8211; that you are describing something
+  it is not valid to do. Normally scheduled windows threads cannot access
+  FreeRTOS scheduler operations, and Windows threads that are running
+  FreeRTOS tasks cannot make Windows system calls &#8211; the two are just not
+  compatible logically.
+</blockquote>
+We call vPortGenerateSimulatedInterrupt from Windows threads, which I guess is not the intended use case, but like I say later on in my post, this works well with our fixes.
+Perhaps it would be less confusing about what is allowed or not if there were some standard way of interacting between Windows and FreeRTOS threads. We&#8217;ve been using the following function for that purpose, with good results:
+~~~
+typedef struct
+{
+    int32<em>t (*func)(void* arg);
+    void* arg;
+    int32</em>t result;
+<pre><code>StaticSemaphore_t wait_buf;
+SemaphoreHandle_t wait;
+</code></pre>
+} sys<em>exec</em>state_t;
+VOID CALLBACK sys<em>exec</em>func<em>cb(PTP</em>CALLBACK<em>INSTANCE instance, PVOID context)
+{
+    sys</em>exec<em>state</em>t* state = (sys<em>exec</em>state<em>t*)context;
+    BaseType</em>t yield = pdFALSE;
+<pre><code>// call the function
+state-&gt;result = state-&gt;func(state-&gt;arg);
+// tell the task that we're done
+taskENTER_CRITICAL();
+xSemaphoreGiveFromISR(state-&gt;wait, &amp;yield);
+if (yield == pdTRUE)
+{
+    portYIELD();
+}
+taskEXIT_CRITICAL();
+</code></pre>
+}
+int32<em>t sys</em>exec<em>func(int32</em>t (<em>func)(void</em> arg), void* arg)
+{
+    int32<em>t result = 0;
+    sys</em>exec<em>state</em>t state;
+<pre><code>state.func = func;
+state.arg = arg;
+state.result = 0;
+state.wait = xSemaphoreCreateBinaryStatic(&amp;state.wait_buf);
+BOOL submitted = FALSE;
+taskENTER_CRITICAL();
+submitted = TrySubmitThreadpoolCallback(sys_exec_func_cb, &amp;state, NULL);
+taskEXIT_CRITICAL();
+if (submitted == TRUE)
+{
+    xSemaphoreTake(state.wait, portMAX_DELAY);
+    result = state.result;
+}
+else
+{
+    result = -EWOULDBLOCK;
+}
+vSemaphoreDelete(&amp;state.wait);
+return result;
+</code></pre>
+}
+~~~
+This allows you to synchronously execute a function outside of the FreeRTOS context from a FreeRTOS task. For example we can safely do something like this:
+~~~
+typedef struct
+{
+    const void* ptr;
+    size<em>t size</em>of<em>elements;
+    size</em>t number<em>of</em>elements;
+    FILE* file;
+} fwrite<em>args</em>t;
+int32<em>t do</em>fwrite(void* arg)
+{
+    fwrite<em>args</em>t* args = (fwrite<em>args</em>t*)arg;
+    return fwrite(args->ptr, args->size_of_elements, args->number_of_elements, args->file);
+}
+int32<em>t safe</em>fwrite(const void *ptr, size_t size_of_elements, size_t number_of_elements, FILE *file)
+{
+     fwrite_args_t args;
+     args.ptr = ptr;
+     args.size_of_elements = size_of_elements;
+     args.number_of_elements = number_of_elements;
+     args.file = file;
+<pre><code> return sys_exec_func(do_fwrite, &amp;args);
+</code></pre>
+}
+void freertos<em>task(void* arg)
+{
+    FILE* f;
+    uint8</em>t buffer[10];
+<pre><code>// ...
+safe_fwrite(buffer, 10, 1, f);
+// ...
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 9, 2019</div><div class="thread-post-content">From your description there are a lot of good enhancements here, I just
+need a little time to digest and test.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on July 10, 2019</div><div class="thread-post-content">From my side, the tests I&#8217;ve done with the Richard&#8217;s version were ok. I post here my modified version with the termination management and some other mods. I&#8217;ll follow the discussion and in case needed I can also do some tests.
+Thank you very much for the support!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 11, 2019</div><div class="thread-post-content">I made a couple of edits to this post just to keep you up to date with progress.  Only commented on the first two points so far.  Search for [edit1] in the post.
+https://sourceforge.net/p/freertos/discussion/382005/thread/d8a09bc895/#74d1/9a09
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wtodd">wtodd</a> on July 11, 2019</div><div class="thread-post-content"><blockquote>
+  [edit1] This is basically the same case as a tick interrupt resulting in a context switch.
+</blockquote>
+The yield interrupt is synchronous, while the tick interrupt is asynchronous. I agree that the timing is not critical for asynchronous interrupts, but it definitely is critical for synchrounous interrupts (like the yield interrupt). When the user calls vPortGenerateSimulatedInterrupt from a FreeRTOS task, it should behave in a synchronous manner, regardless of which interrupt it is.
+For example, if I register my own simulated interrupt handler and then call vPortGenerateSimulatedInterrupt  from a task, I would expect that task to yield to the interrupt handler before returning from vPortGenerateSimulatedInterrupt, and, if the interrupt handler requests a context switch, I would also expect the scheduler to switch to another task before the first returns from vPortGenerateSimulatedInterrupt. The fact that it doesn&#8217;t currently do that with the yield interrupt is the reason it crashes. My point is that it is possible to fix this for every interrupt, not just the yield interrupt.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wtodd">wtodd</a> on July 11, 2019</div><div class="thread-post-content">In fact, the real issue is not really with vPortGenerateSimulatedInterrupt at all, but rather with vPortExitCritical. When interrupts are enabled after the final call to vPortExitCritical, it should process all pending interrupts before returning from vPortExitCritical. That way, if you do something like
+~~~
+ taskENTER<em>CRITICAL();
+ vPortGenerateSimulatedInterrupt(portINTERRUPT</em>UART);
+ // &#8230;
+ taskEXIT_CRITICAL();
+~~~
+The interrupts handlers will be processed before returning from taskEXIT_CRITICAL. Then, vPortGenerateSimulatedInterrupt can be as simple as this:
+~~~
+void vPortGenerateSimulatedInterrupt(uint32<em>t ulInterruptNumber)
+{
+    portENTER</em>CRITICAL();
+    uxPendingInterrupts |= ( 1U &lt;&lt; ulInterruptNumber );
+    SetEvent( pvInterruptEvent );
+    portEXIT_CRITICAL();
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the Win32 Port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 11, 2019</div><div class="thread-post-content">I like that simplification.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

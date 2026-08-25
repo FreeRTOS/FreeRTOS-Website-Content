@@ -1,0 +1,186 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xQueueSendFromISR() and xQueueReceive() - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2009/freertos_xQueueSendFromISR_and_xQueueReceive_3412840.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="xQueueSendFromISR() and xQueueReceive() - FreeRTOS" />
+<meta property="og:description" content="xQueueSendFromISR() and xQueueReceive()Posted by vagni on September 28, 2009I am using FreeRTOS v4.6.1 on my STR75x-based application with IAR EW-ARM v4.41A. I have an UART-ISR with the following code: static PDU&#095;STRUCT RxBuf; static xQueueHandle xQueueRxPdu;&nbsp;&nbsp; // a queue capable of containing pointers to PDU&#095;STRUCT structures &#095;&#095;arm void UART1&#095;Isr&#040;void&#041; &#123; portBASE&#095;TYPE xTaskWokenByPost = pdFALSE; PDU&#095;STRUCT &#042;pRxBuf &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2009/freertos_xQueueSendFromISR_and_xQueueReceive_3412840.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="xQueueSendFromISR() and xQueueReceive()Posted by vagni on September 28, 2009I am using FreeRTOS v4.6.1 on my STR75x-based application with IAR EW-ARM v4.41A. I have an UART-ISR with the following code: static PDU&#095;STRUCT RxBuf; static xQueueHandle xQueueRxPdu;&nbsp;&nbsp; // a queue capable of containing pointers to PDU&#095;STRUCT structures &#095;&#095;arm void UART1&#095;Isr&#040;void&#041; &#123; portBASE&#095;TYPE xTaskWokenByPost = pdFALSE; PDU&#095;STRUCT &#042;pRxBuf [&hellip;]" />
+<meta name="twitter:title" content="xQueueSendFromISR() and xQueueReceive() - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201798' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201798' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201798' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201798' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141859' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2009%2Ffreertos_xQueueSendFromISR_and_xQueueReceive_3412840.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2009%2Ffreertos_xQueueSendFromISR_and_xQueueReceive_3412840.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141859">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2009_freertos_support_forum_archive_index.html/">September 2009 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">xQueueSendFromISR() and xQueueReceive()</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/vagni">vagni</a> on September 28, 2009</div><div class="thread-post-content">I am using FreeRTOS v4.6.1 on my STR75x-based application with IAR EW-ARM v4.41A.  
+I have an UART-ISR with the following code:  
+static PDU&#95;STRUCT RxBuf;  
+static xQueueHandle xQueueRxPdu;&nbsp;&nbsp; // a queue capable of containing pointers to PDU&#95;STRUCT structures  
+&#95;&#95;arm void UART1&#95;Isr&#40;void&#41;  
+&#123;  
+portBASE&#95;TYPE xTaskWokenByPost = pdFALSE;  
+PDU&#95;STRUCT &#42;pRxBuf = &amp;amp;RxBuf;  
+if&#40; Received&#95;Valid&#95;PDU &#41;  
+&#123;  
+// post the received PDU  
+xTaskWokenByPost = xQueueSendFromISR&#40; xQueueRxPdu, &#40;void &#42;&#41;&amp;amp;pRxBuf, xTaskWokenByPost &#41;;  
+&#125;  
+/&#42; If a task was woken by a message being received<br />
+then we may need to switch to another task. &#42;/  
+portEND&#95;SWITCHING&#95;ISR&#40; xTaskWokenByPost &#41;;  
+&#125;  
+Then I have one my task with the following code:  
+// coda della PDU ricevuta  
+static xQueueHandle xQueueRxPdu;  
+void UartTask&#40; void &#42;pvParameters &#41;  
+&#123;  
+portTickType xLastWakeTime,xNextWakeTime;  
+PDU&#95;STRUCT &#42;pRxPdu;  
+// Create a queue capable of containing 2 pointers to PDU&#95;STRUCT structures.  
+xQueueRxPdu = xQueueCreate&#40; 2, sizeof&#40; PDU&#95;STRUCT &#42; &#41; &#41;;  
+// task loop  
+for&#40; ; ; Wdog&#40;&#41; &#41;  
+&#123;  
+// wait for a message  
+xLastWakeTime = xTaskGetTickCount&#40;&#41;;  
+xNextWakeTime = xLastWakeTime + 200;  
+if&#40; QueueReceive&#40; xQueueRxPdu, &amp;amp;pRxPdu, xNextWakeTime &#41; == pdTRUE &#41;  
+&#123;  
+// received message processing  
+&#125;  
+else  
+&#123;  
+// do something else  
+&#125;  
+&#125;  
+&#125;  
+So my task waits for a received message for max 200 ticks &#40;200 msec&#41;, then does something else and returns to wait for a received message. Both the message processing&nbsp; time and the alternative processing time are less than 1 msec.  
+There is an external unit sending a message every 200 msec.  
+The above task has priority 2, the same of two other my task. Also there is another task with priority 3.  
+After some minutes or some hours or some days of continuous properly working &#40;this is random time&#41; my task suddenly stops receiving messages from the external unit. I can recover the issue only with an application reset.  
+What happens if xQueueSendFromISR&#40;&#41; and portEND&#95;SWITCHING&#95;ISR&#40;&#41; are called when my task is just running and not waiting for a message from the queue? In this case, when my task returns to call xQueueReceive&#40;&#41; is it assured to find in the queue the message queued before by the UART&#95;ISR?  
+Thank you for your help.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueSendFromISR() and xQueueReceive()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on September 28, 2009</div><div class="thread-post-content">You say you are using IAR compiler, I presume you have an assembly code entry point for the ISR?  
+xQueueReceive&#40;&#41; takes an a relative block time. If you add 200 to the block time on each call the task will block for an extra 200ms each time.&nbsp; 200ms the first time you call it, 400ms the next, 600ms the next, etc. You should not add 200 to the block time because it is just that, a block time not a wake time.  
+As you are queueing pointers to structures are you sure that the structure being pointed to is not be accessed by the task and the interrupt simultaneously?  
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueSendFromISR() and xQueueReceive()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/vagni">vagni</a> on September 28, 2009</div><div class="thread-post-content">Yes, you are right.  
+Threre is an assembly code entry point for the ISR, it is the same for all the IRQ channels inside the STR75x ARM7 microcontroller.  
+Also, there is a copy error on the task code I reported. The right and actual code for calling xQueueReceive&#40;&#41; is the following:  
+if&#40; xQueueReceive&#40; xQueueRxPdu, &amp;amp;pRxPdu, 200&#41; == pdTRUE &#41;  
+&#123;  
+// received message processing  
+&#125;  
+else  
+&#123;  
+// do something else  
+&#125;  
+So the task will always block for 200ms.  
+What you say regarding to the possible simultaneous access to the same message structure make me think that is maybe wrong to wait for message a time equal to the sending period on the external unit.  
+But the external unit is sending the same message every 200ms, so the message structure is overwritten with the same data bytes. If task accesses to the message structure while the subsequent message reception is just started, the received message should not be lost. Or not?  
+If the task should loose a message, it should always receive the subsequent one, not start to loose every message.  
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

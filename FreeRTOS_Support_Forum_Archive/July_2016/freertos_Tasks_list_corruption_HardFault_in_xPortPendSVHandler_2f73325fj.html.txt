@@ -1,0 +1,160 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasks list corruption / HardFault in xPortPendSVHandler() - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2016/freertos_Tasks_list_corruption_HardFault_in_xPortPendSVHandler_2f73325fj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tasks list corruption / HardFault in xPortPendSVHandler() - FreeRTOS" />
+<meta property="og:description" content="Tasks list corruption / HardFault in xPortPendSVHandler()Posted by dhemaius on July 6, 2016FreeRTOS v8.2.3 System has been running for a while, then after a vTaskSwitchContext() call inside xPortPendSVHandler(), a hard fault occured when it tried to pop the core registers. Here is the list of values that did not make sense at that point : &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2016/freertos_Tasks_list_corruption_HardFault_in_xPortPendSVHandler_2f73325fj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Tasks list corruption / HardFault in xPortPendSVHandler()Posted by dhemaius on July 6, 2016FreeRTOS v8.2.3 System has been running for a while, then after a vTaskSwitchContext() call inside xPortPendSVHandler(), a hard fault occured when it tried to pop the core registers. Here is the list of values that did not make sense at that point : [&hellip;]" />
+<meta name="twitter:title" content="Tasks list corruption / HardFault in xPortPendSVHandler() - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202670' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202670' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202670' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202670' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145943' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2016%2Ffreertos_Tasks_list_corruption_HardFault_in_xPortPendSVHandler_2f73325fj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2016%2Ffreertos_Tasks_list_corruption_HardFault_in_xPortPendSVHandler_2f73325fj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145943">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2016_freertos_support_forum_archive_index.html/">July 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Tasks list corruption / HardFault in xPortPendSVHandler()</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dhemaius">dhemaius</a> on July 6, 2016</div><div class="thread-post-content">FreeRTOS v8.2.3
+System has been running for a while, then after a vTaskSwitchContext() call inside xPortPendSVHandler(), a hard fault occured when it tried to pop the core registers. Here is the list of values that did not make sense at that point :
+pxCurrentTCB = 0x00000005 ( found out it came from corrupt pxReadyTasksLists[6] )
+pxReadyTasksLists[6].uxNumberOfItems     = 0xFFFFFFFF
+pxReadyTasksLists[6].pxIndex                    = 0x2001ADA8
+pxReadyTasksLists[6].pxIndex->pxNext       = 0x2001ADA8
+pxReadyTasksLists[6].pxIndex->pxPrevious = 0x2001ADA8
+pxReadyTasksLists[6].pxIndex->pvOwner     = 0x00000005    ( @ xDelayedTaskList1.uxNumberOfItems)
+pxReadyTasksLists[6].pxIndex->pvContainer = 0x2001ADBC  ( points on xDelayedTaskList1.xListEnd )
+pxReadyTasksLists[6].xListEnd                  @ 0x2001ADA8
+xDelayedTaskList1.uxNumberOfItems         = 0x00000005
+xDelayedTaskList1.pxIndex                        = 0x2001ADBC
+xDelayedTaskList1.xListEnd                       @ 0x2001ADBC
+uxTopReadyPriority = 81  ( configMAX_PRIORITIES = 7 !!! )
+Any idea how such a corruption can happen?
+Futhermore, sneeking around trying to find out how an empty list is still being used, I found something peculiar inside listGET<em>OWNER</em>OF<em>NEXT</em>ENTRY macro&#8230; Why reaffecting ( pxConstList )->pxIndex->pxNext to ( pxConstList )->pxIndex when it just found out that ( pxConstList )->pxIndex->pxNext is the end of the list marker, causing ( pxConstList )->pxIndex->pvOwner to be invalid?
+~~~
+<h1>define listGET<em>OWNER</em>OF<em>NEXT</em>ENTRY( pxTCB, pxList )                                        </h1>
+{                                                                                           
+List_t * const pxConstList = ( pxList );                                                    
+    /* Increment the index to the next item and return the item, ensuring */                
+    /* we don&#8217;t return the marker used at the end of the list.  */                          
+    ( pxConstList )->pxIndex = ( pxConstList )->pxIndex->pxNext;                            
+    if( ( void * ) ( pxConstList )->pxIndex == ( void * ) &amp;( ( pxConstList )->xListEnd ) )  
+    {                                                                                       
+        ( pxConstList )->pxIndex = ( pxConstList )->pxIndex->pxNext;                        
+    }                                                                                       
+    ( pxTCB ) = ( pxConstList )->pxIndex->pvOwner;                                          
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tasks list corruption / HardFault in xPortPendSVHandler()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on July 6, 2016</div><div class="thread-post-content">These things are nearly always because of interrupt priority problems. Are your interrupt priorities set below configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY? Do you have configASSERT() defined? Do you have stack overflow checking defined to 2? For links to the info http://www.freertos.org/FAQHelp.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tasks list corruption / HardFault in xPortPendSVHandler()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dhemaius">dhemaius</a> on July 6, 2016</div><div class="thread-post-content">A colleague just revised that on my request before I saw your post and the answer is yes, some ISR using the API were above (meaning number &lt; ) the configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY. I should have thought about it earlier, because I have been down that road.
+I had added a configASSERT verification inside uxListRemove() in the past to trap an underroll of pxList->uxNumberOfItems and I still get that error.
+Call Stack is always as follow :
+prvIdleTask
+   SysTick<em>Handler
+         xTaskIncrementTick
+               uxListRemove
+                     assert</em>failed (aka configASSERT )
+I will personnally check again for a wrong priority I guess.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

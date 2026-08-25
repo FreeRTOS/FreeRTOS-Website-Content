@@ -1,0 +1,303 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tickless idle not resuming tasks immediately - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2019/freertos_Tickless_idle_not_resuming_tasks_immediately_e3c049778bj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tickless idle not resuming tasks immediately - FreeRTOS" />
+<meta property="og:description" content="Tickless idle not resuming tasks immediatelyPosted by kebes22 on August 9, 2019I believe there is a problem with the recommended tickless idle implementation i.e. here: http://freertos.org/low-power-tickless-rtos.html, or with the supporting tick update calls. I have had timing issues with a project on a Nordic nRF52832 (Arm cortex M4), and I have tracked it down to &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2019/freertos_Tickless_idle_not_resuming_tasks_immediately_e3c049778bj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Tickless idle not resuming tasks immediatelyPosted by kebes22 on August 9, 2019I believe there is a problem with the recommended tickless idle implementation i.e. here: http://freertos.org/low-power-tickless-rtos.html, or with the supporting tick update calls. I have had timing issues with a project on a Nordic nRF52832 (Arm cortex M4), and I have tracked it down to [&hellip;]" />
+<meta name="twitter:title" content="Tickless idle not resuming tasks immediately - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203155' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203155' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203155' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203155' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138184' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2019%2Ffreertos_Tickless_idle_not_resuming_tasks_immediately_e3c049778bj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2019%2Ffreertos_Tickless_idle_not_resuming_tasks_immediately_e3c049778bj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138184">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2019_freertos_support_forum_archive_index.html/">August 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Tickless idle not resuming tasks immediately</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kebes22">kebes22</a> on August 9, 2019</div><div class="thread-post-content">I believe there is a problem with the recommended tickless idle implementation i.e. here: http://freertos.org/low-power-tickless-rtos.html, or with the supporting tick update calls.
+I have had timing issues with a project on a Nordic nRF52832 (Arm cortex M4), and I have tracked it down to the tickless idle. The project uses Nordic&#8217;s tickless idle implementation, but they appear to have followed the implementation recommendations (from the link above).
+The problem is that upon waking from a tickless idle sleep, it does not immediately execute the tasks that should now be pending (i.e. the ones that scheduled the wakeup time in the first place). I have spent days trying to track down the exact cause, and I think I have found the main problem.
+Normally (without tickless idle), a tick interrupt happens on every time tick, and does the following:
+    &#8211; (Tick ISR) Calls xTaskIncrementTick(), which:
+        &#8211; Increments time by exactly 1 tick.
+        &#8211; Moves tasks from the delayed list to the ready list (if task time is up)
+    &#8211; (Tick ISR) Requests a context switch (if the result of xTaskIncrementTick() indicates something was unblocked)
+The key here is that tasks get moved from the delayed list to the ready list, and the context switch executes the ready list (if higher priority than the current task)
+The sequence with the tickless idle implementation (both freeRTOS&#8217;s recommendation, and Nordic&#8217;s implementation) is:
+    &#8211; (Idle task) Suspends scheduler
+    &#8211; (Idle task) Checks if delayed time is long enough to sleep
+    &#8211; (Idle task) Calls portSUPPRESS<em>TICKS</em>AND_SLEEP(), which (among a few other things):
+        &#8211; Sets up a wake interrupt
+        &#8211; Sleeps
+        &#8211; Wakes Up
+        &#8211; Calculates time difference
+        &#8211; Corrects time by calling vTaskStepTick() which:
+            &#8211; Increments time by the specified time difference
+    &#8211; (Idle task) Resumes scheduler
+So the problem seems to be the fact that incrementing time with vTaskStepTick() fixes the system time, but does not unblock tasks (i.e. the task that scheduled the wakeup). So the tasks wait until the next time tick that processes normally, and then calls xTaskIncrementTick() (in the Tick ISR) which will then unblock the waiting task (now a tick delayed).
+In digging deeper, I have found examples of tickless idle implementations that use vTaskStepTick() to increment by one less tick than the time elapsed, and then rely on the normal tick interrupt to do the final tick. This seems to be an ok workaround for some implementations, but the Nordic implementation suppresses the normal tick interrupt during tickless idle, and so there is no pending interrupt upon waking. 
+I have found a similar workaround, by calling vTaskStepTick(timeDiff-1), then calling xTaskIncrementTick() (inside of portSUPPRESS<em>TICKS</em>AND_SLEEP()). Technically this causes the final tick to be pended (since the scheduler is still suspended), but it seems to work.
+Ideally, I feel like vTaskStepTick() (freeRTOS non-portable code) should be updated to also handle unblocking of tasks, in the same way that xTaskIncrementTick() does. The main difference still being that vTaskStepTick() would not do this for every discrete time step, but only once at the end. It could be implemented very simply using the same diff-1 and xTaskIncrementTick() combination in my workaround, or the unblocking code could separated from xTaskIncrementTick() and called separately by each function. It makes most sense to me that whether you are stepping time by 1 tick or multiple ticks, the freeRTOS kernel should then decide if the time change should unblock anything.
+Obviously some people have figured this problem out (hence SOME implementations account for it), but the recommended implementation (the link above) does not show anything to handle it, and Nordic&#8217;s implementation follows it.
+Is there a reason the kernel doesn&#8217;t handle unblocking the tasks in vTaskStepTick()? It seems odd to me that there seems to be so much confusion on how to handle it, and that even a company like Nordic, with a large user base and many iterations of code using FreeRTOS, still doesn&#8217;t seem to do it right.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle not resuming tasks immediately</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 10, 2019</div><div class="thread-post-content">This will require a deeper study, from recollection this should be the
+sequence inside the &#8216;suppress ticks and sleep&#8217; function:
+1) Calculate a new timer reload value that will wake the system at the
+time the next task should unblock.
+2) Disable interrupts (necessary to prevent races on exit sleep mode).
+3) Timer generates an interrupt at the appropriate time, but the timer
+interrupt does not execute because interrupts are disabled.
+4) System comes out of sleep, calculates how long it was asleep for &#8211; if
+it was the timer that generated the interrupt then it slept for the
+entire period.
+5) Call vTaskStepTick() to adjust tick count.
+6) Enable interrupts, at which point&#8230;..
+7) &#8230;.the ISR for the timer interrupt that brought the system out of
+sleep but was not able to execute until interrupts were enabled executes
+as a normal tick interrupt &#8211; which does all the normal tick interrupt
+things, including unblocking tasks that have an expired block time.
+Looking at the code now though I see there was an update that enables
+interrupts before the tick count was incremented (
+https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c#l591
+), which means if the interrupt was the clock interrupt then the tick
+interrupt will only increment the tick count by one and the task will
+not be unblocked.
+I think the change was made to ensure interrupts from sources other than
+the clock execute at the earliest opportunity &#8211; which is desirable.
+Another undesirable consequence might be that the tick gets incremented
+one too many times, but I&#8217;ve not determined that is actually the case.
+That would mean however that the issue (to be determined if there is
+one) would not be fixed simply by pending a yield interrupt before
+exiting if the entire time had elapsed.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle not resuming tasks immediately</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 14, 2019</div><div class="thread-post-content">I have investigated this further and at this time can&#8217;t see an issue in the default tickless idle mode:
+1) If the CPU is brought out of sleep mode by the sleep time expiring, which is going to be a timer interrupt, then the timer interrupt (tick interrupt) will execute when interrupts are first re-enabled, which is before the tick count is stepped forward.
+https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c#l529
+However, at that time the scheduler is suspended, so although the tick interrupt executes, the actually processing (incrementing the tick) is held pending until the scheduler is unsuspended.
+2) Interrupts are then disabled again.
+https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c#l537
+3) As a timer (tick) interrupt has already executed the number that will be stepped is adjusted accordingly.
+https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c#l578
+4) The tick count is then stepped forward.
+https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c#l602
+5) After the function exits, the scheduler is unsuspended, at which time the tick that is held pending is executed &#8211; so it is executed immediately the function exits and before the scheduler is actually unsuspended.
+https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/tasks.c#l3439
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle not resuming tasks immediately</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kebes22">kebes22</a> on August 14, 2019</div><div class="thread-post-content">Thanks for looking into this. I have been meaning to post some better clarification, but I have been too busy.
+I can see that the default implementations have done some things to work around the problem. I think part of the confusion is that your tickless idle guide (http://freertos.org/low-power-tickless-rtos.html) does not show these workarounds. Specifically the time is only incremented by the time difference before and after sleep (not the diff-1 in the implementations). If this is done, and the tick interrupt ALSO runs, then the time gets incremented one too many times. If the tick interrupt does not also run, then time gets incremented properly, but tasks do not get unblocked on time.
+It appears that Nordic may have followed this (instead of the default implementations), but instead of running the tick interrupt afterwards, they disable and clear the tick interrupt. This means that time gets corrected for the sleep time, but nothing processes until the next tick, since vTaskStepTick() does not unblock tasks, and xTaskIncrementTick does not get called until the next tick.
+Here is Nordic&#8217;s implementation:
+~~~
+void vPortSuppressTicksAndSleep( TickType<em>t xExpectedIdleTime )
+{
+    /*
+     * Implementation note:
+     *
+     * To help debugging the option configUSE</em>TICKLESS<em>IDLE</em>SIMPLE<em>DEBUG was presented.
+     * This option would make sure that even if program execution was stopped inside
+     * this function no more than expected number of ticks would be skipped.
+     *
+     * Normally RTC works all the time even if firmware execution was stopped
+     * and that may lead to skipping too much of ticks.
+     */
+    TickType</em>t enterTime;
+<pre><code>/* Make sure the SysTick reload value does not overflow the counter. */
+if ( xExpectedIdleTime &gt; portNRF_RTC_MAXTICKS - configEXPECTED_IDLE_TIME_BEFORE_SLEEP )
+{
+    xExpectedIdleTime = portNRF_RTC_MAXTICKS - configEXPECTED_IDLE_TIME_BEFORE_SLEEP;
+}
+/* Block all the interrupts globally */
+</code></pre>
+<h1>ifdef SOFTDEVICE_PRESENT</h1>
+<pre><code>do{
+    uint8_t dummy = 0;
+    uint32_t err_code = sd_nvic_critical_region_enter(&amp;dummy);
+    APP_ERROR_CHECK(err_code);
+}while (0);
+</code></pre>
+<h1>else</h1>
+<pre><code>__disable_irq();
+</code></pre>
+<h1>endif</h1>
+<pre><code>enterTime = nrf_rtc_counter_get(portNRF_RTC_REG);
+if ( eTaskConfirmSleepModeStatus() != eAbortSleep )
+{
+    TickType_t xModifiableIdleTime;
+    TickType_t wakeupTime = (enterTime + xExpectedIdleTime) &amp; portNRF_RTC_MAXTICKS;
+    /* Stop tick events */
+    nrf_rtc_int_disable(portNRF_RTC_REG, NRF_RTC_INT_TICK_MASK);
+    /* Configure CTC interrupt */
+    nrf_rtc_cc_set(portNRF_RTC_REG, 0, wakeupTime);
+    nrf_rtc_event_clear(portNRF_RTC_REG, NRF_RTC_EVENT_COMPARE_0);
+    nrf_rtc_int_enable(portNRF_RTC_REG, NRF_RTC_INT_COMPARE0_MASK);
+    __DSB();
+    /* Sleep until something happens.  configPRE_SLEEP_PROCESSING() can
+     * set its parameter to 0 to indicate that its implementation contains
+     * its own wait for interrupt or wait for event instruction, and so wfi
+     * should not be executed again.  However, the original expected idle
+     * time variable must remain unmodified, so a copy is taken. */
+    xModifiableIdleTime = xExpectedIdleTime;
+    configPRE_SLEEP_PROCESSING( xModifiableIdleTime );
+    if ( xModifiableIdleTime &gt; 0 )
+    {
+</code></pre>
+<h1>if 1  // With FreeRTOS sd<em>app</em>evt_wait increases power consumption with FreeRTOS compared to _WFE (NRFFOSDK-11174)</h1>
+<h1>ifdef SOFTDEVICE_PRESENT</h1>
+<pre><code>        if (nrf_sdh_is_enabled())
+        {
+            uint32_t err_code = sd_app_evt_wait();
+            APP_ERROR_CHECK(err_code);
+        }
+        else
+</code></pre>
+<h1>endif</h1>
+<h1>endif // (NRFFOSDK-11174)</h1>
+<pre><code>        {
+            /* No SD -  we would just block interrupts globally.
+            * BASEPRI cannot be used for that because it would prevent WFE from wake up.
+            */
+            do{
+                __WFE();
+            } while (0 == (NVIC-&gt;ISPR[0] | NVIC-&gt;ISPR[1]));
+        }
+    }
+    configPOST_SLEEP_PROCESSING( xExpectedIdleTime );
+    nrf_rtc_int_disable(portNRF_RTC_REG, NRF_RTC_INT_COMPARE0_MASK);
+    nrf_rtc_event_clear(portNRF_RTC_REG, NRF_RTC_EVENT_COMPARE_0);
+    /* Correct the system ticks */
+    {
+        TickType_t diff;
+        TickType_t exitTime;
+        nrf_rtc_event_clear(portNRF_RTC_REG, NRF_RTC_EVENT_TICK);
+        nrf_rtc_int_enable (portNRF_RTC_REG, NRF_RTC_INT_TICK_MASK);
+        exitTime = nrf_rtc_counter_get(portNRF_RTC_REG);
+        diff =  (exitTime - enterTime) &amp; portNRF_RTC_MAXTICKS;
+        /* It is important that we clear pending here so that our corrections are latest and in sync with tick_interrupt handler */
+        NVIC_ClearPendingIRQ(portNRF_RTC_IRQn);
+        if ((configUSE_TICKLESS_IDLE_SIMPLE_DEBUG) &amp;&amp; (diff &gt; xExpectedIdleTime))
+        {
+            diff = xExpectedIdleTime;
+        }
+        if (diff &gt; 0)
+        {
+            vTaskStepTick(diff);
+        }
+    }
+}
+</code></pre>
+<h1>ifdef SOFTDEVICE_PRESENT</h1>
+<pre><code>uint32_t err_code = sd_nvic_critical_region_exit(0);
+APP_ERROR_CHECK(err_code);
+</code></pre>
+<h1>else</h1>
+<pre><code>__enable_irq();
+</code></pre>
+<h1>endif</h1>
+}
+~~~
+Obviously part of the problem is their specific implementation (which I will bring up with them separately once I better understand it). But I am still trying to figure out why a FreeRTOS time increment function (i.e. vTaskStepTick) would not automatically unblock tasks? It instead relies on a sort of hybrid mode where BOTH time increment functions must be used. And this interdependency does not seem to be very well explained.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle not resuming tasks immediately</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kebes22">kebes22</a> on August 14, 2019</div><div class="thread-post-content">Also it seems confusing, because the whole point of the tickless idle is to NOT run the tick interrupt every time (and not have it as a source of wakeup). So relying on it to be pending after a tickless sleep doesn&#8217;t make sense. Some implementations (including Nordic&#8217;s) use a completely different interrupt source to wake up from tickless idle (a compare event, instead of a tick event), so there is no reason for a tick to be pending.
+Even the function name (portSUPPRESS<em>TICKS</em>AND_SLEEP) suggests that the ticks should be supressed and should have no dependency.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle not resuming tasks immediately</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 14, 2019</div><div class="thread-post-content">The tick interrupt doesn’t run all the time. The clock is programmed to generate an interrupt at whatever time a task next needs to leave the blocked state, an in the default implementation the same clock is used for the tick interrupt.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

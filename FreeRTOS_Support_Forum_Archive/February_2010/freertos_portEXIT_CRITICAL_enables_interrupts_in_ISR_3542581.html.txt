@@ -1,0 +1,229 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>portEXIT_CRITICAL() enables interrupts in ISR - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2010/freertos_portEXIT_CRITICAL_enables_interrupts_in_ISR_3542581.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="portEXIT_CRITICAL() enables interrupts in ISR - FreeRTOS" />
+<meta property="og:description" content="portEXIT_CRITICAL() enables interrupts in ISRPosted by johandc on February 4, 2010HI, After 6 hours of debugging i finally found out why my ARM7 was crashing: &#040;Short version below&#041; Scope: Inside USART ISR: 1&#041; Call to portENTER&#095;CRITICAL&#040;&#041; &#8211; Increments ulCriticalNesting to 1 2&#041; Magic happens, data is processed 3&#041; Call to portEXIT&#095;CRITCIAL&#040;&#041; &#8211; decrements ulCriticalNesting to &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2010/freertos_portEXIT_CRITICAL_enables_interrupts_in_ISR_3542581.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="portEXIT_CRITICAL() enables interrupts in ISRPosted by johandc on February 4, 2010HI, After 6 hours of debugging i finally found out why my ARM7 was crashing: &#040;Short version below&#041; Scope: Inside USART ISR: 1&#041; Call to portENTER&#095;CRITICAL&#040;&#041; &#8211; Increments ulCriticalNesting to 1 2&#041; Magic happens, data is processed 3&#041; Call to portEXIT&#095;CRITCIAL&#040;&#041; &#8211; decrements ulCriticalNesting to [&hellip;]" />
+<meta name="twitter:title" content="portEXIT_CRITICAL() enables interrupts in ISR - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201853' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201853' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201853' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201853' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138235' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2010%2Ffreertos_portEXIT_CRITICAL_enables_interrupts_in_ISR_3542581.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2010%2Ffreertos_portEXIT_CRITICAL_enables_interrupts_in_ISR_3542581.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138235">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2010_freertos_support_forum_archive_index.html/">February 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on February 4, 2010</div><div class="thread-post-content">HI,  
+After 6 hours of debugging i finally found out why my ARM7 was crashing: &#40;Short version below&#41;  
+<strong>Scope: Inside USART ISR:</strong><br />
+1&#41; Call to portENTER&#95;CRITICAL&#40;&#41; &#8211; Increments ulCriticalNesting to 1<br />
+2&#41; Magic happens, data is processed<br />
+3&#41; Call to portEXIT&#95;CRITCIAL&#40;&#41; &#8211; decrements ulCriticalNesting to 0<br />
+4&#41; PortEXIT&#95;CRITICAL&#40;&#41;&nbsp; sees that nesting is 0 and calls portENABLE&#95;INTERRUPT&#40;&#41;&nbsp;&nbsp;&nbsp; &lt;&#8211; This is the error&#33;<br />
+5&#41; Interrupts are now enabled, before exiting the USART ISR: Result :<br />
+6&#41; Nested interrupt occurs, call to PortSAVE&#95;CONTEXT&#40;&#41; etc….  
+… At this point, the system has entered an invalid state since a nested interrupt occured, and invalid information was stored on the stack… The system will never return to running state, and in fact sooner or later &#40;a couple of milliseconds later&#41; a PREFETCH&#95;ABORT interrupt is thrown by the processor.  
+This problem also exists in several other ports, for example the AVR32.  
+I think it is a general problem that portEXIT&#95;CRITICAL&#40;&#41; want&#8217;s to enable interrupts, disregarding the calling context. If FreeRTOS does not support nested interrupts, it should never enable interrupts unless the cpu is in system mode. The result is that no calls which are protected by critical sections can be called from within an iSR, which is a bit of a pain.  
+Please help me, is this a bug in AVR32 + ARM7 FreeRTOS?  
+<strong>Temporary FIx</strong><br />
+I solved the problem by checking the status register for the running mode of the processor. If it runs in ISR mode, it won&#8217;t enable interrupts, and now it works… However, is this a good solution?
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on February 4, 2010</div><div class="thread-post-content">This topic points out the exact same problem:<br />
+<a href="https://sourceforge.net/projects/freertos/forums/forum/382005/topic/1453677">https://sourceforge.net/projects/freertos/forums/forum/382005/topic/1453677</a>  
+However they don&#8217;t reach a conclusion on the problem, which i now think is a major bug in FreeRTOS.
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jorick23">jorick23</a> on February 4, 2010</div><div class="thread-post-content">I would think that when portENTER&#95;CRITICAL bumps ulCriticalNesting from 0 to 1, it should also save the current interrupt state &#40;enabled or disabled&#41;.&nbsp; Then when portEXIT&#95;CRITICAL bumps ulCriticalNesting from 1 to 0, it should restore that saved state.  
+I fixed a problem similar to this in my project a while back by doing the same thing.
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on February 4, 2010</div><div class="thread-post-content">It doesn&#8217;t seem to be that easy on all ports. The ARM7 and AVR32 does not store the interrupt state, but uses a nesting counter instead.  
+I personally think that the solution of adding &#8220;context-awareness&#8221;, by checking the CPU mode-register, is better than having all these &#8220;FromISR&#8221; functions. It could be a simple function like:<br />
+if &#40;cpu&#95;get&#95;mode&#40;&#41; &#33;= CPU&#95;ISR&#41; portENTER&#95;CRITICAL&#40;&#41;;  
+But i suppose it takes too much overhead??
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/destremps">destremps</a> on February 4, 2010</div><div class="thread-post-content">I&#8217;m going to jump in without studying what you guys are talking about too hard and suggest what I did in the AVR32 environment to cover this. You must ensure that all interrupts &#40;which make free&#95;rtos calls&#41; are AT THE SAME PRIORITY LEVEL. Inlcuding the rtos tick int. I believe this way they won&#8217;t nest &#40;at least in AVR32&#41;. And your problems go away.  
+&nbsp;&nbsp;
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/destremps">destremps</a> on February 4, 2010</div><div class="thread-post-content">Sorry I should&#8217;ve included this.   
+Here&#8217;s my thread from before  
+<a href="https://sourceforge.net/projects/freertos/forums/forum/382005/topic/3315259">https://sourceforge.net/projects/freertos/forums/forum/382005/topic/3315259</a>  
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on February 4, 2010</div><div class="thread-post-content">@destremps: Aha&#33; That might explain why i&#8217;m seeing this issue only on the ARM7 and not the AVR32 even though i run the same code on both platforms.  
+I don&#8217;t know if this is an option for the ARM7 processor. Either way, i have decided to do it properly and never call portENTER/EXIT&#95;CRITICAL&#40;&#41; from an ISR. It takes a lot of work to wrap all my Malloc and Free calls in a vpPortMallocFromISR&#40;&#41;, and even worse, i have functions like conn&#95;close&#40;&#41;, that gets called both by tasks and from ISR, that in turn calls vPortFree… So i now have to make versions like &#8220;conn&#95;close&#95;from&#95;isr&#40;&#41;&#8221; too… :&#40;  
+As a result i might even change to a pre-allocated buffer handling system. But i don&#8217;t like over-complicating my code when there are no hard deadlines, and malloc works fine in ISR.
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on February 4, 2010</div><div class="thread-post-content">**Never, never, never **call portENTER&#95;CRITICAL&#40;&#41; or portEXIT&#95;CRITICAL&#40;&#41; from within an ARM7 interrupt unless you have changed the code yourself so that it would work.&nbsp; It is pointless in any case as ARM7 interrupts do not nest and leave interrupts disabled for their entirety &#8211; so why try to disable them again?.&nbsp; Nesting interrupts on an ARM7 is quite complex so by default it is not done &#8211; better to instead keep the interrupt really short and defer processing to a handler task.  
+<strong>Only API functions that end in FromISR or FROM&#95;ISR can be called from an ISR</strong>  
+The critical nesting count is part of the task context and has no meaning in an interrupt.&nbsp; For ports that support interrupt nesting there are the macros portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; and portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; that save the current interrupt state then restore the original interrupt state respectively &#8211; leaving the critical nesting count untouched.&nbsp; Take a look at ports such as the Cortex M3 and Coldfire V2 to see examples.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on February 4, 2010</div><div class="thread-post-content"><blockquote>
+  and malloc works fine in ISR
+</blockquote>
+Only just read that line &#8211; calling malloc from inside an ISR is a really bad idea, its not deterministic, can take a long time to execute, is probably not reentrant, etc.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on February 5, 2010</div><div class="thread-post-content">@richardbarry. Thank you for the reminder. I simply got too comfortable using the FreeRTOS API that i started using it within ISR&#8217;s too. When i&#8217;m at it, perhaps i can write a buffer-handler to avoid calling pvPortMalloc from ISR, however i would also like to have ISR/Task safe versions of xTaskGetTickCount and vTaskList.  
+I&#8217;m using these functions as a part of a small &#8220;service-set&#8221; in a network stack, and i&#8217;m trying to avoid to ask all nodes on the network to include a &#8220;ServiceTask&#8221; to handle these simple commands &#40;ping, process-list and memfree&#41;.  
+Regarding calling Malloc from within an ISR, if only all Task context calls vpPortMalloc&#40;&#41; which disables interrupts, i think it should be safe. I know that it&#8217;s not deterministic and may take a &#8220;long time&#8221; &#45; however everything that is critical runs with hardware DMA, so i have plenty of time to execute these ISR&#8217;s. &#8211; but for the main part i will change to a pre-allocated buffer handler in order to make all calls to my network stack both Task and interrupt safe.  
+What do you think about the idea that API calls would check which context they are called from and behave differently? I.e. QueueSend&#40;&#41; would call some macro, say CPU&#95;GET&#95;MODE&#40;&#41;, that returns CPU&#95;ISR or CPU&#95;TASK depending on the current execution context. Then the function QueueSend would behave as either QueueSend or QueueSendFromISR depending on this.??  
+This would simplify the API a lot, and make FreeRTOS more robust to lazy programmers that forget about their context, or have code which is called from multiple contexts &#40;like a network stack&#41;…
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on February 5, 2010</div><div class="thread-post-content">By the way, if i wanted to spare my subsystems from the pain of having another task using up stack-space. I could create a new task from the ISR and pass a pointer to the buffer to the task, which would then be schedules, run in task context and delete it self after finishing. In this way i defer the processing to a task, but it does not use up memory when not used…  
+<strong>The catch is</strong>: It&#8217;s impossible to create a task from within an ISR… Since there are no &#8220;unprotected&#8221; version, and since it calls pvPortMalloc in order to allocate stack space…  
+The problem is, i don&#8217;t have sufficient memory to have another task idling in the system just to answer ping-packets from the network stack. &#40;and process-list and memfree calls too&#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aturowski">aturowski</a> on February 5, 2010</div><div class="thread-post-content"><blockquote>
+  What do you think about the idea that API calls would check which context they are called from and behave differently? I.e. QueueSend&#40;&#41; would call some macro, say CPU&#95;GET&#95;MODE&#40;&#41;, that returns CPU&#95;ISR or CPU&#95;TASK depending on the current execution context. Then the function QueueSend would behave as either QueueSend or QueueSendFromISR depending on this.??
+</blockquote>
+Most small sized CPU are not able to find out if the code they are currently executing is&nbsp; ISR or &#8220;task&#8221;. I mean there is no facilities in CPU itself to distringuish between these modes in run time.  
+<blockquote>
+  This would simplify the API a lot, and make FreeRTOS more robust to lazy programmers that forget about their context, or have code which is called from multiple contexts &#40;like a network stack&#41;…
+</blockquote>
+You can call the same code from multiple contexts provided that the calling routine provide correct context/protection.  
+And one more thing…. FreeRTOS is designed to run VERY close to the hardware with VERY limited resources available. So simply there is no resources available to protect against lazy programmers.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on February 5, 2010</div><div class="thread-post-content"><blockquote>
+  What do you think about the idea that API calls would check which context they are called from and behave differently? I.e. QueueSend&#40;&#41; would call some macro, say CPU&#95;GET&#95;MODE&#40;&#41;, that returns CPU&#95;ISR or CPU&#95;TASK depending on the current execution context. Then the function QueueSend would behave as either QueueSend or QueueSendFromISR depending on this.??
+</blockquote>
+People would very quickly complain about the non portability of the solution and the extra processing time taken.  
+<blockquote>
+  By the way, if i wanted to spare my subsystems from the pain of having another task using up stack-space. I could create a new task from the ISR and pass a pointer to the buffer to the task, which would then be schedules, run in task context and delete it self after finishing. In this way i defer the processing to a task, but it does not use up memory when not used…  
+</blockquote>
+The catch is: It&#8217;s impossible to create a task from within an ISR… Since there are no &#8220;unprotected&#8221; version, and since it calls pvPortMalloc in order to allocate stack space…
+There are lots of catches to doing that, the main one being that your system would crash immediately. Even if it didn&#8217;t crash it would be incredibly slow. Create a persistent handler task that uses a semaphore to be told when there is processing that needs to be done. How is creating and deleting it all the time going to make it use less memory?
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on February 5, 2010</div><div class="thread-post-content">The problem is, i want the network-stack API to be inherently thread and interrupt safe but without having to add &#95;from&#95;isr&#40;&#41; to all my functions. Currently i have implemented a static memory allocation with a small pool handler which is faster and can be called from all contexts. Now i&#8217;m down to the QueueSend call&#8217;s which sometimes require from&#95;isr &#40;for example when a ping-reply is sent directly from the ISR of the network adapter&#41;…  
+I&#8217;m still struggling to figure out how i can pull this off…
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on February 5, 2010</div><div class="thread-post-content"><strong>@davedoors</strong>  
+The problem is, i want to avoid having a persistent service task running, just in order to answer ping-packets. Especially since we have very low memory and adding another task would require at least 400b stack on AVR32. By creating and deleting the task, the 400 bytes stack used by the task could be used for 2 packet buffers for the router instead.
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on February 5, 2010</div><div class="thread-post-content">Okay, i solved the problem &#8220;by documentation&#8221;. It is now required that the user calls the serviceHandler from within one of his existing server tasks. This way the services do not use more stack than is used already, and now all the services execute in a task context, so i don&#8217;t have multiple context calls any longer.  
+&#40;Okay, there are still some when routing with the loopback device, but it removed the biggest part of them&#41;  
+Thank you for your help and support :&#41; &#8211; It&#8217;s the first time i have looked into this forum and it is a very good resource&#33; I will recommend all our customers to use it as well.
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jorick23">jorick23</a> on February 5, 2010</div><div class="thread-post-content">What about something like this?  
+First, a little ARM assembler &#40;can&#8217;t be in user mode to execute&#41;:  
+IsInIrq:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mrs&nbsp;&nbsp;&nbsp;&nbsp; r0, cpsr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Get the program status register<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and&nbsp;&nbsp;&nbsp;&nbsp; r0, r0, &#35;0x1F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Isolate the mode bits<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cmp&nbsp;&nbsp;&nbsp;&nbsp; r0, &#35;MODE&#95;IRQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Check if in IRQ mode<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; movne&nbsp;&nbsp; r0, &#35;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // If no, return a boolean false<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; moveq&nbsp;&nbsp; r0, &#35;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // If yes, return a boolean true<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Return to the caller  
+And then some C code:  
+&nbsp;&nbsp; if &#40;IsInIsr &#40; &#41;&#41; &#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xQueueSendFromISR &#40;…&#41;;<br />
+&nbsp;&nbsp; &#125; else &#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xQueueSend &#40;…&#41;;<br />
+&nbsp;&nbsp; &#125;  
+Of course the assembler portion depends on your processor.
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on February 5, 2010</div><div class="thread-post-content">Yes, this was exactly what i meant&#33;  
+Very nice ASM implementation of the &#8220;macro&#8221;, i had something like this:  
+<pre><code>int x;
+asm volatile ("mrs %0,cpsr":"=r"(x));
+if ((x &amp; 0x1f) == 0x12) {
+xQueueSendFromISR(...);
+} else {
+xQueueSend(...);
+}
+</code></pre>
+But your suggestion is a lot nicer…  
+Both for ARM7 and AVR32 it is possible to get the mode-information.<br />
+For AVR8, it doesn&#8217;t have different modes really, but the global interrupt flag is always disabled in ISR context so this flag might be used instead. As an alternative, each call to portSAVE&#95;CONTEXT&#40;&#41; could increment a variable that tells that the system is running in ISR mode.
+</div></div><div class="thread-post"><h3 class="thread-post-title">portEXIT_CRITICAL() enables interrupts in ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on February 6, 2010</div><div class="thread-post-content">There are very good reason for having distinct routines for fromISR and fromTask contexts:<br />
+1&#41; It is designed that ISRs normally want to execute as quick as possible and are normally very short, not using a lot of other code, so the code knows it is in an ISR when it makes the calls.  
+2&#41; Because of the environment they execute in, they are optimized differently. Task level routines need to have the areas that need to be protected by critical sections as small as possible to minimize interrupt latency, maybe even at the cost of being a little slower, the ISR&nbsp; variants know they are not going to be interrupted, so don&#8217;t need to be concerned about that, but want to be as fast as possible  
+3&#41; The two sets of routines mayu do slightly different operations, the task level routines may need to suspend the current task if something isn&#8217;t ready for them, the ISR level don&#8217;t need to do this, but do need to defer task switching if needed and return a flag to indicate that a task switch is requested.  
+As you have seen, with the current set of routines, it is possible to add a layer on top that can handle making the decision for the programs that want that ability, If the base library always did this, then those applications that were sensitive to the extra overhead of that system would be stuck.  
+One advantage of an open source package like this is you are free to modify it, as long as you follow the rules on sharing the mods. One idea that would allow it to be done on any processor is to define a macro to be used at the start/end of every interrupt that wants to use this ability that sets/clears a flag, &#40;and clears the task switch request variable&#41;. Since it would be defined in the port files, on those ports that have an easy test to see if you are in an interrupt, could omit the flag &#40;this would say that the dual mode functions would call a port macro to test the flag, either checking the variable, or the hardware if available&#41;.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FatFs, freertos, interrupt - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2015/freertos_FatFs_freertos_interrupt_0957e311j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FatFs, freertos, interrupt - FreeRTOS" />
+<meta property="og:description" content="FatFs, freertos, interruptPosted by molnardavid on October 7, 2015Hi, I am new at freertos and I need some help. I am using STM32F429 with CubeMx 1.7.0. FreeRTOS and STemWin and fatFs included. I have 2 tasks blinky task &#8211; blinking a led on the board interval = 100ms main task &#8211; read a bmp from &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2015/freertos_FatFs_freertos_interrupt_0957e311j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FatFs, freertos, interruptPosted by molnardavid on October 7, 2015Hi, I am new at freertos and I need some help. I am using STM32F429 with CubeMx 1.7.0. FreeRTOS and STemWin and fatFs included. I have 2 tasks blinky task &#8211; blinking a led on the board interval = 100ms main task &#8211; read a bmp from [&hellip;]" />
+<meta name="twitter:title" content="FatFs, freertos, interrupt - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202566' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202566' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202566' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202566' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145037' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2015%2Ffreertos_FatFs_freertos_interrupt_0957e311j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2015%2Ffreertos_FatFs_freertos_interrupt_0957e311j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145037">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2015_freertos_support_forum_archive_index.html/">October 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FatFs, freertos, interrupt</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnardavid">molnardavid</a> on October 7, 2015</div><div class="thread-post-content">Hi,
+I am new at freertos and I need some help. I am using STM32F429 with CubeMx 1.7.0. FreeRTOS and STemWin and fatFs included. I have 2 tasks
+blinky task &#8211; blinking a led on the board interval = 100ms
+main task &#8211; read a bmp from sd card and draw it on LCD then clears LCD and start again
+until this point everything works fine. Now I would like to detect touch screen from EXTI interrupt. interrupt works fine if I touch the screen almost ~10 interrupts triggered. There is only on thing in the interrupt handler -> print &#8220;ISRrn&#8221; to serial port. This also works fine. BUT!
+After some touch (randomy changes but surely happens) my fatFs file systems responds that there is a timeout with the semaphor at f<em>open. And after this happened once then no more picture drawed on LCD bacause f</em>open reports this error.
+My drawing function looks like this
+~~~~
+void guiFile<em>drawBmp(char* path)
+{
+    FIL file;       /* File object */
+    FRESULT result;    /* FatFs return code */
+    result = f</em>open(&amp;file, path, FA<em>READ);
+    if (result != FR</em>OK)
+    {
+        printf(&#8220;no file&#8221;);
+        return;
+    }
+    GUI<em>DrawStreamedBitmapExAuto(Stream</em>GetData, &amp;file, 0, 0);
+<pre><code>f_close(&amp;file);
+</code></pre>
+}
+~~~~
+Everything works fine until I press the touch screen and generate some interrups.
+Interrupt handler:
+~~~~
+/**
+* @brief This function handles EXTI Line[15:10] interrupts.
+<em>/
+void EXTI15_10_IRQHandler(void)
+{
+  /</em> USER CODE BEGIN EXTI15<em>10</em>IRQn 0 <em>/
+    printf(&#8220;ISR!!rn&#8221;);
+  /</em> USER CODE END EXTI15<em>10</em>IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
+  /* USER CODE BEGIN EXTI15<em>10</em>IRQn 1 */
+  //CTP_INT_Callback();
+  /* USER CODE END EXTI15<em>10</em>IRQn 1 */
+}
+~~~~
+Any help would be appreciated, thank you in advance
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">FatFs, freertos, interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 7, 2015</div><div class="thread-post-content">Is the printf routine in you system safe to use from interrupts? 
+</div></div><div class="thread-post"><h3 class="thread-post-title">FatFs, freertos, interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnardavid">molnardavid</a> on October 7, 2015</div><div class="thread-post-content">Thank you for fast answer 
+Good point but!
+if I blink my system LED it works
+~~~~
+void EXTI15<em>10</em>IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15<em>10</em>IRQn 0 <em>/
+    HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_3);
+  /</em> USER CODE END EXTI15<em>10</em>IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
+  /* USER CODE BEGIN EXTI15<em>10</em>IRQn 1 */
+  //CTP_INT_Callback();
+  /* USER CODE END EXTI15<em>10</em>IRQn 1 */
+}
+~~~~
+but if I am doing this
+~~~~
+void EXTI15<em>10</em>IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15<em>10</em>IRQn 0 */
+<pre><code>for (int i=0;i&lt;1000;i++)
+{
+    HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_3);
+}
+</code></pre>
+  /* USER CODE END EXTI15<em>10</em>IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
+  /* USER CODE BEGIN EXTI15<em>10</em>IRQn 1 */
+  //CTP_INT_Callback();
+  /* USER CODE END EXTI15<em>10</em>IRQn 1 */
+}
+~~~~
+maybe the problem has something to do with timing? If the routine in  ISR takes too long then fatFs semaphore corrupted somehow?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FatFs, freertos, interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnardavid">molnardavid</a> on October 7, 2015</div><div class="thread-post-content">of course my final goal is to get touch event parameters from screen and add it to a queue than later process them in a task. I have just simlify the problem example where the problem still exists.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FatFs, freertos, interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnardavid">molnardavid</a> on October 7, 2015</div><div class="thread-post-content">I made another test. Completely removed the ISR just two tasks.
+blinkyTask
+~~~~
+  for(;;)
+  {
+        HAL<em>GPIO</em>TogglePin(GPIOD,GPIO<em>PIN</em>3);
+        osDelay(100);
+  }
+~~~~
+drawBmpTask
+~~~~
+  for(;;)
+  {
+        FIL file;       /* File object <em>/
+        FRESULT result;    /</em> FatFs return code */
+        result = f_open(&amp;file, path, FA_READ);
+        if (result != FR_OK)
+        {
+            printf(&#8220;no file&#8221;);
+            return;
+        }
+        GUI_DrawStreamedBitmapExAuto(Stream_GetData, &amp;file, 0, 0);
+<pre><code>    f_close(&amp;file);
+}
+</code></pre>
+~~~~
+if I made a small modification on blinkyTask like this
+~~~~
+  for(;;)
+  {
+      for (int i=0;i&lt;1000;i++)
+      {
+          HAL<em>GPIO</em>TogglePin(GPIOD,GPIO<em>PIN</em>3);
+      }
+      osDelay(100);
+  }
+~~~~
+Then the problem occurs again: f<em>open gives me FR</em>DISK_ERR 
+HAL<em>SD</em>ErrorTypedef HAL<em>SD</em>ReadBlocks(SD<em>HandleTypeDef *hsd, uint32</em>t *pReadBuffer, uint64_t ReadAddr, uint32_t BlockSize, uint32_t NumberOfBlocks) returns MSD_ERROR;
+</div></div><div class="thread-post"><h3 class="thread-post-title">FatFs, freertos, interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on October 7, 2015</div><div class="thread-post-content">Hi Dávid,
+<blockquote>
+  of course my final goal is to get touch event parameters from screen
+  and add it to a queue than later process them in a task. I have just
+  simlify the problem example where the problem still exists.
+</blockquote>
+It surprises me that fatFS is suffering from an interrupt that is taking too much time.
+I would think it is related to the (hardware) disk driver, but I don&#8217;t know for sure.
+What I do know (and you most probably also) is that all hw interrupts are to be kept as short as possible 🙂
+If your ISR is triggered by a touch event, let it use one of these calls:
+~~~~
+    xTaskNotifyFromISR();
+    xQueueSendFromISR();
+    xSemaphoreGiveFromISR();
+~~~~
+&#8230; in order to wake up a task which will handle the touch event(s).
+I wouldn&#8217;t even bother to fetch the actual touch event data from within the ISR, just let the task do that.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FatFs, freertos, interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnardavid">molnardavid</a> on October 9, 2015</div><div class="thread-post-content">Hi Hein,
+Thank you for your answer. I choosen the solution you suggested. Unfortunately the continous picture update gives me the same result (FR<em>DISK</em>ERR). Keep digging &#8230; until that I will turn off that feaure. 
+Here is what I did
+~~~~
+/**
+* @brief This function handles EXTI Line[15:10] interrupts.
+<em>/
+void EXTI15_10_IRQHandler(void)
+{
+  /</em> USER CODE BEGIN EXTI15<em>10</em>IRQn 0 */
+    long lHigherPriorityTaskWoken = pdFALSE;
+<pre><code>/* USER CODE END EXTI15_10_IRQn 0 */
+HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
+/* This interrupt does nothing more than demonstrate how to synchronise a
+task with an interrupt.  First the handler releases a semaphore.
+lHigherPriorityTaskWoken has been initialised to zero. */
+xSemaphoreGiveFromISR( touchBinarySemHandle, &amp;lHigherPriorityTaskWoken );
+/* If there was a task that was blocked on the semaphore, and giving the
+semaphore caused the task to unblock, and the unblocked task has a priority
+higher than the currently executing task (the task that this interrupt
+interrupted), then lHigherPriorityTaskWoken will have been set to pdTRUE.
+Passing pdTRUE into the following macro call will cause this interrupt to
+return directly to the unblocked, higher priority, task. */
+portEND_SWITCHING_ISR( lHigherPriorityTaskWoken );
+</code></pre>
+}
+~~~~
+~~~~
+/* StartTouchTask function <em>/
+void StartTouchTask(void const * argument)
+{
+    /</em> USER CODE BEGIN StartTouchTask <em>/
+    I2C_Init();
+    FT5206_Init();
+    FT5206_Wake(1);
+    xSemaphoreTake(touchBinarySemHandle,100);
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+    /</em> Infinite loop */
+    for(;;)
+    {
+<pre><code>  if (xSemaphoreTake(touchBinarySemHandle,portMAX_DELAY ) == pdTRUE)
+  {
+      CTP_INT_Callback(); 
+  }
+}
+/* USER CODE END StartTouchTask */
+</code></pre>
+}
+~~~~
+~~~~
+/** Interrupt Handlers &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-*/
+void CTP_INT_Callback()
+{
+  uint8_t reg = prvBaseRegisterForPoint[FT5206Point_1 &#8211; 1];
+  I2C_Transmit(FT5206_ADDRESS, &amp;reg, 1);
+  uint8_t storage[4] = {0x00};
+  I2C_Receive(FT5206_ADDRESS, storage, 4);
+  LCDEventMessage message;
+  message.event = LCDEvent<em>TouchEvent;
+  message.data[0] = ((storage[0] &amp; 0x0F) &lt;&lt; 8) | storage[1];
+  message.data[1] = ((storage[2] &amp; 0x0F) &lt;&lt; 8) | storage[3];
+  message.data[2] = (storage[0] &amp; 0xC0) >> 6;
+  message.data[3] = FT5206Point</em>1;
+  xQueueSendToBack(xLCDEventQueue, &amp;message, NULL);
+}
+~~~~
+Main taks
+~~~~
+    /* USER CODE BEGIN 5 <em>/
+    /</em> Infinite loop */
+    for(;;)
+    {
+      //graphicsTest_RGB565BMPStreamed();
+<pre><code>      if( xLCDEventQueue != 0 )
+      {
+          LCDEventMessage receivedMessage;
+          // Peek a message on the created queue.  Block for 10 ticks if a
+          // message is not immediately available.
+          if( xQueueReceive( xLCDEventQueue, &amp; (receivedMessage), ( TickType_t ) 10 ) )
+          {
+              if (receivedMessage.data[3] == FT5206Point_1 )
+              {
+                  printf("%lu: %lu %lurn",receivedMessage.data[2],receivedMessage.data[0],receivedMessage.data[1]);
+                  if (receivedMessage.data[2] ==1)
+                  {
+                      uint32_t result;
+                      HAL_RNG_GenerateRandomNumber(&amp;hrng,&amp;result);
+                      uint32_t color = result &amp;0xFFFFFF;
+                      GUI_SetColor(color);
+                  }
+                  else if (receivedMessage.data[2]==2)
+                  {
+                      GUI_FillCircle(480-receivedMessage.data[1],receivedMessage.data[0],10);
+                  }
+              }
+              // pcRxedMessage now points to the struct AMessage variable posted
+              // by vATask, but the item still remains on the queue.
+          }
+      }
+}
+</code></pre>
+~~~~
+Thank you for your help. If I will find the error I will post again.
+Regards,
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">FatFs, freertos, interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnardavid">molnardavid</a> on October 9, 2015</div><div class="thread-post-content">solution on the way&#8230;
+if I am doing this the problem solved
+there is a function which continously draws bmp onto the picture. If I disable interrupt before f_read and then reenable file system stays consistent
+~~~~
+static int Stream_GetData(void * p, U8 ** ppData, unsigned NumBytesReq, U32 Off)
+{
+<pre><code>FRESULT result;    /* FatFs return code */
+static int FileAddress = 0;
+UINT NumBytesRead;
+FIL *PicFile;
+PicFile = (FIL *)p;
+/*
+* Check buffer size
+*/
+/*
+* Set file pointer to the required position
+*/
+if(Off == 1) FileAddress = 0;
+else FileAddress = Off;
+result = f_lseek(PicFile, FileAddress);
+if (result != FR_OK) return -1;
+/*
+* Read data into buffer (directly to gui buffer)
+*/
+__disable_irq();
+result = f_read(PicFile, *ppData, NumBytesReq, &amp;NumBytesRead);
+__enable_irq();
+//printf("f_read: %d read:%drn ",result,NumBytesRead);
+/*
+* Return number of available bytes
+*/
+return NumBytesRead;
+</code></pre>
+}
+~~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">FatFs, freertos, interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnardavid">molnardavid</a> on October 9, 2015</div><div class="thread-post-content">I am getting closer
+~~~~
+/**
+  * @brief  Reads block(s) from a specified address in an SD card, in polling mode. 
+  * @param  pData: Pointer to the buffer that will contain the data to transmit
+  * @param  ReadAddr: Address from where data is to be read<br />
+  * @param  BlockSize: SD card data block size, that should be 512
+  * @param  NumOfBlocks: Number of SD blocks to read 
+  * @retval SD status
+  */
+uint8_t BSP_SD_ReadBlocks(uint32_t *pData, uint64_t ReadAddr, uint32_t BlockSize, uint32_t NumOfBlocks)
+{
+    HAL_SD_ErrorTypedef status=HAL_SD_ReadBlocks(&amp;hsd, pData, ReadAddr, BlockSize, NumOfBlocks);
+    if( status != SD_OK)
+    {
+        return MSD_ERROR;
+    }
+    else
+    {
+        return MSD_OK;
+    }
+}
+~~~~
+gives me SD<em>RX</em>OVERRUN
+</div></div><div class="thread-post"><h3 class="thread-post-title">FatFs, freertos, interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnardavid">molnardavid</a> on October 15, 2015</div><div class="thread-post-content">Hi
+My final solution is in bsp<em>driver</em>sd.c. Need to disable OS during readblocks. It is somehow correlated with a timeout. Until I had short tasks for example led blink the problem not occurs.
+regards,
+Dave
+~~~~
+/**
+  * @brief  Reads block(s) from a specified address in an SD card, in polling mode. 
+  * @param  pData: Pointer to the buffer that will contain the data to transmit
+  * @param  ReadAddr: Address from where data is to be read<br />
+  * @param  BlockSize: SD card data block size, that should be 512
+  * @param  NumOfBlocks: Number of SD blocks to read 
+  * @retval SD status
+  */
+uint8_t BSP_SD_ReadBlocks(uint32_t *pData, uint64_t ReadAddr, uint32_t BlockSize, uint32_t NumOfBlocks)
+{
+    vPortEnterCritical();   //context switch cause SD_RX_OVERRUN (maybe takes too much time)
+    HAL_SD_ErrorTypedef status=HAL_SD_ReadBlocks(&amp;hsd, pData, ReadAddr, BlockSize, NumOfBlocks);
+    vPortExitCritical();
+    if( status != SD_OK)
+    {
+        return MSD_ERROR;
+    }
+    else
+    {
+        return MSD_OK;
+    }
+}
+~~~~
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

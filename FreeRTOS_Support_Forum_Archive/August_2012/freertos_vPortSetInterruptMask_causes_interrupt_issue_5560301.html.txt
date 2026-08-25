@@ -1,0 +1,264 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vPortSetInterruptMask causes interrupt issue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2012/freertos_vPortSetInterruptMask_causes_interrupt_issue_5560301.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="vPortSetInterruptMask causes interrupt issue - FreeRTOS" />
+<meta property="og:description" content="vPortSetInterruptMask causes interrupt issuePosted by ignisuti on August 19, 2012MCU: Kinetis K10 &#8211; Arm Cortex M4 IDE: CodeWarrior 10.2 I know I&#8217;m not supposed to set any interrupt priorities lower than configMAX&#095;SYSCALL&#095;INTERRUPT&#095;PRIORITY for functions that call into RTOS API. So, I&#8217;ve been careful about that. However, I&#8217;m still seeing a VERY WEIRD issue. When I &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2012/freertos_vPortSetInterruptMask_causes_interrupt_issue_5560301.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="vPortSetInterruptMask causes interrupt issuePosted by ignisuti on August 19, 2012MCU: Kinetis K10 &#8211; Arm Cortex M4 IDE: CodeWarrior 10.2 I know I&#8217;m not supposed to set any interrupt priorities lower than configMAX&#095;SYSCALL&#095;INTERRUPT&#095;PRIORITY for functions that call into RTOS API. So, I&#8217;ve been careful about that. However, I&#8217;m still seeing a VERY WEIRD issue. When I [&hellip;]" />
+<meta name="twitter:title" content="vPortSetInterruptMask causes interrupt issue - FreeRTOS" />
+<meta name="twitter:image" content="http://dl.dropbox.com/u/438946/Elecsys/NVIC_PIT0.JPG" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202162' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202162' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202162' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202162' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144379' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2012%2Ffreertos_vPortSetInterruptMask_causes_interrupt_issue_5560301.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2012%2Ffreertos_vPortSetInterruptMask_causes_interrupt_issue_5560301.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144379">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2012_freertos_support_forum_archive_index.html/">August 2012 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ignisuti">ignisuti</a> on August 19, 2012</div><div class="thread-post-content">MCU: Kinetis K10 &#8211; Arm Cortex M4<br />
+IDE: CodeWarrior 10.2  
+I know I&#8217;m not supposed to set any interrupt priorities lower than configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY for functions that call into RTOS API. So, I&#8217;ve been careful about that.  
+However, I&#8217;m still seeing a VERY WEIRD issue. When I set UART3&#8217;s Error interrupt, the call into vPortSetInterruptMask disables my Periodic Interrupt Timer &#40;PIT0&#41;&#33; I&#8217;m not using UART3, but I wanted to to set all unused interrupts to level 15 &#40;Lowest priority&#41; just to be safe. It&#8217;s strange because no other interrupts trigger this error.  
+Any thoughts on what I&#8217;m seeing this odd behavior? MY PIT0 is set to interrupt level 0 &#40;highest priority&#41;. Maybe I just have a misunderstanding of how things work with this RTOS. I thought this PIT0 interrupt would NEVER be disabled. I need that to be the cause since it&#8217;s keeping track of time in my system.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 19, 2012</div><div class="thread-post-content"><blockquote>
+  I know I&#8217;m not supposed to set any interrupt priorities lower than configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY for functions that call into RTOS API. So, I&#8217;ve been careful about that.
+</blockquote>
+If you mean assign them a priority that is numerically lower, then that statement is correct, but remember that numerically lower means effectively higher on the Cortex-M.  
+You are right that if you timer is truly at priority 0 it should never be disabled, especially if your UART interrupt priority is 15, and the timer interrupt is not making any calls into the RTOS API.  
+Can you see why the timer is not running?&nbsp; FreeRTOS only manipulates interrupt masks using the Cortex-M BASEPRI register &#8211; and an interrupt of priority 0 cannot be masked using BASEPRI.&nbsp; So either interrupts are globally disabled &#40;which FreeRTOS doesn&#8217;t do&#41; or the timer has stopped for some reason.&nbsp; Are you using &#42;any&#42; functions that manipulate any of the Cortex-M interrupt masks other than taskENTER&#95;CRITICAL&#40;&#41; and taskEXIT&#95;CRITICAL&#40;&#41;, could anything be globally disabling interrupts in the Cortex-M core itself?&nbsp; &#40;by calling the &#8220;cpsid i&#8221; asm instruction&#41;?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ignisuti">ignisuti</a> on August 19, 2012</div><div class="thread-post-content">Well, based on that &#40;I&#8217;m just now learning about BASEPRI&#41;, this is looking a LOT like a Freescale Bug.  
+I had this code in place to determine it was the BASEPRI causing my trouble. The first delay&#95;ms&#40;&#41; works, but the second falls into the trap I&#8217;ve set.  
+<pre><code>    delay_ms( 5 );
+    portDISABLE_INTERRUPTS();
+    delay_ms( 5 );
+</code></pre>
+Here is my Delay&#95;ms&#40;&#41; function:  
+<pre><code>/* ===============================================================================================
+==  FUNCTION DESCRIPTION:
+==      Delays to for specified amount of milliseconds.
+==  For safety, 1ms is added to requested ms delay because timer could technically rollover 1us later. 
+==
+==  OUTPUTS:
+==  N/A
+== =============================================================================================*/
+void TIMERS__delay_ms
+  (
+  timer_t  delay_amount
+  )
+    {
+    /* Local Variables. */
+    u32  last_count;
+    u32  current_count = 0;
+    u32  trouble_counter = 0;
+    u32  max_trouble_count = 10000; //Observed trouble counts of 8,303 up to 9,060 while testing successes at 100MHz. 
+    /* Record the current count from the interrupt counter. */
+    last_count = SYSTICK__counter__1ms;
+    /* Loop until the local counter matches the specified delay. */
+    while( TRUE ) 
+    {
+    /* Check if interrupt counter has been updated. */
+    if( last_count != SYSTICK__counter__1ms )
+        {       
+        current_count++;            //Increment local counter.
+        if( current_count &gt;= (delay_amount + 1) )   break;
+        last_count = SYSTICK__counter__1ms; //Record current count;
+        trouble_counter = 0;        //Reset trouble counter.
+        }
+    if( ++trouble_counter &gt;= max_trouble_count ) 
+        {
+        //TODO: Figure out why this sometimes occurs.
+        DEBUG__print_error_message( "SysTick Interrupt stopped triggering!" );
+        //DEBUG__assert( __FILE__, __func__, __LINE__ );
+        break;
+        }
+    }
+    } /* TIMERS__delay_ms() */
+</code></pre>
+Here&#8217;s a snapshot of my PIT0 interrupt priority.<br />
+NVICIP84:<br />
+<img src="http://dl.dropbox.com/u/438946/Elecsys/NVIC_PIT0.JPG" alt="" />  
+With NVICIP84 set to 0 and BASEPRI set to 0x50, I can clearly see my interrupt has stopped ticking by running through the delay&#95;ms&#40;&#41; function. If I use my debugger to move back to the top of the function, set BASEPRI 0x00, then everything runs fine again. Setting BASEPRI to any valid value causes the interrupt to stop triggering again&#33;&#33;&#33;  
+So, looks like a Freescale issue. I&#8217;d assume the ARM core is fine since it&#8217;s been around much longer.&nbsp; Is there anything I&#8217;m missing?
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ignisuti">ignisuti</a> on August 19, 2012</div><div class="thread-post-content">And, just to throw a completely random curve-ball in there…  
+As stated in the previous email, running my delay&#95;ms&#40;&#41; function with these conditions causes PIT0 to stop interrupting.<br />
+NVICIP84 = 0<br />
+BASEPRI = 0x50  
+Now if I run delay&#95;ms&#40;&#41; function with the EXACT SAME conditions, but update NVICIP68 &#40;UART 3&#8217;s Error Interrupt&#41; to be 0x00 through 0x04, my PIT0 interrupts starts triggering again&#33;&#33;&#33;  
+Richard, this is now apparent to me that this is a non-FreeRTOS-related issue. My apologies for posting it on your forum. But, you do seem to have an excellent grasp on the Kinetis &#40;ARM Cortex&#41; MCU&#8217;s. I would be very grateful for any input you have on this matter.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on August 19, 2012</div><div class="thread-post-content">I&#8217;m not following some of this but have some comments  
+<blockquote>
+  delay&#95;ms&#40; 5 &#41;;<br />
+  portDISABLE&#95;INTERRUPTS&#40;&#41;;<br />
+  delay&#95;ms&#40; 5 &#41;;
+</blockquote>
+You are calling portDISABLE&#95;INTERRUTPS&#40;&#41; but don&#8217;t appear to be re-enabling them. In that case no interrupts will execute at all, ever.  
+In a FreeRTOS application you should only use taskENTER&#95;CRITICAL&#40;&#41; and taskEXIT&#95;CRITICAL&#40;&#41; to enter and exit critical sections, and not use portDISABLE&#95;INTERRUPTS&#40;&#41; or portENABLE&#95;INTERRUPTS&#40;&#41; unless you are absolutely sure about the internal workings of the chip and the FreeRTOS port.  
+<blockquote>
+  void TIMERS&#95;&#95;delay&#95;ms<br />
+  &nbsp; &#40;<br />
+  &nbsp; timer&#95;t&nbsp; delay&#95;amount<br />
+  &nbsp; &#41;<br />
+  &nbsp;&nbsp;&nbsp; &#123;<br />
+  &nbsp;&nbsp;&nbsp; /&#42; Local Variables. &#42;/<br />
+  &nbsp;&nbsp;&nbsp; u32&nbsp; last&#95;count;<br />
+  &nbsp;&nbsp;&nbsp; u32&nbsp; current&#95;count = 0;<br />
+  &nbsp;&nbsp;&nbsp; u32&nbsp; trouble&#95;counter = 0;<br />
+  &nbsp;&nbsp;&nbsp; u32&nbsp; max&#95;trouble&#95;count = 10000; //Observed trouble counts of 8,303 up to 9,060 while testing successes at 100MHz.<br />
+  &nbsp;&nbsp;&nbsp;<br />
+  &nbsp;&nbsp;&nbsp; /&#42; Record the current count from the interrupt counter. &#42;/<br />
+  &nbsp;&nbsp;&nbsp; last&#95;count = SYSTICK&#95;&#95;counter&#95;&#95;1ms;  
+</blockquote>
+&nbsp;&nbsp;&nbsp; /&#42; Loop until the local counter matches the specified delay. &#42;/<br />
+&nbsp;&nbsp;&nbsp; while&#40; TRUE &#41;<br />
+&#123;<br />
+/&#42; Check if interrupt counter has been updated. &#42;/<br />
+if&#40; last&#95;count &#33;= SYSTICK&#95;&#95;counter&#95;&#95;1ms &#41;
+FreeRTOS uses the SYSTICK itself, and the tick rate is set by configTICK&#95;RATE&#95;HZ in FreeRTOS. Are you trying to use SYSTICK too? If you configured SYSTICK before calling vTaskStartScheduler&#40;&#41; then FreeRTOS will have just overwritten your settings. If you configure SYSTICK from a task after calling vTaskStartScheduler&#40;&#41; then the scheduler will not start properly.  
+If you want to delay in FreeRTOS you can use the vTaskDelay&#40;&#41; and vTaskDelayUntil&#40;&#41; functions, which will stop the calling task from using any processing time until the delay period is up.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ignisuti">ignisuti</a> on August 19, 2012</div><div class="thread-post-content">edwards, I wasn&#8217;t using portDISABLE&#95;INTERRUTPS&#40;&#41; directly. I made the observation that when my code returned from the very first xQueueGenericCreate&#40;&#41; call, my delay&#95;ms&#40;&#41; function was broke &#40;Interrupts stopped occurring&#41;.<br />
+So, I followed the breadcrumbs all the way down to portDISABLE&#95;INTERRUTPS&#40;&#41; which was calling vPortSetInterruptMask, which was setting BASEPRI. I hacked in these delay&#95;ms&#40;&#41; calls around portDISABLE&#95;INTERRUTPS&#40;&#41; just to prove it was the BASEPRI causing my interrupt to stop firing.  
+The portDISABLE&#95;INTERRUTPS&#40;&#41; sets the BASEPRI. So, all interrupts with priority level below BASEPRI will still occur. I had my PIT0 interrupt priority set to 0. So, it should never be disabled unless I purposely disable all interrupts.  
+I was originally using SYSTICK, but when I observed these symptoms, I moved onto PIT0 for my unit to track time. That change however didn&#8217;t improve anything regarding this behavior.   
+had simply followed the breadcrumbs  
+xQueueGenericCreate
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ignisuti">ignisuti</a> on August 19, 2012</div><div class="thread-post-content">edwards, you asked some good questions which got me thinking more.  
+Why wasn&#8217;t BASEPRI reset to 0 when returning from xQueueGenericCreate&#40;&#41;? I did some digging and found something concerning.&nbsp; The very first time I entered vPortEnterCritical&#40;&#41;, the uxCriticalNesting variable was set to 0xaaaaaaaa. I see that is the value assigned during declaration of the variable, but it should be set to 0 in xPortStartScheduler&#40;&#41;. But, xPortStartScheduler&#40;&#41; is never getting called.  
+I&#8217;m still learning about the FreeRTOS. Do I have something setup incorrectly here? It would appear so.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 19, 2012</div><div class="thread-post-content">Since YOUR main&#40;&#41; code is supposed to call vTaskStartScheduler&#40;&#41; which will setup a few needed things and then call vPortStartScheduler&#40;&#41; to start up the system, then you do seem to have something setup wrong. In fact, normally interrupts are totally disabled until vPortStartScheduler is called.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 19, 2012</div><div class="thread-post-content">Just to confirm ignisuti&#8217;s comments in post 6.  
+<blockquote>
+  You are calling portDISABLE&#95;INTERRUTPS&#40;&#41; but don&#8217;t appear to be re-enabling them. In that case no interrupts will execute at all, ever
+</blockquote>
+On the Cortex-M portDISABLE&#95;INTERRUPTS does not completely disable interrupts.&nbsp; It only masks up to configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY.&nbsp; The reason not to use portDISABLE&#95;INTERRUPTS is that it does not count the nesting depth, whereas taskENTER&#95;CRITICAL&#40;&#41; does.  
+<blockquote>
+  The very first time I entered vPortEnterCritical&#40;&#41;, the uxCriticalNesting variable was set to 0xaaaaaaaa.
+</blockquote>
+This is done to prevent interrupts accidentally getting enabled by a FreeRTOS API function before the user is ready and the scheduler has started.&nbsp; uxCriticalNesting&#40;&#41; will get set to 0 and interrupts completely unmasked when the first task starts running.  
+Do you have tasks running?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ignisuti">ignisuti</a> on August 19, 2012</div><div class="thread-post-content">Richard,<br />
+Yes, I create two tasks and then call scheduler&#95;start&#40;&#41;. I looks like this wasn&#8217;t happening before, because I made a rather serious mistake and was calling RTOS API before I had a chance to call scheduler&#95;start&#40;&#41;.<br />
+I believe I&#8217;ve got that sorted out now…   
+Now…. I seem to be stuck in tel&#95;task&#40;&#41; and never switch over to SERVICES&#95;&#95;main&#95;loop&#40;&#41;.  
+Now might be a good time to update you guys on my level of knowledge with FreeRTOS. Very Little&#33; Just learning the basics as I run into issues like these. The Port was done by another engineer.<br />
+So, let&#8217;s start from the basics. What do I need to do to enable SERVICES&#95;&#95;main&#95;loop&#40;&#41; beyond what I show below?  
+<pre><code>    /* Initialize the MCU. */
+    APP__STARTUP__initialize();
+    /* Create RTOS Tasks. */
+    task_create( tel_task,      "Telemetry Loop", 2 * 1024 / 4, NULL, 3, NULL );
+    task_create( SERVICES__main_loop,   "Main Loop",      8 * 1024 / 4, NULL, 2, NULL );   
+    /* Start the RTOS Scheduler. */
+    scheduler_start();    
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">vPortSetInterruptMask causes interrupt issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 20, 2012</div><div class="thread-post-content"><blockquote>
+  because I made a rather serious mistake and was calling RTOS API before I had a chance to call scheduler&#95;start&#40;&#41;.
+</blockquote>
+It is ok to call some RTOS API functions before the scheduler has started, but not all.&nbsp; In particular, it is important not to try and cause a task switch, or call a blocking API function &#40;this makes sense, because both of these actions are asking the scheduler to do something but the scheduler is not running&#41;.&nbsp; You have to be particularly careful that interrupts don&#8217;t execute that call API functions which in turn attempt to do one of these things.&nbsp; It is best therefore to limit the API usage to creating tasks, queues and semaphores before the scheduler starts, and to not enable interrupts before the scheduler starts.  
+What you are doing in the code snippet looks to be ok, but you are not calling FreeRTOS API functions directly.&nbsp; I presume your task&#95;create&#40;&#41; and scheduler&#95;start&#40;&#41; functions somehow map to, or wrap, xTaskCreate&#40;&#41; and vTaskStartScheduler&#40;&#41; respectively, but it depends on what else your wrapper functions are doing.  
+Have you looked at the official example projects for your processor, or the more generic basic demos?  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

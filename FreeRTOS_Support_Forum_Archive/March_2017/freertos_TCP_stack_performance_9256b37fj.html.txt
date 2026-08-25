@@ -1,0 +1,251 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCP stack performance - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2017/freertos_TCP_stack_performance_9256b37fj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="TCP stack performance - FreeRTOS" />
+<meta property="og:description" content="TCP stack performancePosted by joehinkle on March 29, 2017I&#8217;m making a TCP connection with a web server and using GET to download an 11.3 meg file. It takes 670 secs to download &#8211; or 16.865KB per second. That appears awfully slow but I have no reference to properly gauge the performance. NXP &#8211; Kinetis K64 &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2017/freertos_TCP_stack_performance_9256b37fj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="TCP stack performancePosted by joehinkle on March 29, 2017I&#8217;m making a TCP connection with a web server and using GET to download an 11.3 meg file. It takes 670 secs to download &#8211; or 16.865KB per second. That appears awfully slow but I have no reference to properly gauge the performance. NXP &#8211; Kinetis K64 [&hellip;]" />
+<meta name="twitter:title" content="TCP stack performance - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202792' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202792' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202792' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202792' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146436' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2017%2Ffreertos_TCP_stack_performance_9256b37fj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2017%2Ffreertos_TCP_stack_performance_9256b37fj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146436">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2017_freertos_support_forum_archive_index.html/">March 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">TCP stack performance</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on March 29, 2017</div><div class="thread-post-content">I&#8217;m making a TCP connection with a web server and using GET to download an 11.3 meg file.
+It takes 670 secs to download &#8211; or 16.865KB per second.
+That appears awfully slow but I have no reference to properly gauge the performance.
+NXP &#8211; Kinetis K64 ARM m4 cpu running at 120 MHZ.
+Freertos for the RTOS using 5msec tics.
+Freertos TCP stack.
+Socket usues a 1K buffer to acquire the data.
+Stack&#8217;s thread is hightest priority with my download thread just below it.
+Is 16.9KB an acceptable download speed?
+If that performance is very low as I suspect it is, any suggestions as to how to improve it?
+Thanks.
+Joe
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack performance</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on March 29, 2017</div><div class="thread-post-content">One other implementation fact I forgot to mention.  My network buffers are 700 bytes in size.
+I can&#8217;t make them any larger due to ram requirements.
+This test is running with the stack having access to 165 network buffers.
+The size of the buffers and the number of them is dictated by another requirement.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack performance</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 30, 2017</div><div class="thread-post-content">Hi Joe,
+Please have a look at <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/a9b136c0/?limit=25#6477">my recent post</a> and also the PCAP&#8217;s in the attachment.
+How much RAM do you have available for +TCP? Could you post the <code>FreeRTOSIPConfig.h</code> that you&#8217;re using?
+Would you mind to post a zipped PCAP of a current sessions. One second is enough, filtered on e.g. &#8220;tcp.port==80&#8221; or so. Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack performance</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 30, 2017</div><div class="thread-post-content">Hi Joe, if I understand it well, in the PCAP that you emailed me, a host is sending a file to your +TCP device.
+Your device advertised a TCP window size of 1320. The MSS is 660 bytes. All perfect.
+But the big delays are found between the +TCP ACK and the reception of new data: about 87 ms. After that, two blocks of 660 bytes are received and an ACK is sent immediately.
+You&#8217;re using these IP addresses: a private 192.168.1.21 and a public IP address 173.x.x.x
+This connection goes through the Internet? If that is true, then a 90 ms delay is &#8216;normal&#8217; and only more buffer space can help you out. Unless you have a low bandwidth, then the case would be hopeless 🙂
+But I guess that you have enough bandwitdth, it only has long delays.
+Is your +TCP device mostly receiving large files, or also sending?
+I assume you have seen the socket option <code>FREERTOS_SO_WIN_PROPERTIES</code> ?
+It allows you to set 4 properties of a socket. These must be set before communication starts.
+~~~
+typedef struct xWIN<em>PROPS {
+    /* Properties of the Tx buffer and Tx window */
+    int32</em>t lTxBufSize; /* Unit: bytes <em>/
+    int32_t lTxWinSize; /</em> Unit: MSS */
+<pre><code>/* Properties of the Rx buffer and Rx window */
+int32_t lRxBufSize; /* Unit: bytes */
+int32_t lRxWinSize; /* Unit: MSS */
+</code></pre>
+} WinProperties_t;
+~~~
+As a test you could set them like this:
+<pre><code>xProperties.lTxBufSize = 6 * ipconfigTCP_MSS;
+xProperties.lTxWinSize = 4;
+xProperties.lRxBufSize = 6 * ipconfigTCP_MSS;
+xProperties.lRxWinSize = 4;
+</code></pre>
+or more, depending on how much RAM you have available.
+Also augmenting the value of MTU would increase the performance, but that would be costly in terms of RAM usage. 
+Regards, Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack performance</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on March 31, 2017</div><div class="thread-post-content">Thanks Hein
+I like the way your stack performs.
+Joe
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack performance</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on March 31, 2017</div><div class="thread-post-content">Hein:
+Thanks for suggesting the WinProperties_t.
+Here are some test results.
+Communication is based on a 10 Mbit stream.  I have to use a 10Mbit hub to allow my computer to  wireshark and capture the package going to the embedded cpu.
+My test file is 11.1 meg in size.
+My default setup (don&#8217;t know the the default xProperties of the socket) but I used the following in the config file
+~~~
+<h1>define ipconfigTCP<em>RX</em>BUFFER<em>LENGTH (4 * ipconfigTCP</em>MSS)</h1>
+<h1>define ipconfigTCP<em>TX</em>BUFFER<em>LENGTH (4 * ipconfigTCP</em>MSS)</h1>
+<h1>define ipconfigTCP<em>WIN</em>SEG_COUNT 12</h1>
+~~~
+I am downloading the file and writing it out to a SD card.
+Time to complete is 800 seconds.
+I can&#8217;t change the MSS size but I did change the following properties for THAT specifc socket:
+xProperties.lRxBufSize = 20 * ipconfigTCP_MSS;
+xProperties.lRxWinSize = 20;
+Download time (and SD writing) was reduced to 110 seconds &#8212; so dare close to a times 8 improvment.
+Great help on your part.
+Thanks.
+Joe
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack performance</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 1, 2017</div><div class="thread-post-content">Hi Joe,
+( I am truly sorry to be lengthy again &#8230; )
+<blockquote>
+  My default setup (don&#8217;t know the the default xProperties of the socket)
+</blockquote>
+The defaults of the <code>xProperties</code> of a socket are indeed taken from these two macro&#8217;s:
+~~~
+    /* Defines the default size of the TX stream buffer. */
+    #define ipconfigTCP_TX_BUFFER_LENGTH (4 * ipconfigTCP_MSS)
+<pre><code>/* Defines the default size of the RX stream buffer. */
+#define ipconfigTCP_RX_BUFFER_LENGTH (4 * ipconfigTCP_MSS)
+</code></pre>
+~~~
+<code>ipconfigTCP_MSS</code> equals <code>ipconfigNETWORK_MTU</code>, minus the overhead of a TCP package.
+These are the default values:
+~~~
+    xProperties.lTxBufSize = ipconfigTCP<em>TX</em>BUFFER<em>LENGTH;
+    xProperties.lTxWinSize = ipconfigTCP</em>TX<em>BUFFER</em>LENGTH / ipconfigTCP<em>MSS;
+    xProperties.lRxBufSize = ipconfigTCP</em>RX<em>BUFFER</em>LENGTH;
+    xProperties.lRxWinSize = ipconfigTCP<em>RX</em>BUFFER<em>LENGTH / ipconfigTCP</em>MSS;
+~~~
+The driver will make sure that <code>lTxWinSize</code> and <code>lRxWinSize</code> are at least 1.
+Also, <code>lTxBufSize</code> will always be a multiple of <code>MSS</code>, and if necessary, it will be rounded-up.
+In case no TCP sliding windows are used ( <code>FREERTOS_SO_WIN_PROPERTIES = 0</code> ), the actual window size will be one MSS.
+The following macro is something different:
+<pre><code>#define ipconfigTCP_WIN_SEG_COUNT    12
+</code></pre>
+It says that all TCP sockets together ( at any time ) may have a total of 12 outstanding ( i.e. unconfirmed ) packets. It determines the number of buffers ( of type <code>TCPSegment_t</code> ) that are allocated in <code>FreeRTOS_TCP_WIN.c</code>.
+<blockquote>
+  <blockquote>
+    I am downloading the file and writing it out to a SD card.
+    Time to complete is 800 seconds.
+    I can&#8217;t change the MSS size but I did change the following properties for THAT specific socket:
+    xProperties.lRxBufSize = 20 * ipconfigTCP_MSS;
+    xProperties.lRxWinSize = 20;
+    Download time (and SD writing) was reduced to 110 seconds &#8212; so dare close to a times 8 improvement.
+  </blockquote>
+</blockquote>
+That is good news! But maybe you get the same performance with 10. In a PCAP you can count the actual number of outstanding packets. It is indicated as:
+~~~
+    TCP -> [SEQ/ACK analysis] -> [Bytes in flight 16060]`.
+~~~
+In my example, there are at most 16060 bytes (11 times MSS) outstanding without an ACK.
+About getting UDP faster using an application-hook :
+Have you used <a href="http://www.freertos.org/FreeRTOS_Support_Forum_Archive/August_2016/freertos_TCP_UDP_multi-cast_support_658bdb52j.html"><code>FREERTOS_SO_UDP_RECV_HANDLER</code></a> already?
+The UDP messages can be delivered to your application with this function:
+<pre><code>BaseType_t xOnUDPReceive(
+    Socket_t xSocket,
+    void * pvData,
+    size_t uxLength,
+    const struct freertos_sockaddr * pxFrom,
+    const struct freertos_sockaddr * pxDestination );
+</code></pre>
+The address of your function can be bound to a socket by calling <code>FreeRTOS_setsockopt()</code> with &#8216;FREERTOS<em>SO</em>UDP<em>RECV</em>HANDLER&#8217;.
+The function must return non-zero to tell the stack that it may discard the packet.
+When using this call-back, time is saved: your application task doesn&#8217;t not need to become active.
+The call-back should be fast though (do not block or wait), because it is called from the IP-task.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

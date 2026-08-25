@@ -1,0 +1,296 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zynq - TCP: Improve speed - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2018/freertos_Zynq_-_TCP_Improve_speed_95cd3f27j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Zynq - TCP: Improve speed - FreeRTOS" />
+<meta property="og:description" content="Zynq &#8211; TCP: Improve speed Posted by hannes23 on June 20, 2018Hello, herewith I&#8217;d like to share my experience with improving the TCP communication. In my case I could get more than 20 % gain in TCP speed at 1000 Mbps. Following things are necessay: 1st: Re-map the OCM (on-chip-memory) from bottom to top of &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2018/freertos_Zynq_-_TCP_Improve_speed_95cd3f27j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Zynq &#8211; TCP: Improve speed Posted by hannes23 on June 20, 2018Hello, herewith I&#8217;d like to share my experience with improving the TCP communication. In my case I could get more than 20 % gain in TCP speed at 1000 Mbps. Following things are necessay: 1st: Re-map the OCM (on-chip-memory) from bottom to top of [&hellip;]" />
+<meta name="twitter:title" content="Zynq - TCP: Improve speed - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202974' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202974' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202974' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202974' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147208' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2018%2Ffreertos_Zynq_-_TCP_Improve_speed_95cd3f27j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2018%2Ffreertos_Zynq_-_TCP_Improve_speed_95cd3f27j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147208">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2018_freertos_support_forum_archive_index.html/">June 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Zynq &#8211; TCP: Improve speed </h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hannes23">hannes23</a> on June 20, 2018</div><div class="thread-post-content">Hello,
+herewith I&#8217;d like to share my experience with improving the TCP communication.
+In my case I could get more than 20 % gain in TCP speed at 1000 Mbps.
+Following things are necessay: 
+1st: Re-map the OCM (on-chip-memory) from bottom to top of address-space.
+2nd: Force the linker to place the ucNetworkPackets &#8211; buffers into the OCM space.
+The remapping is done by a macro calling some certain assembler code directly
+after starting in main().
+My code is :
+int main( void )
+{
+    xil<em>printf( &#8220;Hello from FreeRTOS mainrn&#8221; );
+        configASSERT( configUSE</em>TASK<em>FPU</em>SUPPORT == 2 );
+    xil<em>printf( &#8220;configUSE</em>TASK<em>FPU</em>SUPPORT (FreeRTOS.h) is set to %drn&#8221;, configUSE<em>TASK</em>FPU_SUPPORT );
+<pre><code>    // Remap all 4 64KB blocks of OCM to top of memory and enable DDR address filtering
+    MY_REMAP();
+...
+...
+</code></pre>
+The configUSE<em>TASK</em>FPU_SUPPORT &#8211; part could of course be omitted if not used.
+The code (found somewhere in the Xilinx forum)  for the MY_REMAP() define is:
+<h1>define MY_REMAP()   <strong>asm</strong> <strong>volatile</strong>(</h1>
+<pre><code>"mov  r5, #0x03                                           n"
+"mov  r6, #0                                              n"
+"LDR  r7, =0xF8000000  /* SLCR base address    */         n"
+"LDR  r8, =0xF8F00000  /* MPCORE base address  */         n"
+"LDR  r9, =0x0000767B  /* SLCR lock key        */         n"
+"mov  r10,#0x1F                                           n"
+"LDR  r11,=0x0000DF0D  /* SLCR unlock key                 n"
+"dsb                                                      n"
+"isb                   /* make sure it completes */       n"
+"pli  do_remap     /* preload the instruction cache */    n"
+"pli  do_remap+32                                         n"
+"pli  do_remap+64                                         n"
+"pli  do_remap+96                                         n"
+"pli  do_remap+128                                        n"
+"pli  do_remap+160                                        n"
+"pli  do_remap+192                                        n"
+"isb                   /* make sure it completes */       n"
+"b    do_remap                                            n"
+".align 5, 0xFF         /* forces the next block to a cache line alignment */ n"
+"do_remap:              /* Unlock SLCR                         */ n"
+"str  r11, [r7, #0x8]   /* Configuring OCM remap value         */ n"
+"str  r10, [r7, #0x910] /* Lock SLCR                           */ n"
+"str  r9,  [r7, #0x4]   /* Disable SCU &amp; address filtering     */ n"
+"str  r6,  [r8, #0x0]   /* Set filter start addr to 0x00000000 */ n"
+"str  r6,  [r8, #0x40]  /* Enable SCU &amp; address filtering      */ n"
+"str  r5,  [r8, #0x0]                                             n"
+"dmb                                                              n"
+</code></pre>
+   );
+Next step is to create a memory section &#8220;.ocm&#8221; by changing the linker-desciption file.
+Following changes are to be done:
+In the memory section add:
+   ps7_ocm  : ORIGIN = 0xfffc0000, LENGTH = 0x3fe00
+In the section description add:
+.ocm (NOLOAD) : {
+   __ocm<em>start = .;
+   *(.ocm)
+   __ocm</em>end = .;
+} > ps7_ocm
+Final step is to inform the buffer definition, that the buffers should be placed into the ocm.
+In file: NetworkInterface.c add the ocm-section attribute. It then should be:
+static uint8<em>t ucNetworkPackets[ ipconfigNUM</em>NETWORK<em>BUFFER</em>DESCRIPTORS * niBUFFER<em>1</em>PACKET_SIZE ] <strong>attribute</strong> ( ( aligned( 32 
+) ) ) <strong>attribute</strong> ((section (&#8220;.ocm&#8221;)));
+After compile and link one could inspect the map-file to see, if the ocm section is successful generated and populated.
+It looks like:
+.ocm            0x00000000fffc0000    0x30000
+                0x00000000fffc0000                __ocm<em>start = .
+ *(.ocm)
+ .ocm           0x00000000fffc0000    0x30000 ./src/Ethernet/FreeRTOS-Plus-TCP/portable/NetworkInterface/Zynq/NetworkInterface.o
+                0x00000000ffff0000                __ocm</em>end = .
+All hints and changes are of course without my responsibility and warrenty
+If anybody has other or additional changes or hints to improve the speed in TCP communication let me please know.
+Especially someone could comment, if it makes sense to push other buffers or variables into the ocm.
+Greetings to all.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Zynq &#8211; TCP: Improve speed </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 20, 2018</div><div class="thread-post-content">Really appreciate you taking the time to write this up.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Zynq &#8211; TCP: Improve speed </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 20, 2018</div><div class="thread-post-content">Hi Johannes, thanks a lot for sharing this.  I&#8217;m afraid I can not comment on it as I don&#8217;t know enough about the Zynq memory handling.
+But I would be curious to see the results of a test with iperf3.
+I&#8217;ll attach the latest version ( v3.0d ) of the iperf server to this message.
+To activate the server wait for +TCP to be ready and call:
+~~~
+    void vIPerfInstall( void );
+~~~
+You can start a test on the host with this command:
+~~~
+    iperf3 -c 192.168.2.114 &#8211;port 5001 &#8211;bytes 100M [ -R ]
+~~~
+The reverse flag ( <code>-R</code> ) causes the Zynq to send data, in stead of receiving data.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Zynq &#8211; TCP: Improve speed </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 20, 2018</div><div class="thread-post-content">I wrote:
+<blockquote>
+  <blockquote>
+    I would be curious to see the results of a test with iperf3.
+  </blockquote>
+</blockquote>
+It would be great if you can start two sessions simultaneously in two directions:
+~~~
+    iperf3 -c 192.168.2.114 &#8211;port 5001 &#8211;bytes 1G
+    iperf3 -c 192.168.2.114 &#8211;port 5001 &#8211;bytes 1G -R
+~~~
+We recently saw a problem with Zynq: incoming packets were dropped under heavy traffic, causing very slow transfer speed for the first session ( the one without <code>-R</code> ).
+I am curious to see if a faster memory access will prevent these problems
+</div></div><div class="thread-post"><h3 class="thread-post-title">Zynq &#8211; TCP: Improve speed </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hannes23">hannes23</a> on June 21, 2018</div><div class="thread-post-content">Hello Hein,
+here are the results of the iperf3 tests I&#8217;ve done at my Zynq7000, running at 666MHz.
+First I had to change the ip-address and port-number according to needs of our firewall.
+Then I got a stack-fault. Maybe that some other tasks wich are running on my system caused this.
+These other tasks don&#8217;t use much CPU time, I believe, so I didn&#8217;t change the software for the iperf tests.
+After setting the stack-size to 1000 everything was fine.
+Next I changed the window- and buffer settings to those values I used at my HTTP-server work.
+The code after change is:
+<h1>ifndef ipconfigIPERF<em>TX</em>BUFSIZE</h1>
+<h1>define mySETTINGS</h1>
+<h1>ifdef mySETTINGS</h1>
+<pre><code>#define ipconfigIPERF_TX_BUFSIZE                ( 128 * 1024 )
+#define ipconfigIPERF_TX_WINSIZE                ( 48 )
+#define ipconfigIPERF_RX_BUFSIZE                ( ( 80 * 1024 ) - 1 )
+#define ipconfigIPERF_RX_WINSIZE                ( 24 )
+</code></pre>
+<h1>else</h1>
+<pre><code>#define ipconfigIPERF_TX_BUFSIZE                ( 65 * 1024 )   /* Units of bytes. */
+#define ipconfigIPERF_TX_WINSIZE                ( 4 )           /* Size in units of MSS */
+#define ipconfigIPERF_RX_BUFSIZE                ( ( 65 * 1024 ) - 1 )   /* Units of bytes. */
+#define ipconfigIPERF_RX_WINSIZE                ( 8 )           /* Size in units of MSS */
+</code></pre>
+<h1>endif</h1>
+<h1>endif</h1>
+By the way: Why should or must the RX_BUFSIZE be uneven?
+I&#8217;ve done tests with original bufsizes with and without -R, and also tests with my settings, also both variants.
+Finally I did the concurrent test as you supposed and saw that indeed the performance of the one without -R really
+dropped. On my debug uart I got lots of messages like:
+SACK[4503,34508]: optlen 12 sending 14583407 &#8211; 14584867
+The test results are:
+Original bufsize:
+[  4]   0.00-19.59  sec  1.00 GBytes   438 Mbits/sec                  sender
+[  4]   0.00-19.59  sec  1024 MBytes   438 Mbits/sec                  receiver 
+and for the reverse mode:
+[  4]   0.00-27.12  sec  37.0 Bytes  10.9 bits/sec  4294967295             sender
+[  4]   0.00-27.12  sec  1.00 GBytes   317 Mbits/sec                  receiver 
+mySettings  bufsize:
+[  4]   0.00-16.43  sec  1.00 GBytes   523 Mbits/sec                  sender
+[  4]   0.00-16.43  sec  1024 MBytes   523 Mbits/sec                  receiver 
+and for the reverse mode:
+[  4]   0.00-13.81  sec  37.0 Bytes  21.4 bits/sec  4294967295             sender
+[  4]   0.00-13.81  sec  1.00 GBytes   622 Mbits/sec                  receiver 
+For completeness I added the results in a file.
+Greetings
+</div></div><div class="thread-post"><h3 class="thread-post-title">Zynq &#8211; TCP: Improve speed </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 23, 2018</div><div class="thread-post-content">Thanks Johannes, for these detailed and systematic measurements.
+It looks like using your memory settings makes the Ethernet communication faster, at least a 20%.
+But unfortunately, it does not help against the packet loss in this case:
+~~~
+    My settings bufsize parallel:
+    Connecting to host 169.254.79.19, port 4503
+    [  4] local 169.254.214.213 port 35510 connected to 169.254.79.19 port 4503
+    [ ID] Interval           Transfer     Bandwidth
+    <snip>
+    [  4]   3.00-4.00   sec   512 KBytes  4.19 Mbits/sec<br />
+    [  4]   4.00-5.00   sec   896 KBytes  7.34 Mbits/sec<br />
+~~~
+In this case with heavy two-way traffic, incoming packets are being dropped.
+<a href="https://sourceforge.net/p/freertos/discussion/382005/thread/3bde8d1d/?limit=250#f3e8">Earlier I found</a> that it helps to decrease the packet size of TCP packets ( MSS ).
+<blockquote>
+  and saw that indeed the performance of the one without -R really
+  dropped. On my debug uart I got lots of messages like:
+  <code>SACK[4503,34508]: optlen 12 sending 14583407 - 14584867</code>
+</blockquote>
+That is indeed a sign of packets being dropped
+</div></div><div class="thread-post"><h3 class="thread-post-title">Zynq &#8211; TCP: Improve speed </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 2, 2019</div><div class="thread-post-content">HI Johannes, I finally solved the problem of the lost packets during concurrent transmissions.
+See [this post] (https://sourceforge.net/p/freertos/feature-requests/126/)
+See x<em>emacpsif</em>dma.c in the function <code>emacps_send_message(()</code>, it is very essential to read back the register that was just set:
+~~~
+    XEmacPs<em>WriteReg( ulBaseAddress, XEMACPS</em>NWCTRL<em>OFFSET, xxx );
++    /* Reading it back is important compiler is optimised. */
++    XEmacPs</em>ReadReg( ulBaseAddress, XEMACPS<em>NWCTRL</em>OFFSET );
+~~~
+Now I started two concurrent sessions with iperf3, and both transported an equal amount of data.
+This is <a href="https://sourceforge.net/p/freertos/feature-requests/_discuss/thread/1db9fcdb13/dc97/attachment/Zynq_2019_march_01.7z">the new Zynq driver</a>
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

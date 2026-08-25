@@ -1,0 +1,333 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR) - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2016/freertos_vTaskNotifyGive_works_from_a_task_NOT_within_an_ISR_vTaskNotifyGiveFromISR_0caeaa55j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR) - FreeRTOS" />
+<meta property="og:description" content="vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)Posted by simointe on May 31, 2016(TMS570LC4, nested interrupt, C++) I have a task waiting on a notification, I aim for a semaphore-like binary behaviour. The stuff works fine as long as I call xTaskNotifyGive( taskHandle ) within another task (not ISR). The waiting task awake &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2016/freertos_vTaskNotifyGive_works_from_a_task_NOT_within_an_ISR_vTaskNotifyGiveFromISR_0caeaa55j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)Posted by simointe on May 31, 2016(TMS570LC4, nested interrupt, C++) I have a task waiting on a notification, I aim for a semaphore-like binary behaviour. The stuff works fine as long as I call xTaskNotifyGive( taskHandle ) within another task (not ISR). The waiting task awake [&hellip;]" />
+<meta name="twitter:title" content="vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR) - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202652' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202652' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202652' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202652' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145890' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2016%2Ffreertos_vTaskNotifyGive_works_from_a_task_NOT_within_an_ISR_vTaskNotifyGiveFromISR_0caeaa55j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2016%2Ffreertos_vTaskNotifyGive_works_from_a_task_NOT_within_an_ISR_vTaskNotifyGiveFromISR_0caeaa55j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145890">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2016_freertos_support_forum_archive_index.html/">May 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/simointe">simointe</a> on May 31, 2016</div><div class="thread-post-content">(TMS570LC4, nested interrupt, C++)
+I have a task waiting on a notification, I aim for a semaphore-like binary behaviour.
+The stuff works fine as long as I call xTaskNotifyGive( taskHandle ) within another task (not ISR). The waiting task awake from :
+ulTaskNotifyTake( pdTRUE, portMAX_DELAY );
+Now I want to do the same thing from my ISR (InterruptCan1High), I call :
+    xHigherPriorityTaskWoken = pdFALSE;
+    vTaskNotifyGiveFromISR( taskHandle, &amp;xHigherPriorityTaskWoken );
+    portYIELD<em>FROM</em>ISR(xHigherPriorityTaskWoken);
+&#8230;and the waiting task never wake. Interrupt comes and comes, multiple vTaskNotifyGiveFromISR() are done.
+I have try both ways to define my ISR:
+__interrupt void InterruptCan1High( void )
+{
+    &#8230;; //code above
+}
+or
+NESTED<em>INTERRUPT</em>ENTRY<em>IRQ( InterruptCan1High )
+{
+    &#8230;; //code above
+}
+NESTED</em>INTERRUPT<em>EXIT</em>IRQ( InterruptCan1High )
+Nothing happen.
+Regards.
+Simon
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 31, 2016</div><div class="thread-post-content">I don&#8217;t know what NESTED<em>INTERRUPT</em>ENTRY_IRQ() is, so I should stick to 
+the __interrupt method of defining the interrupt handler.
+Are you sure taskHandle used in the interrupt handler is the correct handle.
+If you step though the call to vTaskNotifyGiveFromISR() in the debugger, 
+what do you see happening &#8211; does it try to unblock a task?
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/simointe">simointe</a> on June 8, 2016</div><div class="thread-post-content">NESTED<em>INTERRUPT</em>ENTRY_IRQ()  is some assembler code we defined in order to manage nesting interrupt. But I don&#8217;t use it for rtos tick interrupt and the swi interrupt cause it seems conflict with freeRtos stuff.
+We have CANBUS interrupt using NO rtos stuff at all and I use these define in order it works.
+I&#8217;ll test what you talk about stepping through vTaskNotifyGiveFromISR(), I&#8217;ll be right back.
+~~~
+<h1>define NESTED<em>INTERRUPT</em>ENTRY_IRQ( fn )       </h1>
+<pre><code>  _Pragma ("FUNC_CANNOT_INLINE")           
+  static void internalIrq##fn (void)
+</code></pre>
+//&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+/// brief Define adding the necessary assembly instructions to exit a nested
+///        interrupt. It needs to be a define because it can not be a function
+///        call.
+///        Restore LR
+///        Disable IRQ (IRQ Mode)
+///        Restore SPSR<em>irq to LR
+///        Copy LR to SPSR</em>irq
+//&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+<h1>define NESTED<em>INTERRUPT</em>EXIT_IRQ( fn )           </h1>
+   <em>Pragma (&#8220;CODE</em>STATE(32)&#8221;)                     
+   void fn (void)                                 
+   {                                              
+      {                                           
+      asm( &#8221; ADD       SP, SP, #8      &#8221; );       
+      asm( &#8221; SUB       LR, LR, #4      &#8221; );       
+      asm( &#8221; SRSFD     #0x12 !         &#8221; );       
+      asm( &#8221; CPS       #0x13           &#8221; );       
+      asm( &#8221; PUSH      {R0-R12}        &#8221; );       
+      asm( &#8221; FMRX      R5,FPEXC        &#8221; );       
+      asm( &#8221; PUSH      {R5}            &#8221; );       
+      asm( &#8221; FMRX      R5,FPSCR        &#8221; );       
+      asm( &#8221; PUSH      {R5}            &#8221; );       
+      asm( &#8221; FSTMDBD   SP!, {D0-D7}    &#8221; );       
+      asm( &#8221; MOV       R1, SP          &#8221; );       
+      asm( &#8221; AND       R1, R1, #4      &#8221; );       
+      asm( &#8221; SUB       SP, SP, R1      &#8221; );       
+      asm( &#8221; PUSH      {R1, R14}       &#8221; );       
+      }                                           
+      internalIrq##fn();                          
+      {                                           
+      asm( &#8221; POP       {R1, LR}       &#8221; );        
+      asm( &#8221; ADD       SP, SP, r1     &#8221; );        
+      asm( &#8221; FLDMIAD   SP!, {D0-D7}   &#8221; );        
+      asm( &#8221; POP       {R5}           &#8221; );        
+      asm( &#8221; FMXR      FPSCR, R5      &#8221; );        
+      asm( &#8221; POP       {R5}           &#8221; );        
+      asm( &#8221; FMXR      FPEXC, R5      &#8221; );        
+      asm( &#8221; POP       {R0-R12}       &#8221; );        
+      asm( &#8221; CPS       #0x12          &#8221; );        
+      asm( &#8221; RFEFD     SP!            &#8221; );        
+      }                                           
+   }
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 8, 2016</div><div class="thread-post-content">I can&#8217;t recall if the TMS570 port support interrupt nesting or not, but know the generic ARM Cortex-R port does.  If the port does implement interrupt nesting it could be dangerous to have your own code on some interrupts and use FreeRTOS code on other interrupts if those two interrupts could nest with each other (don&#8217;t know that for a fact, hence I say &#8216;could&#8217;).
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/user1966">user1966</a> on June 9, 2016</div><div class="thread-post-content">Hi!
+(PIC24, MPLAB X, FreeRTOS 9.0.0)
+I have the same issue, actually it seems that none of the FromISR calls are working, I have tried at least task notification, semaphores, queues and deferred interrupt handling.
+My setup is very simple, just one simple task having only waiting point and a separate timer interrupt routine (60 ms interval) trying to wake it up. Tick is 1 ms. The code is straight from the text book. Using debugger I can see that it looks like the FromISR is working correctly but the task is not unblocked. The task and the interrupt priorities are the same (1). Maybe there is something very basic missing from my setup. Is there something specific in the configuration file that needs to be added to make it work? This is my freertos configuration .h
+~~~
+<h1>define MPLAB<em>PIC24</em>PORT</h1>
+<h1>define configUSE_PREEMPTION            1</h1>
+<h1>define configUSE<em>IDLE</em>HOOK             0</h1>
+<h1>define configUSE<em>TICK</em>HOOK             0</h1>
+<h1>define configTICK<em>RATE</em>HZ              ( ( portTickType ) 1000 )</h1>
+<h1>define configCPU<em>CLOCK</em>HZ              ( ( unsigned long ) 16000000 )  /* Fosc / 2 */</h1>
+<h1>define configMAX<em>PRIORITIES            ( ( unsigned portBASE</em>TYPE ) 4 )</h1>
+<h1>define configMINIMAL<em>STACK</em>SIZE        ( 115 )</h1>
+<h1>define configTOTAL<em>HEAP</em>SIZE           ( ( size_t ) (6000) )</h1>
+<h1>define configMAX<em>TASK</em>NAME_LEN         ( 4 )</h1>
+<h1>define configUSE<em>TRACE</em>FACILITY        0 // For tracing</h1>
+<h1>define configUSE<em>16</em>BIT_TICKS          1</h1>
+<h1>define configIDLE<em>SHOULD</em>YIELD         1</h1>
+/* Co-routine definitions. */
+<h1>define configUSE<em>CO</em>ROUTINES       0</h1>
+<h1>define configMAX<em>CO</em>ROUTINE_PRIORITIES ( 2 )</h1>
+/* Set the following definitions to 1 to include the API function, or zero
+to exclude the API function. */
+<h1>define INCLUDE_vTaskPrioritySet        1</h1>
+<h1>define INCLUDE_uxTaskPriorityGet       0</h1>
+<h1>define INCLUDE_vTaskDelete             1</h1>
+<h1>define INCLUDE_vTaskCleanUpResources   1</h1>
+<h1>define INCLUDE_vTaskSuspend            1</h1>
+<h1>define INCLUDE_vTaskDelayUntil         1</h1>
+<h1>define INCLUDE_vTaskDelay              1</h1>
+<h1>define configUSE_MUTEXES               1</h1>
+<h1>define configKERNEL<em>INTERRUPT</em>PRIORITY 0x01</h1>
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 10, 2016</div><div class="thread-post-content">Have you followed the instructions on the documentation page for the 
+PIC24, and used the examples provided as a template?
+The instructions from the web page (which is somewhat historic):
+&#8220;Interrupt service routines that cannot cause a context switch have no 
+special requirements and can be written as per the compiler documentation.
+Interrupt service routines that can cause a context switch must execute 
+with priority portKERNEL<em>INTERRUPT</em>PRIORITY, and only call taskYIELD() 
+at the very end of the service routine after the interrupt source has 
+been cleared. See the file serial.c included in the demo application for 
+an example.&#8221;
+The example provided:
+~~~
+void <strong>attribute</strong>((<strong>interrupt</strong>, auto<em>psv)) _U2TXInterrupt( void )
+{
+signed char cChar;
+portBASE</em>TYPE xHigherPriorityTaskWoken = pdFALSE;
+   /* If the transmit buffer is full we cannot get the next character.
+   Another interrupt will occur the next time there is space so this does
+   not matter. <em>/
+   IFS1bits.U2TXIF = serCLEAR_FLAG;
+   while( !( U2STAbits.UTXBF ) )
+   {
+     if( xQueueReceiveFromISR( xCharsForTx, &amp;cChar, 
+&amp;xHigherPriorityTaskWoken ) == pdTRUE )
+     {
+       /</em> Send the next character queued for Tx. <em>/
+       U2TXREG = cChar;
+     }
+     else
+     {
+       /</em> Queue empty, nothing to send. */
+       xTxHasEnded = pdTRUE;
+       break;
+     }
+   }
+   if( xHigherPriorityTaskWoken != pdFALSE )
+   {
+     taskYIELD();
+   }
+}
+~~~
+I just tried this in the simulator and it seems to work.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/user1966">user1966</a> on June 10, 2016</div><div class="thread-post-content">Thanks for your reply. 
+I think I have followed the instructions as such. I&#8217;m not using the PIC24 demo project, my HW is something else than the explorer board.
+It&#8217;s getting a bit weird. I played with xQueueSendFromISR and if I go through the code line-by-line (using step-into in MPLABX) it works. But if I let the code run freely, it doesn&#8217;t. I followed the code and found strange behaviour in queue.c at line 1258. I assume that the scheduler works correctly and calls the xQueueGenericReceive to wake up the task. Something happens at line 1258 when it uses taskENTER<em>CRITICAL() macro. By using &#8220;step-into&#8221; the debugger passes the taskENTER</em>CRITICAL and enters the next code line after at line 1264 and eventually comes out of the xQueueReceive in the task as expected. But if I use &#8220;step-over&#8221; or set a breakpoint at line 1264, it will never reach that line (just stays running and never wakes up the task). Here&#8217;s the FreeRTOS code for taskENTER_CRITICAL()
+void vPortEnterCritical( void )
+{
+    portDISABLE_INTERRUPTS();
+    uxCriticalNesting++;
+}
+portDISABLE_INTERRUPTS() macro is something like this:
+SET<em>CPU</em>IPL( configKERNEL<em>INTERRUPT</em>PRIORITY ); __asm volatile ( &#8220;NOP&#8221; )
+and finally SET<em>CPU</em>IPL macro is:
+`#define SET<em>CPU</em>IPL(ipl) {       &#96;`
+  unsigned int DISI<em>save;        
+  DISI</em>save = DISICNT;           
+  asm volatile (&#8220;disi #0x3FFF&#8221;); 
+  SRbits.IPL = ipl;              
+  __builtin<em>write</em>DISICNT( DISI_save); } (void) 0
+Is there something I need to correct for the taskENTER_CRITICAL() for this port?
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 11, 2016</div><div class="thread-post-content">Please post your ISR code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/user1966">user1966</a> on June 11, 2016</div><div class="thread-post-content">Here it is. The t<em>counter1 and t</em>counter2 are UINT32 and just for debugging purposes.
+/*  _T1Interrupt ISR  */
+void <strong>attribute</strong>((<strong>interrupt</strong>, <strong>auto_psv</strong>)) _T2Interrupt( void )
+<pre><code>{
+</code></pre>
+/*  Description
+        Interrupt service routine for Timer2 interrupt
+<pre><code>Return values
+    None
+</code></pre>
+<hr />
+*/
+/*  Data structures  */
+<pre><code>BaseType_t xHigherPriorityTaskWoken;
+TaskHandle_t task_handle;
+UINT8 messu;
+</code></pre>
+/*  Code  */
+<pre><code>messu = 0xa;
+t_counter1++;
+xHigherPriorityTaskWoken = pdFALSE;
+xQueueSendFromISR( xQueue, &amp;messu, &amp;xHigherPriorityTaskWoken );
+// reset timer interrupt flag and return from ISR
+IFS0bits.T1IF = 0;
+if (xHigherPriorityTaskWoken == pdTRUE) {
+    t_counter2++;
+    portYIELD();
+}
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on June 11, 2016</div><div class="thread-post-content">One thing I see is it is installed for T2, but mesing with T1
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/user1966">user1966</a> on June 12, 2016</div><div class="thread-post-content">Thanks Richard, that seemed to solve the problem! I was using old ISR template and didn&#8217;t check the interrupt flag setting at all (assumed it to be correct one). I was just too blind to see the solution.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskNotifyGive works from a task NOT within an ISR (vTaskNotifyGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/simointe">simointe</a> on June 13, 2016</div><div class="thread-post-content">Now it works, I have to admit that I don&#8217;t know exactly why.
+But when the error was there, stepping through xTaskGenericNotifyFromISR() the problem was that the original state of the thread is taskNOTIFICATION<em>RECEIVED instead of taskWAITING</em>NOTIFICATION and the task was NOT unblock by the call.
+~~~
+xTaskGenericNotifyFromISR()..
+            if( ucOriginalNotifyState == taskWAITING_NOTIFICATION )
+~~~
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

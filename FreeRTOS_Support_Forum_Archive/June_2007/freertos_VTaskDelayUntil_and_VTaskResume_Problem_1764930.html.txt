@@ -1,0 +1,219 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VTaskDelayUntil and VTaskResume Problem - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2007/freertos_VTaskDelayUntil_and_VTaskResume_Problem_1764930.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="VTaskDelayUntil and VTaskResume Problem - FreeRTOS" />
+<meta property="og:description" content="VTaskDelayUntil and VTaskResume ProblemPosted by chaalar on June 26, 2007Hi, I have strange problem about task resuming/suspending I guess which is related to vTaskDelayUntil function. I have two tasks, one is running periodically hence using vTaskDelayUntil, and the other one is syncronized to an interrupt. When I receive an interrupt which rarely fires, I suspend &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2007/freertos_VTaskDelayUntil_and_VTaskResume_Problem_1764930.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="VTaskDelayUntil and VTaskResume ProblemPosted by chaalar on June 26, 2007Hi, I have strange problem about task resuming/suspending I guess which is related to vTaskDelayUntil function. I have two tasks, one is running periodically hence using vTaskDelayUntil, and the other one is syncronized to an interrupt. When I receive an interrupt which rarely fires, I suspend [&hellip;]" />
+<meta name="twitter:title" content="VTaskDelayUntil and VTaskResume Problem - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201495' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201495' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201495' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201495' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139964' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2007%2Ffreertos_VTaskDelayUntil_and_VTaskResume_Problem_1764930.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2007%2Ffreertos_VTaskDelayUntil_and_VTaskResume_Problem_1764930.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139964">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2007_freertos_support_forum_archive_index.html/">June 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chaalar">chaalar</a> on June 26, 2007</div><div class="thread-post-content">Hi,
+I have strange problem about task resuming/suspending I guess which is related to vTaskDelayUntil function.
+I have two tasks, one is running periodically hence using vTaskDelayUntil, and the other one is syncronized to an interrupt. When I receive an interrupt which rarely fires, I suspend other task for some time, do some spi transfer and then resume other task. The problem is that after I resumed other task whole freeRTOS behaves strange. It seems like my periodic task never delays itself anymore, it never gives processor anyway, eventough it has the lowest priority.
+I searched the forum but unable to find some clue. My port is SAM7X GCC port, I&#8217;m also using version 4.0.0. I couldn&#8217;t find any related changes in the changelog, also.
+Thanks for your comments.
+Best Regards
+Caglar Akyuz
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jorick23">jorick23</a> on June 26, 2007</div><div class="thread-post-content">Here are some checks you can do:
+1&#46; Make sure you have enough stack available for the interrupt.
+2&#46; Make sure you are clearing the interrupt correctly prior to exiting the interrupt.&nbsp; Failure to clear the interrupt will cause the interrupt to be entered again immediately after returning.
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on June 26, 2007</div><div class="thread-post-content">Are you suspending the task from within the interrupt?&nbsp; There is a vTaskResumeFromISR&#40;&#41; function, but no vTaskSuspendFromISR&#40;&#41; equivalent.&nbsp; You could write one easily enough, or use a different method to suspend the task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chaalar">chaalar</a> on June 27, 2007</div><div class="thread-post-content">Sorry for the lack of information in the original post.
+Actually I&#8217;m not suspending/resuming from the interrupt context. I&#8217;m suspending/resuming in an other task which is also have higher priority. Moreover, I&#8217;m suspending/resuming three task. Two of them have no problem with this scheme, but the suspending/resuming third one causes the problem. One note which may worth mentioning is other two tasks are waiting on the queues for an event but this third one does not. Instead, it is uses vTaskDelayUntil to perform its job at every 500 ms. If I don&#8217;t suspend/resume this third task everything is ok.
+I also double checked the stack sizes, I increased all the stack sizes&#40;for interrupts also&#41; almost two times for each. It didn&#8217;t help. 
+I can also solve this situation in another way, but I&#8217;m wondering why this is happening. 
+Thanks
+Caglar Akyuz 
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on June 27, 2007</div><div class="thread-post-content">There is a subtle difference with the way in which suspending your two tasks would work.
+If a task is suspended while it is blocked on a queue, when it is then resumed it will continue to be blocked on the queue to wait for the rest of its timeout to expire.
+If a task is blocked on a DelayUntil call, when the task is resumed it will leave the DelayUntil call even if its timeout has not expired.
+Would this explain the behavior you are seeing?
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chaalar">chaalar</a> on June 27, 2007</div><div class="thread-post-content">Yes, this is exactly the case, I guess. However, at next loop in the task it should wait again in the vTaskDelayUntil, shouldn&#8217;t it? 
+After resuming, task is running uninterrupted, even vTaskDelayUntil doesn&#8217;t work. I&#8217;m toggling a pin in this task, before suspend/resume operation, led is blanking at every 500 milliseconds. After suspending/resuming led blinks with a period of ~20 microseconds. 
+Best Regards
+Caglar Akyuz 
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/acehigh1971">acehigh1971</a> on July 6, 2007</div><div class="thread-post-content">Hi all.
+I&#8217;ve run in the same problem some time ago, and now again &#40;in another application&#41;.
+I run in the same situation which is a lot strange: the task stops blocking on vTaskDelayUntil after it is suspended and resumed, and runs uninterrupted.
+You could simply verify this by replacing the call to vTaskDelayUntil with vTaskDelay &#40;Yes, I know it&#8217;s not the same but a lot of times it is ok&#8230;&#41;
+I think Richard Barry should consider this as a problem.
+P.S. I use Arm7 with Gcc compiler
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/embeddedc">embeddedc</a> on July 6, 2007</div><div class="thread-post-content">The function will return straight away if it thinks the time you have requested to unblock has already passed.&nbsp; When this situation occurs simple step into the function to see why it does not block.&nbsp; Most likely the value in the first parameter to the function has become corrupt.&nbsp; Stack problem?
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/acehigh1971">acehigh1971</a> on July 9, 2007</div><div class="thread-post-content">Hi all,
+I&#8217;m doing some debug and the results are the following &#40;not finished yet&#41;:
+&#45; Not a stack problem. I did a check on stack size and no problem came out, but:
+The variable that I pass to vTaskDelayUntil gets incremented by one delay time between the suspend call and the resume call&#33;
+When I do the first call to vTaskDelayUntil after resuming that task, it is found that the lastwaketime is greater than the actual tick, so the task never blocks, but keeps increasing the lastwaketime variable.
+Now I have to understand why this happens. Any help is accepted.
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/acehigh1971">acehigh1971</a> on August 6, 2007</div><div class="thread-post-content">I decided in the end to remove all the calls to vTaskDelayUntil with vTaskDelay and take into account the error that could derive from this.
+Anybody can help me, anyway?
+Thanks in advance.
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/acehigh1971">acehigh1971</a> on August 7, 2007</div><div class="thread-post-content">Hello all,
+After completing the development, I decided to do some debug on vTaskDelayUntil behaviour, to support my previous statements &#40;and to correct some of them&#41;.
+I wrote a simple task that resembles the following:
+&#8230;
+static portTASK&#95;FUNCTION&#40; vTESTTASKTask, pvParameters&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; &#40;void&#41; pvParameters;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp; xLastWakeTime = xTaskGetTickCount&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; for&#40;;;&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uint32&#95;t ciclo;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B = 4567;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for &#40;ciclo=0;ciclo&lt;=1800;ciclo++&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A = B &#42; ciclo;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vTaskDelayUntil&#40;&amp;xLastWakeTime,10/portTICK&#95;RATE&#95;MS&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+&#8230;
+Everything works fine. I preload&nbsp; the tick count in xLastWakeTime, and, at the end of the operations, I call the vTaskDelayUntil to precisely run again after 10ms.
+Note: Without optimisation, the computation cycle lasts some 2ms.
+Suppose you have the tick time at 9400, and the xLastWakeTime is put at 9405. The task is now &quot;blocked&quot; waiting for the timer to expire.
+The problem arises when another task does a vTaskSuspend on this task. The task goes to &quot;suspend state&quot;.
+Then the tick timer goes up &#40;eg. to 10000&#41;, and I do a call to vTaskResume. the wake time is still set at 9405, but the tick is 10000. 
+The task now does not block on the timer, and the task runs freely, without blocking on the vTaskDelayUntil call &#40;In every vTaskDelayUntil call, the xLastWakeTime is increased of 10/portTICK&#95;RATE&#95;MS counts per call&#41;.
+Depending on how fast is the task &#40;how many tick it gets to execute&#41;, after a lot of free loops of the task, finally the lastwaketime reaches and overpasses the os ticktime, finally allowing the task to block on the vTaskDelayUntil call. 
+This causes, obviously, to use all the available processing time, respecting the task priorities, to recover the lost time.
+If, after a suspend/resume I would not like this behaviour but a 10 ms constant execution, I see only the following solution:
+Reset the xLastWakeTime value to the actual TickTime value, before the vTaskResume call. 
+Not quite elegant, because the xLastWakeTime must be in this case a global variable.
+My question now is this: Is this behaviour intended? Am I doing something wrong? Should this be noted down in the API documentation? 
+I have seen that is quite usual to 
+stop the execution of a task by suspending it if needed by another &quot;controller&quot; task, and by resuming it when required again to operate.
+The vTaskDelayUntil always falls into this pitfall.
+I would really prefer to have the lastwaketime updated automatically in the call to vTaskDelayUntil, so not having the xLastWakeTime variable defined as global.
+Is this wrong?
+P.S. I haven&#8217;t done any consideration on tick timer overflow, I prefer to leave this to the OS writer.
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 7, 2007</div><div class="thread-post-content">The behviour you describe is as the intended behaviour &#8211; and as you describe the system is doing exactly what you are telling it to do.&nbsp; If you request that a task wakes at some point in the past then it should not go to sleep.
+There was a thread some time back where somebody had the same issue and I think I explained what was going on there.
+I don&#8217;t think it would be easy to change this behaviour as the task that suspends the blocked task has no knowledge of the blocked tasks state.&nbsp; Likewise the task that is suspended then resumed has no knowledge that this has happened.&nbsp; You could add data into the TCB to indicate the situation, but this would be RAM that in most cases would never get used.&nbsp; Also, you would have to know how to behave when such a situation occurred?&nbsp; Should the periodic task run immediately when unsuspended, or just have its block time adjusted &#8211; and if so to when?&nbsp; This is very application specific behaviour.
+One sledge hammer approach I suppose would be for the periodic task to check its wake time once within its periodic function &#40;in the application code, not in the RTOS code&#41; &#8211; and if it sees that it is more than one period behind the current time to assume the situation has occurred and then take action to correct its next wake time.&nbsp; This way you would only spin round the function once.&nbsp; The current wake time can be obtained using the xTaskGetTickCount&#40;&#41; function.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/acehigh1971">acehigh1971</a> on August 7, 2007</div><div class="thread-post-content">Thanks for the quick answer, and for the suggestions &#40;and thanks for the great job on freertos&#8230;&#41;.
+I think that exiting the vTaskDelayUntil call would be the correct point to check for this situation, and correct the wake time for my needs, without having to define the variable as global. The same task is controlling its own wake time.
+P.S.: Could a brief note on the docs be inserted, anyway? :-&#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 7, 2007</div><div class="thread-post-content">&gt;P.S.: Could a brief note on the docs be inserted, anyway? :-&#41; 
+How is this?
+http://www.freertos.org/vtaskdelayuntil.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">VTaskDelayUntil and VTaskResume Problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/acehigh1971">acehigh1971</a> on August 13, 2007</div><div class="thread-post-content">Ah&#8230;
+This is fine. Thank you Richard.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

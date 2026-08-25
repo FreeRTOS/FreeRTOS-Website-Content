@@ -1,0 +1,153 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPU port BSS segment initialization for FreeRTOS - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_MPU_port_BSS_segment_initialization_for_FreeRTOS_18fe4095j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="MPU port BSS segment initialization for FreeRTOS - FreeRTOS" />
+<meta property="og:description" content="MPU port BSS segment initialization for FreeRTOSPosted by jgreen on November 29, 2016I&#8217;m working on creating a Cortex-M4 project using the MPU version of FreeRTOS. The target processor is the STM32F303RE. To summarize the issue I&#8217;m having: global BSS data in FreeRTOS privileged areas is not being cleared to 0 on init. I&#8217;m using a &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_MPU_port_BSS_segment_initialization_for_FreeRTOS_18fe4095j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="MPU port BSS segment initialization for FreeRTOSPosted by jgreen on November 29, 2016I&#8217;m working on creating a Cortex-M4 project using the MPU version of FreeRTOS. The target processor is the STM32F303RE. To summarize the issue I&#8217;m having: global BSS data in FreeRTOS privileged areas is not being cleared to 0 on init. I&#8217;m using a [&hellip;]" />
+<meta name="twitter:title" content="MPU port BSS segment initialization for FreeRTOS - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202739' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202739' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202739' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202739' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146189' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_MPU_port_BSS_segment_initialization_for_FreeRTOS_18fe4095j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_MPU_port_BSS_segment_initialization_for_FreeRTOS_18fe4095j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146189">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2016_freertos_support_forum_archive_index.html/">November 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">MPU port BSS segment initialization for FreeRTOS</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jgreen">jgreen</a> on November 29, 2016</div><div class="thread-post-content">I&#8217;m working on creating a Cortex-M4 project using the MPU version of FreeRTOS.  The target processor is the STM32F303RE.
+To summarize the issue I&#8217;m having: global BSS data in FreeRTOS privileged areas is not being cleared to 0 on init.
+I&#8217;m using a linker script based on FreeRTOS/Demo/CORTEX<em>MPU</em>Simulator<em>Keil</em>GCC/GCC_Specific/sections.ld but with the proper ROM and RAM areas for this MPU:
+  ROM (rx)  : ORIGIN = 0x08000000, LENGTH = 128K
+  RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 32K
+The startup assembler file is the ST CMSIS startup file which comes with their standard peripheral library.  Stepping through the Reset_Handler code, I see that it does a BSS init to zero for my application data.  But this does not include variables in FreeRTOS privileged areas.  This results in crashes when I start creating tasks, since structures like pxReadyTasksLists are essentially uninitialized.
+My guess is that the startup assembler code needs to initialize a second BSS area and possibly also copy initialized data from ROM to RAM for another area for FreeRTOS.  Or maybe there is something wrong with the linker map, where these areas should somehow be combined but still marked as privileged?  Is there a startup assembler file I can look at for an MPU port?  Any other ideas?
+Best regards,
+Element
+</div></div><div class="thread-post"><h3 class="thread-post-title">MPU port BSS segment initialization for FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jgreen">jgreen</a> on November 29, 2016</div><div class="thread-post-content">I have implemented a hack to get things to work for now, until I can fix this properly.  In main() I have the following code:
+~~~
+extern uint32<em>t <strong>privileged_data_start</strong>[];
+extern uint32</em>t <strong>privileged<em>data</em>end</strong>[];
+int
+main(void)
+{
+  // Hack to initialize privileged data areas to 0
+  // FIXME &#8211; How does this usually happen with the FreeRTOS MPU port?
+  memset (&amp;<strong>privileged<em>data</em>start</strong>, 0, ((uint8<em>t *)(&amp;<strong>privileged_data_end</strong>)) &#8211; ((uint8</em>t *)(&amp;<strong>privileged_data_start</strong>)));
+~~~
+Would like to know how this SHOULD work.
+Best regards,
+Element
+</div></div><div class="thread-post"><h3 class="thread-post-title">MPU port BSS segment initialization for FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 29, 2016</div><div class="thread-post-content">This is not really a FreeRTOS question.
+The start up routine (the function that the reset handler calls) is 
+dependent on the linker script.  It uses information from the linker 
+script, normally linker variables, to know the start and end address of 
+the RAM that needs to be cleared to 0, and the start and end address of 
+the data to copy and where to copy it to to initialise variables.  If 
+you edit the linker script to add in new sections that need 
+initialisation then you also need to update the start up routine 
+accordingly.
+</div></div><div class="thread-post"><h3 class="thread-post-title">MPU port BSS segment initialization for FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jgreen">jgreen</a> on November 29, 2016</div><div class="thread-post-content">Seems pretty related to me.  FreeRTOS MPU sets up specific regions of memory for different purposes.  Knowing that it&#8217;s own BSS section is not initialized by run of the mill default startup code, is critical to getting the MPU port working on any platform.  I did not see anything in the Keil simulator demo project showing this (perhaps it starts with a zeroed memory space by default), which seems to warrant at least some mention of this somewhere (which I could not find).  The names of these sections and their purpose is defined by FreeRTOS.  Regardless, as outlined in my other post, I&#8217;m just using memset() in main().
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

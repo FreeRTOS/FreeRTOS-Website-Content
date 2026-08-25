@@ -1,0 +1,168 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CORTEX-M0 Interrupt latency - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2015/freertos_CORTEX-M0_Interrupt_latency_5884fb79j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="CORTEX-M0 Interrupt latency - FreeRTOS" />
+<meta property="og:description" content="CORTEX-M0 Interrupt latencyPosted by dmarples on February 23, 2015Folks, I am trying to handle an interrupt with very low latency on a CORTEX-M0 (NXP LPC11C24). To do this I don&#8217;t let FreeRTOS get in the way, nor do I call any FreeRTOS routines from the interrupt. Most of the time it is working well, but &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2015/freertos_CORTEX-M0_Interrupt_latency_5884fb79j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="CORTEX-M0 Interrupt latencyPosted by dmarples on February 23, 2015Folks, I am trying to handle an interrupt with very low latency on a CORTEX-M0 (NXP LPC11C24). To do this I don&#8217;t let FreeRTOS get in the way, nor do I call any FreeRTOS routines from the interrupt. Most of the time it is working well, but [&hellip;]" />
+<meta name="twitter:title" content="CORTEX-M0 Interrupt latency - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202486' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202486' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202486' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202486' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145262' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2015%2Ffreertos_CORTEX-M0_Interrupt_latency_5884fb79j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2015%2Ffreertos_CORTEX-M0_Interrupt_latency_5884fb79j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145262">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2015_freertos_support_forum_archive_index.html/">February 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">CORTEX-M0 Interrupt latency</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dmarples">dmarples</a> on February 23, 2015</div><div class="thread-post-content">Folks,
+I am trying to handle an interrupt with very low latency on a CORTEX-M0 (NXP LPC11C24). To do this I don&#8217;t let FreeRTOS get in the way, nor do I call any FreeRTOS routines from the interrupt.  Most of the time it is working well, but every now and again (3-4 times per second in my specific use case) I see delays of anything up to 20uS in interrupt response.
+The interrupt is fired from a timer match, and I have tried various priorities (at the moment it&#8217;s set as NVIC<em>SetPriority(TIMER</em>32<em>0</em>IRQn,0) which, I hope, will give me the highest priority/pre-emption available).
+The problem is much worse when I have configTICK<em>RATE</em>HZ set to a high value (e.g. 1000), and much better when I have it set lower (100)&#8230;but it&#8217;s still present in all conditions.
+I&#8217;m pretty sure the problem occurs because FreeRTOS is doing its housekeeping in response to its tick, but I would expect my high priority interrupt to take precidence&#8230;it isn&#8217;t :-/ This is obviously sticky fingers and I am not understanding something about CORTEX-M0 interrupt configuration &#8211; does the M0 loose the prioritisation and pre-emption features of the larger CORTII, or am I neglecting to perform some incantation thats needed to make it fly?
+Thanks in advance for help or advice
+DAVE
+</div></div><div class="thread-post"><h3 class="thread-post-title">CORTEX-M0 Interrupt latency</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on February 23, 2015</div><div class="thread-post-content">The ARM series of processors (Including the M0) do not naturally nest interrupts, so a higher priority interrupt does not interrupt a lower priority interrupt unless the software goes to special care to save state allow for nesting. Interrupt priority affects which interrupt will get serviced first if multiple are pending when they are being serviced.
+What the ARM does provide (I think even in the M0) is an extra layer of interrupts  called the &#8220;Fast Interrupt&#8221; which CAN interrupt the normal Vectored Interrupt.It sounds like if you configure your timer to generate the fast interrupt, it would meet your needs.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CORTEX-M0 Interrupt latency</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 23, 2015</div><div class="thread-post-content">Unlike the older ARM7 and ARM9 parts, the Cortex-M parts do naturally 
+nest interrupts.  In the FreeRTOS Cortex-M3/4/7 ports there are some 
+interrupt priorities that are never effected by the RTOS, but those 
+interrupt priorities cannot use FreeRTOS API function.  On the 
+Cortex-M3/4/7 this is achieved by using the BASEPRI register to only 
+mask a subset of interrupts.  <em>However</em>, the Cortex-M0 is much simpler 
+than its bigger 3/4/7 brothers and does not have a BASEPRI register, so 
+instead has to use the global interrupt mask &#8211; therefore on the M0 
+critical sections do effect all interrupts.
+That information was not clear on this page&#8230;
+http://www.freertos.org/RTOS-Cortex-M3-M4.html
+&#8230;which was written before the M0 was introduced.  I have just added a 
+note to this effect at the top of the page.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CORTEX-M0 Interrupt latency</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dmarples">dmarples</a> on February 23, 2015</div><div class="thread-post-content">Richard,
+Ah, so I&#8217;m out of luck trying to do this on an M0 then?  It certainly explains the behaviour I see and it would stop me being able to do this particular trick on a low end CPU&#8230;oh well, back to seperate CPU and CAN transceivers again then I guess 🙂 
+However, this does mean I don&#8217;t understand the purpose of the priority registers in the M0. If I look at the LPC11 series manual (Pg 69 of UM10398 if anyone is interested, register description on Pg 505) it states that the CPU has 4 programmable interrupt priority levels with hardware priority level masking&#8230;and its retained the tail chaining and other nice features from its big brothers.
+So, before I go off hacking the portability layer, am I missing something here, or does this mean that the M0 port <em>could</em> be made to respect these priorites? This doesn&#8217;t seem to be a NXP specific feature, as I see the same material in Section 4.2.6 of the Cortex-M0 Generic User Guide (although obviously the number of priority bits implemented <em>is</em> manufacturer specific).
+Thanks for the super-quick reply btw.
+Regards
+DAVE
+</div></div><div class="thread-post"><h3 class="thread-post-title">CORTEX-M0 Interrupt latency</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on February 23, 2015</div><div class="thread-post-content">The M0 does have different interrupt priorities and interrupts do nest according to their priority. Richard is talking about critical sections which mask all interrupts. That doesnt prevent interrupts nesting when you are not in a critical section, but does mean all interrupts will experience some jitter in timing.
+One solution for you would be to change the critical nesting functions so they disable individual peripheral interrupts that are used in your program rather than global interrupts. The standard M0 port cant do that because it doesnt know which interrupts are going to be used.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CORTEX-M0 Interrupt latency</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dmarples">dmarples</a> on February 23, 2015</div><div class="thread-post-content">Dave,
+(Too many Daves and Richards in this thread).  
+So, if I hack the portability layer to basically mask/unmask different priroties then I should get what I need?  Of course the OS needs a critical section from <em>its</em> perspective, but (apart from timing) I&#8217;ve deliberately kept my time critical task completely away from any OS-affecting stuff&#8230;at the moment the M0 port seems to use cpsid/cpsie instructions to create critical sections (it also sets/clears PRIMASK), if I modify that code to give me an &#8216;unmaskable&#8217; high priority interrupt then I should get what I need, shouldn&#8217;t I?
+Sorry to ask so many questions, but I&#8217;ve been down these rabbit holes before, and there&#8217;s nothing worse than coming back out of one and someone who&#8217;s already suffered the pain saying &#8220;Oh, well, of course that couldn&#8217;t work&#8221;. I&#8217;m not afraid of doing the work, but I&#8217;d rather get input from others that this is a sensible thing to do before embarking on it (and I do recognise that by default all M0 interrupts are set to have the higest priority, so there&#8217;s a bit of housekeeping to be done in the startup code too for this to fly).
+Regards
+DAE
+</div></div><div class="thread-post"><h3 class="thread-post-title">CORTEX-M0 Interrupt latency</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 23, 2015</div><div class="thread-post-content">I think the idea is thus:  If you wanted to leave some interrupts 
+enabled then you would have to make a list of all the interrupts in use 
+by the system (including the tick interrupt, which uses the systick 
+timer), then implement an application specific enter/exit critical 
+function that disabled just those specific interrupts by writing to the 
+interrupt enable bits in the peripherals &#8211; leaving global interrupts 
+enabled.
+Depending on the number of interrupts in use by your system that could 
+potentially become quite a long function &#8211; which is not good.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

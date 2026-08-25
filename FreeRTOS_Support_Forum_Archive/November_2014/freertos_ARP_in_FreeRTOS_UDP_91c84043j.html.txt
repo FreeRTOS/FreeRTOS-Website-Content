@@ -1,0 +1,184 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARP in FreeRTOS+UDP - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2014/freertos_ARP_in_FreeRTOS_UDP_91c84043j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="ARP in FreeRTOS+UDP - FreeRTOS" />
+<meta property="og:description" content="ARP in FreeRTOS+UDPPosted by digitalwiz on November 5, 2014I&#8217;m porting the FreeRTOS+UDP simulation to the LPCXpresso environment. It&#8217;s mostly there but I have a suspicion there&#8217;s something strange going on with the Address Resolution Protocol. Watching packets with Wireshark, I see that the echo clients send out echo request messages that appear to be properly &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2014/freertos_ARP_in_FreeRTOS_UDP_91c84043j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="ARP in FreeRTOS+UDPPosted by digitalwiz on November 5, 2014I&#8217;m porting the FreeRTOS+UDP simulation to the LPCXpresso environment. It&#8217;s mostly there but I have a suspicion there&#8217;s something strange going on with the Address Resolution Protocol. Watching packets with Wireshark, I see that the echo clients send out echo request messages that appear to be properly [&hellip;]" />
+<meta name="twitter:title" content="ARP in FreeRTOS+UDP - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202451' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202451' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202451' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202451' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143832' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2014%2Ffreertos_ARP_in_FreeRTOS_UDP_91c84043j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2014%2Ffreertos_ARP_in_FreeRTOS_UDP_91c84043j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143832">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2014_freertos_support_forum_archive_index.html/">November 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">ARP in FreeRTOS+UDP</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/digitalwiz">digitalwiz</a> on November 5, 2014</div><div class="thread-post-content">I&#8217;m porting the FreeRTOS+UDP simulation to the LPCXpresso environment. It&#8217;s mostly there but I have a suspicion there&#8217;s something strange going on with the Address Resolution Protocol.
+Watching packets with Wireshark, I see that the echo clients send out echo request messages that appear to be properly formatted, but never get a reply. I know the echo server is working because I connected to it from my virtual Linux machine.
+Both network ports are broadcasting ARP requests to find out who 192.168.1.2 is (that&#8217;s my FreeRTOS simulation), but apparently aren&#8217;t getting a response. Also I can&#8217;t get to the CLI from YAT, again probably because address resolution hasn&#8217;t completed properly.
+Any hints? Clues? Has anyone else seen similar behavior?
+TIA
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 5, 2014</div><div class="thread-post-content"><blockquote>
+  I&#8217;m porting the FreeRTOS+UDP simulation 
+</blockquote>
+Is this the FreeRTOS Win32 simulator version?
+<blockquote>
+  I see that the echo clients send out echo request messages that 
+  appear to be properly formatted, but never get a reply
+</blockquote>
+Are the echo clients on the FreeRTOS side?  So the FreeRTOS client sends a message to the server.  What is the server running on?
+<blockquote>
+  Both network ports are broadcasting ARP requests to find out 
+  who 192.168.1.2 is (that&#8217;s my FreeRTOS simulation)
+</blockquote>
+Sorry, I&#8217;m confused.  If 192.168.1.2 is the FreeRTOS node, which are the other two network ports&#8230;and I thought FreeRTOS was now running on an LPCXpresso?
+As I recall in the simulator there is both a client and a server running at the same time &#8211; on the same node.  So the simulator effectively talks to itself.  Is that what your LPCXpresso project is attempting to do too?  If so I don&#8217;t think that would work on real hardware, with a real network MAC and PHY because it won&#8217;t see its own traffic &#8211; whereas the simulator does see its own traffic.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/digitalwiz">digitalwiz</a> on November 5, 2014</div><div class="thread-post-content">Yes, it is the FreeRTOS Win32 simulator. I&#8217;m using the LPCXpresso Eclipse IDE to build and run the program.
+The client/server pair works fine. Then there are two clients (one zero-copy, the other not) that talk to a standard echo server. The server is running on my Windows 7 workstation. As I said previously, I know the server is working because I can telnet to it either from a Windows shell or my virtual Linux machine.
+The workstation itself has two network ports: Ethernet at 192.168.1.191 and WiFi at 192.168.1.192. I&#8217;m connecting FreeRTOS to the Ethernet port with address 192.168.1.2. The echo clients attempt to access the server at 192.168.1.191. It just occurred to me that maybe the problem is trying to talk to another node using the same interface, so I tried changing the server location to 192.168.1.192 and got the same thing.
+In either case FreeRTOS appears to correctly resolve the MAC address for the server. The reverse does not seem to be true. Both 192.168.1.191 and 192 are continually broadcasting ARP requests inquiring about 192.168.1.2, but apparently getting no response.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 6, 2014</div><div class="thread-post-content">Hi Doug,
+It can be confusing to have two NIC&#8217;s with an address in the same range.
+What you could try is, e.g. assign:
+<pre><code>- 192.168.2.192 to Wifi
+- 192.168.1.191 to Ethernet / LAN
+</code></pre>
+both with a netmask of 255.255.255.0.
+I&#8217;m not sure about your W32, but Linux might receive a packet on the ETH and send a reply through WiFi, because they belong logically to the same network.
+If the networks are different (192.168.1.x versus 192.168.2.x), the routing becomes very predictable.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/digitalwiz">digitalwiz</a> on November 11, 2014</div><div class="thread-post-content">Turns out the header structures weren&#8217;t being packed properly. pack<em>struct</em>end.h for GCC looks like this:
+    <strong>attribute</strong>( (packed) )
+So as a shot in the dark I added a space after <strong>attribute</strong> and lo and behold the structures are now properly packed. There&#8217;s still something funny going on with the Sender and Target addresses that I have to sort out, but I&#8217;m making progress.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 12, 2014</div><div class="thread-post-content">I just checked the file and found it to contain the following:
+<pre>__attribute__( (packed) );</pre>
+That looks valid, and I&#8217;m not sure that changing it to:
+<pre>__attribute__ ( (packed) );</pre>
+makes any difference?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/digitalwiz">digitalwiz</a> on November 12, 2014</div><div class="thread-post-content">Oops, the double underscores got deleted from my post. They really are there.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/digitalwiz">digitalwiz</a> on November 13, 2014</div><div class="thread-post-content">Indeed, adding a space after &#95;&#95;attribute&#95;&#95; didn&#8217;t do anything. I was fooled by looking at an ARP transaction of the simulator talking to itself.
+So fundamentally, &#95;&#95;attribute&#95;&#95;( (packed) ) doesn&#8217;t seem to be working. Fortunately, GCC also supports the MS compiler #pragma mechanism. So I substituted pack<em>struct</em>start.h and pack<em>struct</em>end.h from the MSVC directory <strong>and it works!</strong>
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/digitalwiz">digitalwiz</a> on November 13, 2014</div><div class="thread-post-content">Hey Richard,
+Question: Why did you use this construct #include &#8220;pack<em>struct</em>start.h&#8221;, #include &#8220;pack<em>struct</em>end.h&#8221; rather than just define macros?
+Thanks, Doug
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 14, 2014</div><div class="thread-post-content"><blockquote>
+  So fundamentally, <strong>attribute</strong>( (packed) ) doesn&#8217;t seem to be working
+</blockquote>
+That is very interesting.  I have been hit by that GCC bug myself, but never on an ARM architecture.  Which GCC version are you using.
+In code I wrote for another project I added an assert() into the code that took the sizeof() a structure and compared it to the expected value as a sanity check that the structure packing was working.
+<blockquote>
+  Why did you use this construct #include &#8220;pack<em>struct</em>start.h&#8221;, 
+  <h1>include &#8220;pack<em>struct</em>end.h&#8221; rather than just define macros</h1>
+</blockquote>
+Indeed, for a very good reason, I just can&#8217;t remember exactly what the reason was.  Macros were used originally, but we got into a situation where they couldn&#8217;t cope with something, I just remember what that something was.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/digitalwiz">digitalwiz</a> on November 15, 2014</div><div class="thread-post-content">This is MinGW generating x86 code with gcc version 4.8.1.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ARP in FreeRTOS+UDP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 15, 2014</div><div class="thread-post-content">Right &#8211; that is the same compiler bug I have experienced then, on x86.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

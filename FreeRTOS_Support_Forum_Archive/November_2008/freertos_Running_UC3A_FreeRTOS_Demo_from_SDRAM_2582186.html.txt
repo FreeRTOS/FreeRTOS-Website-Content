@@ -1,0 +1,364 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running UC3A FreeRTOS Demo from SDRAM - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2008/freertos_Running_UC3A_FreeRTOS_Demo_from_SDRAM_2582186.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Running UC3A FreeRTOS Demo from SDRAM - FreeRTOS" />
+<meta property="og:description" content="Running UC3A FreeRTOS Demo from SDRAMPosted by dksquires on November 19, 2008I am working with a client that plans on using an AT32UC3A0512-based controller board with 64MB of SDRAM @0xD0000000 and oodles of battery-backed SRAM for critical data. This controller board has two SPI DataFlash chips to provide storage for binary program files. We would &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2008/freertos_Running_UC3A_FreeRTOS_Demo_from_SDRAM_2582186.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Running UC3A FreeRTOS Demo from SDRAMPosted by dksquires on November 19, 2008I am working with a client that plans on using an AT32UC3A0512-based controller board with 64MB of SDRAM @0xD0000000 and oodles of battery-backed SRAM for critical data. This controller board has two SPI DataFlash chips to provide storage for binary program files. We would [&hellip;]" />
+<meta name="twitter:title" content="Running UC3A FreeRTOS Demo from SDRAM - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201681' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201681' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201681' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201681' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141630' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2008%2Ffreertos_Running_UC3A_FreeRTOS_Demo_from_SDRAM_2582186.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2008%2Ffreertos_Running_UC3A_FreeRTOS_Demo_from_SDRAM_2582186.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141630">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2008_freertos_support_forum_archive_index.html/">November 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Running UC3A FreeRTOS Demo from SDRAM</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dksquires">dksquires</a> on November 19, 2008</div><div class="thread-post-content">I am working with a client that plans on using an AT32UC3A0512-based controller board with 64MB of SDRAM @0xD0000000 and oodles of battery-backed SRAM for critical data. This controller board has two SPI DataFlash chips to provide storage for binary program files.
+We would like to use FreeRTOS for the controller but need to configure it to run from the SDRAM instead of from internal CPU FLASH memory. I&#8217;ve written a loader program that initializes &#40;and tests&#41; SDRAM, then loads a binary file into SDRAM and executes it. I&#8217;ve modified one of the Atmel 1.3.0 software framework programs &#40;USART demo&#41; to run from SDRAM and it works fine. 
+I&#8217;ve not been successful, however, at rebuilding the FREERTOS Demo program in the 1.3.0 Software Framework to run out of SDRAM at 0xD0000000. For now I am using the EVK1100 board for proof of concept testing. I am using the gnu Makefile version of the project, and can use the original config.mk file to build it to run succcessfully from internal FLASH memory. But I suspect that my modified config.mk file for SDRAM execution is not&nbsp; right. 
+When running from SDRAM on the EVK1100, the USART demo spits out 24 characters on the USART, then dies. No LEDs flash at all. My loader program disables global interrupts before jumping to 0xD0000000. Of course, the JTAGICE Mk II cannot help me here because the SDRAM isn&#8217;t running after a reset. 
+The config.mk is shown below &#8211; it&#8217;s one that was posted on the AVRFreaks support forum &#40;AVR General&#41; by J Cesnik on Mar 21, 2008. 
+/&#42; Default linker script, for normal executables &#42;/ 
+OUTPUT&#95;FORMAT&#40;&quot;elf32-avr32&quot;, &quot;elf32-avr32&quot;, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;elf32-avr32&quot;&#41; 
+OUTPUT&#95;ARCH&#40;avr32:uc&#41; 
+ENTRY&#40;&#95;start&#41; 
+SEARCH&#95;DIR&#40;&quot;/home/mingwbuild/mingwavr32/avr32/lib&quot;&#41;; 
+/&#42; Do we need any of these for elf? 
+&nbsp;&nbsp; &#95;&#95;DYNAMIC = 0;&nbsp;&nbsp;&nbsp; &#42;/ 
+MEMORY 
+&nbsp; &#123; 
+&nbsp;&nbsp;&nbsp; SDRAM &#40;rxai&#33;w&#41; : ORIGIN = 0xD0000000, LENGTH = 0x02000000 
+&nbsp;&nbsp;&nbsp; INTRAM &#40;wxa&#33;ri&#41; : ORIGIN = 0x00000000, LENGTH = 64K 
+&nbsp; &#125; 
+SECTIONS 
+&#123; 
+&nbsp; /&#42; Read-only sections, merged into text segment: &#42;/ 
+&nbsp; PROVIDE &#40;&#95;&#95;executable&#95;start = 0xD0000000&#41;; . = 0xD0000000; 
+&nbsp; .interp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.interp&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .reset : &#123;&nbsp; &#42;&#40;.reset&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .hash&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.hash&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .dynsym&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.dynsym&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .dynstr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.dynstr&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .gnu.version&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.gnu.version&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .gnu.version&#95;d&nbsp; : &#123; &#42;&#40;.gnu.version&#95;d&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .gnu.version&#95;r&nbsp; : &#123; &#42;&#40;.gnu.version&#95;r&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.init&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.init&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.text .rel.text.&#42; .rel.gnu.linkonce.t.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.text .rela.text.&#42; .rela.gnu.linkonce.t.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.fini&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.fini&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.fini&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.fini&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.rodata&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.rodata .rel.rodata.&#42; .rel.gnu.linkonce.r.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.rodata&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.rodata .rela.rodata.&#42; .rela.gnu.linkonce.r.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.data.rel.ro&nbsp;&nbsp; : &#123; &#42;&#40;.rel.data.rel.ro&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.data.rel.ro&nbsp;&nbsp; : &#123; &#42;&#40;.rel.data.rel.ro&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.data .rel.data.&#42; .rel.gnu.linkonce.d.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.data .rela.data.&#42; .rela.gnu.linkonce.d.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.tdata&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.tdata .rel.tdata.&#42; .rel.gnu.linkonce.td.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.tdata&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.tdata .rela.tdata.&#42; .rela.gnu.linkonce.td.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.tbss&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.tbss .rel.tbss.&#42; .rel.gnu.linkonce.tb.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.tbss&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.tbss .rela.tbss.&#42; .rela.gnu.linkonce.tb.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.ctors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.ctors&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.ctors&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.ctors&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.dtors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.dtors&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.dtors&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.dtors&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.got&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.got&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.got&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.got&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.bss&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.bss .rel.bss.&#42; .rel.gnu.linkonce.b.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.bss&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.bss .rela.bss.&#42; .rela.gnu.linkonce.b.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rel.plt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rel.plt&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rela.plt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rela.plt&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 
+&nbsp; &#123; 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;&#40;.init&#41;&#41; 
+&nbsp; &#125; &gt;SDRAM AT&gt;SDRAM =0xd703d703 
+&nbsp; .plt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.plt&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 
+&nbsp; &#123; 
+&nbsp;&nbsp;&nbsp; &#42;&#40;.text .stub .text.&#42; .gnu.linkonce.t.&#42;&#41; 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;&#40;.text.&#42;personality&#42;&#41;&#41; 
+&nbsp;&nbsp;&nbsp; /&#42; .gnu.warning sections are handled specially by elf32.em.&nbsp; &#42;/ 
+&nbsp;&nbsp;&nbsp; &#42;&#40;.gnu.warning&#41; 
+&nbsp; &#125; &gt;SDRAM AT&gt;SDRAM =0xd703d703 
+&nbsp; .fini&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 
+&nbsp; &#123; 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;&#40;.fini&#41;&#41; 
+&nbsp; &#125; &gt;SDRAM AT&gt;SDRAM =0xd703d703 
+&nbsp; PROVIDE &#40;&#95;&#95;etext = .&#41;; 
+&nbsp; PROVIDE &#40;&#95;etext = .&#41;; 
+&nbsp; PROVIDE &#40;etext = .&#41;; 
+&nbsp; .rodata&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rodata .rodata.&#42; .gnu.linkonce.r.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .rodata1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.rodata1&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .eh&#95;frame&#95;hdr : &#123; &#42;&#40;.eh&#95;frame&#95;hdr&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .eh&#95;frame&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : ONLY&#95;IF&#95;RO &#123; KEEP &#40;&#42;&#40;.eh&#95;frame&#41;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .gcc&#95;except&#95;table&nbsp;&nbsp; : ONLY&#95;IF&#95;RO &#123; KEEP &#40;&#42;&#40;.gcc&#95;except&#95;table&#41;&#41; &#42;&#40;.gcc&#95;except&#95;table.&#42;&#41; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; .dalign&nbsp;&nbsp; : &#123; . = ALIGN&#40;8&#41;; PROVIDE&#40;&#95;data&#95;lma = .&#41;; &#125; &gt;SDRAM AT&gt;SDRAM 
+&nbsp; PROVIDE &#40;&#95;data = ORIGIN&#40;INTRAM&#41;&#41;; 
+&nbsp; . = ORIGIN&#40;INTRAM&#41;; 
+&nbsp; /&#42; Exception handling&nbsp; &#42;/ 
+&nbsp; .eh&#95;frame&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : ONLY&#95;IF&#95;RW &#123; KEEP &#40;&#42;&#40;.eh&#95;frame&#41;&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; .gcc&#95;except&#95;table&nbsp;&nbsp; : ONLY&#95;IF&#95;RW &#123; KEEP &#40;&#42;&#40;.gcc&#95;except&#95;table&#41;&#41; &#42;&#40;.gcc&#95;except&#95;table.&#42;&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; /&#42; Thread Local Storage sections&nbsp; &#42;/ 
+&nbsp; .tdata&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.tdata .tdata.&#42; .gnu.linkonce.td.&#42;&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; .tbss&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.tbss .tbss.&#42; .gnu.linkonce.tb.&#42;&#41; &#42;&#40;.tcommon&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; /&#42; Ensure the &#95;&#95;preinit&#95;array&#95;start label is properly aligned.&nbsp; We 
+&nbsp;&nbsp;&nbsp;&nbsp; could instead move the label definition inside the section, but 
+&nbsp;&nbsp;&nbsp;&nbsp; the linker would then create the section even if it turns out to 
+&nbsp;&nbsp;&nbsp;&nbsp; be empty, which isn&#8217;t pretty.&nbsp; &#42;/ 
+&nbsp; PROVIDE &#40;&#95;&#95;preinit&#95;array&#95;start = ALIGN&#40;32 / 8&#41;&#41;; 
+&nbsp; .preinit&#95;array&nbsp;&nbsp;&nbsp;&nbsp; : &#123; KEEP &#40;&#42;&#40;.preinit&#95;array&#41;&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; PROVIDE &#40;&#95;&#95;preinit&#95;array&#95;end = .&#41;; 
+&nbsp; PROVIDE &#40;&#95;&#95;init&#95;array&#95;start = .&#41;; 
+&nbsp; .init&#95;array&nbsp;&nbsp;&nbsp;&nbsp; : &#123; KEEP &#40;&#42;&#40;.init&#95;array&#41;&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; PROVIDE &#40;&#95;&#95;init&#95;array&#95;end = .&#41;; 
+&nbsp; PROVIDE &#40;&#95;&#95;fini&#95;array&#95;start = .&#41;; 
+&nbsp; .fini&#95;array&nbsp;&nbsp;&nbsp;&nbsp; : &#123; KEEP &#40;&#42;&#40;.fini&#95;array&#41;&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; PROVIDE &#40;&#95;&#95;fini&#95;array&#95;end = .&#41;; 
+&nbsp; .ctors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 
+&nbsp; &#123; 
+&nbsp;&nbsp;&nbsp; /&#42; gcc uses crtbegin.o to find the start of 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the constructors, so we make sure it is 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; first.&nbsp; Because this is a wildcard, it 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; doesn&#8217;t matter if the user does not 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; actually link against crtbegin.o; the 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; linker won&#8217;t look for a file to match a 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wildcard.&nbsp; The wildcard also means that it 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; doesn&#8217;t matter which directory crtbegin.o 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; is in.&nbsp; &#42;/ 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;crtbegin&#42;.o&#40;.ctors&#41;&#41; 
+&nbsp;&nbsp;&nbsp; /&#42; We don&#8217;t want to include the .ctor section from 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from the crtend.o file until after the sorted ctors. 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The .ctor section from the crtend file contains the 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end of ctors marker and it must be last &#42;/ 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;&#40;EXCLUDE&#95;FILE &#40;&#42;crtend&#42;.o &#41; .ctors&#41;&#41; 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;&#40;SORT&#40;.ctors.&#42;&#41;&#41;&#41; 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;&#40;.ctors&#41;&#41; 
+&nbsp; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; .dtors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 
+&nbsp; &#123; 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;crtbegin&#42;.o&#40;.dtors&#41;&#41; 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;&#40;EXCLUDE&#95;FILE &#40;&#42;crtend&#42;.o &#41; .dtors&#41;&#41; 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;&#40;SORT&#40;.dtors.&#42;&#41;&#41;&#41; 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;&#40;.dtors&#41;&#41; 
+&nbsp; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; .jcr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; KEEP &#40;&#42;&#40;.jcr&#41;&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; .data.rel.ro : &#123; &#42;&#40;.data.rel.ro.local&#41; &#42;&#40;.data.rel.ro&#42;&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; .dynamic&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.dynamic&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; .got&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.got.plt&#41; &#42;&#40;.got&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; .data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 
+&nbsp; &#123; 
+&nbsp;&nbsp;&nbsp; &#42;&#40;.data .data.&#42; .gnu.linkonce.d.&#42;&#41; 
+&nbsp;&nbsp;&nbsp; KEEP &#40;&#42;&#40;.gnu.linkonce.d.&#42;personality&#42;&#41;&#41; 
+&nbsp;&nbsp;&nbsp; SORT&#40;CONSTRUCTORS&#41; 
+&nbsp; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; .data1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &#123; &#42;&#40;.data1&#41; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; .balign&nbsp;&nbsp; : &#123; . = ALIGN&#40;8&#41;; &#95;edata = .; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; &#95;edata = .; 
+&nbsp; PROVIDE &#40;edata = .&#41;; 
+&nbsp; &#95;&#95;bss&#95;start = .; 
+&nbsp; .bss&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 
+&nbsp; &#123; 
+&nbsp;&nbsp; &#42;&#40;.dynbss&#41; 
+&nbsp;&nbsp; &#42;&#40;.bss .bss.&#42; .gnu.linkonce.b.&#42;&#41; 
+&nbsp;&nbsp; &#42;&#40;COMMON&#41; 
+&nbsp;&nbsp; /&#42; Align here to ensure that the .bss section occupies space up to 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;end.&nbsp; Align after .bss to ensure correct alignment even if the 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .bss section disappears because there are no input sections.&nbsp; &#42;/ 
+&nbsp;&nbsp; . = ALIGN&#40;8&#41;; 
+&nbsp; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; . = ALIGN&#40;8&#41;; 
+&nbsp; &#95;end = .; 
+&nbsp; PROVIDE &#40;end = .&#41;; 
+&nbsp; &#95;&#95;heap&#95;start&#95;&#95; = ALIGN&#40;8&#41;; 
+&nbsp; . = ORIGIN&#40;INTRAM&#41; + LENGTH&#40;INTRAM&#41; &#8211; 0x1000; 
+&nbsp; &#95;&#95;heap&#95;end&#95;&#95; = .; 
+&nbsp; /&#42; Stabs debugging sections.&nbsp; &#42;/ 
+&nbsp; .stab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.stab&#41; &#125; 
+&nbsp; .stabstr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.stabstr&#41; &#125; 
+&nbsp; .stab.excl&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.stab.excl&#41; &#125; 
+&nbsp; .stab.exclstr&nbsp; 0 : &#123; &#42;&#40;.stab.exclstr&#41; &#125; 
+&nbsp; .stab.index&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.stab.index&#41; &#125; 
+&nbsp; .stab.indexstr 0 : &#123; &#42;&#40;.stab.indexstr&#41; &#125; 
+&nbsp; .comment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.comment&#41; &#125; 
+&nbsp; /&#42; DWARF debug sections. 
+&nbsp;&nbsp;&nbsp;&nbsp; Symbols in the DWARF debugging sections are relative to the beginning 
+&nbsp;&nbsp;&nbsp;&nbsp; of the section so we begin them at 0.&nbsp; &#42;/ 
+&nbsp; /&#42; DWARF 1 &#42;/ 
+&nbsp; .debug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#41; &#125; 
+&nbsp; .line&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.line&#41; &#125; 
+&nbsp; /&#42; GNU DWARF 1 extensions &#42;/ 
+&nbsp; .debug&#95;srcinfo&nbsp; 0 : &#123; &#42;&#40;.debug&#95;srcinfo&#41; &#125; 
+&nbsp; .debug&#95;sfnames&nbsp; 0 : &#123; &#42;&#40;.debug&#95;sfnames&#41; &#125; 
+&nbsp; /&#42; DWARF 1.1 and DWARF 2 &#42;/ 
+&nbsp; .debug&#95;aranges&nbsp; 0 : &#123; &#42;&#40;.debug&#95;aranges&#41; &#125; 
+&nbsp; .debug&#95;pubnames 0 : &#123; &#42;&#40;.debug&#95;pubnames&#41; &#125; 
+&nbsp; /&#42; DWARF 2 &#42;/ 
+&nbsp; .debug&#95;info&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;info .gnu.linkonce.wi.&#42;&#41; &#125; 
+&nbsp; .debug&#95;abbrev&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;abbrev&#41; &#125; 
+&nbsp; .debug&#95;line&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;line&#41; &#125; 
+&nbsp; .debug&#95;frame&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;frame&#41; &#125; 
+&nbsp; .debug&#95;str&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;str&#41; &#125; 
+&nbsp; .debug&#95;loc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 : &#123; &#42;&#40;.debug&#95;loc&#41; &#125; 
+&nbsp; .debug&#95;macinfo&nbsp; 0 : &#123; &#42;&#40;.debug&#95;macinfo&#41; &#125; 
+&nbsp; /&#42; SGI/MIPS DWARF 2 extensions &#42;/ 
+&nbsp; .debug&#95;weaknames 0 : &#123; &#42;&#40;.debug&#95;weaknames&#41; &#125; 
+&nbsp; .debug&#95;funcnames 0 : &#123; &#42;&#40;.debug&#95;funcnames&#41; &#125; 
+&nbsp; .debug&#95;typenames 0 : &#123; &#42;&#40;.debug&#95;typenames&#41; &#125; 
+&nbsp; .debug&#95;varnames&nbsp; 0 : &#123; &#42;&#40;.debug&#95;varnames&#41; &#125; 
+&nbsp; .stack&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ORIGIN&#40;INTRAM&#41; + LENGTH&#40;INTRAM&#41; &#8211; 0x1000 : 
+&nbsp; &#123; 
+&nbsp;&nbsp;&nbsp; &#95;stack = .; 
+&nbsp;&nbsp;&nbsp; &#42;&#40;.stack&#41; 
+&nbsp;&nbsp;&nbsp; . = 0x1000; 
+&nbsp;&nbsp;&nbsp; &#95;estack = .; 
+&nbsp; &#125; &gt;INTRAM AT&gt;SDRAM 
+&nbsp; /DISCARD/ : &#123; &#42;&#40;.note.GNU-stack&#41; &#125; 
+&#125; 
+&#45;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+Here&#8217;s the linker output displayed:
+uc3a0512-rtosdemo.elf&nbsp; :
+section&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; addr
+.reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x2008&nbsp;&nbsp; 0xd0000000
+.got&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0xc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x18
+.init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x1c&nbsp;&nbsp; 0xd0002008
+.text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0xbf78&nbsp;&nbsp; 0xd0002024
+.exception&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x200&nbsp;&nbsp; 0xd000e000
+.fini&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x18&nbsp;&nbsp; 0xd000e200
+.rodata&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x294&nbsp;&nbsp; 0xd000e218
+.dalign&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x4&nbsp;&nbsp; 0xd000e4ac
+.ctors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x4
+.dtors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0xc
+.jcr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x14
+.data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x844&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x24
+.bss&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x320&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x868
+.comment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x9fc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0
+.debug&#95;aranges&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x9e0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0
+.debug&#95;pubnames&nbsp;&nbsp;&nbsp; 0x1156&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0
+.debug&#95;info&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x100c1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0
+.debug&#95;abbrev&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x1fe3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0
+.debug&#95;line&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x29aa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0
+.debug&#95;frame&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x2bcc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0
+.debug&#95;str&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0xd02&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0
+.debug&#95;loc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x3129&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0
+.stack&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x1000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0xf000
+.debug&#95;ranges&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x1e8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0
+Total&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x2db2f
+&nbsp;&nbsp; text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bss&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hex&nbsp;&nbsp;&nbsp; filename
+ 0xe448&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x864&nbsp;&nbsp;&nbsp;&nbsp; 0x1324&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 65488&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ffd0&nbsp;&nbsp;&nbsp; uc3a0512-rtosdemo.elf
+I can&#8217;t help but notice that there&#8217;s no .heap shown.
+Any hints would be most appreciated. I do not profess to be a linker expert and hopefully won&#8217;t need to be to get past 
+this issue.
+Thanks,
+Dave Squires
+SQUIRES ENGINEERING, INC.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Running UC3A FreeRTOS Demo from SDRAM</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on November 20, 2008</div><div class="thread-post-content">FreeRTOS runs out of RAM fine on ARM7 and Coldfire so I think you are right to suspect the linker script. You could try the AVRFreaks WEB site to see if anybody can give you a linker script that is all set as you need it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Running UC3A FreeRTOS Demo from SDRAM</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dksquires">dksquires</a> on November 21, 2008</div><div class="thread-post-content">I&#8217;ve got a pertinent update. Apparently in Atmel&#8217;s updated datasheet &#40;08/2008&#41; for the AVR32 UC3A processor, they now say that code execution from SDRAM does NOT work in any revision of silicon, contrary to the errata of the previous &#40;04/2008&#41; datasheet for the UC3A chips.
+So now according to the best information I have, running FreeRTOS &#40;or anything else&#41; from SDRAM on a silicon Rev E, H, I J chip is not expected to work.
+So my linker script may or may not be an issue. Trival &#40;non-FreeRTOS&#41; programs seem to work. I may have just gotten lucky. :&#41;
+Dave
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shadow registers in PIC32MZ EF - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2016/freertos_Shadow_registers_in_PIC32MZ_EF_aceab66aj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Shadow registers in PIC32MZ EF - FreeRTOS" />
+<meta property="og:description" content="Shadow registers in PIC32MZ EFPosted by pbeam on April 12, 2016In trying to make things better and more efficient, I am totally unable to get shadow registers to work for an interrupt that does not use FreeRTOS services. The effect I get is that FreeRTOS &#8220;crashes&#8221; when malloc fails &#8212; which is really not the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2016/freertos_Shadow_registers_in_PIC32MZ_EF_aceab66aj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Shadow registers in PIC32MZ EFPosted by pbeam on April 12, 2016In trying to make things better and more efficient, I am totally unable to get shadow registers to work for an interrupt that does not use FreeRTOS services. The effect I get is that FreeRTOS &#8220;crashes&#8221; when malloc fails &#8212; which is really not the [&hellip;]" />
+<meta name="twitter:title" content="Shadow registers in PIC32MZ EF - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202631' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202631' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202631' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202631' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145796' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2016%2Ffreertos_Shadow_registers_in_PIC32MZ_EF_aceab66aj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2016%2Ffreertos_Shadow_registers_in_PIC32MZ_EF_aceab66aj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145796">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2016_freertos_support_forum_archive_index.html/">April 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Shadow registers in PIC32MZ EF</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pbeam">pbeam</a> on April 12, 2016</div><div class="thread-post-content">In trying to make things better and more efficient, I am totally unable to get shadow registers to work for an interrupt that does not use FreeRTOS services.  The effect I get is that FreeRTOS &#8220;crashes&#8221; when malloc fails &#8212; which is really not the problem.
+I have an ISR that interrupts at 200 Khz, so overhead is a problem.  This does not work:
+<blockquote>
+  void __attribute ((interrupt(IPL7SRS), no<em>fpu, vector(</em>EXTERNAL<em>2</em>VECTOR))) Int2<em>ISR(void) {<br />
+  //void Int2</em>ISR(void) {
+      unsigned flag = 0;
+      if (!SPI1STATbits.SPIRBE) {
+</blockquote>
+This does work:
+<blockquote>
+  void __attribute ((interrupt(IPL7AUTO), no<em>fpu, vector(</em>EXTERNAL<em>2</em>VECTOR))) Int2<em>ISR(void) {<br />
+  //void Int2</em>ISR(void) {
+      unsigned flag = 0;
+      if (!SPI1STATbits.SPIRBE) {
+      &#8230;
+</blockquote>
+Obviously, the IPL7SRS has lower overhead, so it is desirable.  I have defined the PRISS bits so that interrupt priority 7 uses shadow register 7.  (I have also used the no_fpu attribute since FreeRTOS v8.2.3 does not handle the FPU properly, and I don&#8217;t use it anyway.)
+Should this work?  I have looked at the assembly with IPL7AUTO, and it does seem to recognize the shadow registers are available as it skips a number of PUSH instructions.  What makes this more critical is that I need to service an A/D at 1Mhz, so the shadow registers would surely help.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Shadow registers in PIC32MZ EF</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 13, 2016</div><div class="thread-post-content">The compiler specific level of detail is outside of the scope of my knowledge, but I have taken advise on this and&#8230;
+It should be okay, the prolog and epilog for ISR entry is clean.
+The XC32 compiler will set up the IRQs so that each one gets its own shadow set &#8211; but it will depend on the compiler version.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Shadow registers in PIC32MZ EF</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pbeam">pbeam</a> on April 13, 2016</div><div class="thread-post-content">This is what my XC32 v 1.40 does.  With IPL7SRS, there is essentially no prolog:
+<blockquote>
+  !//void Int2<em>ISR(void) {
+  !    unsigned flag = 0;
+  !    if (!SPI1STATbits.SPIRBE) {
+  0x9D00CEF8: LUI V0, -16510
+  0x9D00CEFC: LW V0, 4112(V0)
+  0x9D00CF00: ANDI V0, V0, 32
+  0x9D00CF04: BNE V0, ZERO, 0x9D00CFEC
+  0x9D00CF08: LUI V0, -16511
+  !        ADC</em>Value.data32 = SPI1BUF;
+  0x9D00CF84: LUI V0, -16510
+  0x9D00CF88: LW V1, 4128(V0)
+  0x9D00CF8C: SW V1, -32580(GP)
+  !        flag = 1;
+</blockquote>
+This causes  FreeRTOS to bomb.  With IPL7AUTO, I get all this stuff:
+!void attribute ((interrupt(IPL7AUTO), no<em>fpu, vector(</em>EXTERNAL<em>2</em>VECTOR))) Int2_ISR(void) {   
+<blockquote>
+  0x9D00A0F4: RDPGPR SP, SP
+  0x9D00A0F8: MFC0 K1, EPC
+  0x9D00A0FC: MFC0 K0, SRSCtl
+  0x9D00A100: ADDIU SP, SP, -136
+  0x9D00A104: MFC0 K1, Status
+  0x9D00A108: SW K0, 128(SP)
+  0x9D00A10C: SW K1, 132(SP)
+  0x9D00A110: INS K1, ZERO, 1, 15
+  0x9D00A114: INS K1, ZERO, 29, 1
+  0x9D00A118: ORI K1, K1, 7168
+  0x9D00A11C: INS K1, ZERO, 29, 1
+  0x9D00A120: MTC0 K1, Status
+  0x9D00A124: SW V1, 24(SP)
+  0x9D00A128: SW V0, 20(SP)
+  0x9D00A12C: LW V1, 128(SP)
+  0x9D00A130: ANDI V1, V1, 15
+  0x9D00A134: BNE V1, ZERO, 0x9D00A17C
+  0x9D00A138: NOP
+  0x9D00A13C: SW RA, 84(SP)
+  0x9D00A140: SW T9, 80(SP)
+  0x9D00A144: SW T8, 76(SP)
+  0x9D00A148: SW T7, 72(SP)
+  0x9D00A14C: SW T6, 68(SP)
+  0x9D00A150: SW T5, 64(SP)
+  0x9D00A154: SW T4, 60(SP)
+  0x9D00A158: SW T3, 56(SP)
+  0x9D00A15C: SW T2, 52(SP)
+  0x9D00A160: SW T1, 48(SP)
+  0x9D00A164: SW T0, 44(SP)
+  0x9D00A168: SW A3, 40(SP)
+  0x9D00A16C: SW A2, 36(SP)
+  0x9D00A170: SW A1, 32(SP)
+  0x9D00A174: SW A0, 28(SP)
+  0x9D00A178: SW AT, 16(SP)
+  0x9D00A17C: MFLO V0
+  0x9D00A180: SW V0, 116(SP)
+  0x9D00A184: MFHI V1
+  0x9D00A188: SW V1, 112(SP)
+  0x9D00A18C: MFLO V0
+  0x9D00A190: SW V0, 108(SP)
+  0x9D00A194: MFHI V1
+  0x9D00A198: SW V1, 104(SP)
+  0x9D00A19C: MFLO V0
+  0x9D00A1A0: SW V0, 100(SP)
+  0x9D00A1A4: MFHI V1
+  0x9D00A1A8: SW V1, 96(SP)
+  0x9D00A1AC: MFLO V0
+  0x9D00A1B0: SW V0, 92(SP)
+  0x9D00A1B4: MFHI V1
+  0x9D00A1B8: SW V1, 88(SP)
+  0x9D00A1BC: RDDSP V1, 0x3F
+  0x9D00A1C0: SW V1, 12(SP)
+</blockquote>
+Things work, but there is, of course, the additional overhead.  The processor does take the jump at 0x9D00A134 so it skips all the SW instructions.  Apparently, however, the compiler is not saving something important.
+I&#8217;m probably just going to deal with the overhead.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Shadow registers in PIC32MZ EF</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 13, 2016</div><div class="thread-post-content">I&#8217;m told:
+&#8220;The lack of prolog is what might be expected&#8230; you don&#8217;t have any regs 
+that need saving and only gp needs copying over&#8230;but it is not clear 
+why FreeRTOS would have a problem if the kernel is indeed running down 
+at IPL1&#8230; it should not be possible to interrupt IPL7 and when the IPL7 
+ISR returns all should be clean again&#8221;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Shadow registers in PIC32MZ EF</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pbeam">pbeam</a> on April 13, 2016</div><div class="thread-post-content">I think I might have figured it out.  For posterity, XC32 seems to have a bug with optimization > 0.  As you can see from my last message, there is absolutely no prolog, which means the Hi and Lo registers are not saved amongst other things.  Changing to optimization of 0 generates this prolog:
+<blockquote>
+  void __attribute ((interrupt(IPL7SRS), no<em>fpu, vector(</em>EXTERNAL<em>2</em>VECTOR))) Int2<em>ISR(void) {<br />
+  0x9D00F82C: RDPGPR SP, SP
+  0x9D00F830: MFC0 K0, EPC
+  0x9D00F834: MFC0 K1, Status
+  0x9D00F838: ADDIU SP, SP, -72
+  0x9D00F83C: SW K0, 68(SP)
+  0x9D00F840: MFC0 K0, SRSCtl
+  0x9D00F844: SW K1, 64(SP)
+  0x9D00F848: SW K0, 60(SP)
+  0x9D00F84C: INS K1, ZERO, 1, 15
+  0x9D00F850: INS K1, ZERO, 29, 1
+  0x9D00F854: ORI K1, K1, 7168
+  0x9D00F858: MTC0 K1, Status
+  0x9D00F85C: MFLO V0
+  0x9D00F860: SW V0, 52(SP)
+  0x9D00F864: MFHI V1
+  0x9D00F868: SW V1, 48(SP)
+  0x9D00F86C: MFLO V0
+  0x9D00F870: SW V0, 44(SP)
+  0x9D00F874: MFHI V1
+  0x9D00F878: SW V1, 40(SP)
+  0x9D00F87C: MFLO V0
+  0x9D00F880: SW V0, 36(SP)
+  0x9D00F884: MFHI V1
+  0x9D00F888: SW V1, 32(SP)
+  0x9D00F88C: MFLO V0
+  0x9D00F890: SW V0, 28(SP)
+  0x9D00F894: MFHI V1
+  0x9D00F898: SW V1, 24(SP)
+  0x9D00F89C: RDDSP V1, 0x3F
+  0x9D00F8A0: SW V1, 56(SP)
+  0x9D00F8A4: ADDU S8, SP, ZERO
+  !//void Int2</em>ISR(void) {
+  !    unsigned flag = 0;
+  0x9D00F8A8: SW ZERO, 16(S8)
+</blockquote>
+This is a little better than AUTO.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Shadow registers in PIC32MZ EF</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pbeam">pbeam</a> on April 13, 2016</div><div class="thread-post-content">For posterity, from Microchip comes the following statement:
+<blockquote>
+  It looks like there is an issue in v1.40 that is addressed for the upcoming release.
+  The issue is related to a new optimization introduced in GCC 4.8. If the code in the ISR triggers the optimization, some necessary context-saving code can get optimized away.
+  A workaround in XC32 v1.40 for the issue reported in the web forum thread would be to add this attribute to the function:
+  extern volatile int foo;
+  void <strong>attribute</strong>((interrupt(IPL7SRS),optimize(&#8220;-fno-shrink-wrap&#8221;))) IntHandlerChangeNotification(void)
+  {
+      if (<em>(volatile unsigned int</em>)0xfeedface)
+          (void)foo;
+  }
+</blockquote>
+Hopefully, this will save someone else the same pain I just went through.  Not being a MIPS guru, I&#8217;m not sure why all of this is needed, but with optimization, shadow register, and -fno-shrink-wrap, the following prolog is produced, which appears to work:
+void __attribute ((interrupt(IPL7SRS), no<em>fpu, vector(</em>EXTERNAL<em>2</em>VECTOR), optimize(&#8220;-fno-shrink-wrap&#8221;))) Int2_ISR(void) {<br />
+0x9D00CEF8: RDPGPR SP, SP
+0x9D00CEFC: MFC0 K0, EPC
+0x9D00CF00: MFC0 K1, Status
+0x9D00CF04: ADDIU SP, SP, -64
+0x9D00CF08: SW K0, 60(SP)
+0x9D00CF0C: MFC0 K0, SRSCtl
+0x9D00CF10: SW K1, 56(SP)
+0x9D00CF14: SW K0, 52(SP)
+0x9D00CF18: INS K1, ZERO, 1, 15
+0x9D00CF1C: INS K1, ZERO, 29, 1
+0x9D00CF20: ORI K1, K1, 7168
+0x9D00CF24: MTC0 K1, Status
+0x9D00CF28: MFLO V0
+0x9D00CF2C: SW V0, 44(SP)
+0x9D00CF30: MFHI V1
+0x9D00CF34: SW V1, 40(SP)
+0x9D00CF38: MFLO V0
+0x9D00CF3C: SW V0, 36(SP)
+0x9D00CF40: MFHI V1
+0x9D00CF44: SW V1, 32(SP)
+0x9D00CF48: MFLO V0
+0x9D00CF4C: SW V0, 28(SP)
+0x9D00CF50: MFHI V1
+0x9D00CF54: SW V1, 24(SP)
+0x9D00CF58: MFLO V0
+0x9D00CF5C: SW V0, 20(SP)
+0x9D00CF60: MFHI V1
+0x9D00CF64: SW V1, 16(SP)
+0x9D00CF68: RDDSP V1, 0x3F
+0x9D00CF6C: SW V1, 48(SP)
+I&#8217;ll leave it till another time (or another person) to figure out why so much has to be saved and restored
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

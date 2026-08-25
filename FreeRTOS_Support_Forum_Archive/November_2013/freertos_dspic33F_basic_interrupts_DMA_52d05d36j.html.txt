@@ -1,0 +1,137 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dspic33F, basic interrupts (DMA) - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2013/freertos_dspic33F_basic_interrupts_DMA_52d05d36j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="dspic33F, basic interrupts (DMA) - FreeRTOS" />
+<meta property="og:description" content="dspic33F, basic interrupts (DMA)Posted by apullin2 on November 15, 2013Hi there, I&#8217;m just starting out porting some code I have developed for controlling a robot into FreeRTOS. We got away with a fair amount of complexity with ground-up coding, but it&#8217;s at the level now where a real RTOS will help manage current and future &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2013/freertos_dspic33F_basic_interrupts_DMA_52d05d36j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="dspic33F, basic interrupts (DMA)Posted by apullin2 on November 15, 2013Hi there, I&#8217;m just starting out porting some code I have developed for controlling a robot into FreeRTOS. We got away with a fair amount of complexity with ground-up coding, but it&#8217;s at the level now where a real RTOS will help manage current and future [&hellip;]" />
+<meta name="twitter:title" content="dspic33F, basic interrupts (DMA) - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202318' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202318' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202318' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202318' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144369' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2013%2Ffreertos_dspic33F_basic_interrupts_DMA_52d05d36j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2013%2Ffreertos_dspic33F_basic_interrupts_DMA_52d05d36j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144369">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2013_freertos_support_forum_archive_index.html/">November 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">dspic33F, basic interrupts (DMA)</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/apullin2">apullin2</a> on November 15, 2013</div><div class="thread-post-content">Hi there,
+I&#8217;m just starting out porting some code I have developed for controlling a robot into FreeRTOS. We got away with a fair amount of complexity with ground-up coding, but it&#8217;s at the level now where a real RTOS will help manage current and future system complexity. And it&#8217;s a good learning exercise. This is all for an academic research application, too.
+I&#8217;m a little uncertain what to do about interrupts that &#8220;need&#8221; to stay in the code, like for example, the _DMA0Interrupt that is being used to copy values from DMA RAM to some named variables, to be accessed by other code with getter function. This is done to have high-speed ADC sampling (triggered automatically by the PWM hardware generator), and thus give a zeroth-order-hold of the sampled sources to other code modules.
+The current interrupt code is simple: http://pastebin.com/8n9sH1gR
+So, the code doesn&#8217;t call any FreeRTOS functions, so nothing will be blocking waiting on the result of this function. If I understand correctly, this means that it can not cause a context switch?
+What I&#8217;m not sure of it, do I have to worry about other hardware interrupts potentially firing during this interrupt? A higher priority interrupt, like the radio pin interrupt, might fire at any time and cause a complex task that would involved OS API functions and task blocking/unblocking to happen.
+Similarly, will the existence on non-API-using hardware interrupts like this have a bearing on how I will need to design the ISR&#8217;s that do use API functions, and their dependent tasks?
+Any input on this topic would be greatly appreciated.
+Thanks,
+Andrew
+</div></div><div class="thread-post"><h3 class="thread-post-title">dspic33F, basic interrupts (DMA)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 15, 2013</div><div class="thread-post-content">On the dsPic (based on your subject), all interrupts that interact with FreeRTOS are on a single level, normally the lowest, so you can avoid your ISR which doesn&#8217;t interact with FreeRTOS from being blocked by one of those by just putting it on a higher level. It also means that since it doesn&#8217;t interact with FreeRTOS in can&#8217;t unblock a task.
+If it needs to unblock a task, that requries placing it on the same level as the other ISRs, and thus possibly delayed by them, or having it trigger some other interrupt (possibly from an unused device) that is at the lower level to do the interaction.
+Having an interrupt at this higher level shouldn&#8217;t affect your other ISR&#8217;s as long as it doesn&#8217;t manipulate something that those other interrupts need to manipulate without interruption. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">dspic33F, basic interrupts (DMA)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/apullin2">apullin2</a> on November 15, 2013</div><div class="thread-post-content">Ah, great, thanks Richard, that helps clear things up. Yes, this is on dsPIC33F. I suppose that means that I can juggle the interaction of non-API interrupts in the higher CPU interrupt priority levels.
+This is a little daunting, since it seems there are several mechanisms for concurrency of different sorts, and I need to figure out which type to use for each part of the code, like multiple SPI and I2C buses.
+I had a follow-up question on the same topic: for the hardware ISR&#8217;s that will make API calls, like the radio-data-ready external interrupt, will I still need an assembly file wrapper as described in the PIC32 version of the documentation? I don&#8217;t think I see any examples of this in the dsPIC example code, such as in serial.c for the _U2*XInterrupt&#8217;s .
+</div></div><div class="thread-post"><h3 class="thread-post-title">dspic33F, basic interrupts (DMA)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 16, 2013</div><div class="thread-post-content">The PIC24/dsPIC are a different beast than the PIC32, and their port layer does not use a wrapper, just write them as normal interrupt functions. The only major requirement is that the test if taskWoken and calling of vPortYIELD do need to be the very last part of the ISR, as any code after that might get delayed executing if a task switch occurs (the task switch is written so that it can be the leaving from an ISR, and the remainder of the ISR won&#8217;t be executed until the switched from task gets to execute again.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

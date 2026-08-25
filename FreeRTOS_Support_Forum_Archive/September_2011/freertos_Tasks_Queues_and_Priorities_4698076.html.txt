@@ -1,0 +1,161 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasks, Queues and Priorities - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2011/freertos_Tasks_Queues_and_Priorities_4698076.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tasks, Queues and Priorities - FreeRTOS" />
+<meta property="og:description" content="Tasks, Queues and PrioritiesPosted by gerhardkreuzer on September 8, 2011try to have two tasks and a queue. The producer runs on a lower priority than the consumer, but the consumer has to carry out some hardware related stuff which includes timeouts, waiting for the adc making 500 samples at low speed sampling rate for instance. &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2011/freertos_Tasks_Queues_and_Priorities_4698076.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Tasks, Queues and PrioritiesPosted by gerhardkreuzer on September 8, 2011try to have two tasks and a queue. The producer runs on a lower priority than the consumer, but the consumer has to carry out some hardware related stuff which includes timeouts, waiting for the adc making 500 samples at low speed sampling rate for instance. [&hellip;]" />
+<meta name="twitter:title" content="Tasks, Queues and Priorities - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202027' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202027' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202027' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202027' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139376' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2011%2Ffreertos_Tasks_Queues_and_Priorities_4698076.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2011%2Ffreertos_Tasks_Queues_and_Priorities_4698076.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139376">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2011_freertos_support_forum_archive_index.html/">September 2011 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Tasks, Queues and Priorities</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gerhardkreuzer">gerhardkreuzer</a> on September 8, 2011</div><div class="thread-post-content">try to have two tasks and a queue. The producer runs on a lower priority than the consumer, but the consumer has to carry out some hardware related stuff which includes timeouts, waiting for the adc making 500 samples at low speed sampling rate for instance.  
+to get this up step by step, I replaced the hardware stuff by delays.  
+Whats going on now, as I check it out using the debugger and breakpoints.  
+1&#46; Some ticket entered the queue and the consumer starts over immediately, bevause he hase the higher priority.<br />
+2&#46; Consumer reaches the first point of waiting<br />
+3&#46; The producer starts again and throw in another ticket, that ok<br />
+4&#46; The consumer immediately starts at the beginnung again, not finishing the outstanding work, getting the new ticket and ….  
+Ok, I run the sample for some time waiting for a crash because this behavior should lead to memory problems, but  
+It works.  
+My question now: Is this concept bullshit, or is the debugger misleading me or whats going on here?  
+With best regards  
+Gerhard  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tasks, Queues and Priorities</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sven-de">sven-de</a> on September 8, 2011</div><div class="thread-post-content">In other words: The second queue-event releases your task from the block-state to which it was send with a delay. If this is actually the case that would be a major bug in FreeRTOS. A task blocked by a delay may only be released after termination of the time constraint. The only way around this, I know of, is an example in the reference manual where the task is released earlier by calling vTaskSuspend&#40;&#41; and vTaskResume&#40;&#41; before the actual time limit is reached. Queue-events shouldn&#8217;t have any impact on delays.  
+Since such a prominent bug would&#8217;ve been noticed, the problem is probably at your end. My best guess would be that the debugger somehow currupts the behaviour.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tasks, Queues and Priorities</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 8, 2011</div><div class="thread-post-content">I need to get a better understanding of the question.  
+<blockquote>
+  1&#46; Some ticket entered the queue and the consumer starts over immediately, bevause he hase the higher priority.
+</blockquote>
+Ok, sounds good so far.&nbsp; A high priority task is blocked on a queue, waiting for data.&nbsp; Data is posted to the queue by a low priority task, causing the higher priority task to unblock &#40;data is in the queue&#41;, and, as it has the higher priority, preempt the task that posted to the queue.&nbsp; Now the high priority task is running.  
+<blockquote>
+  2&#46; Consumer reaches the first point of waiting
+</blockquote>
+The consumer, being the higher priority task, is blocked for a fixed period.&nbsp; It enters the Blocked state, which allows the lower priority producer task to execute again.  
+<blockquote>
+  3&#46; The producer starts again and throw in another ticket, that ok
+</blockquote>
+The low priority writes to the queue again, but this time there is nothing blocked on the queue as the higher priority consumer is just delaying for a fixed period &#40;not delayed on the queue, just delaying&#41;.&nbsp; Therefore the low priority task should be able to write to the queue, not get preempted as the write does not unblock anything, and just continue.  
+This scenario of course could result in the queue becoming full &#8211; if tasks are writing to the queue but the only task that can read from the queue is blocked doing something else.  
+<blockquote>
+  4&#46; The consumer immediately starts at the beginnung again, not finishing the outstanding work, getting the new ticket and ….
+</blockquote>
+Up to now I have understood everything, but this bit does not make sense to me, or I have misunderstood what you are saying.&nbsp;   
+What should happen is the consumer completes is delay, leaves the Blocked state, then continues with whatever the next thing in its implementation is &#8211; which might be to read from the queue again.  
+What you seem to be saying is that the task just starts from the beginning of its implementation again?&nbsp; That can only point to a system crash/reset.&nbsp; The most likely cause for that would be a stack overflow.&nbsp; Do you have stack overflow checking switched on?  
+This assumes you are using an official port.&nbsp; If not, I cannot really comment as there may be a bug in the &#40;unofficial&#41; port layer.&nbsp; All the official ports goes through fairly extensive testing that I would hope would highlight such a bug &#40;not that anything is 100% certain of course&#41;.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tasks, Queues and Priorities</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 8, 2011</div><div class="thread-post-content">….just to add some more.&nbsp; Which port are you using?&nbsp; If it is a Cortex-M3 port I could suggest also that you double check your interrupt priorities having looked at item three here: <a href="http://www.freertos.org/FAQHelp.html">http://www.freertos.org/FAQHelp.html</a>  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tasks, Queues and Priorities</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on September 8, 2011</div><div class="thread-post-content">One thing to watch out for is that debuggers can get confused with task switches. It sounds like while the consumer was &#8220;paused&#8221; you traced through the producer, but during that time the consumer probably finished it&#8217;s delay and started back up, but no breakpoint was set for it any more &#40;the breakpoint following the producer&#41;, and then finished its operations.  
+If you use a debugger to &#8220;step&#8221; through a task, you MUST avoid stepping into any function that might be called by multiple threads &#40;including most of FreeRTOS&#41; or you may &#8220;jump threads&#8221; in the stepping and the thread you are tracing runs on ahead. What happens with stepping is that you can &#40;normally will&#41; get a timer interrupt when you step &#40;which the stepping normally doesn&#8217;t follow&#41;, and if that task switches, that can bypass the debugger which put a breakpoint on the next instruction it thought would run, so other tasks run until you get back to task you started from &#40;or any other task that reaches that address&#41;. If you end up with a different task than the one you started with, if you ever follow it on a path the first task doesn&#8217;t take, the first task now run free.  
+You can set breakpoints and watch it progress.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

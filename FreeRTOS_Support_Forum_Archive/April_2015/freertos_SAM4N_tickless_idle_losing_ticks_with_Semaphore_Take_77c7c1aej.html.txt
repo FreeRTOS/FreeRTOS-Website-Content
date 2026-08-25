@@ -1,0 +1,227 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAM4N &#039;tickless idle&#039; losing ticks with Semaphore Take - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2015/freertos_SAM4N_tickless_idle_losing_ticks_with_Semaphore_Take_77c7c1aej.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="SAM4N &#039;tickless idle&#039; losing ticks with Semaphore Take - FreeRTOS" />
+<meta property="og:description" content="SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore TakePosted by helliwell_cj on April 27, 2015I&#8217;m using v8.1.2 on an Atmel SAM4N, with &#8216;tickless idle&#8217;. I&#8217;ve used the implementation of the SAM4L lowpowertickmanagement.c from v8.0.1; modified &#8211; because it doesn&#8217;t have an AST &#8211; to the SAM4N&#8217;s similarly-slow-running RTT. The tick rate is 128Hz. configEXPECTEDIDLETIMEBEFORE_SLEEP is set &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2015/freertos_SAM4N_tickless_idle_losing_ticks_with_Semaphore_Take_77c7c1aej.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore TakePosted by helliwell_cj on April 27, 2015I&#8217;m using v8.1.2 on an Atmel SAM4N, with &#8216;tickless idle&#8217;. I&#8217;ve used the implementation of the SAM4L lowpowertickmanagement.c from v8.0.1; modified &#8211; because it doesn&#8217;t have an AST &#8211; to the SAM4N&#8217;s similarly-slow-running RTT. The tick rate is 128Hz. configEXPECTEDIDLETIMEBEFORE_SLEEP is set [&hellip;]" />
+<meta name="twitter:title" content="SAM4N &#039;tickless idle&#039; losing ticks with Semaphore Take - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202511' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202511' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202511' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202511' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145357' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2015%2Ffreertos_SAM4N_tickless_idle_losing_ticks_with_Semaphore_Take_77c7c1aej.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2015%2Ffreertos_SAM4N_tickless_idle_losing_ticks_with_Semaphore_Take_77c7c1aej.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145357">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2015_freertos_support_forum_archive_index.html/">April 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helliwell_cj">helliwell_cj</a> on April 27, 2015</div><div class="thread-post-content">I&#8217;m using v8.1.2 on an Atmel SAM4N, with &#8216;tickless idle&#8217;. I&#8217;ve used the implementation of the SAM4L low<em>power</em>tick<em>management.c from v8.0.1; modified &#8211; because it doesn&#8217;t have an AST &#8211; to the SAM4N&#8217;s similarly-slow-running RTT. The tick rate is 128Hz. configEXPECTED</em>IDLE<em>TIME</em>BEFORE_SLEEP is set to 5.
+This seems to be working, but I&#8217;ve encountered an issue with one particular task (there&#8217;s only 3 in the app so far) which is waiting on a semaphore (xSemaphoreCreateBinary) given by an ISR: the tick count, comparing it with real time, is running 50% slow. In my current set-up the semaphore is never given (and I&#8217;ve disabled the interrupt).
+The timeout on the xSemaphoreTake is 1sec; and the task loop then has a further 1sec vTaskDelay.
+If I add a delay to the task before it enters its for loop, then the tick rate is fine until that delay ends.
+Now there may be a problem with my low<em>power</em>tick_management.c, but I&#8217;ve discovered that if I change the xSemaphoreTake() to a plain vTaskDelay() then the problem goes away. Which makes me instead suspect something kernel-related &#8211; shouldn&#8217;t they then be amounting, in broad terms, to the same thing? i.e. delay the task for 1sec.
+I haven&#8217;t spotted anything relevant in the change history, but is there a fix/update I&#8217;ve missed? I&#8217;m also unsure of the best way to dig to track the issue down further..?
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helliwell_cj">helliwell_cj</a> on April 27, 2015</div><div class="thread-post-content">Oh, and the other &#8216;interesting&#8217; factor &#8211; if I enable FreeRTOS+Trace in the app, then the issue also disappears&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 27, 2015</div><div class="thread-post-content">It is not quite clear to me how the issue is manifesting itself.  Hopefully some questions and answers will make it clearer:
+<blockquote>
+  I&#8217;m using v8.1.2 on an Atmel SAM4N, with &#8216;tickless idle&#8217;. I&#8217;ve used
+  the implementation of the SAM4L low<em>power</em>tick_management.c from
+  v8.0.1; modified &#8211; because it doesn&#8217;t have an AST &#8211; to the SAM4N&#8217;s 
+</blockquote>
+Did you check the latest version of FreeRTOS to see if the tickless implementation had changed?  I just did &#8211; and found in fact it had, with an additional line being added &#8211; being line 384 in this file:
+http://sourceforge.net/p/freertos/code/HEAD/tree/trunk/FreeRTOS/Demo/CORTEX<em>M4</em>ATSAM4L<em>Atmel</em>Studio/src/SAM4L<em>low</em>power<em>tick</em>management.c
+<blockquote>
+  This seems to be working, but I&#8217;ve encountered an issue with one 
+  particular task (there&#8217;s only 3 in the app so far) which is waiting
+  on a semaphore (xSemaphoreCreateBinary) given by an ISR: 
+</blockquote>
+I presume you are using xSemaphoreGiveFromISR(), rather than xSemaphoreGive().
+If you were using the latest FreeRTOS version you would also be able to get a lot more run time checking of interrupt priorities (the most common cause of issues on Cortex-M) by having configASSERT() defined.
+<blockquote>
+  the tick
+  count, comparing it with real time, is running 50% slow. 
+</blockquote>
+&#8230;.and is that also the case when configUSE<em>TICKLESS</em>IDLE is set to 0?
+<blockquote>
+  In my
+  current set-up the semaphore is never given (and I&#8217;ve disabled the
+  interrupt). The timeout on the xSemaphoreTake is 1sec; and the task
+  loop then has a further 1sec vTaskDelay. If I add a delay to the task
+  before it enters its for loop, then the tick rate is fine until that
+  delay ends.
+</blockquote>
+Hmm.  That does sound like an problem in your tickless idle implementation then, as that is when the tick frequency gets set back to its normal &#8216;ticking&#8217; frequency.  Could you also try this using the default tickless idle mode, which is build into the Cortex-M4 port layer (best to use the latest version).  The power saving will not be as great, but it will be good for comparison as a test.
+<blockquote>
+  Now there may be a problem with my low<em>power</em>tick_management.c, but
+  I&#8217;ve discovered that if I change the xSemaphoreTake() to a plain
+  vTaskDelay() then the problem goes away. 
+</blockquote>
+Assuming the semaphore has been created, then timing out on a semaphore should indeed behave the same as calling vTaskDelay().  The underlying mechanisms in the code&#8217;s implementation are close to being the same.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helliwell_cj">helliwell_cj</a> on April 27, 2015</div><div class="thread-post-content">Thanks for the quick reply.
+&#8220;Did you check the latest version of FreeRTOS to see if the tickless implementation had changed? I just did &#8211; and found in fact it had, with an additional line being added &#8211; being line 384 in this file:&#8221;
+I did see this addition in an online post, but I&#8217;m unsure (I&#8217;ll re-check) whether its relevant to the different timer which I have. [And it&#8217;s accepted that you can&#8217;t comment a great deal on chip specifics].
+&#8220;I presume you are using xSemaphoreGiveFromISR(), rather than xSemaphoreGive().&#8221;
+Sorry, yes &#8211; I abbreviated it in my text. (And I&#8217;m not even enabling the interrupt anyway now).
+&#8220;If you were using the latest FreeRTOS version you would also be able to get a lot more run time checking of interrupt priorities (the most common cause of issues on Cortex-M) by having configASSERT() defined.&#8221;
+I&#8217;ll look at upgrading.
+I haven&#8217;t checked without tickles idle (or with the default) &#8211; to be honest, because it&#8217;s critical to the app, I&#8217;ve been using tickless pretty much from the outset.
+&#8220;That does sound like an problem in your tickless idle implementation then, as that is when the tick frequency gets set back to its normal &#8216;ticking&#8217; frequency&#8221;
+Is that the case? As I understood it [with this implementation], it&#8217;s always the slow tick which is being used, so the frequency is fixed.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 27, 2015</div><div class="thread-post-content"><blockquote>
+  &#8220;That does sound like an problem in your tickless idle implementation
+   then, as that is when the tick frequency gets set back to its normal
+   &#8216;ticking&#8217; frequency&#8221; Is that the case? As I understood it [with this
+  implementation], it&#8217;s always the slow tick which is being used, so
+  the frequency is fixed.
+</blockquote>
+Right &#8211; that could well be the case for the SAM4L.  It is the place 
+where the register that sets the time the next interrupt is written to 
+in any case, although granted the value written to the register is 
+probably only calculated once at initialisation or compile time, and 
+then just reused &#8211; so shouldn&#8217;t be wrong if it was correct the first 
+time it was used.
+Worth trying with the default tickless implementation all the same 
+though, and it could narrow down the source of the issue.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helliwell_cj">helliwell_cj</a> on April 27, 2015</div><div class="thread-post-content">A follow-on re. upgrading FreeRTOS &#8211; I&#8217;m using Atmel Studio, which is always a PITA. Am I right in thinking that the versions of port.c and portmacro.h I should be pulling in for this processor are the ones in &#8216;ARM_CM3&#8217;? (I think that&#8217;s what I did last time I upgraded).
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 27, 2015</div><div class="thread-post-content">I can&#8217;t recall if the SAM4N has a floating point unit or not.  If it 
+<em>does</em> then use the port layer files from 
+FreeRTOS/Source/portable/GCC/ARM<em>CM4F.  On the other hand, if it does 
+*not* have a floating point unit then use the files from 
+FreeRTOS/Source/portable/GCC/ARM</em>CM3.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helliwell_cj">helliwell_cj</a> on April 27, 2015</div><div class="thread-post-content">Yep &#8211; no FPU. Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helliwell_cj">helliwell_cj</a> on April 27, 2015</div><div class="thread-post-content">Ok, the default tickless implementation works ok [albeit my app is now stripped down a lot!]. Even with the latest kernel though, my low power tickless goes awry.
+It&#8217;s odd that xSemaphoreTake() vs. vTaskDelay() makes a difference; similarly enabling FreeRTOS+Trace. Makes me wonder if it relates to execution time entering/exiting the tickless state, except <em>both</em> presumably involve extra instructions.
+Any thoughts, from these RTOS perspectives, as to what area may being getting fouled up&#8230;?
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 27, 2015</div><div class="thread-post-content">Nothing comes to mind.  It is very curious that the tick frequency 
+doubles (or halves, I forgot what you said now).
+Can you view the registers in the peripheral used to generate the tick 
+at the time the tick frequency is executing at the wrong frequency to 
+see if any look incorrect (the compare match value, a divider, or 
+something).
+Although, that assumes the tick is really at the wrong frequency, it 
+could alternatively be the code that stops the tick or re-starts the 
+tick that is somehow generating additional interrupts so in fact the 
+clock is correct, but the additional interrupts make it appear as if it 
+were to fast (or slow, or whatever).
+Are you sure the interrupt that brings the system out of sleep is being 
+cleared correctly, and not executing twice?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helliwell_cj">helliwell_cj</a> on April 27, 2015</div><div class="thread-post-content">I do suspect it&#8217;s something to do with the reload/restart logic. I did previously see the ISR being entered twice at a time, which I thought I&#8217;d corrected. It may be that it is still happening on some occasions (as the rate error seems to be somewhat variable &#8211; especially depending what other code/tasks I have in there) &#8211; another close inspection needed!
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helliwell_cj">helliwell_cj</a> on May 5, 2015</div><div class="thread-post-content">Does look like a problem with the RTT &#8211; I can reproduce what looks like similar symptoms with just a simple [FreeRTOS-less] test app. Support ticket opened with Atmel!
+I do have a question about the tickless SAM4L example in FreeRTOS though &#8211; is there someone here (i.e. authors) who might be able to clarify a part of the code?
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 5, 2015</div><div class="thread-post-content">&#8220;yes&#8221;.  Which part?
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helliwell_cj">helliwell_cj</a> on May 5, 2015</div><div class="thread-post-content">The part of vPortSuppressTicksAndSleep() after the sleep has ended due to a tick interrupt:  &#8220;if( ulTickFlag != pdFALSE ) { &#8230;&#8221;.
+I&#8217;m just puzzled by resetting &#8220;the alarm value with whatever remains of this tick period&#8221; &#8211; the cpu has woken because of a tick, so hasn&#8217;t the ISR already set the alarm for the next tick? Why is it necessary to re-set it? Or in other words, isn&#8217;t the alarm value just going to be set to the value it already has?
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 5, 2015</div><div class="thread-post-content">I don&#8217;t have the code in front of me right now, but could it be because 
+the MCU will have been woken part way through a tick period, but the 
+interrupt itself didn&#8217;t take that into account so reset the wake time 
+for a complete tick period (rather than the remainder of the partial 
+tick period)?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SAM4N &#8216;tickless idle&#8217; losing ticks with Semaphore Take</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helliwell_cj">helliwell_cj</a> on May 6, 2015</div><div class="thread-post-content">I think that case is the &#8216;else&#8217; part.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

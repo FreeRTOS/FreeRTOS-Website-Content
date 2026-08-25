@@ -1,0 +1,136 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ class initialisation lockup - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2014/freertos_C_class_initialisation_lockup_158b18baj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="C++ class initialisation lockup - FreeRTOS" />
+<meta property="og:description" content="C++ class initialisation lockupPosted by terrybarnaby on May 27, 2014We are using an in house C++ class library that sits on top of FreeRTOS for use on the STM32F4 platform (Tasks, IO devices etc). This works well, but there is an issue if you try and use something like pvPortMalloc() before the FreeRTOS scheduler is &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2014/freertos_C_class_initialisation_lockup_158b18baj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="C++ class initialisation lockupPosted by terrybarnaby on May 27, 2014We are using an in house C++ class library that sits on top of FreeRTOS for use on the STM32F4 platform (Tasks, IO devices etc). This works well, but there is an issue if you try and use something like pvPortMalloc() before the FreeRTOS scheduler is [&hellip;]" />
+<meta name="twitter:title" content="C++ class initialisation lockup - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202393' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202393' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202393' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202393' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143563' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2014%2Ffreertos_C_class_initialisation_lockup_158b18baj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2014%2Ffreertos_C_class_initialisation_lockup_158b18baj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143563">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2014_freertos_support_forum_archive_index.html/">May 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">C++ class initialisation lockup</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/terrybarnaby">terrybarnaby</a> on May 27, 2014</div><div class="thread-post-content">We are using an in house C++ class library that sits on top of FreeRTOS for use on the STM32F4 platform (Tasks, IO devices etc). This works well, but there is an issue if you try and use something like pvPortMalloc() before the FreeRTOS scheduler is started (probably from a object creation constructor (creating semaphores etc etc)).
+Code like this eventually calls: vPortEnterCritical() then vPortExitCritical(). The GCC/ARM_CM4F port uses a variable uxCriticalNesting to determine if interrupts should be re-enabled in vPortExitCritical(). However before the scheduler is started uxCriticalNesting is set to 0xaaaaaaaa. Thus when the C++ initialises things before the scheduler is started, interrupts end up by being disabled. Unfortunately we are using interrupts at that time for certain functionality (debugging printf&#8217;s through USB for example).
+Now we can set uxCriticalNesting to 0 in port.c and this works, but are there implications of doing this and generally in calling FreeRTOS functions (apart from the obvious ones !) before the scheduler is started ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">C++ class initialisation lockup</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 27, 2014</div><div class="thread-post-content">What you are seeing is intentional and not related to C++.  You will have the same effect calling any FreeRTOS API functions that use critical sections, not just pvPortMalloc().
+A context switch cannot be performed prior to the scheduler being started.  Interrupts are intentionally left disabled (in fact, just masked in this case) during the initialisation phase to ensure any interrupts that use the FreeRTOS API that are pre-installed or installed during the initialisation phase cannot execute while the scheduler is in an inconsistent state.  Interrupts are enabled again automatically when the first task starts to run.
+On STM32 platforms interrupts are not actually globally disabled, only masked upto configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY, so if you set your UART interrupt to a priority above that (which means a lower numeric value on Cortex-M parts) then the interrupt will remain enabled &#8211; <b>however</b> the interrupt must <b>not</b> attempt to use the FreeRTOS API and its priority must be lowered again to be equal to or below configMAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY if it is going to use the FreeRTOS API after the scheduler has been started.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">C++ class initialisation lockup</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/terrybarnaby">terrybarnaby</a> on May 27, 2014</div><div class="thread-post-content">Many thanks for the reply.
+That makes sense, shame I have to change interrupt priorities during the initialisation phase, but I can see the sense of this to save odd issues in some usage cases. Cheers.
+</div></div><div class="thread-post"><h3 class="thread-post-title">C++ class initialisation lockup</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dumarjo">dumarjo</a> on May 27, 2014</div><div class="thread-post-content">Hi,
+One thing that we have done here to protect against the malloc, is we test how many task exist. If at least 1 task exist, we presume that the sheduler is started. This don&#8217;t prevent the problem with the interrupt, but At least this correct the problem of global object creation.
+Jonathan
+</div></div><div class="thread-post"><h3 class="thread-post-title">C++ class initialisation lockup</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 27, 2014</div><div class="thread-post-content">This might be helpful as an alternative to checking the number of tasks:
+http://www.freertos.org/a00021.html#xTaskGetSchedulerState
+Regards,
+Richard Barry.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug in the EMAC ISR - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2006/freertos_Bug_in_the_EMAC_ISR_1485350.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Bug in the EMAC ISR - FreeRTOS" />
+<meta property="og:description" content="Bug in the EMAC ISRPosted by molnarzs on April 18, 2006It may explain the eventual EMAC hangs. The problem, with scratching a solution that worked in my case, can be found in my blog: During my actual project &#040;using an Atmel AT91SAM7X controller&#041; I encountered a bug that also exists in the lwIP demo of &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2006/freertos_Bug_in_the_EMAC_ISR_1485350.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Bug in the EMAC ISRPosted by molnarzs on April 18, 2006It may explain the eventual EMAC hangs. The problem, with scratching a solution that worked in my case, can be found in my blog: During my actual project &#040;using an Atmel AT91SAM7X controller&#041; I encountered a bug that also exists in the lwIP demo of [&hellip;]" />
+<meta name="twitter:title" content="Bug in the EMAC ISR - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201359' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201359' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201359' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201359' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139635' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2006%2Ffreertos_Bug_in_the_EMAC_ISR_1485350.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2006%2Ffreertos_Bug_in_the_EMAC_ISR_1485350.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139635">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2006_freertos_support_forum_archive_index.html/">April 2006 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Bug in the EMAC ISR</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnarzs">molnarzs</a> on April 18, 2006</div><div class="thread-post-content">It may explain the eventual EMAC hangs. The problem, with scratching a solution that worked in my case, can be found in my blog:
+During my actual project &#40;using an Atmel AT91SAM7X controller&#41; I encountered a bug that also exists in the lwIP demo of FreeRTOS. I tried it and the problem really occurs. It is likely that the bug does not affect an embedded web server like the demo &#40;in normal circumferences&#41;, but, as the the problem is in the very simple ISR, it might be found in several different projects.
+The observation: if we send a fast burst of huge amount of data for a couple of seconds &#40;with a packet generator for example&#41;, the EMAC controller stops answering and does not recover. If we do it for a minute, it surely hangs.
+The reason: The data arrives faster than the controller is able to process it. So in a given moment, all the receive buffers get used in the same time. The controller does not generate RCOMP interrupts any more, it generates RXUBR interrupts only as all the buffers are used, all the used bits are set. If this interrupt is not handled in the EMAC ISR &#8211; the networking task is never signalled &#8211; the data in buffers never processed &#8211; all the buffers remain used &#8211; the controller stops receiving data.
+The solution I used in my project: enable RXUBR as well. When this interrupt occurs, it is also considered as frame arrived. If fact, someone really wanted to send us something:
+if &#40;status AT91C&#95;EMAC&#95;RCOMP || status AT91C&#95;EMAC&#95;RXUBR&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; /&#42; A frame has been received, signal it &#42;/
+&nbsp;&nbsp;&nbsp; &#95;n&#95;ethernet&#95;is&#95;frame&#95;received = TRUE;
+&#125;
+This will trigger data processing. By checking the ownership bits &#40;the code should do it when it looks for the frame&#8217;s last buffer&#41;, the code can easily detect that all the buffers are used, so a data burst must have arrived. It than starts the appropriate recovery action &#40;in my case, I simply releases all the buffers by dropping the content, until the data rate normalizes&#41;.
+http://www.zsoltmolnar.hu/blog/embedded/2006/04/freertos-emac-bug.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the EMAC ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnarzs">molnarzs</a> on April 18, 2006</div><div class="thread-post-content">Someone wrote in the &quot;tcp connection resetting&quot; thread, relating to this bug, that:
+&gt;quote, &quot; + Updated the SAM7X EMAC drivers to take 
+&gt;into account the hardware errata&nbsp; 
+&gt;regarding lost packets. 
+&gt;&quot; from http://www.freertos.org/History.txt 
+&gt;Could this be something to do with your problem? 
+Where can I find that HW errata? We have lost packet problems as well, but it has no link with the interrupt issue, the source of that problem got clear, and the described fix made solved it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the EMAC ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 18, 2006</div><div class="thread-post-content">I was told directly by Atmel about the problem discovered in the EMAC hardware, and that this would be described in an errata &quot;very shortly&quot;.&nbsp; I therefore put the reference to the errata in the change history.&nbsp; However, I have not actually seen the errata, and looking on the Atmel WEB I cannot find it still.&nbsp; Maybe it is not written yet ;-&#41;
+The problem was described to me as:
+&#43; An interrupt occurs, the AT91C&#95;EMAC&#95;RCOMP bit is set in the interrupt status register.
+&#43; Under particular conditions, a timing glitch occurs in the device.&nbsp; AT91C&#95;EMAC&#95;RCOMP is cleared again :-&#40;
+&#43; The interrupt is processed, but AT91C&#95;EMAC&#95;RCOMP is already clear so the interrupt source is not known from the interrupt status.
+I got around this by finding the interrupt source by also checking the AT91C&#95;EMAC&#95;REC in the RSR which &#40;I&#8217;m told&#41; should remain set even under the error condition.&nbsp; If you are writing a more complete driver then the other bits in the RSR also need double checking even if the interrupt status bit is clear.
+This is of course difficult to test as generating a glitch is not something that can be done on demand.
+Could it be that your original problem was that you were only checking the interrupt status register &#40;as per the datasheet&#41;, not recognising that a frame had been received &#40;as the AT91C&#95;EMAC&#95;REC bit had been mistakenly cleared&#41;, and therefore your buffers were filling up?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the EMAC ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnarzs">molnarzs</a> on April 18, 2006</div><div class="thread-post-content">Thanks for the info, that was really valuable&#33; 
+In my case, that was it. I checked it, and both solutions &#40;yours and mine&#41; solves the problem, but yours certainly is much simpler and to the point. 
+So the actual EMAC hangs &#40;in version 4.0.1&#41; must have a different source.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the EMAC ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/molnarzs">molnarzs</a> on April 18, 2006</div><div class="thread-post-content">Hmm, I think the problem still exists, the right solution would be combining the two. We do not have to enable and check RXUBR, checking AT91C&#95;EMAC&#95;REC is OK, but my proposed recovery method must be there. 
+In ulEMACInputLength &#40;SAM&#95;EMAC.c&#41;, by the time you get to the section that looks for the frame length &#40;line 318&#41;, all the buffers may get full. In this case, either you never get out of the loop &#40;wrong or too long packets, etc.&#41; or the function returns 0 &#8211; the packets are not processed. In both cases, the SW stops responding to the network requests.
+In my SW, I changed the RXUBR checking to your one while keeping my the recovery code, ant it works fine, survives the heavy load. But the FreeRTOS, as is, hangs when I apply the same load.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the EMAC ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on February 20, 2007</div><div class="thread-post-content">Hello All,
+I realize that this thread is a bit old, but I think that I&#8217;m running into a similar issue. This thread is the closest description to the problem that I can find.
+I&#8217;m running FreeRTOS v4.2.0 lwIP&#95;Demo&#95;Rowley&#95;ARM7 port for the AT91SAM7X256. Compiled with Rowley CrossStudio 1.6.
+If I send a continuous stream of ping packets and hit the web server from 2 different machines at about the same time, the system locks up after a few seconds. 
+I&#8217;ve determined that the processor is DABORT&#8217;ing. I cannot seem to get much useful data out of the MC&#95;AASR and MC&#95;ASR registers. But it is DABORT&#8217;ing because: UNDADD = 1, MISADD = 1, ABTSZ = 2, all others are 0.
+This thread mentions something about a bug in the EMAC ISR due to a hardware problem. I read the errata about the issue, but I&#8217;m not sure how to implement the changes in the ISR.
+Has the EMAC ISR problem been fixed in the latest version of the port? Or am I running into a different issue with the ISR?
+Thanks for any hints or advice&#33;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the EMAC ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on February 20, 2007</div><div class="thread-post-content">Are you using GCC?&nbsp; There has been some discussions recently.&nbsp; Are you using -O0 optimisation?&nbsp; If so try -O1.&nbsp; Also try -fomit-frame-pointer option.&nbsp; Finally, try reducing the heap size, you might just be running out of stack space.&nbsp; These are all things discussed so you may have tried already.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the EMAC ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on February 20, 2007</div><div class="thread-post-content">Thanks for the tips&#33;
+I was using -O1, but not the -fomit-frame-pointer option. I tried it and it made no difference. 
+I&#8217;ve also tried reducing the heap size. I also tried increasing the default stack size for the &quot;basic web server&quot; to 1024. Neither change made a difference. The darn thing still locks up with a DABORT under a load. :-
+Thanks again for the help.
+I&#8217;m going to continue debugging it. Hopefully I&#8217;ll find the issue.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in the EMAC ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on May 7, 2007</div><div class="thread-post-content">has anyone found a solution? could the original &#96;nobody&#96; of this post reply with his results?
+thanks.
+mo.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

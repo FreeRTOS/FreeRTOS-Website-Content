@@ -1,0 +1,166 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reception of characters via UART interrupt [FreeRTOS - Cortex M7] - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2018/freertos_Reception_of_characters_via_UART_interrupt_FreeRTOS_-_Cortex_M7_083da185j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Reception of characters via UART interrupt [FreeRTOS - Cortex M7] - FreeRTOS" />
+<meta property="og:description" content="Reception of characters via UART interrupt [FreeRTOS &#8211; Cortex M7]Posted by xavierpacheco on March 13, 2018Hello, I am using STM32CubeMx to solve the following issue: My system should avoid loss of character reception, and since I can not guarantee the priority of the task that invokes my services, the reception of characters will be handled &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2018/freertos_Reception_of_characters_via_UART_interrupt_FreeRTOS_-_Cortex_M7_083da185j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Reception of characters via UART interrupt [FreeRTOS &#8211; Cortex M7]Posted by xavierpacheco on March 13, 2018Hello, I am using STM32CubeMx to solve the following issue: My system should avoid loss of character reception, and since I can not guarantee the priority of the task that invokes my services, the reception of characters will be handled [&hellip;]" />
+<meta name="twitter:title" content="Reception of characters via UART interrupt [FreeRTOS - Cortex M7] - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202912' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202912' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202912' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202912' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146971' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2018%2Ffreertos_Reception_of_characters_via_UART_interrupt_FreeRTOS_-_Cortex_M7_083da185j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2018%2Ffreertos_Reception_of_characters_via_UART_interrupt_FreeRTOS_-_Cortex_M7_083da185j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146971">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2018_freertos_support_forum_archive_index.html/">March 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Reception of characters via UART interrupt [FreeRTOS &#8211; Cortex M7]</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/xavierpacheco">xavierpacheco</a> on March 13, 2018</div><div class="thread-post-content">Hello,
+I am using STM32CubeMx to solve the following issue:
+My system should avoid loss of character reception, and since I can not guarantee the priority of the task that invokes my services, the reception of characters will be handled by an interrupt routine that is activated when a character is received by the serial port.
+This routine must save the received characters in a certain data structure (buffer) to be later processed by the tasks (tasks) of the system. Processing of this interrupt routine should be minimal so as not to interfere with other interrupt routines or tasks.
+The routines used by the tasks are:
+ char uart_getchar (void) &#8211; this routine reads a character from the buffer where the characters have been received and should not return until a character is obtained.
+ bool uart<em>getchar</em>available (char * c) &#8211; this routine returns a boolean value determining if a buffer character could be read, in which case the value is found in parameter c. If there is no character in the buffer, the routine returns immediately and the result of the call is false.
+The way I&#8217;m implementing this is as follows:
+This will be my ISR in stm32f7xx<em>it.c: 
+~~~
+extern uint8</em>t buffRX[10];
+void USART3<em>IRQHandler(void)
+{
+  HAL</em>UART<em>IRQHandler(&amp;huart3);
+  HAL</em>UART<em>Receive</em>IT(&amp;huart3, buffRX, 10);
+~~~
+}
+Part of the main: 
+~~~
+<h1>include &#8220;main.h&#8221;</h1>
+<h1>include &#8220;stm32f7xx_hal.h&#8221;</h1>
+<h1>include &#8220;cmsis_os.h&#8221;</h1>
+UART_HandleTypeDef huart3;
+osThreadId defaultTaskHandle; //task for char uart<em>getchar (void) (normal priority)
+osThreadId myTask02Handle; //task for bool uart</em>getchar_available (char * c) (normal priority)
+uint8_t buffRX[10];
+~~~
+How could I implement char uart<em>getchar (void) and bool uart</em>getchar<em>available (char * c) in my tasks? Can I use HAL</em>UART_RxCpltCallback to check if a caracter has been obtained?  Also, do you think that I have initialized the UART interrupt correctly? I&#8217;m not expert using STM32 MCUs, that&#8217;s why I ask for your suggestions. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Reception of characters via UART interrupt [FreeRTOS &#8211; Cortex M7]</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 13, 2018</div><div class="thread-post-content">I&#8217;m not 100% sure what you are asking, but I think you are looking for 
+advice on creating a blocking UART driver.  There are lots of FreeRTOS 
+features that could be used for this, but I would recommend looking at 
+stream buffers as a start.  Your UART interrupt handler need just write 
+the characters into the stream buffer.  Your receiving task need only 
+block on the stream buffer until it contains characters.  If you also 
+need a function that returns the number of bytes available you can just 
+query the stream buffer to see how many bytes it contains.
+https://www.freertos.org/RTOS-stream-buffer-example.html
+Regarding your set up of the UART interrupt.  If you use a FreeRTOS API 
+then the priority of the interrupt needs to be at or below 
+configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY, and as you are using an STM32, 
+there is an extra step to ensure all the priority bits are set to be 
+preemption priority and not sub priority.  That part is explained on 
+this page: https://www.freertos.org/RTOS-Cortex-M3-M4.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Reception of characters via UART interrupt [FreeRTOS &#8211; Cortex M7]</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 15, 2018</div><div class="thread-post-content">My first comment is I haven&#8217;t looked at the STM32CubeMX routines in particular, but my general impression with a lot of these &#8216;bare metal&#8217; abstraction drivers is they DON&#8217;T mesh well with an RTOS, inpart because they often don&#8217;t provide easy ways to block and reactivate.
+With the sort of getchar routines you are looking to use, you really want to put the data in a Queue, or with V10 a StreamBuffer, and that says you want a driver that in the ISR is given the characters as received so you can place them in the Queue/Buffer, not one that does it&#8217;s own buffering (as then you can&#8217;t easly get the blocking behavior).
+What I often end up using is a single function, int getChar(TickType<em>t), which I pass a timeout value (0 would be like your uart</em>getchar<em>available operation, or portMAX</em>DELAY for a full block until one arrives) and have the function return the character (as an unsigned char, 00-255) if one was received, and -1 if it timed out.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

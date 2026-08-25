@@ -1,0 +1,216 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS API functions must not be called from within a critical section - Please explain - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2019/freertos_FreeRTOS_API_functions_must_not_be_called_from_within_a_critical_section_-_Please_explain_7beb78c86fj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS API functions must not be called from within a critical section - Please explain - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS API functions must not be called from within a critical section &#8211; Please explainPosted by ingamow on January 14, 2019From the documentation of taskENTER_CRITICAL(), I&#8217;ve seen this info &#8220;FreeRTOS API functions must not be called from within a critical section&#8221;. In one of my projects using Cortex M0, I happen to use xQueueSendFromISR() from &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2019/freertos_FreeRTOS_API_functions_must_not_be_called_from_within_a_critical_section_-_Please_explain_7beb78c86fj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS API functions must not be called from within a critical section &#8211; Please explainPosted by ingamow on January 14, 2019From the documentation of taskENTER_CRITICAL(), I&#8217;ve seen this info &#8220;FreeRTOS API functions must not be called from within a critical section&#8221;. In one of my projects using Cortex M0, I happen to use xQueueSendFromISR() from [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS API functions must not be called from within a critical section - Please explain - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203166' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203166' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203166' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203166' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147537' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2019%2Ffreertos_FreeRTOS_API_functions_must_not_be_called_from_within_a_critical_section_-_Please_explain_7beb78c86fj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2019%2Ffreertos_FreeRTOS_API_functions_must_not_be_called_from_within_a_critical_section_-_Please_explain_7beb78c86fj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147537">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2019_freertos_support_forum_archive_index.html/">January 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ingamow">ingamow</a> on January 14, 2019</div><div class="thread-post-content">From the documentation of taskENTER_CRITICAL(), I&#8217;ve seen this info <strong>&#8220;FreeRTOS API functions must not be called from within a critical section&#8221;</strong>. In one of my projects using Cortex M0, I happen to use xQueueSendFromISR() from within a critical section in an ISR. I face no problems in using this, so just wanted to know the <strong>EXACT TECHNICAL REASON</strong> of why this is mentioned. 
+*P.S : I could only find Answers like &#8220;As a general Rule of Thumb &#8230;&#8221; . Can anyone please explain it in detail ? *
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on January 14, 2019</div><div class="thread-post-content">First, you should not be calling taskENTER<em>CRITICAL inside an ISR, as it doesn&#8217;t end in FromISR (there is on many port a taskENTER</em>CRITICAL<em>FROM</em>ISR routine that can be used if the port supports nested interrupts), and I don&#8217;t think that function has the same note. (I don&#8217;t know off hand if the M0 allows nested interurpts so it provides/needs a critical section in ISRs).
+The big issue is that if you call a FreeRTOS function that blocks inside a critical section, you run into an issue that the taskENTER_CRITICAL call says no other task or ISR will be run during it, but the blocking says that some other task should be run, so the result will by necessity break some expectation. ISRs never block, so this can&#8217;t be an issue for a critical section in an ISR.
+Many ports implement the scheduler call via a interrupt call, so it can&#8217;t be called in a critical section.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 14, 2019</div><div class="thread-post-content">The Cortex-M0 does not have a basepri register, so critical sections 
+don&#8217;t mask just a subset of interrupt priorities as per the 
+Cortex-M3/4/7 ports, but all interrupts &#8211; so interrupt nesting isn&#8217;t 
+supported directly by the kernel for that port.  Therefore a critical 
+section inside an interrupt is not necessary, and the &#8220;From ISR&#8221; 
+versions of those functions referred to by Richard D are just null macros.
+The &#8216;rule of thumb&#8217; description is given because it is not only 
+dependent of the API function in use, but also dependent on the FreeRTOS 
+port in use.  For example, consider a port that uses a trap to perform a 
+context switch synchronously &#8211; in a critical section the trap may just 
+cause an exception (because of the state of the processor when you are 
+in a critical section), whereas other architectures may not.  In any 
+case, anything that is supposed to block of switch to a higher priority 
+task that doesn&#8217;t because you are in a critical section can cause 
+application logic errors.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ingamow">ingamow</a> on January 15, 2019</div><div class="thread-post-content">Thank you guys. I&#8217;m using a 4 year old code in which it said that taskENTER<em>CRITICAL was introduced in the ISR context to fix a bug that occured years back. It works perfectly now, but under some rare cases we are having some issues. As far as FreeRTOS part is concerned, this is the one in which we are violating the rule. So we are now trying to find an alternative for this approach and is planning to use taskENTER</em>CRITICAL<em>FROM</em>ISR (which is not a null macro). In fact, this is what is done inside that macro :- 
+**  asm volatile(
+                    &#8221; mrs r0, PRIMASK   n&#8221;
+                    &#8221; cpsid i           n&#8221;
+                    &#8221; bx lr               &#8221;
+                  );  **
+Will this make any difference ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ingamow">ingamow</a> on January 15, 2019</div><div class="thread-post-content">
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 15, 2019</div><div class="thread-post-content">On 1/14/2019 9:55 PM, Akshay wrote:
+<blockquote>
+  Thank you guys. I&#8217;m using a 4 year old code in which it said that 
+  taskENTER_CRITICAL was introduced in the ISR context to fix a bug that 
+  occured years back.
+</blockquote>
+Really?  Which code is that?  Can you please give more information.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ingamow">ingamow</a> on January 15, 2019</div><div class="thread-post-content">It&#8217;s a confidential code developed and maintained by previous developers in our company.
+But it looks something like this :
+            taskENTER<em>CRITICAL();
+            if(xQueueSendFromISR( &#8230;.))
+            {
+                taskEXIT</em>CRITICAL();
+                &#8230;
+             }<br />
+this is in an ISR context, and the addition of critical section is what is mentioned to be done as a workaround for a bug fix that occured long back (Nobody remembers the exact reason). I dont want to bring around new bugs in removing this but just wanted to know answers to these questions
+1) Here,  will the use of  taskENTER<em>CRITICAL</em>FROM_ISR (which is not a null macro in our case as mentioned above) make any difference? 
+2) Is there an alternative approach for the above mentioned code?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on January 15, 2019</div><div class="thread-post-content">If the port supports nested interrupts, then taskENTER<em>CRITICAL</em>FROM<em>ISR, which should be called something like:
+uint32</em>t mask = taskENTER<em>CRITICAL</em>FROM<em>ISR();
+will block interrupts up to the level that is allowed to use the FreeRTOS FromISR API, from occuring until the next occurance of
+taskEXIT</em>CRITICAL<em>FROM</em>ISR(mask);
+(note the additon of a parameter in the calls)
+If it doesn&#8217;t support nested interrupts, then there is no need to do this, as nothing will be able to interfere.
+If nesting IS possible (or was in an earlier version of the code) the Critical Section may have been needed if some other ISR might play with that Queue also.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ingamow">ingamow</a> on January 17, 2019</div><div class="thread-post-content">Thanks Richard. Now I know why taskENTER<em>CRITICAL</em>FROM_ISR will be useless in our case.
+ The thing which I still don&#8217;t understand is :
+<blockquote>
+  In any case, anything that is supposed to block of switch to a higher priority 
+  task that doesn&#8217;t because you are in a critical section can cause 
+  application logic errors
+</blockquote>
+Can you explain this point in detail. How does context switching in a critical region cause application Logic errors ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on January 17, 2019</div><div class="thread-post-content">A context switch can&#8217;t happen in a critical setion, thats why you have a critical section, so you can&#8217;t switch to some new context.
+The issue comes if you want to test the status of something, and react appropriately, and not have to worry that something else might have changed the conditon. Note that xQueueSendFromISR internally uses a critical section for accessing the queue so it can test that there is room, and using it, without problems that someone else takes the space that it thought was available.
+In the code you posted, which had to be incomplete as the critical section was only ended if the send succedded, perhaps the else clause to handle a failed send needed to assume that some other ISR wasn&#8217;t going to come along and make room in the queue during its recovery. That would require a critical section.
+It could also be that at one point there was more code after the Send and before the end critical, that has since been removed, and now the critical section isn&#8217;t needed in this version.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS API functions must not be called from within a critical section &#8211; Please explain</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ingamow">ingamow</a> on January 17, 2019</div><div class="thread-post-content">+Akshay AJ <a href="/FreeRTOS_Support_Forum_Archive/January_2019/&#109;&#x61;&#105;&#x6c;t&#111;&#x3a;&#97;&#x6b;&#115;&#104;&#x61;&#121;&#x2e;&#97;&#x6a;&#x40;&#103;&#x61;&#100;&#x67;e&#111;&#x6e;&#46;&#x63;o&#109;">&#97;&#x6b;&#115;&#104;&#x61;&#121;&#x2e;&#97;&#x6a;&#x40;&#103;&#x61;&#100;&#x67;e&#111;&#x6e;&#46;&#x63;o&#109;</a>
+On Thu, Jan 17, 2019 at 5:10 PM Richard Damon wrote:
+<blockquote>
+  A context switch can&#8217;t happen in a critical setion, thats why you have a
+  critical section, so you can&#8217;t switch to some new context.
+  The issue comes if you want to test the status of something, and react
+  appropriately, and not have to worry that something else might have changed
+  the conditon. Note that xQueueSendFromISR internally uses a critical
+  section for accessing the queue so it can test that there is room, and
+  using it, without problems that someone else takes the space that it
+  thought was available.
+  In the code you posted, which had to be incomplete as the critical section
+  was only ended if the send succedded, perhaps the else clause to handle a
+  failed send needed to assume that some other ISR wasn&#8217;t going to come along
+  and make room in the queue during its recovery. That would require a
+  critical section.
+  It could also be that at one point there was more code after the Send and
+  before the end critical, that has since been removed, and now the critical
+  <h2>section isn&#8217;t needed in this version.</h2>
+  FreeRTOS API functions must not be called from within a critical section &#8211;
+  Please explain
+  <h2><a href="https://sourceforge.net/p/freertos/discussion/382005/thread/7beb78c86f/?limit=25#3a80">https://sourceforge.net/p/freertos/discussion/382005/thread/7beb78c86f/?limit=25#3a80</a></h2>
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+&#8212; 
+Regards,
+<em>Akshay A J</em>
+<a href="https://www.linkedin.com/in/akshay-a-j-a7744b106">https://www.linkedin.com/in/akshay-a-j-a7744b106</a>
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

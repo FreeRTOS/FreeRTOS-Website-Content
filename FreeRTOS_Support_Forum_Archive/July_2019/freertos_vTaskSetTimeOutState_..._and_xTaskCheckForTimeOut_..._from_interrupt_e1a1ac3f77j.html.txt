@@ -1,0 +1,421 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vTaskSetTimeOutState(...) and xTaskCheckForTimeOut(...) from interrupt - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2019/freertos_vTaskSetTimeOutState_..._and_xTaskCheckForTimeOut_..._from_interrupt_e1a1ac3f77j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="vTaskSetTimeOutState(...) and xTaskCheckForTimeOut(...) from interrupt - FreeRTOS" />
+<meta property="og:description" content="vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interruptPosted by parmi on July 2, 2019Can the vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) APIs be called by an interrupt service routine? vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interruptPosted by richard_damon on July 2, 2019I don&#8217;t think so, they would need critical sections, which need to be done differently in ISRs. In general, if it doesn&#8217;t &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2019/freertos_vTaskSetTimeOutState_..._and_xTaskCheckForTimeOut_..._from_interrupt_e1a1ac3f77j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interruptPosted by parmi on July 2, 2019Can the vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) APIs be called by an interrupt service routine? vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interruptPosted by richard_damon on July 2, 2019I don&#8217;t think so, they would need critical sections, which need to be done differently in ISRs. In general, if it doesn&#8217;t [&hellip;]" />
+<meta name="twitter:title" content="vTaskSetTimeOutState(...) and xTaskCheckForTimeOut(...) from interrupt - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203145' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203145' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203145' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203145' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138124' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2019%2Ffreertos_vTaskSetTimeOutState_..._and_xTaskCheckForTimeOut_..._from_interrupt_e1a1ac3f77j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2019%2Ffreertos_vTaskSetTimeOutState_..._and_xTaskCheckForTimeOut_..._from_interrupt_e1a1ac3f77j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138124">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2019_freertos_support_forum_archive_index.html/">July 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on July 2, 2019</div><div class="thread-post-content">Can the vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) APIs be called by an interrupt service routine?
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 2, 2019</div><div class="thread-post-content">I don&#8217;t think so, they would need critical sections, which need to be done differently in ISRs. In general, if it doesn&#8217;t say FromISR, it isn&#8217;t usable from an ISR.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on July 2, 2019</div><div class="thread-post-content">I figured it was like that, is there a way to make these APIs safe?
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 2, 2019</div><div class="thread-post-content">You need to change the critical section macros, as per the example for
+vTaskSetTimeOutState() below.
+<pre>
+void vTaskSetTimeOutState( TimeOut_t * const pxTimeOut )
+{
+UBaseType_t uxSavedInterruptStatus;
+    configASSERT( pxTimeOut );
+    uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+    {
+        pxTimeOut->xOverflowCount = xNumOfOverflows;
+        pxTimeOut->xTimeOnEntering = xTickCount;
+    }
+    portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedInterruptStatus );
+}
+</pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on July 8, 2019</div><div class="thread-post-content">ok, thanks a lot for the solution.
+Is there a way to add this API to FreeRTOS without having to modify the &#8220;tasks.c&#8221; file? for example by creating a &#8220;tasks_helper.c&#8221; file.
+Because if I create an additional *.c I can&#8217;t access the &#8220;xNumOfOverflows&#8221; and &#8220;xTickCount&#8221; variables
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 8, 2019</div><div class="thread-post-content">You can add your code into a header file called
+freertos<em>task</em>c<em>additions.h, then set
+configINCLUDE</em>FREERTOS<em>TASK</em>C<em>ADDITIONS</em>H to 1 in FreeRTOSConfig.h to
+have the header file included at the bottom of the source file so you
+have access to the private data.
+https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/tasks.c#l5203
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on July 8, 2019</div><div class="thread-post-content">I have created &#8220;<strong>freertos<em>tasks</em>c_additions.h</strong>&#8221; file:
+~~~
+<h1>include &#8220;FreeRTOS.h&#8221;</h1>
+<h1>include &#8220;task.h&#8221;</h1>
+void vTaskSetTimeOutStateFromISR(TimeOut_t * const pxTimeOut);
+BaseType<em>t xTaskCheckForTimeOutFromISR(TimeOut</em>t * const pxTimeOut, TickType_t * const pxTicksToWait);
+~~~
+<strong>tasks_custom.cpp</strong>
+~~~
+<h1>include &#8220;freertos<em>tasks</em>c_additions.h&#8221;</h1>
+void vTaskSetTimeOutStateFromISR(TimeOut<em>t * const pxTimeOut)
+{
+    UBaseType</em>t uxSavedInterruptStatus;
+<pre><code>configASSERT(pxTimeOut);
+uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+{
+    pxTimeOut-&gt;xOverflowCount = xNumOfOverflows;
+    pxTimeOut-&gt;xTimeOnEntering = xTickCount;
+}
+portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+</code></pre>
+}
+BaseType<em>t xTaskCheckForTimeOutFromISR(TimeOut</em>t * const pxTimeOut, TickType<em>t * const pxTicksToWait)
+{
+    BaseType</em>t xReturn;
+    UBaseType_t uxSavedInterruptStatus;
+<pre><code>configASSERT(pxTimeOut);
+configASSERT(pxTicksToWait);
+uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+{
+    /* Minor optimisation.  The tick count cannot change in this block. */
+    const TickType_t xConstTickCount = xTickCount;
+    const TickType_t xElapsedTime = xConstTickCount - pxTimeOut-&gt;xTimeOnEntering;
+</code></pre>
+<h1>if( INCLUDE_xTaskAbortDelay == 1 )</h1>
+<pre><code>    if (pxCurrentTCB-&gt;ucDelayAborted != pdFALSE)
+    {
+        /* The delay was aborted, which is not the same as a time out,
+        but has the same result. */
+        pxCurrentTCB-&gt;ucDelayAborted = pdFALSE;
+        xReturn = pdTRUE;
+    }
+    else
+</code></pre>
+<h1>endif</h1>
+<h1>if ( INCLUDE_vTaskSuspend == 1 )</h1>
+<pre><code>if (*pxTicksToWait == portMAX_DELAY)
+    {
+        /* If INCLUDE_vTaskSuspend is set to 1 and the block time
+        specified is the maximum block time then the task should block
+        indefinitely, and therefore never time out. */
+        xReturn = pdFALSE;
+    }
+    else
+</code></pre>
+<h1>endif</h1>
+if ((xNumOfOverflows != pxTimeOut->xOverflowCount) &amp;&amp; (xConstTickCount >= pxTimeOut->xTimeOnEntering)) /<em>lint !e525 Indentation preferred as is to make code within pre-processor directives clearer. */
+        {
+            /</em> The tick count is greater than the time at which
+            vTaskSetTimeout() was called, but has also overflowed since
+            vTaskSetTimeOut() was called.  It must have wrapped all the way
+            around and gone past again. This passed since vTaskSetTimeout()
+            was called. <em>/
+            xReturn = pdTRUE;
+        }
+        else if(xElapsedTime &lt; *pxTicksToWait) /</em>lint !e961 Explicit casting is only redundant with some compilers, whereas others require it to prevent integer conversion errors. <em>/
+        {
+            /</em> Not a genuine timeout. Adjust parameters for time remaining. */
+            *pxTicksToWait -= xElapsedTime;
+            vTaskInternalSetTimeOutState(pxTimeOut);
+            xReturn = pdFALSE;
+        }
+        else
+        {
+            *pxTicksToWait = 0;
+            xReturn = pdTRUE;
+        }
+    }
+    portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+<pre><code>return xReturn;
+</code></pre>
+}
+~~~
+<strong>configINCLUDE<em>FREERTOS</em>TASK<em>C</em>ADDITIONS_H</strong> setted to 1
+but when i try to use &#8216;<strong>vTaskSetTimeOutStateFromISR(&#8230;)</strong>&#8216; I get the following error:
+<strong>vTaskSetTimeOutStateFromISR(&#8230;)</strong> was not declared in this scope
+<h2>edit</h2>
+Problem solved, I forgot to write #include &#8220;freertos<em>tasks</em>c_additions.h&#8221; in the file where I&#8217;m going to use my APIs
+In any case, is the procedure I wrote to add new APIs valid? do you have any suggestions to improve this implementation?
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on July 8, 2019</div><div class="thread-post-content">no, I agree that when I compile it doesn&#8217;t find the &#8220;xNumOfOverflows&#8221; and &#8220;xTickCount&#8221; variables.
+I suspect the way I implemented these APIs is incorrect.
+Any tips?
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 8, 2019</div><div class="thread-post-content">If you define configINCLUDE<em>FREERTOS</em>TASK<em>C</em>ADDITIONS 1 in FreeRTOS config, then your FreeRTOS<em>Task</em>C<em>Additions.h file is included a part of Task.c, that means that it won&#8217;t need to include FreeRTOS.h or Tasks.h headers, as they are already available. You likely want it to include some other FreeRTOS</em>Additions<em>API.h that the callers of your new functions also  include to provide declerations of the functions. (If you are using C++, don&#8217;t forget the extern &#8220;C&#8221; stuff in the API header). Your other code does NOT include FreeRTOS</em>Task<em>C</em>Additions.h
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on July 10, 2019</div><div class="thread-post-content">But if I don&#8217;t include the files &#8216;FreeRTOS.h&#8217; and &#8216;task.h&#8217;, the types &#8216;BaseType<em>t&#8217; and &#8216;TimeOut</em>t&#8217; are not found.
+unknown type name &#8216;BaseType<em>t&#8217;
+unknown type name &#8216;TimeOut</em>t&#8217;
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on July 10, 2019</div><div class="thread-post-content">For your code in freertos<em>tasks</em>c<em>additions.h, those types will have been define by task.c before it includes freertos</em>tasks<em>c</em>additions.h, so they will not be an issue. YOU should NEVER have in include for freertos<em>tasks</em>c_additions.h in your own code, so those definitions should be ok. If you include the file in some other file, then it won&#8217;t have access to private internals of tack.c, so you can&#8217;t do that. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on July 10, 2019</div><div class="thread-post-content">I managed to solve most minor problems.
+The main problem is that I cannot access the variables &#8216;xTickCount&#8217; and &#8216;xNumOfOverflows&#8217; from my interrupt safe API &#8220;MyAPIFromISR(&#8230;)&#8221; declared in the file &#8216;freertos<em>tasks</em>c_addtions.h&#8217;, because  &#8216;xTickCount&#8217; and &#8216;xNumOfOverflows&#8217;  are declared as &#8216;static&#8217; in &#8216;task.c&#8217;.
+I think the only way to fix it is to add my API directly into FreeRTOS&#8217;s &#8220;task.c&#8221; file.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on July 10, 2019</div><div class="thread-post-content">That is the whole purpose of freertos<em>tasks</em>c<em>additions.h, it is code that you provide that is automatically included into tasks.c when you define configINCLUDE</em>FREERTOS<em>TASK</em>C<em>ADDITIONS</em>H as 1 in FreeRTOSConfig.h
+Even though it has a .h extension, think of it as a .c file for your program. (I personally might have called it something like freertos<em>tasks</em>c_additions.c to be clearer that it shouldn&#8217;t be included elsewhere (but then you do need to make sure it isn&#8217;t compiled as an indendant file also)
+Code in freertos<em>tasks</em>c_additions.h, since it is include by tasks.c, has full access to all the variables and defintions inside tasks.c. You add your code there, and it effectively gets added to tasks.c without needing to actually change the file. Because the code in there wants to see the private internals of tasks.c, it can&#8217;t be included elsewhere in your system. You will need to have a header file to provide the needed declerations of the functions in that file so other files can call them.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on July 10, 2019</div><div class="thread-post-content">Thanks for the explanation, but I can&#8217;t understand.
+Can you show me an example?
+<strong>FreeRTOSConfig.h</strong>
+~~~
+//&#8230;
+<h1>define configINCLUDE<em>FREERTOS</em>TASK<em>C</em>ADDITIONS_H   1</h1>
+//&#8230;
+~~~
+<strong>freertos<em>tasks</em>c_additions.h</strong>
+~~~
+<h1>ifndef INC<em>FREERTOS</em>TASKS<em>C</em>ADDITIONS_H</h1>
+<h1>define INC<em>FREERTOS</em>TASKS<em>C</em>ADDITIONS_H</h1>
+<h1>ifdef __cplusplus</h1>
+extern &#8220;C&#8221; {
+<h1>endif</h1>
+void MyAPIFromISR()
+{
+    UBaseType_t uxSavedInterruptStatus;
+<pre><code>configASSERT(pxTimeOut);
+uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+{
+    BaseType_t x = xNumOfOverflows;  //[Clang IntelliSense] Error: use of undeclared identifier 'xNumOfOverflows'
+    TickType_t y = xTickCount;  //[Clang IntelliSense] Error: use of undeclared identifier 'xTickCount'
+}
+portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+</code></pre>
+}
+<h1>ifdef __cplusplus</h1>
+}
+<h1>endif</h1>
+<h1>endif // !INC<em>FREERTOS</em>TASKS<em>C</em>ADDITIONS_H</h1>
+~~~
+<strong>user_code.cpp</strong>
+~~~
+<h1>include &lt;FreeRTOS.h></h1>
+<h1>include &lt;task.h></h1>
+void test()
+{
+    TimeOut_t temp;
+<pre><code>vTaskSetTimeOutStateFromISR(&amp;temp);  //'vTaskSetTimeOutStateFromISR' was not declared in this scope
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 10, 2019</div><div class="thread-post-content">Just like the functions in tasks.c have declerations in task.h, you need to create a header file (other than freertos<em>additions</em>tasks<em>c.h) to put those declerations in, and THAT file should be included in your user code (and in freertos</em>additions<em>tasks</em>c.h) to provide the needed declaration.
+It would have something like:
+~~~
+<h1>ifndef FREERTOS<em>ADDITIONS</em>TASK<em>C</em>API_H</h1>
+<h1>define FREERTOS<em>ADDITIONS</em>TASK<em>C</em>API_H 1</h1>
+<h1>ifdef __cplusplus</h1>
+extern &#8220;C&#8221; {
+<h1>endif</h1>
+extern void vTaskSetTimeOutStateFromISR(TimeOut_t *);
+<h1>ifdef __cplusplus</h1>
+}
+<h1>endif</h1>
+<h1>endif</h1>
+~~~
+and then in freertos<em>additions</em>tasks_c.h would have the implementation of that function that you have created, and should also include the above header file to confirm the definition matches the decleration.
+</div></div><div class="thread-post"><h3 class="thread-post-title">vTaskSetTimeOutState(&#8230;) and xTaskCheckForTimeOut(&#8230;) from interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on August 20, 2019</div><div class="thread-post-content">ok thanks a lot for the help, following your advice I solved the problem.
+<strong>FreeRTOSConfig.h</strong>
+~~~
+//&#8230;
+<h1>define configINCLUDE<em>FREERTOS</em>TASK<em>C</em>ADDITIONS_H   1</h1>
+//&#8230;
+~~~
+<strong>freertos<em>tasks</em>c<em>additions</em>api.h</strong>
+~~~
+<h1>ifndef FREERTOS<em>TASK</em>C<em>ADDITIONS</em>API_H</h1>
+<h1>define FREERTOS<em>TASK</em>C<em>ADDITIONS</em>API_H</h1>
+<h1>ifdef __cplusplus</h1>
+extern &#8220;C&#8221; {
+<h1>endif</h1>
+BaseType<em>t xTaskCheckForTimeOut2(TimeOut</em>t * const pxTimeOut, TimeOut<em>t * const pxTimeOut2, TickType</em>t const pxTicksToWait);
+void vTaskSetTimeOutStateFromISR(TimeOut_t*);
+BaseType<em>t xTaskCheckForTimeOutFromISR(TimeOut</em>t * const pxTimeOut, TickType_t * const pxTicksToWait);
+<h1>ifdef __cplusplus</h1>
+}
+<h1>endif</h1>
+<h1>endif</h1>
+~~~
+<strong>freertos<em>tasks</em>c_additions.h</strong>
+~~~
+<h1>ifndef INC<em>FREERTOS</em>TASKS<em>C</em>ADDITIONS_H</h1>
+<h1>define INC<em>FREERTOS</em>TASKS<em>C</em>ADDITIONS_H</h1>
+<h1>ifdef __cplusplus</h1>
+extern &#8220;C&#8221; {
+<h1>endif</h1>
+void vTaskSetTimeOutStateFromISR(TimeOut<em>t * const pxTimeOut)
+{
+    UBaseType</em>t uxSavedInterruptStatus;
+<pre><code>configASSERT(pxTimeOut);
+uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+{
+    pxTimeOut-&gt;xTimeOnEntering = xTickCount;
+    pxTimeOut-&gt;xOverflowCount = xNumOfOverflows;
+}
+portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+</code></pre>
+}
+BaseType<em>t xTaskCheckForTimeOutFromISR(TimeOut</em>t * const pxTimeOut, TickType<em>t * const pxTicksToWait)
+{
+    BaseType</em>t xReturn;
+    UBaseType_t uxSavedInterruptStatus;
+<pre><code>configASSERT(pxTimeOut);
+configASSERT(pxTicksToWait);
+uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+{       
+    /* Minor optimisation.  The tick count cannot change in this block. */
+    const TickType_t xConstTickCount = xTickCount;
+    const TickType_t xElapsedTime = xConstTickCount - pxTimeOut-&gt;xTimeOnEntering;
+</code></pre>
+<h1>if( INCLUDE_xTaskAbortDelay == 1 )</h1>
+<pre><code>    if (pxCurrentTCB-&gt;ucDelayAborted != pdFALSE)
+    {
+        /* The delay was aborted, which is not the same as a time out,
+        but has the same result. */
+        pxCurrentTCB-&gt;ucDelayAborted = pdFALSE;
+        xReturn = pdTRUE;
+    }
+    else
+</code></pre>
+<h1>endif</h1>
+<h1>if ( INCLUDE_vTaskSuspend == 1 )</h1>
+<pre><code>    if (*pxTicksToWait == portMAX_DELAY)
+    {
+        /* If INCLUDE_vTaskSuspend is set to 1 and the block time
+        specified is the maximum block time then the task should block
+        indefinitely, and therefore never time out. */
+        xReturn = pdFALSE;
+    }
+    else
+</code></pre>
+<h1>endif</h1>
+<pre><code>    if ((xNumOfOverflows != pxTimeOut-&gt;xOverflowCount) &amp;&amp; (xConstTickCount &gt;= pxTimeOut-&gt;xTimeOnEntering)) /*lint !e525 Indentation preferred as is to make code within pre-processor directives clearer. */
+    {
+        /* The tick count is greater than the time at which
+        vTaskSetTimeout() was called, but has also overflowed since
+        vTaskSetTimeOut() was called.  It must have wrapped all the way
+        around and gone past again. This passed since vTaskSetTimeout()
+        was called. */
+        xReturn = pdTRUE;
+    }
+    else if(xElapsedTime &lt; *pxTicksToWait) /*lint !e961 Explicit casting is only redundant with some compilers, whereas others require it to prevent integer conversion errors. */
+    {
+        /* Not a genuine timeout. Adjust parameters for time remaining. */
+        *pxTicksToWait -= xElapsedTime;
+        vTaskInternalSetTimeOutState(pxTimeOut);
+        xReturn = pdFALSE;
+    }
+    else
+    {
+        *pxTicksToWait = 0;
+        xReturn = pdTRUE;
+    }
+}
+portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+return xReturn;
+</code></pre>
+}
+<h1>ifdef __cplusplus</h1>
+}
+<h1>endif</h1>
+<h1>endif // !INC<em>FREERTOS</em>TASKS<em>C</em>ADDITIONS_H</h1>
+~~~
+<strong>my_code.cpp</strong>
+~~~
+//&#8230;
+<h1>include &#8220;freertos<em>tasks</em>c<em>additions</em>api.h&#8221;</h1>
+//&#8230;
+~~~
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

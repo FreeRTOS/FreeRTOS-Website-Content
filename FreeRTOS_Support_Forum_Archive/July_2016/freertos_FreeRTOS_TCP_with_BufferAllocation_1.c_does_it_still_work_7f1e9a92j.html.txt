@@ -1,0 +1,464 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2016/freertos_FreeRTOS_TCP_with_BufferAllocation_1.c_does_it_still_work_7f1e9a92j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work? - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?Posted by sbrauss on July 4, 2016Hi! I currently try to port FreeRTOS+TCP to Renesas RX62N using the code snippets from interactive.freertos.org. The code uses statically allocated buffers with BufferAllocation1.c. I downloaded the current release of FreeRTOS+TCP (160112). However, it does not compile on UNIX/Linux machine,as there is a &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2016/freertos_FreeRTOS_TCP_with_BufferAllocation_1.c_does_it_still_work_7f1e9a92j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?Posted by sbrauss on July 4, 2016Hi! I currently try to port FreeRTOS+TCP to Renesas RX62N using the code snippets from interactive.freertos.org. The code uses statically allocated buffers with BufferAllocation1.c. I downloaded the current release of FreeRTOS+TCP (160112). However, it does not compile on UNIX/Linux machine,as there is a [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202668' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202668' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202668' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202668' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145935' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2016%2Ffreertos_FreeRTOS_TCP_with_BufferAllocation_1.c_does_it_still_work_7f1e9a92j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2016%2Ffreertos_FreeRTOS_TCP_with_BufferAllocation_1.c_does_it_still_work_7f1e9a92j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145935">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2016_freertos_support_forum_archive_index.html/">July 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 4, 2016</div><div class="thread-post-content">Hi!
+I currently try to port FreeRTOS+TCP to Renesas RX62N using the code snippets from interactive.freertos.org. The code uses statically allocated buffers with BufferAllocation<em>1.c. I downloaded the current release of FreeRTOS+TCP (160112). However, it does not compile on UNIX/Linux machine,as there is a typo in BufferAllocation</em>1.c, as it includes &#8220;FreeRTOS<em>sockets.h&#8221; instead of &#8220;FreeRTOS</em>Sockets.h&#8221;. This is maybe not an issue on a win32 platform, I don&#8217;t know. 
+What I wanted to ask for is if a build using statically allocated buffers with BufferAllocation_1.c is still working.
+Thank you,
+Stephan
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 4, 2016</div><div class="thread-post-content">Thanks for reporting the problem with building under Linux.  I think 
+that issue has been resolved in the SVN repository already.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 4, 2016</div><div class="thread-post-content">Hi!
+Thanks for your quick reply! So it still should working?
+Where is the SVN repository?
+Best regards,
+Stephan
+Am 04.07.2016 um 13:43 schrieb Real Time Engineers ltd.:
+<blockquote>
+  Thanks for reporting the problem with building under Linux. I think
+  that issue has been resolved in the SVN repository already.
+  <hr />
+  FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?
+  <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/7f1e9a92/?limit=25#dff8/0991">https://sourceforge.net/p/freertos/discussion/382005/thread/7f1e9a92/?limit=25#dff8/0991</a>
+  <hr />
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 4, 2016</div><div class="thread-post-content">The SVN repository is not [yet] public.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on July 4, 2016</div><div class="thread-post-content">Hi Stephan,
+<blockquote>
+  So it still should working?
+  Yes both BufferAllocation_1 and 2 still supported. The former indeed uses statically allocated buffer space, the second one allocates the buffer space dynamically.
+</blockquote>
+BufferAllocation_1.c : by default it will use critical sections to protect the <code>List_t</code> <code>xFreeBuffersList</code>.
+<pre><code>#define ipconfigBUFFER_ALLOC_LOCK()                 taskENTER_CRITICAL()
+#define ipconfigBUFFER_ALLOC_UNLOCK()               taskEXIT_CRITICAL()
+</code></pre>
+Some users found it more efficient to use a different method, especially if NetworkBuffers are never accessed from within an interrupt (also my personal preference). So those users may use their own version:
+<pre><code>#define ipconfigBUFFER_ALLOC_LOCK()                 myAllocLoc()
+#define ipconfigBUFFER_ALLOC_UNLOCK()               myAllocUnloc()
+</code></pre>
+How is the porting to Renesas RX62N going? Please don&#8217;t hesitate to ask more questions, it might save you time.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 4, 2016</div><div class="thread-post-content">Hi Hein!
+<blockquote>
+  How is the porting to Renesas RX62N going? Please don&#8217;t hesitate to
+  I had a &#8220;small&#8221; success approx. an hour ago: pinging the device works. 🙂
+</blockquote>
+I then included SimpleTCPEchoServer.c into the project to test the 
+socket interface. My system crashes as soon as I open the echo port by 
+my linux machine (&#8220;telnet 192.168.200.169 7&#8221;). I thought that I maybe 
+get out of memory, but I have >5K left, at least before the crash&#8230; 
+Stack size is 512bytes, so the same as in the demos.
+As a ping works, my first thought was that the MAC and PHY layer works 
+fine.
+Thank you &amp; best regards,
+Stephan
+Am 04.07.2016 um 14:51 schrieb Hein Tibosch:
+<blockquote>
+  Hi Stephan,
+<pre><code>So it still should working?
+Yes both BufferAllocation_1 and 2 still supported. The former indeed
+uses statically allocated buffer space, the second one allocates the
+buffer space dynamically.
+</code></pre>
+  BufferAllocation<em>1.c : by default it will use critical sections to
+  protect the |List</em>t| |xFreeBuffersList|.
+  <h1>define ipconfigBUFFER<em>ALLOC</em>LOCK()                 taskENTER_CRITICAL()</h1>
+  <h1>define ipconfigBUFFER<em>ALLOC</em>UNLOCK()               taskEXIT_CRITICAL()</h1>
+  Some users found it more efficient to use a different method, especially
+  if NetworkBuffers are never accessed from within an interrupt (also my
+  personal preference). So those users may use their own version:
+  <h1>define ipconfigBUFFER<em>ALLOC</em>LOCK()                 myAllocLoc()</h1>
+  <h1>define ipconfigBUFFER<em>ALLOC</em>UNLOCK()               myAllocUnloc()</h1>
+  How is the porting to Renesas RX62N going? Please don&#8217;t hesitate to ask
+  more questions, it might save you time.
+  Regards.
+  <hr />
+  FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?
+  <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/7f1e9a92/?limit=25#82f9">https://sourceforge.net/p/freertos/discussion/382005/thread/7f1e9a92/?limit=25#82f9</a>
+  <hr />
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 4, 2016</div><div class="thread-post-content">The problem turns up as soon as FreeRTOS_listen() is called, and a 
+connect packet arrives for this port. I commented our the endless loop 
+in prvConnectionListeningTask(), so no accept is executed. It seems that 
+just the arrival of the TCP connect request from my linux machine let&#8217;s 
+it crash. The interrupt routine is still working when it is crashed, so 
+the interrupt system does not hang.
+Am 04.07.2016 um 17:00 schrieb Stephan Brauss:
+<blockquote>
+  Hi Hein!
+  <blockquote>
+    How is the porting to Renesas RX62N going? Please don&#8217;t hesitate to
+    I had a &#8220;small&#8221; success approx. an hour ago: pinging the device works. 🙂
+  </blockquote>
+  I then included SimpleTCPEchoServer.c into the project to test the
+  socket interface. My system crashes as soon as I open the echo port by
+  my linux machine (&#8220;telnet 192.168.200.169 7&#8221;). I thought that I maybe
+  get out of memory, but I have >5K left, at least before the crash&#8230;
+  Stack size is 512bytes, so the same as in the demos.
+  As a ping works, my first thought was that the MAC and PHY layer works
+  fine.
+  Thank you &amp; best regards,
+  Stephan
+  Am 04.07.2016 um 14:51 schrieb Hein Tibosch:
+  <blockquote>
+    Hi Stephan,
+<pre><code>So it still should working?
+Yes both BufferAllocation_1 and 2 still supported. The former indeed
+uses statically allocated buffer space, the second one allocates the
+buffer space dynamically.
+</code></pre>
+    BufferAllocation<em>1.c : by default it will use critical sections to
+    protect the |List</em>t| |xFreeBuffersList|.
+    <h1>define ipconfigBUFFER<em>ALLOC</em>LOCK()                 taskENTER_CRITICAL()</h1>
+    <h1>define ipconfigBUFFER<em>ALLOC</em>UNLOCK()               taskEXIT_CRITICAL()</h1>
+    Some users found it more efficient to use a different method, especially
+    if NetworkBuffers are never accessed from within an interrupt (also my
+    personal preference). So those users may use their own version:
+    <h1>define ipconfigBUFFER<em>ALLOC</em>LOCK()                 myAllocLoc()</h1>
+    <h1>define ipconfigBUFFER<em>ALLOC</em>UNLOCK()               myAllocUnloc()</h1>
+    How is the porting to Renesas RX62N going? Please don&#8217;t hesitate to ask
+    more questions, it might save you time.
+    Regards.
+    <hr />
+    FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?
+    <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/7f1e9a92/?limit=25#82f9">https://sourceforge.net/p/freertos/discussion/382005/thread/7f1e9a92/?limit=25#82f9</a>
+    <hr />
+    Sent from sourceforge.net because you indicated interest in
+    https://sourceforge.net/p/freertos/discussion/382005/
+    To unsubscribe from further messages, please visit
+    https://sourceforge.net/auth/subscriptions/
+  </blockquote>
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on July 4, 2016</div><div class="thread-post-content">[ please do not include the entire text when replying to a message ]
+<blockquote>
+  I then included SimpleTCPEchoServer.c into the project to test the
+  socket interface. My system crashes as soon as I open the echo port by
+  my linux machine (&#8220;telnet 192.168.200.169 7&#8221;). I thought that I maybe
+  get out of memory, but I have >5K left, at least before the crash&#8230;
+</blockquote>
+5K doesn&#8217;t sound like a lot of memory. The cost of creating a TCP socket depends partly on the config settings. Especially the buffer sizes are important:
+~~~~
+    /* Define the size of Rx buffer for TCP sockets */
+    #define ipconfigTCP_RX_BUF_LEN                ( 5840 )
+<pre><code>/* Define the size of Tx buffer for TCP sockets */
+#define ipconfigTCP_TX_BUF_LEN                ( 5840 )
+</code></pre>
+~~~~
+In the above case, when communication starts, more than 5KB of buffer space will be allocated in either direction. Give them a smaller size, e.g. 2880.
+You might consider using the cheaper option:
+~~~~
+    /* USE<em>TCP</em>WIN: Let TCP use windowing mechanism. */
+    #define ipconfigUSE_TCP_WIN            ( 0 )
+~~~~
+And if you do use sliding TCP windows, you can decrease the value of:
+~~~~
+    #define ipconfigTCP<em>WIN</em>SEG_COUNT                 256
+~~~~
+E.g. make it 16 to allow for 16 simultaneous TCP connections.
+But even if you run out of dynamic memory, the IP-task will not crash (at least I haven&#8217;t seen it happening).
+<blockquote>
+  Stack size is 512bytes, so the same as in the demos.
+</blockquote>
+Do you mean 512 words in stead of bytes?
+Are you testing from a debugger? Do you have <code>configASSERT()</code> defined and also:
+~~~~
+    #define configCHECK<em>FOR</em>STACK_OVERFLOW            2
+~~~~
+?
+Stack overflows, of course, will lead to a crash. Even when <code>CHECK_FOR_STACK_OVERFLOW</code> is defined, a crash may still occur.
+Have you tried running the application with e.g. :
+~~~~
+    #define ipconfigIP<em>TASK</em>STACK<em>SIZE</em>WORDS    ( 1024 )
+~~~~
+The IP-task uses a lot less stack but it can be useful as a quick test.
+How much RAM do you have available, 64 or 96 KB?
+Maybe you can post your config files (as an attachment please): both <code>FreeRTOSConfig.h</code> and <code>FreeRTOSIPConfig.h</code>?
+<blockquote>
+  As a ping works, my first thought was that the MAC and PHY layer works
+  fine.
+  That sounds logical. The higher levels will also work pretty soon 🙂
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 5, 2016</div><div class="thread-post-content">First of all, thank you very much for your detailed answer!!
+<blockquote>
+  [ please do not include the entire text when replying to a message ]
+  Sorry. Standard setting of my email tool&#8230;
+</blockquote>
+ipconfigTCP<em>RX</em>BUF<em>LEN and ipconfigTCP</em>TX<em>BUF</em>LEN are set to 1000, each.
+When I turn off windowing, it no more crashes, and the &#8220;telnet 
+192.168.200.169 7&#8221; connects. 🙂
+I have 96KB RAM, but my application uses &#8220;much ;-)&#8221; RAM. I increased the 
+heap to 24KB, so I have approx. 14KB free before the connection to port 
+7, still too less for ipconfigTCP<em>WIN</em>SEG_COUNT set to 240.
+I have seen that in SimpleTCPEchoServer.c the buffers and sliding 
+windows are set &#8220;manually&#8221; by FREERTOS<em>SO</em>WIN_PROPERTIES. Why that?
+<blockquote>
+  But even if you run out of dynamic memory, the IP-task will not crash
+  (at least I haven&#8217;t seen it happening).
+  It does crash on my system. When I for example open several echo telnet 
+  sessions, free heap memory is decreased, and when it goes under water, 
+  my system crashes.
+  What should happen instead? &#8211; I mean, for example in 
+  SimpleTCPEchoServer.c, there is no error handling if for example 
+  FreeRTOS_socket() has no more memory to create a socket.
+  Do you mean 512 words in stead of bytes?
+  Yes&#8230;
+  Are you testing from a debugger?
+  No.
+</blockquote>
+I tried
+tcpspray -v -e 192.168.200.169 -n 2 -b 128
+to test the echo service, but it hangs, no data seems to be sent back. 
+Maybe there is still something wrong in my mac layer&#8230;
+I have appended my current FreeRTOSIPConfig.h file.
+Thanks again &amp; best regards,
+Stephan
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 5, 2016</div><div class="thread-post-content">It is somewhat strange:
+The connection is established, but FreeRTOS_accept() does not return, 
+and therefore the prvServerConnectionInstance() task is also not created.
+Any idea? Maybe I have a fault in the config file? &#8211; I have reduced the
+number of network buffers to 4 each.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on July 5, 2016</div><div class="thread-post-content">Hi Stephan,
+I see that you defined:
+~~~~
+<h1>define ipconfigZERO<em>COPY</em>TX_DRIVER         1</h1>
+<h1>define ipconfigZERO<em>COPY</em>RX_DRIVER         1</h1>
+~~~~
+That is the difficult way of writing a NetworkInterface.c 🙂
+If you want you can contact FreeRTOS directly ( see <a href="http://www.freertos.org/RTOS-contact-and-support.html">contact</a> ) and send your driver code.
+I suppose that you use a recent version of the kernel, at least V8.1.2 ?
+Your default TCP buffer sizes are very small:
+~~~~
+/* Each TCP socket has a circular buffers for
+ * Rx and Tx, which have a fixed maximum size.
+ * Define the size of Rx buffer for TCP sockets.
+ */
+<h1>define ipconfigTCP<em>RX</em>BUF_LEN          ( 1000 )</h1>
+/* Define the size of Tx buffer for TCP sockets. */
+<h1>define ipconfigTCP<em>TX</em>BUF_LEN          ( 1000 )</h1>
+~~~~
+unless you use a smaller MTU, for instance:
+~~~~
+<h1>define ipconfigNETWORK<em>MTU  ( 1000 + ipSIZE</em>OF<em>IP</em>HEADER + ipSIZE<em>OF</em>TCP_HEADER )</h1>
+~~~~
+which sums up to 1040.
+<blockquote>
+  FreeRTOS_accept() does not return
+</blockquote>
+which means that the socket hasn&#8217;t reached the status <code>eESTABLISHED</code> for whatever reason.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 5, 2016</div><div class="thread-post-content">Hi Hein!
+<blockquote>
+  I suppose that you use a recent version of the kernel, at least
+  I currently use 8.2.3.
+  Your default TCP buffer sizes are very small:
+  Yes, I know. I increased it also to your 5840, but the behaviour stays 
+  the same. Yes, 1000 is probably no good idea with an MTU of 1500&#8230;
+</blockquote>
+Best regards,
+Stephna
+<blockquote>
+  which means that the socket hasn&#8217;t reached the status |eESTABLISHED| for
+  whatever reason.
+  Which is strange as telnet of the linux machine brings up the connected 
+  message.
+</blockquote>
+Best regards,
+Stephan
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on July 5, 2016</div><div class="thread-post-content">Somemore text in response to your earlier post:
+<blockquote>
+  I have 96KB RAM, but my application uses &#8220;much ;-)&#8221; RAM. I increased the
+  heap to 24KB, so I have approx. 14KB free before the connection to port 7
+</blockquote>
+We always have to be very careful when <code>malloc</code> starts to fail 🙂
+A failure to allocate a certain pointer may have many consequences.
+<blockquote>
+  .. still too little for ipconfigTCP<em>WIN</em>SEG_COUNT set to 240.
+</blockquote>
+As you are using small TCP windows, there will be few outstanding segments. And so <code>ipconfigTCP_WIN_SEG_COUNT</code> doesn&#8217;t have to be so high.
+<blockquote>
+  I have seen that in SimpleTCPEchoServer.c the buffers and sliding
+  windows are set &#8220;manually&#8221; by FREERTOS<em>SO</em>WIN_PROPERTIES. Why that?
+</blockquote>
+It is just demo code. It shows that the defaults can be easily overridden by a call to <code>FreeRTOS_setsockopt()</code>.
+<blockquote>
+  <blockquote>
+    But even if you run out of dynamic memory, the IP-task will not crash
+    (at least I haven&#8217;t seen it happening).
+    It does crash on my system. When I for example open several echo telnet
+    sessions, free heap memory is decreased, and when it goes under water,
+    my system crashes.
+  </blockquote>
+</blockquote>
+As a test, isn&#8217;t it possible to give a lot of RAM to the TCP stack? Maybe you can let your application sleep or exclude the RAM-hungry parts?
+<blockquote>
+  What should happen instead? &#8211; I mean, for example in
+  SimpleTCPEchoServer.c, there is no error handling if for example
+  FreeRTOS_socket() has no more memory to create a socket.
+</blockquote>
+<code>FreeRTOS_socket()</code> will return <code>FREERTOS_INVALID_SOCKET</code> if <code>pvPortMalloc()</code> fails.
+When a TCP stream buffer can not be created, all subsequent API&#8217;s will return an error code like <code>pdFREERTOS_ERRNO_ENOMEM</code>.
+<blockquote>
+  <blockquote>
+    Are you testing from a debugger?
+    No.
+  </blockquote>
+</blockquote>
+But I hope that you have some way of sending logging? Serial? UDP?
+<blockquote>
+  I tried
+  tcpspray -v -e 192.168.200.169 -n 2 -b 128
+  to test the echo service, but it hangs, no data seems to be sent back.
+  Maybe there is still something wrong in my mac layer&#8230;
+</blockquote>
+A PCAP of the conversation might be handy here.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP with BufferAllocation_1.c: does it (still) work?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 5, 2016</div><div class="thread-post-content">I was not able so far to get any further.
+<blockquote>
+  As a test, isn&#8217;t it possible to give a lot of RAM to the TCP stack?
+  I have now approx. 40KB free on the heap. 
+  ipconfigNUM<em>NETWORK</em>BUFFER<em>RECEIVERS is 4, and 
+  ipconfigNUM</em>NETWORK<em>BUFFER</em>SENDERS 8, ipconfigTCP<em>RX</em>BUF<em>LEN and 
+  ipconfigTCP</em>TX<em>BUF</em>LEN are 2920
+  but this did not have any impact.
+  But I hope that you have some way of sending logging? Serial? UDP?
+  Yes, over USB.
+  A PCAP of the conversation might be handy here.
+  I have captured the packets of a ping and a echo telnet session where I 
+  typed &#8220;abc&#8221; into the window. Have you a place/email address where I can 
+  send it to?
+</blockquote>
+For me, the captured packets looks fine, but you have for sure much more 
+knowledge.
+Just the echo answers are missing. The contents of the echo reply 
+packets I think also look fine, nor gargabe. The stack also correctly 
+replies with ACK packets.
+Can it be a problem of the network driver? Maybe it is better to start 
+looking for the source of the problem at routine FreeRTOS_accept() and 
+follow it down?
+Best regards,
+Stephan
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

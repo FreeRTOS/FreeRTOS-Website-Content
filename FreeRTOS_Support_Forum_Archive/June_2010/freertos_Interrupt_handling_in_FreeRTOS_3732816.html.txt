@@ -1,0 +1,192 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interrupt handling in FreeRTOS - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2010/freertos_Interrupt_handling_in_FreeRTOS_3732816.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Interrupt handling in FreeRTOS - FreeRTOS" />
+<meta property="og:description" content="Interrupt handling in FreeRTOSPosted by barbart1 on June 6, 2010Hi, I&#8217;m wondering if there is a special mechanism for handling interrupts in FreeRTOS? I wanted to write a simple interrupt routine that would toggle a led when I press a button. But sadly, when I add the interrupt initialization code, the task won&#8217;t start. Here&#8217;s &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2010/freertos_Interrupt_handling_in_FreeRTOS_3732816.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Interrupt handling in FreeRTOSPosted by barbart1 on June 6, 2010Hi, I&#8217;m wondering if there is a special mechanism for handling interrupts in FreeRTOS? I wanted to write a simple interrupt routine that would toggle a led when I press a button. But sadly, when I add the interrupt initialization code, the task won&#8217;t start. Here&#8217;s [&hellip;]" />
+<meta name="twitter:title" content="Interrupt handling in FreeRTOS - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201909' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201909' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201909' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201909' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138880' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2010%2Ffreertos_Interrupt_handling_in_FreeRTOS_3732816.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2010%2Ffreertos_Interrupt_handling_in_FreeRTOS_3732816.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138880">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2010_freertos_support_forum_archive_index.html/">June 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Interrupt handling in FreeRTOS</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/barbart1">barbart1</a> on June 6, 2010</div><div class="thread-post-content">Hi,  
+I&#8217;m wondering if there is a special mechanism for handling<br />
+interrupts in FreeRTOS? I wanted to write a simple interrupt<br />
+routine that would toggle a led when I press a button. But sadly,<br />
+when I add the interrupt initialization code, the task won&#8217;t start.<br />
+Here&#8217;s the code:  
+<pre><code>void initInterr()
+{
+    AT91F_AIC_ConfigureIt(AT91C_BASE_AIC, AT91C_ID_PIOA, 5, AT91C_AIC_SRCTYPE_INT_HIGH_LEVEL,ChangeFlashRate);
+    AT91F_AIC_EnableIt(AT91C_BASE_AIC, AT91C_ID_PIOA);
+    AT91C_BASE_PIOA-&gt;PIO_IER = AT91C_PIO_PA19; // B1
+}
+void vStartLEDFlashTasks()
+{
+    initInterr();
+    xTaskCreate( vLEDBlink, ( signed char * ) "LEDtaskC", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, NULL );
+}
+void ChangeFlashRate()
+{
+    int status;
+    status = AT91C_BASE_PIOA-&gt;PIO_ISR;
+    vParTestToggleLED( 0 );
+}
+</code></pre>
+As you can see it&#8217;s very simple. I&#8217;m using SAM7-P64 dev board. Am i doing it wrong?   
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt handling in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/barbart1">barbart1</a> on June 6, 2010</div><div class="thread-post-content">It seems like the line :  
+<pre><code>AT91C_BASE_PIOA-&gt;PIO_IER = AT91C_PIO_PA19;
+</code></pre>
+is the problem. If I comment it, the task is running and everything is ok. How should I handle the interrupt then?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt handling in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgrover1">rgrover1</a> on June 6, 2010</div><div class="thread-post-content">Try enabling your interrupt only <strong>after</strong> the freeRTOS scheduler gets started.<br />
+In your FreeRTOS port, isn&#8217;t there a sample serial driver using interrupts which can help as a reference?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt handling in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/barbart1">barbart1</a> on June 8, 2010</div><div class="thread-post-content">Hi, I bought the manual and changed my code, but interrupts still don&#8217;t work. Everything seems to be ok. Is the ISR written correctly?  
+<pre><code>void ToggleLedISR()
+{
+    int status;
+    static portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+    status = AT91C_BASE_PIOA-&gt;PIO_ISR;
+    xSemaphoreGiveFromISR(xSemafor, &amp;xHigherPriorityTaskWoken);
+    if(xHigherPriorityTaskWoken == pdTRUE) {
+        AT91C_BASE_AIC-&gt;AIC_EOICR = 0xFA;
+        portYIELD_FROM_ISR();
+    }
+}
+</code></pre>
+Here&#8217;s the task that takes the semaphore:  
+<pre><code>void ToggleLedTask(void *pvParameters) {
+    while(1) {
+        xSemaphoreTake(xSemafor, portMAX_DELAY);
+        vParTestToggleLED( 0 );
+    }
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt handling in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on June 8, 2010</div><div class="thread-post-content">Not familiar with this processor, but the line<br />
+AT91C&#95;BASE&#95;AIC-&gt;AIC&#95;EOICR = 0xFA;<br />
+would be my guess at the error. I presume this is an end of interrupt control, and probably doesn&#8217;t want to be conditioned on xHigherPriorityTaskWoken. I would suggest placing it before the if statement.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt handling in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/barbart1">barbart1</a> on June 8, 2010</div><div class="thread-post-content">I got it working. It seems that an interrupt handler that gives a token to a semaphore needs to be called from a wrapper that copies the context. I got it working with:  
+<pre><code>void vLed_ISR_Wrapper( void )
+{
+    /* Save the context of the interrupted task. */
+    portSAVE_CONTEXT();
+    /* Call the handler itself.  This must be a separate function as it uses
+    the stack. */
+    __asm volatile ("bl vLed_ISR_Handler");
+    /* Restore the context of the task that is going to
+    execute next. This might not be the same as the originally
+    interrupted task.*/
+    portRESTORE_CONTEXT();
+}
+</code></pre>
+Now, correct me if I&#8217;m wrong, but that is the only way I managed to get it done. Without the wrapper the processor &#8220;hangs&#8221; itself. And of course both the wrapper and the handler must be compiled in ARM mode. Or is there a way without using a wrapper?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupt handling in FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on June 8, 2010</div><div class="thread-post-content">If your interrupt is wanting to cause a context switch, or wanting to call a FreeRTOS API function, then the wrapper is required &#8211; as per the documentation and examples.  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

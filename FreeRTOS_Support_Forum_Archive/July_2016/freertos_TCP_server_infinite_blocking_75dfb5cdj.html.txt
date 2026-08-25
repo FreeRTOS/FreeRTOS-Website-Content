@@ -1,0 +1,215 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCP server infinite blocking - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2016/freertos_TCP_server_infinite_blocking_75dfb5cdj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="TCP server infinite blocking - FreeRTOS" />
+<meta property="og:description" content="TCP server infinite blockingPosted by iamtherealeimer on July 14, 2016Hi, I am currently trying to implement the TCP server example from the labs demo onto my stm32f429_eval board. So far I am able to compile the project with armcc (Keil). I just encounter a problem, my prvConnectionListeningTask, respectively the FreeRTOS_accept never unblocks or should I &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2016/freertos_TCP_server_infinite_blocking_75dfb5cdj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="TCP server infinite blockingPosted by iamtherealeimer on July 14, 2016Hi, I am currently trying to implement the TCP server example from the labs demo onto my stm32f429_eval board. So far I am able to compile the project with armcc (Keil). I just encounter a problem, my prvConnectionListeningTask, respectively the FreeRTOS_accept never unblocks or should I [&hellip;]" />
+<meta name="twitter:title" content="TCP server infinite blocking - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202673' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202673' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202673' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202673' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145957' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2016%2Ffreertos_TCP_server_infinite_blocking_75dfb5cdj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2016%2Ffreertos_TCP_server_infinite_blocking_75dfb5cdj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145957">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2016_freertos_support_forum_archive_index.html/">July 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">TCP server infinite blocking</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/iamtherealeimer">iamtherealeimer</a> on July 14, 2016</div><div class="thread-post-content">Hi,
+I am currently trying to implement the TCP server example from the labs demo onto my stm32f429_eval board. 
+So far I am able to compile the project with armcc (Keil). 
+I just encounter a problem, my prvConnectionListeningTask, respectively the FreeRTOS_accept never unblocks or should I say, it waits forever for the event. I tried the echotool to trigger the event, but the it returns &#8220;Can not connect to server&#8221;.
+I have the same problem when I try to ping the device.
+A hint where the unblocking event is generated would be highly appreciated. Or any other ideas that direct me in the right direction.
+I gladly provide more details if need be.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP server infinite blocking</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 14, 2016</div><div class="thread-post-content">First question &#8211; as we don&#8217;t have one in the download ourselves &#8211; have 
+you implemented the pack<em>struct</em>start.h and pack<em>struct</em>end.h header 
+files for the Keil environment?  This is very important and, if wrong, 
+could result in some protocols appearing to work (like the ICMP pings) 
+while others do not.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP server infinite blocking</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/iamtherealeimer">iamtherealeimer</a> on July 14, 2016</div><div class="thread-post-content">Hi Richard,
+yes, I did implement my own.
+_start.h
+~~~
+__packed
+~~~
+_end.h:
+~~~
+;
+~~~
+see
+http://www.keil.com/support/man/docs/armcc/armcc<em>chr1359124980173.htm
+and
+http://www.keil.com/support/man/docs/armcc/armcc</em>chr1359124230944.htm
+I am sorry, I messed up the ping. I obviously pinged another device in the network.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP server infinite blocking</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 14, 2016</div><div class="thread-post-content">Hi!
+I maybe faced the same bug, it took me a long time to find&#8230;
+The priority of the task running your TCP server must be lower than the 
+priority of the Ethernet task.
+Best regards,
+Stephan
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP server infinite blocking</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/iamtherealeimer">iamtherealeimer</a> on July 15, 2016</div><div class="thread-post-content">Good morning Stephan,
+Thank you for your hint, by ethernet task you mean the prvIPTask called from FreeRTOS_IPInit?
+Best regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP server infinite blocking</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 15, 2016</div><div class="thread-post-content">Good Morning Unknown
+The constants in the stack and in the demo are 
+mainTCP<em>SERVER</em>TASK<em>PRIORITY and ipconfigIP</em>TASK_PRIORITY
+Best regards,
+Stephan
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP server infinite blocking</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/iamtherealeimer">iamtherealeimer</a> on July 15, 2016</div><div class="thread-post-content">Hi Stephan,
+Am I right that I am missing the TCP server task, because I only want to use the echo server ? So I think I need to modify the mainECHO<em>SERVER</em>TASK_PRIORITY. 
+Even by using the defaults provided by the demo I am stuck in the prvConnectionListeningTask and the Echo server task is never created.
+My priorities are:
+/#define mainECHO<em>SERVER</em>TASK<em>PRIORITY ( tskIDLE</em>PRIORITY + 2 ) = 2
+/#define tskIDLE<em>PRIORITY           ( ( UBaseType</em>t ) 0U )
+/#define ipconfigIP<em>TASK</em>PRIORITY           ( configMAX<em>PRIORITIES &#8211; 2 ) = 5
+/#define configMAX</em>PRIORITIES              (7)
+Best regards,
+Fabian
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP server infinite blocking</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 15, 2016</div><div class="thread-post-content">You are right, the &#8220;server work task&#8221; is not needed for the echo server 
+example, only examples that have state such as the FTP, HTTP and Telnet 
+servers.
+So I can get it clear in my mind some questions:
+<blockquote>
+  I am currently trying to implement the TCP server example from the 
+  labs demo onto my stm32f429_eval board.
+</blockquote>
+Did you start with the code from this demo?
+http://www.freertos.org/FreeRTOS-Plus/FreeRTOS<em>Plus</em>TCP/TCP-IP<em>FAT</em>Examples<em>ST</em>STM32F407.html
+<blockquote>
+  So far I am able to compile the project with armcc (Keil).
+</blockquote>
+So it is clear you ported the demo to Keil.  Did you make any other 
+changes?  For example, take tasks out, or add new tasks, or change any 
+FreeRTOSConfig/FreeRTOSIPConfig.h settings?
+If you built the original project with the [free] Atollic tools, did it 
+work then?  Maybe it would be good to get that working before porting to 
+Keil.
+<blockquote>
+  my prvConnectionListeningTask, respectively the FreeRTOS_accept never 
+  unblocks
+</blockquote>
+Is this function in 
+FreeRTOS-PlusDemoCommonFreeRTOS<em>Plus</em>TCP_DemosSimpleTCPEchoServer.c
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP server infinite blocking</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sbrauss">sbrauss</a> on July 15, 2016</div><div class="thread-post-content">Hi Fabian
+no, you don&#8217;t need FreeRTOS<em>TCP</em>server.c for the Echo server in 
+SimpleTCPEchoServer.c.
+prvConnectionListeningTask() (and better also 
+prvServerConnectionInstance()) must run at a lower priority than 
+ipconfigIP<em>TASK</em>PRIORITY.
+Best regards,
+Stephan
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP server infinite blocking</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/iamtherealeimer">iamtherealeimer</a> on July 15, 2016</div><div class="thread-post-content">I am not sure, I didn&#8217;t compare the sources but I used this demo:
+FreeRTOS<em>Labs</em>160112FreeRTOS-PlusDemoFreeRTOS<em>Plus</em>TCP<em>and</em>FAT_STM32F4xxx
+from the FreeRTOSLabs.
+I concensed the main to fit my needs ands also skip some initializion I am already doing in a startup task. 
+I zipped all the modification and used files in the attachment. I believe this compiles.
+I will try the attolic approach and go from there. I suspect also some issues with my network configuration. But I can see a Broadcast of the device announcing its ip. Not the server ip obviously.
+Edit:
+In mz edited code I didn&#8217;t activate the ETH_IRQn so abviously I can&#8217;t get an event. Nonetheless, after enabling the interrupt the according IRQ handler calls the eth error callback because the ais flag is set. I think the NetworkInterface / DMA is not configured right. The example ist for a f409 and i am using an f429.
+Best Regards,
+Fabian
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

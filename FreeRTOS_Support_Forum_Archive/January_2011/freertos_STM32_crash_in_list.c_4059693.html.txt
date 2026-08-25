@@ -1,0 +1,332 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STM32 crash in list.c - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2011/freertos_STM32_crash_in_list.c_4059693.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="STM32 crash in list.c - FreeRTOS" />
+<meta property="og:description" content="STM32 crash in list.cPosted by totalsam on January 18, 2011Dear all, Thank you very much for reading my post. I have some issues with a custom board based on a STM32 &#040;Cortex M3&#041;. I use FreeRTOS v6.1.0 with CodeSourcery&#8217;s GCC and Eclipse. In my design, I communicate with a GPRS device through an USART port. &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2011/freertos_STM32_crash_in_list.c_4059693.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="STM32 crash in list.cPosted by totalsam on January 18, 2011Dear all, Thank you very much for reading my post. I have some issues with a custom board based on a STM32 &#040;Cortex M3&#041;. I use FreeRTOS v6.1.0 with CodeSourcery&#8217;s GCC and Eclipse. In my design, I communicate with a GPRS device through an USART port. [&hellip;]" />
+<meta name="twitter:title" content="STM32 crash in list.c - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201963' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201963' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201963' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201963' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=142035' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2011%2Ffreertos_STM32_crash_in_list.c_4059693.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2011%2Ffreertos_STM32_crash_in_list.c_4059693.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-142035">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2011_freertos_support_forum_archive_index.html/">January 2011 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">STM32 crash in list.c</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/totalsam">totalsam</a> on January 18, 2011</div><div class="thread-post-content">Dear all,  
+Thank you very much for reading my post. I have some issues with a custom board based on a STM32 &#40;Cortex M3&#41;.  
+I use FreeRTOS v6.1.0 with CodeSourcery&#8217;s GCC and Eclipse.  
+In my design, I communicate with a GPRS device through an USART port. The crash occurs when receiving a packet from the GPRS device, after a few minutes running.  
+When a data arrives on the USART, the DMA copies it to a buffer, and an interrupt is generated. In the ISR, I just give a semaphore, which unblocks an other task.  
+I paid attention to the special remarks for CM3 users. Here is the init of the NVIC:  
+<pre><code>    NVIC_InitStructure.NVIC_IRQChannel = UART_Gprs_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&amp;NVIC_InitStructure);
+</code></pre>
+In FreeRTOSconfig.h, is set to 255, which on the STM32 means 15. The interrupt priority is the same as the kernel interrupt priority. I tried to put it 1 above &#40;set it to 14&#41;, but no change.  
+When the crash occurs, the code loops forever in list.c, in vListInsert&#40;…&#41;, in the for&#40;…&#41; loop. By putting some traces, I was able to find that the code crashes either at the end of the ISR, either at the task side that waits for the semaphore.  
+Here is the ISR code :  
+<pre><code>void USART3_IRQHandler(void)
+{
+    long xHigherPriorityTaskWoken = pdFALSE;
+    debug_flag = 51;
+    //Don't need to clear the bit, 'cause the DMA controller normally does it
+    USART_ITConfig(UART_Gprs, USART_IT_RXNE, DISABLE);//Disable interrupt
+    xSemaphoreGiveFromISR(xGprsRxSemaphore, &amp;xHigherPriorityTaskWoken);
+    if (xHigherPriorityTaskWoken == pdTRUE)
+    {
+        debug_hpw = 1;
+        debug_flag = 52;
+    }
+    else
+    {
+        debug_hpw = 0;
+        debug_flag = 55;
+    }
+    portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
+}
+</code></pre>
+I also noticed that if I don&#8217;t put the portEND&#95;SWITCHING&#95;ISR&#40;…&#41; in this ISR, the crash does not occur.  
+Here is the code at the task side:  
+<pre><code>            debug_flag = 53;
+            xSemaphoreTake(xGprsRxSemaphore,  ( portTickType ) 200 / portTICK_RATE_MS );
+            debug_flag = 54;
+            dma_cnt = DMA_GetCurrDataCounter(UART_Gprs_Rx_DMA_Channel);
+            while( (gprsRxBuffIndex !=
+                    (UART_BUFFER_SIZE - dma_cnt) ) &amp;&amp; (data_cnt &lt; maxLength))
+            {
+                buffer[*length] = gprsRxBuffer[gprsRxBuffIndex++];
+                *length = (*length) + 1;
+                data_cnt++;
+                if (gprsRxBuffIndex &gt; UART_BUFFER_SIZE-1)
+                {
+                    gprsRxBuffIndex = 0;
+                }
+            }
+            USART_ITConfig(UART_Gprs, USART_IT_RXNE, ENABLE);
+</code></pre>
+Could someone give me a few hints to debug my code and try to find what&#8217;s going on ?  
+Thank you a lot in advance and best regards,  
+Sam
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 19, 2011</div><div class="thread-post-content"><blockquote>
+  Thank you very much for reading my post.
+</blockquote>
+…and thank you for doing some research before posting, and providing good information in your post.  
+Do you set the interrupt priority grouping anywhere?&nbsp; On an STM32, this is normally done with the following line of code:<br />
+NVIC&#95;PriorityGroupConfig&#40; NVIC&#95;PriorityGroup&#95;4 &#41;;  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/totalsam">totalsam</a> on January 19, 2011</div><div class="thread-post-content">Dear Richard,  
+You are absolutely right, this step is missing, and it never crashed again since I made this change. Thank you very much for your help, and thank you as well for FreeRTOS &#33;  
+Best regards,  
+Sam
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gibot">gibot</a> on June 19, 2011</div><div class="thread-post-content">I have the same probleme. My code looks very the same like here shown but I&#8217;m waiting for receiving CAN messages so I use the interrupt for can. I have changed the priority group and have checked my settings for the interrupt. But the I get the same error, my programm stays in the for loop in list.c<br />
+I use libopenstm32.  
+This is my code:  
+Initialisation:  
+<pre><code>SCB_AIRCR = scb_aircrTemp | SCB_AIRCR_VECTKEY | (SCB_AIRCR_PRIGROUP_GROUP16_NOSUB &lt;&lt; SCB_AIRCR_PRIGROUP_LSB);
+    /* NVIC setup. */
+    nvic_enable_irq(NVIC_USB_LP_CAN_RX0_IRQ);
+    //set priority, configMAX_SYSCALL_INTERRUPT_PRIORITY is the highest priority interrupts can have which calls freertos functions
+    nvic_set_priority(NVIC_USB_LP_CAN_RX0_IRQ, configKERNEL_INTERRUPT_PRIORITY - 32);
+    /* Reset CAN. */
+    can_reset(CAN1);
+    /* CAN cell init. */
+    if (can_init(CAN1,
+             false,           /* TTCM: Time triggered comm mode? */
+             false,            /* ABOM: Automatic bus-off management? */
+             false,           /* AWUM: Automatic wakeup mode? */
+             false,           /* NART: No automatic retransmission? */
+             false,           /* RFLM: Receive FIFO locked mode? */
+             false,           /* TXFP: Transmit FIFO priority? */
+             CAN_BTR_SJW_1TQ,
+             CAN_BTR_TS1_5TQ,
+             CAN_BTR_TS2_2TQ,
+             4))             /* BRP+1: Baud rate prescaler */
+    {
+        /* Die because we failed to initialize. */
+        while (1)
+            __asm__("nop");
+    }
+    /* CAN filter 0 init. */
+    can_filter_id_mask_32bit_init(CAN1,
+                0,     /* Filter ID */
+                0,     /* CAN ID */
+                0,     /* CAN ID mask */
+                0,     /* FIFO assignment (here: FIFO0) */
+                true); /* Enable the filter. */
+</code></pre>
+Code of the waiting task:  
+<pre><code>while(1)
+    {
+        //enable interrupt
+        can_enable_irq(CAN1, CAN_IER_FMPIE0);
+        //wait till new can data received
+        xSemaphoreTake(xSemaphoreWaitingForCanReceive, LONG_TIME);
+            //gets the number of waiting can packages from the FMP0 in the CAN receive Register of FIFO0
+            waitingCanPackages = CAN_RF0R(CAN1) &amp; CAN_RF0R_FMP0_MASK;
+            while(waitingCanPackages &gt; 0){
+                gpio_clear(GPIOC, GPIO12);
+                //gets can packages until the FIFO queue is empty
+                for(;waitingCanPackages &gt; 0;waitingCanPackages--){
+                    ticksSinceBooted = xTaskGetTickCount();
+                    //read data from can
+                    readCan(&amp;sensorDataLength, sensorData, &amp;canId);
+                    //reduce can data to required digits
+                    writeCanId = (uint16_t)canId;
+                    //puts canId to the array
+                    arCanId = (uint8_t*)&amp;writeCanId;
+                    //calculate the data to write
+                    //header 1 Byte
+                    fileData[fileDataLength] = 0xCA;
+                    //timestamp 4 Byte
+                    memcpy(&amp; (fileData[fileDataLength + 1]), (uint8_t*)&amp;ticksSinceBooted, 4 * sizeof(uint8_t));
+                    //can Id 2 Byte
+                    fileData[fileDataLength + 5] = arCanId[0];
+                    fileData[fileDataLength + 6] = arCanId[1];
+                    //data length 1 Byte
+                    fileData[fileDataLength + 7] = sensorDataLength;
+                    //data 0 - 8 Byte (sensorDataLength)
+                    memcpy(&amp;(fileData[fileDataLength + 8]), sensorData, sensorDataLength * sizeof(uint8_t));
+                    //calculate the full length of the data to write
+                    fileDataLength += (8 + sensorDataLength);
+                }
+                //write the data on the card
+                //writeFat(fileDataLength, fileData);
+                //reset the length of the data that will be written
+                fileDataLength = 0;
+                gpio_set(GPIOC, GPIO12);
+                //check if more can packages are waiting
+                waitingCanPackages = CAN_RF0R(CAN1) &amp; CAN_RF0R_FMP0_MASK;
+            }
+    }
+</code></pre>
+Interrupt Handler:  
+<pre><code>void usb_lp_can_rx0_isr(void)
+{
+    long xHigherPriorityTaskWoken = pdFALSE;
+    //disable interrupt
+    can_disable_irq(CAN1, CAN_IER_FMPIE0);
+    //unlock Log Task
+    xSemaphoreGiveFromISR(xSemaphoreWaitingForCanReceive,&amp;xHigherPriorityTaskWoken);
+    /* If xHigherPriorityTaskWoken was set to true you
+    we should yield.  The actual macro used here is
+    port specific. */
+    portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
+}
+</code></pre>
+Thanks for your Help
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on June 19, 2011</div><div class="thread-post-content">What number is configKERNEL&#95;INTERRUPT&#95;PRIORITY &#8211; 32 giving you? That does not look right.<br />
+Are you calling NVIC&#95;PriorityGroupConfig&#40;&#41; anywhere?  
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gibot">gibot</a> on June 19, 2011</div><div class="thread-post-content">This is the Priority Group Configuration:  
+SCB&#95;AIRCR = scb&#95;aircrTemp | SCB&#95;AIRCR&#95;VECTKEY | &#40;SCB&#95;AIRCR&#95;PRIGROUP&#95;GROUP16&#95;NOSUB &lt;&lt; SCB&#95;AIRCR&#95;PRIGROUP&#95;LSB&#41;;  
+scb&#95;aircrTemp contains the value of the register before editing without VECTKEY<br />
+SCB&#95;AIRCR&#95;VECTKEY is the key you need to edit the register<br />
+SCB&#95;AIRCR&#95;PRIGROUP&#95;GROUP16&#95;NOSUB contains the value for no subriority bits<br />
+and SCB&#95;AIRCR&#95;PRIGROUP&#95;LSB contains the position of the group priority bits  
+libopenstm32 does not contain a function to do this.  
+configKERNEL&#95;INTERRUPT&#95;PRIORITY is set to 255 for the lowest priority, I&#8217;ve tried it with -32 for a priority that is a littel higher but lower as the max Syscall priority. I have tried it with 255 without -32 to but that&#8217;s the same effect.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on June 19, 2011</div><div class="thread-post-content"><blockquote>
+  This is the Priority Group Configuration:  
+</blockquote>
+SCB&#95;AIRCR = scb&#95;aircrTemp | SCB&#95;AIRCR&#95;VECTKEY | &#40;SCB&#95;AIRCR&#95;PRIGROUP&#95;GROUP16&#95;NOSUB &lt;&lt; SCB&#95;AIRCR&#95;PRIGROUP&#95;LSB&#41;;
+I don&#8217;t understand that at all, but am sure it is not configuring the priority grouping in the interrupt controller. Read post 2 in this thread.  
+<blockquote>
+  configKERNEL&#95;INTERRUPT&#95;PRIORITY is set to 255 for the lowest priority, I&#8217;ve tried it with -32 for a priority that is a littel higher but lower as the max Syscall priority. I have tried it with 255 without -32 to but that&#8217;s the same effect.
+</blockquote>
+Read point 3 here <a href="http://www.freertos.org/FAQHelp.html">http://www.freertos.org/FAQHelp.html</a> <strong>and</strong> check how nvic&#95;set&#95;priority&#40;&#41; is expecting the priority to be specified. I am 99% sure it is not expecting a value above 15, in which case, you are not using the function correctly. I would also set the priority before enabling the interrupt, you have it the other way around.  
+I recommend reading the Cortex-M NVIC reference manual to understand how to set the NVIC up.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gibot">gibot</a> on June 19, 2011</div><div class="thread-post-content">I don&#8217;t use the stm32 stdperipheral lib, I use libopenstm32.<br />
+The NVIC&#95;PriorityGroupConfig function of stm32 std lib does exactly the same as my line for setting the priority group.  
+In stm32 stdperipheral lib, the highest priority you can set is 15. But in libopenstm32 you set the priority to the value how it is set in the register and thats an 8bit value, so the highest number you can set is 255 and that&#8217;s the lowest interrupt priority
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gibot">gibot</a> on June 21, 2011</div><div class="thread-post-content">I have reread the stm32 manual und rechecked my register settings, by read out the registers and I think I&#8217;ve setted them right.   
+But I think there is an other reason for my problem.  
+I have a second task for increase a timer variable that should runs every 10ms. Here I use the vTaskDelayUntil function and I think it crashes if this function sets the scheduler in suspend mode and then the can interrupt happens and call api function while the scheduler is in suspend mode.  
+Is that possible? How it&#8217;s possible to call a function every 10ms in the right way? Can I use a hardware timer?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on June 21, 2011</div><div class="thread-post-content">Suspending the scheduler will not stop interrupts from executing &#40;as you know&#41;.&nbsp; If an interrupt attempts a context switch while the scheduler is suspended then the context switch is held pending until the point where the scheduler is resumed &#40;un-suspended&#41;.&nbsp; That is normal sequence of events, and tested well, but that is not a guarantee of course.&nbsp; I would be surprised however if that was causing the crash without any external/other factors.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gibot">gibot</a> on June 21, 2011</div><div class="thread-post-content">void disk&#95;timer&#95;task&#40;void &#42;pvParameters&#41; &#123;<br />
+portTickType LastWakeTime;<br />
+const portTickType period = 10 / portTICK&#95;RATE&#95;MS;  
+LastWakeTime = xTaskGetTickCount&#40;&#41;;  
+for&#40;;;&#41;<br />
+&#123;<br />
+vTaskDelayUntil&#40;&amp;LastWakeTime, period&#41;;<br />
+timeSinceBooted++;<br />
+&#125;<br />
+&#125;  
+thats the second task  
+timeSinceBooted is definded global.  
+If I don&#8217;t start this task only the task that waits for can receive it doesn&#8217;t crash. If is start this task it crashes.  
+Other tasks don&#8217;t run.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on June 22, 2011</div><div class="thread-post-content">portTICK&#95;RATE&#95;MS is calculated from configTICK&#95;RATE&#95;HZ. What is configTICK&#95;RATE&#95;HZ set to? It is defined in FreeRTOSConfig.h. If 10 / portTICK&#95;RATE&#95;MS was zero or 1 then you will have a problem if disk&#95;timer&#95;task has a high priority because tasks that have a lower priority will never run.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gibot">gibot</a> on June 30, 2011</div><div class="thread-post-content">the disk&#95;timer&#95;task had the same priority as the other task.   
+But I don&#8217;t use it anymore, I use the systick hook for that. But my tasks crash if I&#8217;have more than that tasks that waits for the can receive.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 crash in list.c</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gibot">gibot</a> on June 30, 2011</div><div class="thread-post-content">I think the problem is that the interrupt fires while the programm is in a critical section. I have checked the nvic priority register and that is set to 1111 0000 and I have checked the SCB register that is set to 11111010000001010000001100000000<br />
+011 at position 10:8 stands for the priority group and that is the right setting for no subpriority bits and 4 pre-emption priority bits.  
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

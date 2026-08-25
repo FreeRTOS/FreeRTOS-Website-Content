@@ -1,0 +1,232 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug in vTaskDelayUntil() - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2019/freertos_Bug_in_vTaskDelayUntil_475380f75bj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Bug in vTaskDelayUntil() - FreeRTOS" />
+<meta property="og:description" content="Bug in vTaskDelayUntil()Posted by abdull on May 23, 2019I have a task that keeps printing some characters in an infinite loop and I have implemented a delay before each printing iteration using vTaskDelayUntil, but for some reason the delay isn&#8217;t working properly. this is how I specify the vTaskDelayUnti parameters. ~~~ portTickType wakeTime; wakeTime = &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2019/freertos_Bug_in_vTaskDelayUntil_475380f75bj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Bug in vTaskDelayUntil()Posted by abdull on May 23, 2019I have a task that keeps printing some characters in an infinite loop and I have implemented a delay before each printing iteration using vTaskDelayUntil, but for some reason the delay isn&#8217;t working properly. this is how I specify the vTaskDelayUnti parameters. ~~~ portTickType wakeTime; wakeTime = [&hellip;]" />
+<meta name="twitter:title" content="Bug in vTaskDelayUntil() - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203125' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203125' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203125' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203125' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147784' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2019%2Ffreertos_Bug_in_vTaskDelayUntil_475380f75bj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2019%2Ffreertos_Bug_in_vTaskDelayUntil_475380f75bj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147784">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2019_freertos_support_forum_archive_index.html/">May 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Bug in vTaskDelayUntil()</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abdull">abdull</a> on May 23, 2019</div><div class="thread-post-content">I have a task that keeps printing some characters in an infinite loop and I have implemented a delay before each printing iteration using vTaskDelayUntil, but for some reason the delay isn&#8217;t working properly.
+this is how I specify the vTaskDelayUnti parameters.
+~~~
+portTickType wakeTime;
+wakeTime = xTaskGetTickCount();
+~~~
+and this is what the task does (it only prints BYE infinitly)
+~~~
+void print(void* ptr)
+{
+    portTickType wakeTime;
+    wakeTime = xTaskGetTickCount();
+    while(1)
+    {
+        vTaskDelayUntil( &amp;wakeTime, 3000 );
+        printf(&#8220;BYEn&#8221;);
+    }
+ }
+~~~
+This is how the task is created.
+~~~
+xTaskCreate(print, (const signed char*) &#8220;print&#8221;, 1024, NULL, 3, &amp;printH);
+~~~
+The screen shot below shows the output that I got. The characters do not follow the delay specified initially, and when it reaches the part where it looses the character E it starts to follow the delay specified.
+Any idea for why the vTaskDelayUntil is not working in a propper way would be appreciated.
+Regards,
+abdul.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on May 23, 2019</div><div class="thread-post-content">First, the code as written can&#8217;t be exactly what you are using, as print has the wrong from for a task function, and thus the xTaskCreate should throw an error, task functions MUST have the prototype like:
+void taskfun(void* ptr)
+but your print takes no parameters.
+A second note is that you don&#8217;t show the context of how you declare and initialize your wakeTime variable. I can&#8217;t think of any way to have those two lines as shown be next to each other and work, except as part of the task function, but they are shown outside of it apparently as some global statement. The decleration could be a global (and if not inside the task function it would need to be), but the assignment can not.
+One possible source of your issue would be if the assignment occured well before the task started, in which case the define properties of vTaskDelayUntil is to not delay until the loop &#8216;caught up&#8217; to the right number of loops. Typically, the initialization of the wakeup time variable (and the decleration of it) is just before the loop itsef, inside the task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abdull">abdull</a> on May 23, 2019</div><div class="thread-post-content">I am sorry for the confusion I did, I have just updated the code that I provided.
+~~~
+portTickType wakeTime;
+~~~ 
+and 
+~~~
+wakeTime = xTaskGetTickCount();
+~~~
+are actually initialized inside the task it self. 
+I have added the print task parameters as a void pointer, yet the code is resulting the same issues.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 23, 2019</div><div class="thread-post-content">How are you printing out the characters.  In particular, is your
+debugger set to use semihosting?  If so that could be the problem.  Try
+with semihosting turned off.  Also try removing the print statement
+completely and instead just toggling an LED and measure the toggle
+frequency to see if it is ok provided the print function is not called.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abdull">abdull</a> on May 26, 2019</div><div class="thread-post-content">
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abdull">abdull</a> on May 26, 2019</div><div class="thread-post-content">I am using a preprogrammed IDE, that was bought with the microprocessor we are working on and unfortunatly I can&#8217;t change toggle semihosting neither on or off.
+I have also tried to toggle an LED with a delay of 5000 ticks, yet the toggle frequency is not ok.
+I also want to add that a few days ago the <code>taskDelayUntil()</code> was working fine and I didn&#8217;t change any settings, all I did is turn off my laptop.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abdull">abdull</a> on May 26, 2019</div><div class="thread-post-content">I am using a preprogrammed IDE, that was bought with the microprocessor we are working on and unfortunatly I can&#8217;t change toggle semihosting neither on or off.
+I have also tried to toggle an LED with a delay of 5000 ticks, yet the toggle frequency is not ok.
+I also want to add that a few days ago the <code>taskDelayUntil()</code> was working fine and I didn&#8217;t change any settings, all I did is turn off my laptop.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abdull">abdull</a> on May 26, 2019</div><div class="thread-post-content">Sorry for all these posts, I keep pressing the post button many times  thinking that the page is stuck, but it turns out that is just a delay.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on May 26, 2019</div><div class="thread-post-content"><blockquote>
+  Bug in vTaskDelayUntil()
+</blockquote>
+It would be very unlikely that your &#8220;Hello World&#8221; program reveals a bug in a piece of software that has been successful for more than 15 years.
+<blockquote>
+  yet the toggle frequency is not ok
+</blockquote>
+Can you tell <strong>exactly</strong> what you observe? Is it too slow, too fast, or irregular? How much too slow or fast? When does it become irregular?
+Is your application only running a single task?
+<blockquote>
+  I am using a preprogrammed IDE, that was bought with the microprocessor
+</blockquote>
+Can you tell what processor it is, and what kind of IDE?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abdull">abdull</a> on May 26, 2019</div><div class="thread-post-content"><blockquote>
+  Can you tell exactly what you observe? Is it too slow, too fast, or irregular? How much too slow or fast? When does it become irregular?
+  well it starts very slow, but later on it goes into the expected delay period. The point where it changes and goes to the expected delay period is seen in the screen shot I provided (It is where a character gets missing).
+  Is your application only running a single task?
+  It is running a single task with the priority of 3 and  a stack depth of 1024.
+  Can you tell what processor it is, and what kind of IDE?
+  processor is: ARM9 (AT91SAM9G20)
+  IDE: Eclipse Kepler Service Release 2
+  OS: freeRTOS v7.5.3
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abdull">abdull</a> on May 26, 2019</div><div class="thread-post-content">Fixed the quotation mess that I did. And sorry I am still new to this forum.
+<blockquote>
+  Can you tell exactly what you observe? Is it too slow, too fast, or irregular? How much too slow or fast? When does it become irregular?
+</blockquote>
+well it starts very slow, but later on it goes into the expected delay period. The point where it changes and goes to the expected delay period is seen in the screen shot I provided (It is where a character gets missing).
+<blockquote>
+  Is your application only running a single task?
+</blockquote>
+It is running a single task with the priority of 3 and a stack depth of 1024.
+<blockquote>
+  Can you tell what processor it is, and what kind of IDE?
+</blockquote>
+processor is: ARM9 (AT91SAM9G20)
+IDE: Eclipse Kepler Service Release 2
+OS: freeRTOS v7.5.3
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 26, 2019</div><div class="thread-post-content">Did you reply to this post?
+https://sourceforge.net/p/freertos/discussion/382005/thread/475380f75b/#9ed5/f622/5984
+?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abdull">abdull</a> on May 27, 2019</div><div class="thread-post-content">Yes I did.
+https://sourceforge.net/p/freertos/discussion/382005/thread/475380f75b/#9ed5/f622/5984/e7a1
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bug in vTaskDelayUntil()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on May 27, 2019</div><div class="thread-post-content"><blockquote>
+  DE: Eclipse Kepler Service Release 2
+  and unfortunately I can&#8217;t change toggle semihosting neither on or off.
+</blockquote>
+I never use semi-hosting and like Richard said, it is famous for slowing down the processing.
+Inside your <code>main()</code>, there will also be some code related to semihosting.
+Within Eclipse, there will be some option in the Debug tab.
+You can read about semihosting <a href="https://mcuoneclipse.com/2014/09/11/semihosting-with-gnu-arm-embedded-launchpad-and-gnu-arm-eclipse-debug-plugins/">here</a>
+Debugging/logging: many boards also have a serial port, which can be connected to your laptop with a serial<em>to</em>USB connection (CDC).
+<blockquote>
+  OS: freeRTOS v7.5.3
+</blockquote>
+That is very old. You can download the latest source code <a href="https://freertos.org/a00104.html">here</a>
+Or <a href="https://github.com/aws/amazon-freertos/">here</a> if you prefer github.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

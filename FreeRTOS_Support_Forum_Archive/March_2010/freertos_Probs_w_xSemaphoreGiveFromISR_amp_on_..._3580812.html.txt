@@ -1,0 +1,248 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Probs w/ xSemaphoreGiveFromISR &amp; on ... - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2010/freertos_Probs_w_xSemaphoreGiveFromISR_amp_on_..._3580812.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Probs w/ xSemaphoreGiveFromISR &amp; on ... - FreeRTOS" />
+<meta property="og:description" content="Probs w/ xSemaphoreGiveFromISR &#038; on &#8230;Posted by rgibbs on March 5, 2010I have an ISR that communicates with a task via a semaphore.&nbsp; If I use xSemaphoreGive in the ISR &#040;against the documentation&#041;, everything works fine.&nbsp; However, if I use xSemaphoreGiveFromISR and &#040;conditionally&#041; call vPortYieldFromISR as I should, the scheduler becomes confused after the first &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2010/freertos_Probs_w_xSemaphoreGiveFromISR_amp_on_..._3580812.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Probs w/ xSemaphoreGiveFromISR &#038; on &#8230;Posted by rgibbs on March 5, 2010I have an ISR that communicates with a task via a semaphore.&nbsp; If I use xSemaphoreGive in the ISR &#040;against the documentation&#041;, everything works fine.&nbsp; However, if I use xSemaphoreGiveFromISR and &#040;conditionally&#041; call vPortYieldFromISR as I should, the scheduler becomes confused after the first [&hellip;]" />
+<meta name="twitter:title" content="Probs w/ xSemaphoreGiveFromISR &amp; on ... - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201868' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201868' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201868' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201868' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139944' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2010%2Ffreertos_Probs_w_xSemaphoreGiveFromISR_amp_on_..._3580812.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2010%2Ffreertos_Probs_w_xSemaphoreGiveFromISR_amp_on_..._3580812.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139944">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2010_freertos_support_forum_archive_index.html/">March 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Probs w/ xSemaphoreGiveFromISR &#038; on &#8230;</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgibbs">rgibbs</a> on March 5, 2010</div><div class="thread-post-content">I have an ISR that communicates with a task via a semaphore.&nbsp; If I use xSemaphoreGive in the ISR &#40;against the documentation&#41;, everything works fine.&nbsp; However, if I use xSemaphoreGiveFromISR and &#40;conditionally&#41; call vPortYieldFromISR as I should, the scheduler becomes confused after the first interrupt and never finds a task to schedule after the waiting task blocks, even though there&#8217;s another task that&#8217;s always ready to run.&nbsp;   
+The scenario is as follows:  
+There are two tasks &#8211; a low-priority task that does something to cause an interrupt, and a higher priority task that&#8217;s waiting on a semaphore.&nbsp; The ISR simply posts to the semaphore.&nbsp; In the case were I use the correct &#8220;FromISR&#8221; functions from the ISR, the waiting task wakes up, performs it&#8217;s function &#40;nothing&#41; , and goes back to waiting for the semaphore.&nbsp; The low-priority task never gets scheduled again.&nbsp; However, if I use the INCORRECT function in the ISR, everything works smoothly, and the low-priority task gets scheduled after the waiting task re-waits.  
+I&#8217;m using the GCC/ARM&#95;CM3 port on a ARM Cortex-M3 target.&nbsp; I&#8217;m actually pre-silicon and am running on RTL/VCS simulations.  
+Any help would be greatly appreciated.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Probs w/ xSemaphoreGiveFromISR &#038; on &#8230;</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgibbs">rgibbs</a> on March 5, 2010</div><div class="thread-post-content">I found the previous post where you using binary semaphores fixed the problem.&nbsp; I tried a binary semaphore with no success.&nbsp; Further, I need counting semaphores in this instance.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Probs w/ xSemaphoreGiveFromISR &#038; on &#8230;</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on March 6, 2010</div><div class="thread-post-content">Which CM3 will you use when it is ready.  
+Are you sure your simulator is working correctly? Many don&#8217;t when simulating an RTOS.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Probs w/ xSemaphoreGiveFromISR &#038; on &#8230;</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on March 6, 2010</div><div class="thread-post-content">Also, can you post the code of the two tasks, which sound like they are only a few lines of code. Use the 
+tags to keep the formatting.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Probs w/ xSemaphoreGiveFromISR &#038; on &#8230;</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgibbs">rgibbs</a> on March 8, 2010</div><div class="thread-post-content">Per your question about the simulator, I have never had a problem with the simulator before. The simulator is VCS and it&#8217;s simulating the M3 processor from the RTL, so it should be cycle-accurate.&nbsp; And I&#8217;ve been simulating other things under freeRTOS and other RTOS&#8217;s with this simulator with no problems.  
+Per your question about which CM3 I&#8217;ll be using,&nbsp; I&#8217;m writing code for a new chip incorporating a Cortex-M3.  
+The task and the ISR are shown below, somewhat simplified.  
+Thanks for your help with this.  
+Richard  
+<pre><code>/**
+ * GPIOHelpersTask is the task that performs most of the functionality for
+ * all GPIO interrupts.  It spends most of its time waiting on a signal
+ * from the ISR that an interrupt has occurred.  When it receives a signal
+ * (actually a "put" on its semaphore), it processes all GPIO interrupts
+ * that have occurred since the last signal.
+ *
+ * void GPIOHelpersTask(void)
+ *
+ *
+ **/
+void GPIOHelpersTask(void)
+{
+    uint32_t retCode;
+    uint32_t i;
+    uint8_t  lclIntPending[HW_MAX_GPIO];
+    /* init  the gpio and the ISR-to-this-task counting semaphore*/
+    gpioHelpers_sysInit();
+    /* this is the main task loop;  it runs off of a counting semaphore so it doesn't miss any semaphore posts */
+    while (pdTRUE)
+    {
+    /* wait on semaphore */
+        retCode = xSemaphoreTake(((posixSemaphore *)gpioHelpersSema)-&gt;handle,0xffffffff);
+        if (retCode &lt; 0)
+        {
+            /***TODO***log an error***/
+            while (1) {};
+        }
+        /* process "pending" interrupts */
+        /* first pick up all pending interrupts and save them locally */
+        /* to avoid multiple interrupt enable/disables                */
+        taskENTER_CRITICAL();
+        for (i = 0 ; i &lt; HW_MAX_GPIO ; i++)
+        {
+            lclIntPending[i] = gpioHelper.gpioPendInt[i];
+            gpioHelper.gpioPendInt[i] = 0;
+        }
+        taskEXIT_CRITICAL();
+        /* process each entry in table (comparing to pending mask for that gpio) ***/
+        /* note:  races shouldn't be an issue here, as count is never decrementing */
+        /*        and all other change, we'll either get before or after, but not  */
+        /*        inconsistent state.                                              */
+        for (i = 0 ; i &lt; gpioHelper.gpioHandleCount ; i++)
+        {
+            /* check each entry against the corresponding pending interrupt bits */
+            if ((lclIntPending[gpioHelper.configTable[i].gpioNum] &amp;
+                                            gpioHelper.configTable[i].mask) &amp;&amp;
+                    gpioHelper.configTable[i].IOType &gt; GPIO_INT_TYPES)
+            {
+                /* found one, now process it (call call-back) */
+                ((gpio_callback_t)gpioHelper.configTable[i].notifier)
+                            (
+                                GPIO_DATA_R(gpioHelper.configTable[i].gpioNum,
+                                    gpioHelper.configTable[i].basePin,
+                                    BIT_MASK(gpioHelper.configTable[i].numPins))
+                            );
+                }
+            } /* if (lclIntPending[gpioHelper.configTable[i].gpioNum] &amp; ... */
+        }
+    } /* while (pdTRUE) */
+    /*** should never get here ***/
+}
+/**
+ * GPIOISR is the interrupt service routine for the GPIO blocks.  It fields
+ * all GPIO interrupts and signals the background function to determine what
+ * to do with the interrupt.
+ *
+ * void GPIOISR(void)
+ *
+ *
+ **/
+void GPIOISR(void)
+{
+    uint32_t retCode;
+    uint8_t IRQNum;
+    uint8_t gpioNum;
+    uint8_t intsPending;
+    portBASE_TYPE preEmptionRequired = pdFALSE;
+    /* determine which GPIO is firing */
+    IRQNum = get_irq_in_process();
+    /* convert IRQ to gpio # and check validity  */
+    gpioNum = HW_IRQ2GPIO(IRQNum);
+    if (gpioNum &gt; HW_MAX_GPIO)
+    {
+        /*****BAD ERROR -- should never get here.  IGNORE THIS *****/
+        /*****             or, during debug, hang                ***/
+        while (pdTRUE){};
+        return;
+    }
+    /* pick up its pending interrupts and "or" it into the saved */
+    /* pending interrupts then clear the interrupts in GPIO.     */
+    /* NOTE:  "pend" in NVIC is automatically cleared when an    */
+    /* the isr is entered, so it doesn't need to be cleared, and */
+    /* in fact, shouldn't be cleared, as it means another intrupt*/
+    /* has arrived after the current one was active.  Also, the  */
+    /* "active" bit is read-only and automagically set &amp; cleared */
+    /* by the NVIC.                          */
+    intsPending = GPIO_MIS_R(gpioNum);
+    gpioHelper.gpioPendInt[gpioNum] |= intsPending;
+    GPIO_INTCLR_W(gpioNum,intsPending);
+    /* now notify the gpio helper task that it's got work to do  */
+    given = xSemaphoreGiveFromISR(sem-&gt;handle,&amp;preEmptionRequired);
+        /****handle pre-emption****/
+        if (preEmptionRequired != pdFALSE) 
+    {
+                    vPortYieldFromISR();
+    }
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Probs w/ xSemaphoreGiveFromISR &#038; on &#8230;</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgibbs">rgibbs</a> on March 10, 2010</div><div class="thread-post-content">Is anyone successfully using xSemaphoreGiveFromISR/vPortYieldFromISR on a counting semaphore on a CORTEX&#95;M3?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Probs w/ xSemaphoreGiveFromISR &#038; on &#8230;</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgibbs">rgibbs</a> on March 16, 2010</div><div class="thread-post-content">Problem solved.&nbsp; This was my problem and NOT a freeRTOS problem.  
+I had configSYSCALL&#95;INTERRUPT&#95;PRIORITY set at lower priority &#40;higher priority &#35; on ARM CORTEX M3&#41; than my GPIO interrupt was running at.&nbsp; When I fixed this, the problem went away.  
+Richard
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

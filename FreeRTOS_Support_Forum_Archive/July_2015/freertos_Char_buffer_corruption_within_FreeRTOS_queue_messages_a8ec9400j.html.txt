@@ -1,0 +1,248 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Char buffer corruption within FreeRTOS queue messages - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2015/freertos_Char_buffer_corruption_within_FreeRTOS_queue_messages_a8ec9400j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Char buffer corruption within FreeRTOS queue messages - FreeRTOS" />
+<meta property="og:description" content="Char buffer corruption within FreeRTOS queue messagesPosted by rksheth on July 28, 2015Some info first: HW: STM32F407 Discovery board Compiler: gcc-arm-none-eabi-4_8-2014q2 Yes, demo code (and a fair bit of my code) runs fine on this device. I&#8217;m implementing a USART trace logging feature to be used in a multi-task environment. The idea is that multiple &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2015/freertos_Char_buffer_corruption_within_FreeRTOS_queue_messages_a8ec9400j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Char buffer corruption within FreeRTOS queue messagesPosted by rksheth on July 28, 2015Some info first: HW: STM32F407 Discovery board Compiler: gcc-arm-none-eabi-4_8-2014q2 Yes, demo code (and a fair bit of my code) runs fine on this device. I&#8217;m implementing a USART trace logging feature to be used in a multi-task environment. The idea is that multiple [&hellip;]" />
+<meta name="twitter:title" content="Char buffer corruption within FreeRTOS queue messages - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202545' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202545' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202545' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202545' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145491' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2015%2Ffreertos_Char_buffer_corruption_within_FreeRTOS_queue_messages_a8ec9400j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2015%2Ffreertos_Char_buffer_corruption_within_FreeRTOS_queue_messages_a8ec9400j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145491">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/a00104.html" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/FAQ.html" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2015_freertos_support_forum_archive_index.html/">July 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Char buffer corruption within FreeRTOS queue messages</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rksheth">rksheth</a> on July 28, 2015</div><div class="thread-post-content">Some info first:
+HW: STM32F407 Discovery board
+Compiler: gcc-arm-none-eabi-4_8-2014q2
+Yes, demo code (and a fair bit of my code) runs fine on this device.
+I&#8217;m implementing a USART trace logging feature to be used in a multi-task environment. The idea is that multiple tasks can send a message to the &#8220;debugQueue&#8221; and the &#8220;debugTask&#8221; will sequentially service them and write them out over USART. In order to implement this, I created a queue of the following type:
+typedef struct{
+  uint16<em>t size;
+  trace</em>level<em>t level;
+  char buffer[UART</em>BUF<em>SIZE];
+} debug</em>queue<em>msg</em>t;
+I have tested the basic UART code and know that it works correctly. 
+What I am finding is that the strings that I place in the message buffer come out garbled when they are received by the debugTask. 
+Here&#8217;s an example:
+I have inspected the message in GDB immediately before sending:
+xQueueSend(debugQueue, &amp;msg, 0); 
+and immediately after receiving it in the debugTask:
+xQueueReceive(debugQueue, &amp;msg, portMAX_DELAY );
+Former:
+(gdb) p msg
+$2 = {size = 33, level = TRACE_MED, buffer = &#8220;SPEED HARD SET TO 0.75 DUTY CYCLE&#8221;, &#8216;245&#8217; <repeats 67 times>}
+Latter:
+(gdb) p msg
+$3 = {size = 33, level = TRACE_MED, 
+  buffer = &#8220;S&#8221;, &#8216;245&#8217; <repeats 72 times>, &#8220;375377377377 00 00 00 00&#8221;, &#8216;245&#8217; <repeats 16 times>, &#8220;275 24&#8221;}
+As you can see, the first character is still present but the rest of the string has been overwritten.
+Not sure if I&#8217;m missing something obvious or if there&#8217;s something I don&#8217;t understand about using queues with FreeRTOS.
+I should also point out that I&#8217;m aware that placing a 100 byte buffer within the queue message is not ideal &#8211; but I&#8217;m not sure whether there&#8217;s a fundamental issue with that or if it&#8217;s just bad practice because introduces some extra writes.
+Any advice is appreciated!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Char buffer corruption within FreeRTOS queue messages</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 28, 2015</div><div class="thread-post-content">Could your receiving task be overruning its stack? That is a somewhat large object if the receiving task is using the stack to hold it.
+I am also a bit concerned that the incoming message isn&#8217;t null terminated. This means you need to be very careful to not use any routines (like strcpy) to move the string around.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Char buffer corruption within FreeRTOS queue messages</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 28, 2015</div><div class="thread-post-content">The queue should work whatever the size of the item being queued, provided you have created the queue correctly so each item is actually that size.  As you say yourself, queuing something that big is not ideal, normally for something so large you would just queue a pointer to it &#8211; but then you have to ensure the string still exists in the buffer being pointed to at the time it is printed out.
+To add to Richard Damon&#8217;s comment on stack overflow, do you have <a href="http://www.freertos.org/Stacks-and-stack-overflow-checking.html">configCHECK<em>FOR</em>STACK_OVERFLOW</a> set to 2?  Also, do you have <a href="http://www.freertos.org/a00110.html#configASSERT">configASSERT()</a> defined?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Char buffer corruption within FreeRTOS queue messages</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rksheth">rksheth</a> on August 5, 2015</div><div class="thread-post-content">Appreciate the input.
+@ Richard &#8211; I do in fact explicitly insert a null character as the last char in the buffer, and I memcpy the entire buffer, as opposed to doing a strcpy. It&#8217;s inefficient, but should be safe. I also use strnlen for sizes elsewhere &#8211; moral of the story, I think I&#8217;m covered from null character related issues.
+@ RTE &#8211; Config assert is defined and the check for stack oveflow variable is set to 2. I was also concerned about stack overflow, so I changed the stack size of the task from min stack size (260 in the config file I have) to 1024, but saw the same behavior. I should note that I didn&#8217;t see my code enter the stack overflow handler. 
+I did consider passing a pointer, but in order to guarantee that the buffer with my string would not be overwritten, I realized I&#8217;d need to create one of the following:
+1) A secondary shared circular buffer with a mutex on it, which can cause tasks to block
+2) A secondary shared circular buffer with a new task servicing it with a queue, effectively recreating my debug task
+3) Provide a circular buffer to each task that uses the debug interface, which seems messy and not very scalable. Plus, then I have to think about my buffer size with respect to my message volume in addition to my queue size.
+In conclusion, limiting my message size and keeping the buffer in the queue message seems the most elegant solution, even if it does consume some more cycles. 
+If you have any recommendations on other experiments I can try to narrow down why that buffer is getting corrupted, I would welcome them.
+Thanks!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Char buffer corruption within FreeRTOS queue messages</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 6, 2015</div><div class="thread-post-content">Hi,
+You can either pass the messages by value, and create a big message queue like this:
+~~~~~
+/* Just some examples of sizes */
+<h1>define UART<em>BUF</em>SIZE   64</h1>
+<h1>define DEBUG<em>MSG</em>COUNT 100</h1>
+typedef struct{
+    uint16<em>t size;
+    trace</em>level<em>t level;
+    char buffer[UART</em>BUF<em>SIZE];
+} debug</em>queue<em>msg</em>t;
+/* The size of this queue is big: 100 time the size of
+&#8216;debug<em>queue</em>msg_t&#8217;, approximately 6800 bytes: */
+xQueueCreate( DEBUG<em>MSG</em>COUNT, sizeof( debug<em>queue</em>msg_t ) );
+~~~~~
+Or you can pass the message by reference (memory pointer), and create it like this:
+~~~~~
+<h1>define DEBUG<em>MSG</em>COUNT 100</h1>
+/* This queue will only store and forward objects
+of the size of a pointer.
+This size of this queue is only 100 * 4 = 400 bytes: */
+xQueueCreate( DEBUG_MSG_COUNT, sizeof( debug_queue_msg_t * ) )
+~~~~~
+It looks like you mixed things up: your queue has an element size of 4 bytes and you expect it will hold complete message of type &#8216;debug<em>queue</em>msg_t&#8217;, is that true?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Char buffer corruption within FreeRTOS queue messages</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 6, 2015</div><div class="thread-post-content">Some addition to my previous post:
+FreeRTOS Queues are used for several purposes, for example:
+<ul>
+<li>Semaphores: nothing is being stored and the element size is zero</li>
+<li>Token queues: the element size equals 1 and characters are being sent</li>
+<li>Messages queues: the element size equals to the size of a memory pointer</li>
+</ul>
+I would not recommend using queues to store large objects as in my previous post.
+If you pass pointers you must make sure who is the owner of the pointers at any time. A safe and easy way is to use 2 queues:
+~~~~~
+    void vLoggingInit( void )
+    {
+    BaseType xIndex;
+    static debug<em>queue</em>msg<em>t messages[ DEBUG</em>MSG_COUNT ];
+<pre><code>    /* The queue that will be consumed by the UART task. */
+    xLoggingQueue = xQueueCreate( DEBUG_MSG_COUNT, sizeof( debug_queue_msg_t * ) );
+    /* The queue that holds free messages. */
+    xFreeQueue = xQueueCreate( DEBUG_MSG_COUNT, sizeof( debug_queue_msg_t * ) );
+    for( xIndex = 0; xIndex &lt; DEBUG_MSG_COUNT; xIndex++ )
+    {
+        debug_queue_msg_t *pxPointer = messages + xIndex;
+        xQueueSendToBack( xFreeQueue, ( void *)&amp;pxPointer, 0 );
+    }
+}
+void vSendLogging( trace_level_t xLevel, const char *pcFormat, ... )
+{
+    debug_queue_msg_t *pxPointer;
+    if( xQueueReceive( xFreeQueue, ( void *)&amp;pxPointer, 0ul ) != pdFALSE )
+    {
+    va_list vArgs;
+        /* pxPointer is ours now, fill the fields. */
+        pxPointer-&gt;level = xLevel;
+        va_start (vArgs, pcFormat);
+        pxPointer-&gt;size = vsnprintf( pxPointer-&gt;buffer, sizeof pxPointer-&gt;buffer, pcFormat, vArgs );
+        va_end (vArgs);
+        /* The parameter 'xTicksToWait' can safely be set at the maximum because
+        xLoggingQueue is created big enough to to hold ALL messages: */
+        xQueueSendToBack( xLoggingQueue, ( void *)&amp;pxPointer, portMAX_DELAY );
+    }
+    else
+    {
+        /* The UART task is a bit slow, all messages are occupied. */
+    }
+}
+void vReceiveLogging( ... )
+{
+    debug_queue_msg_t *pxPointer;
+    if( xQueueReceive( xLoggingQueue, ( void *)&amp;pxPointer, 0ul ) != pdFALSE )
+    {
+        /* Send the message: */
+        uart_send( pxPointer );
+        /* Pass the pointer to the poll of free pointers: */
+        xQueueSendToBack( xFreeQueue, ( void *)&amp;pxPointer, portMAX_DELAY );
+    }
+}
+</code></pre>
+~~~~~
+The above function vSendLogging() can be rewritten as an ISR version but I would not recommend to do so: it will influence the process too much.
+Note: I didn&#8217;t take the time to test the above code, excuse me if it contains typos or some mistake 🙂
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/RTOS.html" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

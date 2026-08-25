@@ -1,0 +1,412 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Undertanding Context switch of ARM v7 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_Undertanding_Context_switch_of_ARM_v7_3010d88cj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Undertanding Context switch of ARM v7 - FreeRTOS" />
+<meta property="og:description" content="Undertanding Context switch of ARM v7 Posted by amirsadig on November 7, 2016i have beaglebone black board and i am tring to port it.. i found some coding about context switch like ~~~ define portRESTORE_CONTEXT() { extern volatile void * volatile pxCurrentTCB; extern volatile unsigned portLONG ulCriticalNesting; /* Set the LR to the task stack. &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_Undertanding_Context_switch_of_ARM_v7_3010d88cj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Undertanding Context switch of ARM v7 Posted by amirsadig on November 7, 2016i have beaglebone black board and i am tring to port it.. i found some coding about context switch like ~~~ define portRESTORE_CONTEXT() { extern volatile void * volatile pxCurrentTCB; extern volatile unsigned portLONG ulCriticalNesting; /* Set the LR to the task stack. [&hellip;]" />
+<meta name="twitter:title" content="Undertanding Context switch of ARM v7 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202727' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202727' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202727' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202727' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146129' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_Undertanding_Context_switch_of_ARM_v7_3010d88cj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_Undertanding_Context_switch_of_ARM_v7_3010d88cj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146129">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2016_freertos_support_forum_archive_index.html/">November 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Undertanding Context switch of ARM v7 </h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amirsadig">amirsadig</a> on November 7, 2016</div><div class="thread-post-content">i have beaglebone black board and i am tring to port it.. i found some coding about context switch like
+~~~
+<h1>define portRESTORE_CONTEXT()                                           </h1>
+{                                                                       
+extern volatile void * volatile pxCurrentTCB;                           
+extern volatile unsigned portLONG ulCriticalNesting;                    
+    /* Set the LR to the task stack. */                                 
+    __asm volatile (                                                    
+    &#8220;LDR        R0, =pxCurrentTCB                               nt&#8221;   
+    &#8220;LDR        R0, [R0]                                        nt&#8221;   
+    &#8220;LDR        LR, [R0]                                        nt&#8221;   
+    /* The critical nesting depth is the first item on the stack. */    
+    /* Load it into the ulCriticalNesting variable. */                  
+    &#8220;LDR        R0, =ulCriticalNesting                          nt&#8221;   
+    &#8220;LDMFD  LR!, {R1}                                           nt&#8221;   
+    &#8220;STR        R1, [R0]                                        nt&#8221;   
+    /* Get the SPSR from the stack. */                                  
+    &#8220;LDMFD  LR!, {R0}                                           nt&#8221;   
+    &#8220;MSR        SPSR, R0                                        nt&#8221;   
+    /* Restore all system mode registers for the task. */               
+    &#8220;LDMFD  LR, {R0-R14}^                                       nt&#8221;   
+    &#8220;NOP                                                        nt&#8221;   
+    /* Restore the return address. */                                   
+    &#8220;LDR        LR, [LR, #+60]                                  nt&#8221;   
+    /* And return &#8211; correcting the offset in the LR to obtain the */    
+    /* correct address. */                                              
+    &#8220;SUBS   PC, LR, #4                                          nt&#8221;   
+    );                                                                  
+    ( void ) ulCriticalNesting;                                         
+    ( void ) pxCurrentTCB;                                              
+}
+~~~
+in the following code we have switched to system mode (because the first task has 0x1F as SPSR)
+~~~
+/* Get the SPSR from the stack. */                                  
+    &#8220;LDMFD  LR!, {R0}                                           nt&#8221;   
+    &#8220;MSR        SPSR, R0                                        nt&#8221;   
+~~~
+but the next instruction read LR still from Supervisor Mode
+~~~
+LDR     LR, [LR, #+60]
+~~~
+can someone tell how this happend. i expected after setting SPSR to 0x1F that LR point to banked LR of System mode and not of Supervisor Mode.
+the LR in system mode has a dummy value like 0x0a0a0a0a.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on November 7, 2016</div><div class="thread-post-content">ARMv7 what? Not M so probably A. Is the problem on the first context switch? What mode was the Cortex in when vTaskSwitchContext() is called?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amirsadig">amirsadig</a> on November 8, 2016</div><div class="thread-post-content">beaglebone black come with AM335x which is ARMv7 Cortex-A 8.
+there is no problem with the code .. it works for the first context switch.
+i have made some research and understanfs now what <code>LDMFD  LR, {R0-R14}^</code> exactly what &#8216;^&#8217; means.
+in <a href="http://http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0068b/CIHCADDA.html">ARM Manual </a>:
+<blockquote>
+  ^
+</blockquote>
+<pre><code>is an optional suffix. You must not use it in User mode or System mode. It has two purposes:
+    If op is LDM and reglist contains the pc (r15), in addition to the normal multiple register transfer, the SPSR is copied into the CPSR. This is for returning from exception handlers. Use this only from exception modes.
+    Otherwise, data is transferred into or out of the User mode registers instead of the current mode registers.
+</code></pre>
+but what i am still not understand the code was running in supervisor mode and the code
+~~~
+&#8220;LDMFD  LR!, {R0}                                           nt&#8221;   
+&#8220;MSR        SPSR, R0                                        nt&#8221;   
+~~~
+only store the SPSR but not change the execution mode. after changing PC to call the first task code the execution mode changed to system mode .. this what i still not understands
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rs9562">rs9562</a> on December 22, 2016</div><div class="thread-post-content">Using a LPC2132 board with working:
+ LCD driver
+ LED port driver (8 segments)
+ Keypad driver (interrupt driven using vector irq or firq)
+ I try to initialize minimal hardware (which makes no difference) and make a call to xPortStartScheduler().
+ In portRESTORE<em>CONTEXT() macro I am getting a DATA</em>ABORT exception:
+LR = 0x0aaaaaaaa
+SPSR = 0x200000df
+Addr = the following line in portRESTORE_CONTEXT()
+/* Restore the return address. */
+    &#8220;LDR        LR, [LR, #+60]&#8221;
+<pre><code>The LR has a value of 0xaaaaaaaa which is why the exception occurs.
+That address is in the reserved area on chip.
+The 0xaaaaaaaa is written to a stack area in pxPortInitialiseStack() 
+</code></pre>
+<hr />
+<pre><code>StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t pxCode, void *pvParameters )
+</code></pre>
+{
+StackType_t *pxOriginalTOS;
+<pre><code>    pxOriginalTOS = pxTopOfStack;
+    /* To ensure asserts in tasks.c don't fail, although in this case the assert
+    is not really required. */
+    pxTopOfStack--;
+    /* Setup the initial stack of the task.  The stack is set exactly as
+    expected by the portRESTORE_CONTEXT() macro. */
+    /* First on the stack is the return address - which in this case is the
+    start of the task.  The offset is added to make the return address appear
+    as it would within an IRQ ISR. */
+    *pxTopOfStack = ( StackType_t ) pxCode + portINSTRUCTION_SIZE;
+    pxTopOfStack--;
+    *pxTopOfStack = ( StackType_t ) 0xaaaaaaaa;     /* R14 */
+    pxTopOfStack--;
+    *pxTopOfStack = ( StackType_t ) pxOriginalTOS; /* Stack used when task starts goes in R13. */
+    pxTopOfStack--;
+    *pxTopOfStack = ( StackType_t ) 0x12121212;     /* R12 */
+    pxTopOfStack--;
+    *pxTopOfStack = ( StackType_t ) 0x11111111;     /* R11 */
+    pxTopOfStack--;
+</code></pre>
+<hr />
+<pre><code>The call stack is:
+xPortStartScheduler():
+  vPortISRStartFirstTask();
+    portRESTORE_CONTEXT();
+</code></pre>
+ I am using FreeRTOSv9.0.0/FreeRTOS/Source/portable/GCC/ARM7_LPC2000/port.c
+ Any idea what to change?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 22, 2016</div><div class="thread-post-content">Its been a while since I used an ARM7 port, but from memory I would say your problem is almost certainly due to having the MCU in the wrong mode when xPortStartScheduler() is called.  Make sure the MCU is in Supervisor mode, and definitely not in User mode.  The mode is normally set in the start up code before main() is called.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rs9562">rs9562</a> on December 23, 2016</div><div class="thread-post-content">I see that in section 6.3 (Troubleshooting). I made the change to supervisor mode and still get a data abort with spsr = 0x200000d3. It has been a while since I used an ARM7 too, last
+projects were a LPC1769 (Cortex M3) and a STM32f7Discovery (Cortex M7).
+SPSR = 0x200000d3
+C flag
+I flag
+F flag
+Mode = 0x13 (SVC)
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 23, 2016</div><div class="thread-post-content">Please attach your start up file (the file that sets up the stacks for 
+each CPU mode).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rs9562">rs9562</a> on December 23, 2016</div><div class="thread-post-content">Here is the relevant section. I can attach the entire contents of the startup file if necessary.
+<pre><code>.equ USR_MODE,   0x10
+.equ FIQ_MODE,   0x11
+.equ IRQ_MODE,   0x12
+.equ SVC_MODE,   0x13
+.equ ABT_MODE,   0x17
+.equ UND_MODE,   0x1B
+.equ SYS_MODE,   0x1F
+.equ UND_STACK_SIZE,  0x00000010
+.equ ABT_STACK_SIZE,  0x00000010
+.equ FIQ_STACK_SIZE,  0x00000080
+.equ IRQ_STACK_SIZE,  0x00000080
+.equ SVC_STACK_SIZE,  0x00000400
+.equ SYS_STACK_SIZE,  0x00000400
+.equ IRQ_DISABLE,  (1 &lt;&lt; 7)
+.equ FIQ_DISABLE,  (1 &lt;&lt; 6)
+ldr r0, STACK_START
+/* Undefined mode stack */
+msr CPSR_c, #UND_MODE | IRQ_DISABLE | FIQ_DISABLE
+mov sp, r0
+sub r0, r0, #UND_STACK_SIZE
+/* Abort mode stack */
+msr CPSR_c, #ABT_MODE | IRQ_DISABLE | FIQ_DISABLE
+mov sp, r0
+sub r0, r0, #ABT_STACK_SIZE
+/* FIQ mode stack */
+msr CPSR_c, #FIQ_MODE | IRQ_DISABLE | FIQ_DISABLE
+mov sp, r0
+sub r0, r0, #FIQ_STACK_SIZE
+/* IRQ mode stack */
+msr CPSR_c, #IRQ_MODE | IRQ_DISABLE | FIQ_DISABLE
+mov sp, r0
+sub r0, r0, #IRQ_STACK_SIZE
+/* Supervisor mode stack */
+msr CPSR_c, #SVC_MODE | IRQ_DISABLE | FIQ_DISABLE
+mov sp, r0
+sub r0, r0, #SVC_STACK_SIZE
+/* System mode stack */
+msr CPSR_c, #SYS_MODE | IRQ_DISABLE | FIQ_DISABLE
+mov sp, r0
+/* Start in supervisor mode */
+msr CPSR_c, #SVC_MODE | IRQ_DISABLE | FIQ_DISABLE
+bl  main
+b    .
+STACK_START:.word   __stack_start__
+__stack_start__ equates to __ram_end__ which is 0x40004000
+/*
+ * Linker script for LPC2132 ARM7 MCU
+ *
+ *
+ * __ram_end__       +--------------+ __stack_start__
+ *                   |              |
+ *                   |     Stack    |
+ *                   |              |
+ *                   +--------------+ __stack_end__
+ *                   |              |
+ *                   |     heap     |
+ *                   |              |
+ *                   +--------------+ __bss_end__
+ *                   |              |
+ *                   |     .bss     |
+ *                   |              |
+ *                   +--------------+ __bss_start__
+ *                   |    .data     | __data_end__
+ *                   |Virtual Memory|
+ *                   | Address (VMA)|
+ * __ram_start__     +--------------+ __data_start__
+ *
+ * __flash_end__     +--------------+
+ *                   |              |
+ *                   |     empty    |
+ *                   |              |
+ *                   +--------------+
+ *                   |    .data     |
+ *                   | Load Memory  |
+ *                   | Address (LMA)|
+ *                   +--------------+ __text_end__
+ *                   |              |
+ *                   |   .rodata    |
+ *                   |              |
+ *                   +--------------+
+ *                   |              |
+ *                   |    .text     |
+ *                   |              |
+ *                   +--------------+
+ *                   |   .startup   |
+ *  __flash_start__  +--------------+ __text_start__
+ */
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rs9562">rs9562</a> on December 23, 2016</div><div class="thread-post-content">I found a typing fix for this file:
+FreeRTOSv9.0.0/FreeRTOS/Source/portable/GCC/ARM7_LPC2000/portmacro.h&#8221; line 120 of 269
+/* 
+ * portRESTORE<em>CONTEXT, portRESTORE</em>CONTEXT, portENTER<em>SWITCHING</em>ISR
+ * and portEXIT<em>SWITCHING</em>ISR can only be called from ARM mode, but
+ * are included here for efficiency.  An attempt to call one from
+ * THUMB mode code will result in a compile time error.
+ */
+Edit the second &#8220;portRESTORE<em>CONTEXT&#8221; to read as &#8220;portSAVE</em>CONTEXT&#8221;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rs9562">rs9562</a> on December 23, 2016</div><div class="thread-post-content">After removing the &#8220;^&#8221; from the line in portRESTORE_CONTEXT() to see what difference it made:
+LDMFD LR, {R0-R14}^
+I had not restored it. Then adjusted the CSPR to SVC mode before calling main. Still got a data abort. After I restored the &#8220;^&#8221; things worked. Thanks for your time.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 24, 2016</div><div class="thread-post-content">Refering to your start up file:  The IRQ mode stack is much too small, and there is no need to set up a System mode stack as it will nevery be used.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rs9562">rs9562</a> on December 24, 2016</div><div class="thread-post-content">I was going to tune the stack sizes later, but since you brought it up I really appreciate
+what you suggest and I will make the changes. The previous code I borrowed this from was
+a lpc2148 project I worked on about 8 years ago and the code started in SYS_MODE.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 24, 2016</div><div class="thread-post-content"><div dir='auto'><div>Look at the examples in the download, and copy them.<br><div data-smartmail="gmail_signature"><br></div><div class="gmail_extra"><br><div class="gmail_quote"><br></div></div></div></div>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rs9562">rs9562</a> on December 28, 2016</div><div class="thread-post-content">I have a few tasks running:
+1. RTC timer values (seconds, minutes. etc) are read from RTC registers.
+2. LED bank displays seconds and tenths of seconds.
+3. 16 key keypad detects entry interrupt and decodes a key.
+4. A LCD is printing the elapsed time, key entry, led count.
+It can run for a few hours with no hang up. A few times I have noticed a data abort within portISR.c at portRESTORE_CONTEXT.
+<pre><code>void vPortYieldProcessor( void )
+{
+   /* Within an IRQ ISR the link register has an offset from the true return
+address, but an SWI ISR does not.  Add the offset manually so the same
+ISR return code can be used in both cases. */
+__asm volatile ( "ADD       LR, LR, #4" );
+/* Perform the context switch.  First save the context of the current task. */
+portSAVE_CONTEXT();
+/* Find the highest priority task that is ready to run. */
+__asm volatile ( "bl vTaskSwitchContext" );
+/* Restore the context of the new task. */
+portRESTORE_CONTEXT();
+</code></pre>
+}
+I was thinking that I might have to have some synchronization between reading the RTC registers and servicing the rtc interrupt. As the problems become fewer the complexity increases. As it is I am only using a 4 line with 20 characters per line LCD display. I just print out R13, R14, SPSR at the abort.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 28, 2016</div><div class="thread-post-content">Did you increase the size of the IRQ stack, as per the comment a few 
+posts above?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Undertanding Context switch of ARM v7 </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rs9562">rs9562</a> on December 28, 2016</div><div class="thread-post-content">This happened twice in a row, same exact registers:
+Data Abort Exception:
+FreeRTOSv9.0.0/FreeRTOS/Source/portable/GCC/ARM7_LPC2000/portISR.c
+r0 = 0x40000024     (ulCriticalNesting)
+r1 = 0x40000060     (pxCurrentTCB + 4)
+r2 = 0x00000001
+r3 = 0x4000013c     (pxCurrentTCB + e0)
+r4 = 0x0000000e
+r5 = 0x05050505
+r6 = 0x06060606
+r7 = 0x400004f0     (in the heap)
+r8 = 0x08080808
+r9 = 0x09090909
+r10=0x10101010
+r11=0x40003fec     (Abort stack area , start = 0x40003ff0 length = 0x10)
+r12=0x0000320d
+r13=0x40003fcc     (IRQ stack area, start = 0x40003fd0 length = 0x800)
+r14=0x00004a34
+spsr=0x20000093
+<pre><code>    /* Restore the context of the new task. */
+    portRESTORE_CONTEXT();
+4a20:       e59f01fc        ldr     r0, [pc, #508]  ; 4c24 &lt;vPortExitCritical+0x64&gt;
+4a24:       e5900000        ldr     r0, [r0]
+4a28:       e590e000        ldr     lr, [r0]
+4a2c:       e59f01f4        ldr     r0, [pc, #500]  ; 4c28 &lt;vPortExitCritical+0x68&gt;
+4a30:       e8be0002        ldm     lr!, {r1}
+4a34:       e5801000        str     r1, [r0]
+4a38:       e8be0001        ldm     lr!, {r0}
+4a3c:       e169f000        msr     SPSR_fc, r0
+4a40:       e8de7fff        ldm     lr, {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, sl, fp, ip, sp, lr}^
+4a44:       e1a00000        nop                     ; (mov r0, r0)
+4a48:       e59ee03c        ldr     lr, [lr, #60]   ; 0x3c
+4a4c:       e25ef004        subs    pc, lr, #4
+4a50:       e59f300c        ldr     r3, [pc, #12]   ; 4a64 &lt;swi_handler+0xa8&gt;
+4a54:       e5933000        ldr     r3, [r3]
+4a58:       e59f3008        ldr     r3, [pc, #8]    ; 4a68 &lt;swi_handler+0xac&gt;
+4a5c:       e5933000        ldr     r3, [r3]
+}
+4a60:       e1a00000        nop                     ; (mov r0, r0)
+4a64:       40000024        .word   0x40000024
+4a68:       4000005c        .word   0x4000005c
+</code></pre>
+After adding code to display exception registers and use the the stack checking feature I found that I had to adjust comfigMINIMAL<em>STACK</em>SIZE. Since I&#8217;m only working with 16K sram I have to careful with memory use. I&#8217;m planning to make a few modifications so that a certain key press will display the stack high water marks for the running tasks. Thank you to Real Time Engineers for your comments.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

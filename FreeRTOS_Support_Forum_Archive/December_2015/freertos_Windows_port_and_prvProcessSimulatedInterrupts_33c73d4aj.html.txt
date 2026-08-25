@@ -1,0 +1,366 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows port and prvProcessSimulatedInterrupts() - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/December_2015/freertos_Windows_port_and_prvProcessSimulatedInterrupts_33c73d4aj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Windows port and prvProcessSimulatedInterrupts() - FreeRTOS" />
+<meta property="og:description" content="Windows port and prvProcessSimulatedInterrupts()Posted by daskew on December 4, 2015We&#8217;re using the windows port to allow us to run a firmware code base in an emulated hardware environment. While running, I&#8217;ve what I believe to be an issue with prvProcessSimulatedInterrupts(). It appears that this function allows interrupt handlers to execute at the same time as &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/December_2015/freertos_Windows_port_and_prvProcessSimulatedInterrupts_33c73d4aj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Windows port and prvProcessSimulatedInterrupts()Posted by daskew on December 4, 2015We&#8217;re using the windows port to allow us to run a firmware code base in an emulated hardware environment. While running, I&#8217;ve what I believe to be an issue with prvProcessSimulatedInterrupts(). It appears that this function allows interrupt handlers to execute at the same time as [&hellip;]" />
+<meta name="twitter:title" content="Windows port and prvProcessSimulatedInterrupts() - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202582' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202582' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202582' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202582' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145163' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2015%2Ffreertos_Windows_port_and_prvProcessSimulatedInterrupts_33c73d4aj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2015%2Ffreertos_Windows_port_and_prvProcessSimulatedInterrupts_33c73d4aj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145163">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/December_2015_freertos_support_forum_archive_index.html/">December 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/daskew">daskew</a> on December 4, 2015</div><div class="thread-post-content">We&#8217;re using the windows port to allow us to run a firmware code base in an emulated hardware environment. While running, I&#8217;ve what I believe to be an issue with prvProcessSimulatedInterrupts(). It appears that this function allows interrupt handlers to execute at the same time as FreeRTOS tasks which can lead to unpredictable behavior in some circustances.
+Our emulated environment layer uses windows resources to emulate a UART, GPIO and an RTC. These emulated peripherals use the vPortGenerateSimulatedInterrupt() API whenever they need to cause our firmware code base to see characters, GPIO interrupts, or clock ticks. 
+Occasionally we&#8217;ve seen some configASSERTs inside freeRTOS, usually while freeRTOS is removing an item from a list due to a list being unexpectedly empty. We&#8217;ve also seen Visual Studio report first chance exceptions while processing interrupts.
+While investigating these problems, I noticed that the prvProcessSimulatedInterrupts() implementation in the windows port allows a task to continue executing while interrupt handlers are also called. prvProcessSimulatedInterrupts() only halts the current task from executing if a context switch is necessary after running the interrupt handler.
+To better emulate single-core processors, shouldn&#8217;t prvProcessSimulatedInterrupts() suspend the running task prior to calling interrupt handlers? This appears to be especially important if the interrupt handlers are using the fromISR variants of freeRTOS APIs.
+I inserted a call to SuspendThread() prior to calling all interrupt handlers, and followed with up with:
+        pxThreadState = (xThreadState <em>)(</em>(size_t *)pxCurrentTCB);
+        ResumeThread(pxThreadState->pvThread);
+This seems to have helped with our stability issues. I haven&#8217;t yet further investigated the source of the configASSERT() and windows exceptions that our debugger was catching.
+This code change seems to better emaulate a single core CPU.
+Thoughts?
+-Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 4, 2015</div><div class="thread-post-content">I will have to re-familiarise myself with how this functions.  Please attach your modified version to a forum post so I can see your changed.
+Normally (on real hardware) interrupts execute outside the context of a task.  Critical sections are used to avoid the two separate threads of execution (the task and the interrupt) from accessing critical RTOS data at the same time.  The critical section effectively holds a subset of interrupts off until it is safe for them to execute.
+As I recall, in the windows port, the function that executes the simulated interrupts executes in its own Windows (not FreeRTOS) thread &#8211; in fact it is the main thread which just runs into a for( ;; ) loop that blocks on Windows semaphores to wait for interrupts to process.  In that case it is analogous to the real hardware scenario.  Critical sections prevent (or should prevent) the Windows thread that processes simulated interrupts from leaving the Blocked state.
+We know from experience that all the Windows threads that are FreeRTOS tasks have to run on the same core.  I&#8217;m wondering if there is anything that forces the thread that processes simulated interrupts to also be on the same core &#8211; that is probably very important and needs checking.
+Also, which FreeRTOS version are you using, as the following code was added into the process simulated interrupts function quite recently:
+~~~~
+/* Ensure the thread is actually suspended by performing a 
+synchronous operation that can only complete when the thread is 
+actually suspended.  The below code asks for dummy register
+data. */
+xContext.ContextFlags = CONTEXT_INTEGER;
+( void ) GetThreadContext( pxThreadState->pvThread, &amp;xContext );
+~~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 4, 2015</div><div class="thread-post-content">&#8230; Should have looked first &#8211; the main thread does get its afinity set.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/daskew">daskew</a> on December 4, 2015</div><div class="thread-post-content">Looks like we were running 8.2.1. I&#8217;ve just updated to 8.2.3, so I now have the code change you referenced above.
+I do understand your comments that processor affinity along with critical sections should protect FreeRTOS data structures. However, it looks like the FromISR versions of FreeRTOS functions do not enter a critical section. 
+The way my project is using FreeRTOS may be leading to issues. I have created a very simple OS layer in my product. One example of an OS function is a function called osQueuePost() that posts to a queue. This function performs a check to determine if it is being called from an ISR or not and calls either xQueueSendFromISR() or xQueueSend() depending upon context.
+The way this is implemented on an ARM processor, is a register is read to determine whether we are within an ISR or not. On our windows port, we have a global variable that gets set indicating whether an ISR is executing or not.
+Here is one theory about what may be going on:
+<ol>
+<li>Application task is running</li>
+<li>Interrupt comes in and the interrupt handler sets the IN_ISR global variable</li>
+<li>Interrupt handler then calls osQueuePost() which calls xQueueSendFromISR()</li>
+<li>At the same time as this is executing, windows does a context switch and schedules the application task. The application task calls osQueuePost(). Because the global variable IN_ISR is set to true, the xQueueSendFromISR() API is called.</li>
+<li>At this point, there are two instances of xQueueSendFromISR() running at the same time.</li>
+</ol>
+My osQueuePost() function assumes that we are running a single core processor and that if an ISR is running, application code will not be running as we only have one CPU execution unit. The ISR will set the IN<em>ISR global variable run to completion, then clear the IN</em>ISR global. No matter what the application task is doing at this time when it is interrupted, it will call the appropriate FreeRTOS API.
+To prevent this, it made sense to me to modify the Windows FreeRTOS port to do the following in the for loop inside :
+~~~~~~
+for(;;)
+    {
+        DWORD result = WaitForMultipleObjects( sizeof( pvObjectList ) / sizeof( void * ), pvObjectList, TRUE, INFINITE );
+<pre><code>    /* Used to indicate whether the simulated interrupt processing has
+    necessitated a context switch to another task/thread. */
+    ulSwitchRequired = pdFALSE;
+    /* Suspend the running thread. */
+    pxThreadState = (xThreadState *)*((size_t *)pxCurrentTCB);
+    SuspendThread(pxThreadState-&gt;pvThread);
+    /* Ensure the thread is actually suspended by performing a
+    synchronous operation that can only complete when the thread is
+    actually suspended.  The below code asks for dummy register
+    data. */
+    xContext.ContextFlags = CONTEXT_INTEGER;
+    (void)GetThreadContext(pxThreadState-&gt;pvThread, &amp;xContext);
+    /* For each interrupt we are interested in processing, each of which is
+    represented by a bit in the 32bit ulPendingInterrupts variable. */
+    for( i = 0; i &lt; portMAX_INTERRUPTS; i++ )
+    {
+        /* Is the simulated interrupt pending? */
+        if( ulPendingInterrupts &amp; ( 1UL &lt;&lt; i ) )
+        {
+            /* Is a handler installed? */
+            if( ulIsrHandler[ i ] != NULL )
+            {
+                /* Run the actual handler. */
+                if( ulIsrHandler[ i ]() != pdFALSE )
+                {
+                    ulSwitchRequired |= ( 1 &lt;&lt; i );
+                }
+            }
+            /* Clear the interrupt pending bit. */
+            ulPendingInterrupts &amp;= ~( 1UL &lt;&lt; i );
+        }
+    }
+    if( ulSwitchRequired != pdFALSE )
+    {
+        /* Select the next task to run. */
+        vTaskSwitchContext();
+    }
+    /* Obtain the state of the task now selected to enter the
+    Running state. */
+    pxThreadState = (xThreadState *)(*(size_t *)pxCurrentTCB);
+    ResumeThread(pxThreadState-&gt;pvThread);
+    ReleaseMutex( pvInterruptEventMutex );
+}
+</code></pre>
+~~~~~~
+Here is my osQueuePost function:
+~~~~~~
+COMMON<em>STATUS osQueuePost( OS</em>Queue<em>Handle</em>t handle, void *item, uint32_t timeoutMsecs )
+{
+    COMMON_STATUS status = COMMON_STATUS_ERROR;
+<pre><code>ASSERT(handle != NULL);
+ASSERT(item != NULL);
+if ((handle != NULL) &amp;&amp; (item != NULL))
+{
+    // FreeRTOS uses different interfaces to post a queue item if you are in an interrupt
+    if (bspCPUInHandler())
+    {
+        BaseType_t yieldRequired;
+        // In an interrupt context
+        BaseType_t osResult = xQueueSendFromISR((QueueHandle_t)handle, item, &amp;yieldRequired);
+        if (osResult == pdTRUE)
+        {
+            status = COMMON_STATUS_OK;
+        }
+        else
+        {
+            status = COMMON_STATUS_BUSY;
+        }
+        osSetYield(yieldRequired);
+    }
+    else
+    {
+        // Not in an interrupt context
+        do {
+            TickType_t ticksToWait;
+            if (timeoutMsecs != OS_WAIT_FOREVER)
+            {
+                ticksToWait = timeoutMsecs / portTICK_PERIOD_MS;
+            }
+            else
+            {
+                ticksToWait = portMAX_DELAY;
+            }
+            BaseType_t osResult = xQueueSend((QueueHandle_t)handle, item, ticksToWait);
+            if (osResult == pdTRUE)
+            {
+                status = COMMON_STATUS_OK;
+                break;
+            }
+            if (timeoutMsecs != OS_WAIT_FOREVER)
+            {
+                status = COMMON_STATUS_TIMEOUT;
+                break;
+            }
+        } while (timeoutMsecs == OS_WAIT_FOREVER);
+    }
+}
+ASSERT(status != COMMON_STATUS_ERROR);
+return status;
+</code></pre>
+}
+~~~~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 5, 2015</div><div class="thread-post-content">Critical sections are only required in interrupts if interrupts can 
+nest, so ports that do not support interrupt nesting do not provide the 
+&#8220;FromISR&#8221; versions of the critical section macros.  In the case of the 
+Windows port, all [simulated] interrupts run in the same [Windows] 
+thread so they cannot nest.
+The scenario you describe assumes the application task can start to 
+execute while a [simulated] interrupt is executing, but that should not 
+be possible.  There is an emphasis on the &#8216;should&#8217;, because perhaps that 
+is what is happening.
+The rational for saying it should not be possible is that the Windows 
+thread that executes the interrupts is given a priority of 
+THREAD<em>PRIORITY</em>NORMAL, while the Windows threads that run FreeRTOS 
+tasks are given a priority of THREAD<em>PRIORITY</em>IDLE.
+Another question &#8211; are you making any Windows system calls from any of 
+your FreeRTOS tasks or interrupts?  In particular, are you writing to 
+the console (printf), a disk, or using the Windows TCP/IP stack?  You 
+can get away with these things occasionally (as we do in the demo 
+application for the Windows port), but because such system calls can 
+block the Windows threads in a way that is outside of the control of the 
+FreeRTOS scheduler (which thinks it knows what is running when) they can 
+causes crashes under load.  We have some techniques for getting around 
+this by using thread safe circular buffers to communicate between 
+Windows threads that run FreeRTOS tasks and Windows threads to which IO 
+operations are delegated.
+Now I will look at the code you posted&#8230;
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/daskew">daskew</a> on December 7, 2015</div><div class="thread-post-content">I am not particularly familar with the Windows scheduler so I didn&#8217;t realize that a THREAD<em>PRIORITY</em>NORMAL thread would always be scheduled by Windows to run instead of THREAD<em>PRIORITY</em>IDLE. The Windows port is now making more sense! 
+However, we are making Windows system calls from FreeRTOS tasks, and also access a windows mutex inside interrupts. I can see how such calls would break the assumptions you have spelled out above. I&#8217;ll look a little bit closer at using thread safe circular buffers to queue up our I/O operations.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 7, 2015</div><div class="thread-post-content">Perhaps too complex for your case, but attached is a file that we use in the Windows version of the FreeRTOS+TCP demo application.  The stream buffer (the code for which is also in the FreeRTOS Labs download) is the thread safe circular buffer.
+In the demo you can send debug and application log messages to UDP (I think?), the console, or a disk files.  The FreeRTOS threads call the logging function, and the logging function writes to the stream buffer from the context of the task.  A separate Windows thread that is unknown to the FreeRTOS scheduler then reads from the stream buffer and peforms the necessary IO.
+Like I said, probably too complex for your scenario, but hopefully you will get the idea.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/daskew">daskew</a> on December 9, 2015</div><div class="thread-post-content">We&#8217;re adapting some of the ideas in demo_logging.c to our code base.
+I am wondering why this uses Windows thread priorities as a critical section. Based upon my code reading it appears to me that vLoggingPrintf() will only be called from FreeRTOS tasks. If that is the case, why not use taskENTER<em>CRITICAL()/taskEXIT</em>CRITICAL() to protect the buffer used by vLoggingPrintf?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 10, 2015</div><div class="thread-post-content">I presume you are referring to this code:
+~~~~
+/* First write in the length of the data, then write in the data
+itself.  Raising the thread priority is used as a critical section
+as there are potentially multiple writers.  The stream buffer is
+only thread safe when there is a single writer (likewise for
+reading from the buffer). */
+SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_NORMAL );
+lStreamBufferAdd( xLogStreamBuffer, 0, ( const uint8_t * ) &amp;( xLength ), 
+sizeof( xLength ) );
+lStreamBufferAdd( xLogStreamBuffer, 0, ( const uint8_t * ) 
+cOutputString, xLength );
+SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_IDLE );
+~~~~
+&#8230;the answer is I&#8217;m not sure, but think perhaps it is because in that 
+particular demo there are also other non FreeRTOS Windows threads that, 
+for test purposes, are communicating with the FreeRTOS+TCP TCP/IP stack 
+(so the FreeRTOS tack can communicate with a third party stack within 
+the same test application) and those non FreeRTOS Windows threads might 
+use the same logging function.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on April 19, 2018</div><div class="thread-post-content">I would like to reopen the  post because we had the same problem; the scheduler was locked  (uxSchedulerSuspended set to one) without apparent reasons. We are also using communication with other windows threads and it took a while to discover that the reason was the same as the one posted above.
+ We would like that a solution to the problem is delivered with the official port for windows. I guess other will have the same problems and it would be nice to spare them the same headaches we had.
+What do you think?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davidefer">davidefer</a> on April 19, 2018</div><div class="thread-post-content">Here are our modifications to 10.0.1 port.c (actually almost the same of David above):
+<pre><code>    if( ulSwitchRequired != pdFALSE )
+    {
+        void *pvOldCurrentTCB;
+        pvOldCurrentTCB = pxCurrentTCB;
+        // change: suspend the current thread immediately
+        pxThreadState = (xThreadState *)*((size_t *)pxCurrentTCB);
+        SuspendThread(pxThreadState-&gt;pvThread);
+        /* Select the next task to run. */
+        vTaskSwitchContext(); // pxCurrentTCB is overwritten if context switch needed
+        /* If the task selected to enter the running state is not the task
+        that is already in the running state. */
+        if( pvOldCurrentTCB != pxCurrentTCB )
+        {
+            /* Suspend the old thread. change: already suspended above*/
+            //pxThreadState = ( xThreadState *) *( ( size_t * ) pvOldCurrentTCB );
+            //SuspendThread( pxThreadState-&gt;pvThread );
+            /* Ensure the thread is actually suspended by performing a
+            synchronous operation that can only complete when the thread is
+            actually suspended.  The below code asks for dummy register
+            data. */
+            xContext.ContextFlags = CONTEXT_INTEGER;
+            ( void ) GetThreadContext( pxThreadState-&gt;pvThread, &amp;xContext );
+            /* Obtain the state of the task now selected to enter the
+            Running state. */
+            pxThreadState = ( xThreadState * ) ( *( size_t *) pxCurrentTCB );
+            //ResumeThread( pxThreadState-&gt;pvThread ); change: resume here below
+        }
+        // resume the new or the old thread
+        ResumeThread(pxThreadState-&gt;pvThread);
+    }
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Windows port and prvProcessSimulatedInterrupts()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 19, 2018</div><div class="thread-post-content">Just re-read the thread to re-familiarise myself, it was some time back.
+<blockquote>
+  We would like that a solution to the problem is delivered with the 
+  official port for windows. I guess other will have the same problems and 
+  it would be nice to spare them the same headaches we had.
+</blockquote>
+It is not clear which problem you refer to.  Do you mean you would like 
+the FreeRTOS Windows port to be changed so it can communicate with other 
+Windows threads?  Or so it can make Windows system calls?  I think, in 
+either case, that won&#8217;t be possible as the FreeRTOS Windows port is 
+effectively running a scheduler inside a Windows process and we cannot 
+effect the internal workings of the Windows OS itself.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

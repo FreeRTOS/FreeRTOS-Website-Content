@@ -1,0 +1,210 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>non-contiguous heap definition for different types of memories - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2016/freertos_non-contiguous_heap_definition_for_different_types_of_memories_1abe102dj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="non-contiguous heap definition for different types of memories - FreeRTOS" />
+<meta property="og:description" content="non-contiguous heap definition for different types of memoriesPosted by gezab on August 30, 2016Hi, I am working with IAR&#8217;s STM32F746 development board where I have 3 regions of RAM: 64k very fast access internal RAM (for internal variables and structures), 256k of fast access internal RAM (defined as heap as of now) and 32M of &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2016/freertos_non-contiguous_heap_definition_for_different_types_of_memories_1abe102dj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="non-contiguous heap definition for different types of memoriesPosted by gezab on August 30, 2016Hi, I am working with IAR&#8217;s STM32F746 development board where I have 3 regions of RAM: 64k very fast access internal RAM (for internal variables and structures), 256k of fast access internal RAM (defined as heap as of now) and 32M of [&hellip;]" />
+<meta name="twitter:title" content="non-contiguous heap definition for different types of memories - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203167' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203167' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203167' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203167' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146057' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2016%2Ffreertos_non-contiguous_heap_definition_for_different_types_of_memories_1abe102dj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2016%2Ffreertos_non-contiguous_heap_definition_for_different_types_of_memories_1abe102dj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146057">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2016_freertos_support_forum_archive_index.html/">August 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">non-contiguous heap definition for different types of memories</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gezab">gezab</a> on August 30, 2016</div><div class="thread-post-content">Hi,
+I am working with IAR&#8217;s STM32F746 development board where I have 3 regions of RAM: 64k very fast access internal RAM (for internal variables and structures), 256k of fast access internal RAM (defined as heap as of now) and 32M of external SDRAM which is big but quite slow (currently taking 22 clock cycles at 216MHz for a 32-bit read operation as the board connects the SDRAM chip to the uC via a 16-bit data bus and bursts are not supported by the SDRAM controller). I want to have my heap extended in SDRAM, too, and this would actually be quite straightforward with heap regions introduced in heap_5.c&#8230; The problem is that i want to control at run time whether internal RAM or external RAM gets allocated when malloc is called (I need dynamic allocation for fast as well as for slow memories).
+Is it planned to have such a memory allocation flavour, too, like heap<em>6.c maybe? At the moment I have tailored heap</em>4.c for internal RAM and heap_5.c for external RAM, but this is more like a dirty hack than a nice clean solution&#8230; I do not want to have modified FreeRTOS code in my project and I also would be happy to avoid having 3rd party malloc libraries.
+Thanks for any ideas in advance and best regards,
+Geza
+</div></div><div class="thread-post"><h3 class="thread-post-title">non-contiguous heap definition for different types of memories</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on August 30, 2016</div><div class="thread-post-content">Perhaps use static allocation (xTaskCreateStatic(), xQueueCreateStatic(), etc.) for FreeRTOS objects to allow you to place structs and task stacks in internal RAM, then if your application calls pvPortMalloc() for other objects have heap_4/5.c use the external RAM?
+Or wrap pvPortMalloc() and vPortFree() in your own API that redirects the allocation to fast or slow RAM depending?
+Or have pvPortMalloc() use fast internal RAM for FreeRTOS objects, and then call normally malloc() for anything else and have that come from slow RAM?
+</div></div><div class="thread-post"><h3 class="thread-post-title">non-contiguous heap definition for different types of memories</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gezab">gezab</a> on August 30, 2016</div><div class="thread-post-content">Thanks for your rapid reply, Dave.
+As a matter of fact, I already have static OS object allocation with
+objects defined in IRAM1 (64k, very fast internal). I want to keep IRAM1
+for statically allocated objects, IRAM2 (256k, fast internal) for
+dynamically allocated objects (like file name lists, codec work areas,
+etc.) and the ERAM1 (32M, slow external) for storing large amounts of data
+like the input/output of codecs, pictures, web pages, etc.
+My biggest problem with having both heap<em>4.c and heap</em>5.c is that I needed
+to rename exported functions in order to avoid naming conflicts.
+Do you think that it would be feasible and reasonable to keep the static
+allocation scheme for OS objects, keeping heap_4.c for fast stuff and
+wrapping standard library malloc and co. for external slow things (wrapping
+is needed for thread safety, I thought of protecting function calls with
+semaphores)? This way I would have control over memory types, I do not have
+naming conflicts, the only drawback is code size as I have two independent
+sets of allocation functions.
+On Tue, Aug 30, 2016 at 3:00 PM, Dave <a href="/FreeRTOS_Support_Forum_Archive/August_2016/&#x6d;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#100;&#x61;&#118;&#101;&#x64;&#111;&#111;&#x72;&#115;&#64;&#x75;&#115;&#x65;&#x72;&#115;&#x2e;&#x73;&#102;&#x2e;&#110;&#101;&#x74;">&#100;&#x61;&#118;&#101;&#x64;&#111;&#111;&#x72;&#115;&#64;&#x75;&#115;&#x65;&#x72;&#115;&#x2e;&#x73;&#102;&#x2e;&#110;&#101;&#x74;</a> wrote:
+<blockquote>
+  Perhaps use static allocation (xTaskCreateStatic(), xQueueCreateStatic(),
+  etc.) for FreeRTOS objects to allow you to place structs and task stacks in
+  internal RAM, then if your application calls pvPortMalloc() for other
+  objects have heap_4/5.c use the external RAM?
+  Or wrap pvPortMalloc() and vPortFree() in your own API that redirects the
+  allocation to fast or slow RAM depending?
+  Or have pvPortMalloc() use fast internal RAM for FreeRTOS objects, and
+  then call normally malloc() for anything else and have that come from slow
+  <h2>RAM?</h2>
+  non-contiguous heap definition for different types of memories
+  <h2><a href="https://sourceforge.net/p/freertos/discussion/382005/thread/1abe102d/?limit=25#80f9">https://sourceforge.net/p/freertos/discussion/382005/thread/1abe102d/?limit=25#80f9</a></h2>
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">non-contiguous heap definition for different types of memories</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 30, 2016</div><div class="thread-post-content"><blockquote>
+  Do you think that it would be feasible and reasonable to keep the static
+  allocation scheme for OS objects, keeping heap_4.c for fast stuff and
+  wrapping standard library malloc and co. for external slow things (wrapping
+  is needed for thread safety, I thought of protecting function calls with
+  semaphores)? This way I would have control over memory types, I do not have
+  naming conflicts, the only drawback is code size as I have two independent
+  sets of allocation functions.
+</blockquote>
+Yes, sounds reasonable.  You just need to make sure that your linker 
+script is able to place the heap in your large external memory.
+</div></div><div class="thread-post"><h3 class="thread-post-title">non-contiguous heap definition for different types of memories</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gezab">gezab</a> on August 31, 2016</div><div class="thread-post-content">Thanks, Richard. I converted my code as written above, it is fully
+functional and works as desired.
+Just for my own information, would you also consider introducing a new
+memory allocation flavour like I described in my previous email? That is,
+on top of having a bunch of HeapRegion<em>t descriptors, introducing a second
+level of grouping (e.g. HeapRegionGroup</em>t) and the ability to control which
+group pvPortMalloc() will allocate memory from.
+On Tue, Aug 30, 2016 at 5:19 PM, Real Time Engineers ltd.
+<blockquote>
+  wrote:
+  Do you think that it would be feasible and reasonable to keep the static
+  allocation scheme for OS objects, keeping heap_4.c for fast stuff and
+  wrapping standard library malloc and co. for external slow things (wrapping
+  is needed for thread safety, I thought of protecting function calls with
+  semaphores)? This way I would have control over memory types, I do not have
+  naming conflicts, the only drawback is code size as I have two independent
+  sets of allocation functions.
+  Yes, sounds reasonable. You just need to make sure that your linker
+  <h2>script is able to place the heap in your large external memory.</h2>
+  non-contiguous heap definition for different types of memories
+  <h2><a href="https://sourceforge.net/p/freertos/discussion/382005/thread/1abe102d/?limit=25#80f9/820f/4521">https://sourceforge.net/p/freertos/discussion/382005/thread/1abe102d/?limit=25#80f9/820f/4521</a></h2>
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">non-contiguous heap definition for different types of memories</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 31, 2016</div><div class="thread-post-content">Controlling which group an allocation came from would presumably need an 
+additional parameter to the allocation function &#8211; so I&#8217;m not sure how 
+practical that would be internally for the OS without breaking backward 
+compatibility, or without breaking the semantic similarity between 
+pvPortMalloc()/vPortFree() and malloc()/free().
+I think this could be done externally, at the application level though, 
+for those few that need it.  So there would be a wrapper around the 
+pvPortMalloc() and vPortFree() functions that chose which memory 
+allocator to use &#8211; the issue would then be how to get around having 
+multiple definitions of the allocation functions themselves.
+</div></div><div class="thread-post"><h3 class="thread-post-title">non-contiguous heap definition for different types of memories</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 31, 2016</div><div class="thread-post-content">The amount of code needed for duplicate inplementations of malloc and free is pretty small, especially for systems that would need this sort of functionality, which by definition have multiple ram segments. Having your own private fork of the memory allocation functions (copied from the standard FreeRTOS functions and given a new function name) shouldn&#8217;t add that much work, as these functions have been fairly stable, so little need to migrate updates. Any method I can think of to make this general purpose so as to be part of the official port seems to add overhead to the simple case or breaks backwards compatibility which isn&#8217;t desired. It also is very liey possibile that different memory regions will want differant stratagies for the allocation method (the small, very fast memory might be best with a static, zero overhead method, the very large but slow memory may need the full allocation/deallocation  capability).
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

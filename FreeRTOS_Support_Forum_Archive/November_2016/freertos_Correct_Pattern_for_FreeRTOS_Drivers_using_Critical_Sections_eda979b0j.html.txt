@@ -1,0 +1,260 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Correct Pattern for FreeRTOS Drivers using Critical Sections - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_Correct_Pattern_for_FreeRTOS_Drivers_using_Critical_Sections_eda979b0j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Correct Pattern for FreeRTOS Drivers using Critical Sections - FreeRTOS" />
+<meta property="og:description" content="Correct Pattern for FreeRTOS Drivers using Critical SectionsPosted by pmendham on November 2, 2016We have a number of drivers implemented in FreeRTOS but I am a little confused as to whether we are doing things correctly as my expectations of what the &#8220;standard&#8221; pattern is don&#8217;t seem to match the FreeRTOS API. In general, we &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_Correct_Pattern_for_FreeRTOS_Drivers_using_Critical_Sections_eda979b0j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Correct Pattern for FreeRTOS Drivers using Critical SectionsPosted by pmendham on November 2, 2016We have a number of drivers implemented in FreeRTOS but I am a little confused as to whether we are doing things correctly as my expectations of what the &#8220;standard&#8221; pattern is don&#8217;t seem to match the FreeRTOS API. In general, we [&hellip;]" />
+<meta name="twitter:title" content="Correct Pattern for FreeRTOS Drivers using Critical Sections - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202726' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202726' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202726' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202726' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146118' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_Correct_Pattern_for_FreeRTOS_Drivers_using_Critical_Sections_eda979b0j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_Correct_Pattern_for_FreeRTOS_Drivers_using_Critical_Sections_eda979b0j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146118">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2016_freertos_support_forum_archive_index.html/">November 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pmendham">pmendham</a> on November 2, 2016</div><div class="thread-post-content">We have a number of drivers implemented in FreeRTOS but I am a little confused as to whether we are doing things correctly as my expectations of what the &#8220;standard&#8221; pattern is don&#8217;t seem to match the FreeRTOS API.
+In general, we have many drivers which are primarily driven by a state machine in the ISR. For example, the ISR may transmit the next data byte through a peripheral. To do so it would take the next byte from a buffer. If the transmission is completed then it would take the next buffer from a pending queue. If the pending queue is empty then it would stop.
+When a request is made for transmission, the driver must therefore determine whether there is already a transmission in progress. If so, the buffer can be added to the pending queue and it will get handled by the driver. If there is not a transmission in progress then simply adding the buffer to the pending queue will do nothing because the ISR will never go off (as the hardware has stalled). It is therefore necessary to &#8220;kick&#8221; the hardware to, for example, transmit the first byte from the buffer. After that the processing will continue in the ISR.
+Obviously, the detection of the current driver state (in progress or not) and the decision as to whether to kick the hardware, or simply queue the buffer, must be taken atomically, from the perspective of the ISR. It is therefore necessary to ensure that the peripheral interrupt is masked during this decision. If we only mask the one hardware interrupt then there is the potential for a task switch to take place whilst the interrupt is disabled, which would be bad as it may leave the interrupt disabled for a long time. It seems to me, then, that the best thing would be to have a short critical section, in which it is guaranteed that a task switch cannot take place and I understand that FreeRTOS provides taskENTER<em>CRITICAL and taskEXIT</em>CRITICAL for this sort of situation. However, one of the operations which must take place within the critical section is the insertion of the buffer onto the queue. If this does not happen inthe critical section then the driver could potentially stall. The API reference for taskENTER<em>CRITICAL and taskEXIT</em>CRITICAL clearly states that FreeRTOS API calls must not be made in a critical section. If this is the case, then I do not understand how to implement this simple driver pattern.
+Is it really the case that no FreeRTOS API calls can be made inside a critical section, or could I call the xxxFromISR variant? (As I only want to insert an item into a queue). If the documentation is correct, and I cannot make FreeRTOS calls at all, then my overall pattern must be wrong. How should I be implementing this simple driver pattern in FreeRTOS?
+Many thanks in advance,
+Peter
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 2, 2016</div><div class="thread-post-content">Hi Peter,
+I&#8217;m not sure how your device works, but when I write a devices driver for e.g. SPI or UART, the TX-interrupt will disable itself after the last transmission.
+Here is some code that I use:
+~~~~~
+    /* Put the data in a queue. */
+<pre><code>/* See what TX-interrupts are enabled. */
+unsigned IMR = pdcaTx-&gt;imr &amp; (AVR32_PDCA_RCZ_MASK | AVR32_PDCA_TRC_MASK);
+/* If they are not both enabled */
+if (IMR != (AVR32_PDCA_RCZ_MASK | AVR32_PDCA_TRC_MASK)) {
+    /* Enable ReloadCounterZero and TRansferComplete */
+    pdcaTx-&gt;ier = (AVR32_PDCA_RCZ_MASK | AVR32_PDCA_TRC_MASK);
+}
+</code></pre>
+~~~~~
+It doesn&#8217;t need a critical section. The ISR will always check the status of the peripheral: see if a new data can be loaded in one of the two DMA buffer.
+Isn&#8217;t such a procedure possible for your device?
+How are you passing the data to the interrupt?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 2, 2016</div><div class="thread-post-content">I beleive that a fuller descripton of the restriction is that you should make no FreeRTOS calls that might block inside a critical section (it isn&#8217;t stated that way in the documentation, but I beleive it has been stated that they will work if they can&#8217;t block).
+Also, I find that, when possible, it is best to have the output driver &#8216;kick&#8217; the device by in software &#8216;forcing&#8217; the device interrupt, and let the ISR see that the transmit buffer is empty and start the transmission. That way all characters go out through the same path of code, instead of a kick start transmission in task level (driver) code, and continuing transmission in ISR code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pmendham">pmendham</a> on November 2, 2016</div><div class="thread-post-content">Hi Hein,
+Thank you for your reply.
+For the UART case, you are right, the ISR can disable the interrupt if there is nothing else to do.  Then the non-ISR code can always queue the next buffer and try to enable the interrupt. If the interrupt is already enabled this will have no effect, and if it is not already enabled it will start processing the next transaction. In this case, the transmit side of the driver is one of two states, sending or not sending, and this is represented by the interrupt enable flag. Readiness of the peripheral to start transmission is also identified by an interrupt. This solution is definitely the best, and we do use it in our serial driver, but I don&#8217;t think it corresponds to the general case.
+For a more complex peripheral, such as I2C, the driver can be in many states and there isn&#8217;t a single interrupt which indicates that the peripheral is ready to start a new transaction. Our driver needs to keep track of the current state and it is this data which determines whether or not there is a transaction in progress. If there is no transaction in progress then the non-ISR code actually needs to send a command to the peripheral to start the transaction processing (to kick it). Just re-enabling/un-masking the interrupt at this point would have no effect as there is no interrupt pending: the peripheral is idle and there is no interrupt to indicate readiness. What I think we must do is disable the peripheral interrupt, check what state the driver is in, and then either queue the transaction or kick the hardware accordingly. This is the situation I tried to describe above, and the one in which I think we need a critical section.
+To try and answer your questions specifically:
+<blockquote>
+  Isn&#8217;t such a procedure possible for your device?
+  The procedure you outline will only work for a small subset of the peripherals we use where the effective state machine is simple and the peripheral has a &#8220;ready&#8221; interrupt.
+  How are you passing the data to the interrupt?
+  We pass data to the interrupt using a FreeRTOS queue, the items of which are pointers to structures which each describe a transaction. The transaction structure includes the details of the request such as the data buffer and its length.
+</blockquote>
+Obviously this all makes sense to me but may not be very clear. Please let me know if I can clarify anything.
+Thanks again,
+Peter
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pmendham">pmendham</a> on November 2, 2016</div><div class="thread-post-content">Hi Richard,
+Thank you for your input. You say &#8220;no FreeRTOS calls that might block&#8221;, would that permit us to use the xxxFromISR variants? I&#8217;m guessing that we also shouldn&#8217;t use calls that might cause a task switch?
+I agree with both you and Hein that the best way to kick the process through &#8220;forcing&#8221; a device interrupt. As I have tried to explain in my other reply, I think this only works if there is an interrupt to indicate that the device is ready/idle. Taking the case of an I2C peripheral, when the device is first initialised it will not raise any interrupts. To begin the process you must first tell the device to send a start bit. As there is no interrupt to &#8220;force&#8221; the start bit must be sent from non-ISR code. The rest of the transaction processing can then be done from within the ISR. If the next transaction is already on the pending queue then when the ISR is called for the end of the first transaction it will then move on to the second. However, the non-ISR code needs to know if there is a transaction in progress before it decides to send the start bit, as sending a start bit when a transaction is in progress would break everything.
+We find that this pattern occurs more often that the simple case where there is a convenient &#8220;ready&#8221; interrupt from the hardware. Can you suggest a general way to work with this in FreeRTOS?
+Thanks again,
+Peter
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 3, 2016</div><div class="thread-post-content">When I said no calls that might block, I tend to mean operations with a 0 tick timeout, so not ready returns immediately instead of blocking. I wouldn&#8217;t use the FromISR in a critical section as you aren&#8217;t in an ISR, and the &#8216;isr critical sections&#8217; (in ports that allow nested interrupts) might not be compatible with being called in just a task critical section.
+For something like an I2C controller, I use a mutex or a semaphore at the task level to arbitrate access to the controller. If you want to use the controller, then you take the mutex, when you have it, you KNOW the device is free, you can then start the device, and when it is done you can give the mutex back, or keep it to do another cycle.
+You can also use a semaphore in a similar manner, The ISR gives the semaphore when the operation completes, and when someone wants to start a transaction, it takes the semaphore (and getting it, knows the device is idle) and starts it.
+If you want to have a queue where you can line up messages, and have them go out at some point after in order, with the ISR chaining from one to the next, then you get to what I was describing. Note, <em>I</em> didn&#8217;t say enable the transmit interrupt enable, but use the capability that many processors have of letting the software set the interrupt pending bit for the device, which will cause an interrupt to occur. The ISR will then check the device status register, and see that the device is idle, and the ISR can then start up the operation.
+Basic sequence in task level driver:
+1) Queue up the data
+2) Check if device is busy
+3) If not, simulate a device interrupt. (if device is running after we queue up our data, it will get to it in turn)
+The only small issue is that if after we check if device is busy, but before we kick it, someone else runs and kicks it, we will give a duplicate kick, and the ISR might get entered while busy, but nothing to do at this moment, so it just needs to return.
+If you can&#8217;t kick an interrupt in software, then what you can do is a different sequence:
+1) Queue up the data.
+2) Enter critical section
+3) Check if device is busy,
+4) If busy, (since we have already queue up the data, it will get processes), leave critical section and we are done.
+5) If not busy&#8230;
+6) See if there is any data in the queue (it might have gotten sent between then an now), if not leave critical setion and we are done.
+7) If data in queue and we have seen device not busy in the critical section, nothing could have started it, so we can start it.
+8) Leave critical section and we are done.
+While checking if data is in the Queue is a API call inside a critical section, it is a very safe call as it doesn&#8217;t manipulate the queue at all.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 3, 2016</div><div class="thread-post-content"><blockquote>
+  For a more complex peripheral, such as I2C
+</blockquote>
+Ah yes, that is far more complex.
+I avoided the problem cowardly by giving my I2C driver a mutex.
+Once a caller gets the mutex
+<ul>
+<li>The driver is in the idle state</li>
+<li>It will exchange data with the remote chip, interrupt driven / using DMA</li>
+<li>The i2c call will only return once the result of the transaction is known</li>
+</ul>
+I would <strong>not</strong> like an asynchronous i2c transmission, too hard to track problems.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pmendham">pmendham</a> on November 4, 2016</div><div class="thread-post-content">Hi Hein,
+Thanks for your input. I understand that this is one approach, and that helps me understand how others manage in situations such as this. I was hoping to avoid this approach as it lowers the efficiency of the driver. We have quite a high utilisation on most of our drivers and lowering the efficiency could have abig impact in some situations.
+Our drivers are all asynchronous, but callers are notified once their transaction completes, as the completed transaction is pushed onto a completion queue (specific to that caller). That would then typically release a task for the caller. The caller can use this to synchronise to the underlying operation if they want to, but that is a caller&#8217;s decision rather than a driver decision.
+I think what you&#8217;re suggesting could be applied more generally, however. If I understand correctly, the basic principle is that the next transaction is never started from the ISR. That way the exclusion can be between tasks rather than between the ISR and tasks. Is that correct?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pmendham">pmendham</a> on November 4, 2016</div><div class="thread-post-content">Hi Richard,
+Thank you for your detailed input. In the general case I cannot kick the interrupt in software. Also in the general case there may not a single interrupt/device state indicating readiness (this is often the case for I2C, for example). Looking at your second sequence, which I think best matches the situation I am discussing, I had started out with something like:
+1) Enter criticial section
+2) Check if device is busy
+3) If device is busy queue the transaction
+4) If device is not busy, make the transaction current and start it
+5) Exit critical section
+I think, and please correct me if I&#8217;m wrong, your proposal is similar, except that it moves the queing operations around a bit:
+1) Queue transaction
+2) Enter critical section
+3) Check if device is busy
+4) If device is busy, do nothing
+5) If device is not busy, attempt to dequeue transaction
+6) If we got the transaction off the queue, make it it current and start it
+7) Exit critical section
+So the difference that I can see is that I was originally proposing to use a queue insertion inside a critical section, and you are instead suggesting to use a queue removal (as the insertion is outside the critical section). Is the queue removal &#8220;safer&#8221; to use within the critical section? If so, why? And can this be relied upon to be the case for all FreeRTOS ports given that the documentation specifically says that it is not permitted to make <em>any</em> API calls in a critical section?
+I guess I have more general question too, in that I hit this pattern a lot, in lots of different drivers, on lots of different platforms. In some cases I can find work arounds using the mechanisms you (and Hein) have mentioned, e.g. using interrupts to trigger things. But this doesn&#8217;t work uniformly or in the general case. It seems to me that this critical &#8220;kick or queue&#8221; decision is a key part of writing a driver, and it&#8217;s a pattern I have used extensively on other platforms. However, because of the restriction in critical sections it doesn&#8217;t work on FeeRTOS. Is everyone else doing it differently? Is everyone else using specific hardware features on a case-by-case basis? Is there really no general solution in FreeRTOS?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 6, 2016</div><div class="thread-post-content"><blockquote>
+  If I understand correctly, the basic principle is that the next transaction is never started from the ISR.
+  That way the exclusion can be between tasks rather than between the ISR and tasks. Is that correct
+</blockquote>
+I was proposing &#8216;exclusion between tasks&#8217;, or giving the driver an access mutex, just for easy coding.
+If your client tasks do not want to wait for a mutex and data completion, you can do either of the following:
+<ul>
+<li>Handle the queue of commands completely interrupt-driver</li>
+<li>Create an extra task that will be woken up by a RX-queue event.</li>
+</ul>
+The first option is quite complex and harder to debug. The second option is a bit more expensive.
+Both options offer sequenced and asynchronous I/O with the peripheral.
+I still don&#8217;t see a reason for critical sections 🙂
+The problem of &#8216;kicking&#8217; (waking-up) the driver is still as simple:
+<ul>
+<li>As long as the driver is working, you don&#8217;t do anything</li>
+<li>When the driver is idle, you enable the interrupt</li>
+<li>If you enable the interrupt while driver is active: doesn&#8217;t hurt</li>
+</ul>
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pmendham">pmendham</a> on November 6, 2016</div><div class="thread-post-content">Hi Hein,
+The problem is that, in most cases, enabling the interrupt when the peripheral is idle will not raise an interrupt. For example, on I2C (or SPI for that matter) on most platforms we work on, interrupts are generated at the end of each step in a transaction. The last interrupt is used to indicate the end of the bus transaction and is used to push the completed transaction structure onto a completion queue. If there is no pending transaction at that point, there is nothing to be done and the hardware is now idle. It will not generate another interrupt until it is given something to do. Enabling interrupts at this point will not help. How can I avoid a critical section?
+We could move to deferred interrupt processing in a task (your second option) but this seems heavy on resources to me (both execution time and memory) when the ISRs are currently relatively simple.
+Many thanks,
+Peter
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 6, 2016</div><div class="thread-post-content">You haven&#8217;t indicated what processor you are using, so I am not sure if it is possible, but have you looked at my suggestion of setting the Interrupt Flag Register for the interrupt, forcing a software generate interrupt for the device. This is NOT just enabling the interrupt for the device. As I said earlier, many (but not all) processors have this ability. This would allow you to bypass the need for the critical section, as ALL transaction would be started in the ISR.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pmendham">pmendham</a> on November 6, 2016</div><div class="thread-post-content">We&#8217;re working on a number of different platforms and that&#8217;s why I&#8217;d been vague about it in my question. Our primary platforms are MSP430, ARM7TDMI, Cortex-M0, Cortex-M3, Cortex-M4 in a number of specific devices. We also work on SPARC and OpenRISC although not much with FreeRTOS at the moment. We use a thin abstraction layer for the key parts of tasking/synchronisation (e.g. FreeRTOS) and interrupt handling which means that, in general, our drivers are portable across platforms and operating systems. I had therefore been hoping for a general solution as then we could use it as a pattern across all of our drivers. We find patterns to be very useful in creating reliable, readable and maintainable code. We may be able to use your interrupt forcing technique on some platforms (Cortex-M3/4?) but what about the others? Do we have to look for some &#8220;trick&#8221; on every platform just because of a FreeRTOS limitation?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 7, 2016</div><div class="thread-post-content">I tend to define a &#8216;kick&#8217; operation to start the operation, so your generic driver would queue the request and then kick. On plateforms that support kicking an interrupt, kick can just kick the interrupt, and the ISR can detect that it has an idle device and a request in the queue and start the operation just like it would after a previous operation finished. For platforms that don&#8217;t support kicking the interrupt, you will need something more complicated, like I described earlier, having inside a critical section a test for device idle, and THEN that a request is pending, and if you have both you start the operation.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pmendham">pmendham</a> on November 7, 2016</div><div class="thread-post-content">This is fine, except that what it seems you are relying on is a kick operation which will either kick the hardware, or do nothing if there is an operation in progress. I don&#8217;t have one of those in most cases. In my I2C example, kicking the hardware involves sending a start bit. I <em>must not</em> do that if there is a transaction in progress. In which case I have a kick or queue decision which must be protected by a critical section, which means that I must conduct at least <em>some</em> FreeRTOS calls inside a critical section, which is explicitly forbidden.
+To go back to my post above, there must be either an queue insertion (my example) or a queue removal (your example) in the critical section. I don&#8217;t see how this can be avoided without trickery which is not available on all of my platforms.
+Thanks,
+Peter
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 7, 2016</div><div class="thread-post-content">Nope (perhaps you don&#8217;t understand how the hardward worls), my Kick for the I2C routine would be to set the I2C interrupt flag causing an I2C interrupt to occur (even if the I2C device itself has no status flags that need servicing). The I2C ISR, in addition to processing the various status flag, checks for the case of the device being idle and a request having been queued up for it, and treats that in a similar manner to the previous cycle being done. In fact, you change your ISR logic so it isn&#8217;t the operation complete handler that starts the next, but the operation complete finishes the cycle and makes the device idle, and then in the ISR you check for idle and request queue to start the next cycle.
+My &#8216;Kick&#8217; routine actually touches nothing in the actual device, but is working at the level of the interrupt controller telling it to generate the specific interrupt.
+Yes, if your hardware does not support the kick an interrupt capability, then you will need to fall back to a critical section that first confirms the device is idle, and if so checks that there is a request pending (which is a safe operation), and if so start up the device again. If you need the data from the request to start the cycle, then yes, in THAT case you need to be a queue get in the critical section, but it can be a save variant that can not block (block time of 0), as the real issue in FreeRTOS is that inside a Critical Section, some processors should not invoke the scheduler.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Correct Pattern for FreeRTOS Drivers using Critical Sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 7, 2016</div><div class="thread-post-content">(Notice my last message hit moderation, but one more quick comment that came to mind). Thinking about it, my method where I put the get in the critical section could also use a Mutex instead of a critical section.
+Get Mutex.
+Check if Device Idle
+If Idle, Get a Request with 0 block time
+If got one, Start cycle
+Release Mutex (fall to here if any conditions not meet)
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

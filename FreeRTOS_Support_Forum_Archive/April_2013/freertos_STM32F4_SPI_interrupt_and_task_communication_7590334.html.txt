@@ -1,0 +1,221 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STM32F4 SPI interrupt and task communication - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2013/freertos_STM32F4_SPI_interrupt_and_task_communication_7590334.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="STM32F4 SPI interrupt and task communication - FreeRTOS" />
+<meta property="og:description" content="STM32F4 SPI interrupt and task communication Posted by *anonymous on April 16, 2013Hi, I am working on a project with STM32F4 and FreeRTOS. I have a SPI ISR for receiving data from SPI in the speed of about 5Mbps, I also have a task which handles those data. The Queue is used to be between &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2013/freertos_STM32F4_SPI_interrupt_and_task_communication_7590334.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="STM32F4 SPI interrupt and task communication Posted by *anonymous on April 16, 2013Hi, I am working on a project with STM32F4 and FreeRTOS. I have a SPI ISR for receiving data from SPI in the speed of about 5Mbps, I also have a task which handles those data. The Queue is used to be between [&hellip;]" />
+<meta name="twitter:title" content="STM32F4 SPI interrupt and task communication - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202252' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202252' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202252' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202252' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144783' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2013%2Ffreertos_STM32F4_SPI_interrupt_and_task_communication_7590334.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2013%2Ffreertos_STM32F4_SPI_interrupt_and_task_communication_7590334.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144783">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2013_freertos_support_forum_archive_index.html/">April 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">STM32F4 SPI interrupt and task communication </h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on April 16, 2013</div><div class="thread-post-content">Hi,  
+I am working on a project with STM32F4 and FreeRTOS. I have a SPI ISR for receiving data from SPI in the speed of about 5Mbps, I also have a task which handles those data. The Queue is used to be between the interrupt and task.   
+<pre><code>xQueue=xQueueCreate(10,sizeof(uint8_t)*BufferSize);
+</code></pre>
+The problem is that the task stops working after some time of normal running. But the SPI receive seems to be still continuing because I can still see the waveforms in the oscillopscope. The implementation of SPI receive ISR is as follows:  
+<pre><code>void SPI1_IRQHandler(void) 
+{   
+        static portBASE_TYPE xHigherPriorityTaskWoken;
+    portBASE_TYPE xStatus;
+    xHigherPriorityTaskWoken = pdFALSE; 
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
+     if(index_spi&lt;512)                
+        {        
+            lValueSend[index_spi]=SPI_I2S_ReceiveData(SPI1);
+                        index_spi++; 
+            SPI_I2S_SendData(SPI1,0x22);
+    }
+    else{
+            index_spi=0;
+            xStatus=xQueueSendToBackFromISR(xQueue,&amp;lValueSend,&amp;xHigherPriorityTaskWoken);  
+            portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+               }
+}
+</code></pre>
+And inside the task infinite loop:   
+<pre><code>xStatus=xQueueReceive(xQueue,&amp;lValueReceive,xTicksToWait);
+                    if(xStatus==pdPASS){
+                            dataProcess(lValueReceive);
+                    }
+</code></pre>
+After some debugging, I found out that the queue becomes full very easily, and the context switch doesn&#8217;t happen. So it seems that my task just never gets a chance of running again. But if I understand correctly, after the ISR, either we switch the context to the task waiting for queue&nbsp; if this task waiting for the queue has a higher priority than the current one which was interrupted, either we return to the task which was interrupted. My Datahandling task is already set to configMAX&#95;PRIORITIES, so even if we return to the privious task, my task should have been given control to run.&nbsp; Someone can help to analyse and understand?  
+And also the interrupt priority thing makes me confused. My SPI IRQ settings is:  
+<pre><code>NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1); 
+  NVIC_InitStructure.NVIC_IRQChannel = SPI1_IRQn; 
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; 
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0; 
+</code></pre>
+In the FreeRTOS document, there are two which are absolutely not my settings at all. One is <a href="http://www.freertos.org/RTOS-Cortex-M3-M4.html%2C">http://www.freertos.org/RTOS-Cortex-M3-M4.html,</a>&nbsp;<br />
+&#8220;If you are using an STM32 with the STM32 driver library then ensure all the priority bits are assigned to be preempt priority bits by calling NVIC&#95;PriorityGroupConfig&#40; NVIC&#95;PriorityGroup&#95;4 &#41;; before the RTOS is started.&#8221;   
+Another one is that the interrupt with priority between configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIRITY and configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY can use the freeRTOS API functions. My settings are   
+<pre><code>#define configKERNEL_INTERRUPT_PRIORITY       255
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY    191 /* equivalent to 0xb0, or priority 11. */
+</code></pre>
+With the mapping of STM32, the priority between 11 and 15 can use FreeRTOS API. But my settings are completely out of these two rules, but after test, this is the best config. If I put the NVIC&#95;PriorityGroupConfig&#40; NVIC&#95;PriorityGroup&#95;4 &#41; and set the PreemptionPriority to 15. The task stops even more quickly. Someone may also help to understand with this?   
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F4 SPI interrupt and task communication </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 16, 2013</div><div class="thread-post-content">First, you have in part answered your own question when &#40;paraphrasing&#41; you say &#8220;the documentation says not to do this because it won&#8217;t work correctly, but I have done it anyway&#8221;.&nbsp; So the first piece of advise is to configure your system in accordance with the documentation.  
+That done, you should not find that a queue becoming full would in any way prevent a task from executing, you would just miss characters that could not be placed into the queue as they were received.  
+<blockquote>
+  while &#40;SPI&#95;I2S&#95;GetFlagStatus&#40;SPI1, SPI&#95;I2S&#95;FLAG&#95;RXNE&#41; == RESET&#41;;
+</blockquote>
+I&#8217;m not sure what this line of code is doing, but if it is polling a bit in a register then it is not the sort of code I would necessarily expect to see in an interrupt handler.&nbsp; Generally the interrupt handler should only be entered when a character is actually available, otherwise &#42;all&#42; your tasks are going to be prevented from executing while the interrupt handler is polling.  
+On the other hand if the line of code is somehow resetting a bit in a register and just reading it back to ensure it is reset before continuing then it should be ok.  
+Similar comments for calling functions that send data from inside the receive handler.  
+As more general comments &#8211; normally when attempting to received data at that rate it is not a good idea to use an RTOS queue to send the data to a task.&nbsp; Instead it is better to either use a RAM circular buffer, or ideally a DMA.&nbsp; The DMA would receive the data and the DMA end Rx interrupt would be used to unblock a task only when there was a break in the reception.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F4 SPI interrupt and task communication </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on April 16, 2013</div><div class="thread-post-content">Thanks for your reply, richardbarry. I&#8217;ve already tried to use the recommanded configuration, like I said with NVIC&#95;group4 and Preemption priority 15&#40;lowest&#41;,&nbsp; the task stops anyway.&nbsp; And it&#8217;s like stopping immediately as I start to send something from SPI. With my current wrong setting, it can still run for several seconds and then stops.   
+Then I tried to slow down my SPI to about 1Mbps, it works very stable with my wrong settings, the task didn&#8217;t stop at all, but with the config which is supposed to be the right one, the task stops at some point in the same test.&nbsp; So that&#8217;s why it&#8217;s so strange.  
+You are right about the flag staff,&nbsp; I just comment it now but it doesn&#8217;t seem to change anything. I&#8217;ve done another test which just doesn&#8217;t process the data anymore and only keep the queue receive there.  
+<pre><code>xStatus=xQueueReceive(xQueue,&amp;lValueReceive,xTicksToWait);
+if(xStatus==pdPASS){
+//dataProcess(lValueReceive);
+}
+</code></pre>
+Then my task still stops, so it seems that it&#8217;s not my processing which is slow but the queue just doesn&#8217;t catch up.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F4 SPI interrupt and task communication </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on April 16, 2013</div><div class="thread-post-content">And also I found something similar in the STM32 examples which seemed to be wrong. In the STM32F4&nbsp; FreeRTOS&nbsp; httpserver&#95;netconn example, the Ethernet interrupt is used with FreeRTOS API functions.   
+<pre><code>void ETH_IRQHandler(void)
+{
+  portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+  /* Frame received */
+  if ( ETH_GetDMAFlagStatus(ETH_DMA_FLAG_R) == SET) {
+    /* Give the semaphore to wakeup LwIP task */
+    xSemaphoreGiveFromISR( s_xSemaphore, &amp;xHigherPriorityTaskWoken );   
+  }
+  /* Clear the interrupt flags. */
+  /* Clear the Eth DMA Rx IT pending bits */
+  ETH_DMAClearITPendingBit(ETH_DMA_IT_R);
+  ETH_DMAClearITPendingBit(ETH_DMA_IT_NIS);
+  /* Switch tasks if necessary. */  
+  if ( xHigherPriorityTaskWoken != pdFALSE ) {
+    portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
+  }
+}
+</code></pre>
+However, its setting is also not like the recommandations:  
+<pre><code>void ETH_NVIC_Config(void)
+{
+  NVIC_InitTypeDef   NVIC_InitStructure;
+  /* 2 bit for pre-emption priority, 2 bits for subpriority */
+  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); 
+  /* Enable the Ethernet global Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = ETH_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&amp;NVIC_InitStructure);    
+}
+</code></pre>
+This is becoming more and more confusing, can anyone give a clear explanation?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F4 SPI interrupt and task communication </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 16, 2013</div><div class="thread-post-content">The ETH&#95;NVIC&#95;Config&#40;&#41; function is also wrong, but I can&#8217;t find it in the FreeRTOS download.&nbsp; Which file is it in?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F4 SPI interrupt and task communication </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on April 16, 2013</div><div class="thread-post-content">It&#8217;s in the STM32F4DIS-BB examples. You can find a download here: <a href="http://www.element14.com/community/docs/DOC-51670?ICID=knode-STM32F4-space">http://www.element14.com/community/docs/DOC-51670?ICID=knode-STM32F4-space</a><br />
+The httpserver&#95;netconn project&nbsp; in /STM32F4xx&#95;Ethernet&#95;Example/project/FreeRTOS/httpserver&#95;netconn, and then this ETH&#95;NVIC&#95;Config&#40;&#41; function is defined in the stm32f4x7&#95;eth&#95;bsp.c, the ETH&#95;IRQHandler is in the stm32f4xx&#95;it.c.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

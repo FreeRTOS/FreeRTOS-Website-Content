@@ -1,0 +1,173 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to use taskENTER_CRITICAL() - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2015/freertos_How_to_use_taskENTER_CRITICAL_845cdccfj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How to use taskENTER_CRITICAL() - FreeRTOS" />
+<meta property="og:description" content="How to use taskENTER_CRITICAL()Posted by jeanalban on March 3, 2015Hello everybody, I created two tasks: vCore_Loop (uxPriority = 4, launched every 5ms) and vScreen_Loop (uxPriority = 3, launched every 1ms). vScreen_Loop communicates with a graphical screen via I2C. This low-priority task is often swapped by vCore_Loop task. My problem happens when vScreen_Loop is swapped during &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2015/freertos_How_to_use_taskENTER_CRITICAL_845cdccfj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="How to use taskENTER_CRITICAL()Posted by jeanalban on March 3, 2015Hello everybody, I created two tasks: vCore_Loop (uxPriority = 4, launched every 5ms) and vScreen_Loop (uxPriority = 3, launched every 1ms). vScreen_Loop communicates with a graphical screen via I2C. This low-priority task is often swapped by vCore_Loop task. My problem happens when vScreen_Loop is swapped during [&hellip;]" />
+<meta name="twitter:title" content="How to use taskENTER_CRITICAL() - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202489' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202489' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202489' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202489' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145402' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2015%2Ffreertos_How_to_use_taskENTER_CRITICAL_845cdccfj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2015%2Ffreertos_How_to_use_taskENTER_CRITICAL_845cdccfj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145402">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2015_freertos_support_forum_archive_index.html/">March 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">How to use taskENTER_CRITICAL()</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jeanalban">jeanalban</a> on March 3, 2015</div><div class="thread-post-content">Hello everybody,
+I created two tasks: <strong>vCore_Loop</strong> (uxPriority = 4, launched every 5ms) and <strong>vScreen_Loop</strong> (uxPriority = 3, launched every 1ms).
+<strong>vScreen_Loop</strong> communicates with a graphical screen via I2C. This low-priority task is often swapped by <strong>vCore_Loop</strong> task. My problem happens when <strong>vScreen_Loop</strong> is swapped during an I2C communication: my I2C driver creates an error because the communication is badly interrupted.
+To solve this trouble, I added taskENTER<em>CRITICAL(); and taskEXIT</em>CRITICAL(); between the beggining and the end of the I2C communication function, to be sure that this region will not be swapped by the RTOS scheduler.
+To my surprise it did not affect the task swapping, <strong>vScreen_Loop</strong> is still swapped by <strong>vCore_Loop</strong> during the I2C communication. Do you have any ideas of why?
+note: if the I2C communication function is called by the high-priority task <strong>vCore_Loop</strong> I have no troubles.
+Thanks a lot for your help!
+Jean
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to use taskENTER_CRITICAL()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 4, 2015</div><div class="thread-post-content"><blockquote>
+  To solve this trouble, I added taskENTER<em>CRITICAL(); and taskEXIT</em>CRITICAL();
+</blockquote>
+That might not be a good solution if the I2C communication takes a long time as it will [excepting the rest of your post] prevent context switches or interrupts occuring while the I2C communication is in process.  That is a particular problem if the I2C communication is itself using interrupts &#8211; which it probably is &#8211; as the interrupts will not execute.  A neater and more real time friendly solution would be to have a DMA handle the I2C communication.
+<blockquote>
+  To my surprise it did not affect the task swapping, vScreen<em>Loop is still swapped by 
+  vCore</em>Loop during the I2C communication. Do you have any ideas of why?
+</blockquote>
+My guess would be that the I2C driver is enabling interrupts directly, without using the taskENTER/EXIT_CRITICAL() macros.  The macros will count interrupt enable/disable nesting, but the nesting count will only work if the macros are used in all cases that interrupts are disabled/enabled.  If the I2C driver enables interrupts directly then they will become enabled even though the nesting count is not 0.
+<ul>
+<li>NOTE &#8211; many FreeRTOS ports do not disable interrupts globally, as my reply would infer, but just disables a subset of interrupts.</li>
+</ul>
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to use taskENTER_CRITICAL()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jeanalban">jeanalban</a> on March 4, 2015</div><div class="thread-post-content">&#8220;That might not be a good solution if the I2C communication takes a long time as it will&#8221;
+Yes I know, but for the moment I want something without interrupt. So I did not set any I2C interrupts in my code. Each time the microprocessor communicate via I2C it waits for the slave with something like while(!i2c<em>message</em>is_received). I know it&#8217;s not real-time friendly but I have to do that to achieve my tests.
+&#8220;My guess would be that the I2C driver is enabling interrupts directly&#8221;
+I think that my I2C driver don&#8217;t generates interrupts because I don&#8217;t enable them. So it&#8217;s strange that the task is swapped between taskENTER_CRITICAL() macros. But maybe it comes from low-end I2C interruptions I can&#8217;t manage&#8230;
+(note: I use a STM32F427)
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to use taskENTER_CRITICAL()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 5, 2015</div><div class="thread-post-content">Hi Jean,
+Are you using an i2c library from ST, like e.g. stm32f4xx<em>hal</em>i2c.c ?
+And are you using the DMA-variants of those functions?
+Remember that a lighter way of preventing task switching is <code>vTaskSuspend/vTaskResume</code>.
+I don&#8217;t know why you still observe task-switches after calling <code>taskENTER_CRITICAL</code>. But what I do know is that i2c is a robust protocol that is resistant to delays.
+You wrote:
+<blockquote>
+  because the ( i2c ) communication is badly interrupted
+</blockquote>
+What exactly do you mean with that?
+Maybe some data corruption takes place when you get an interrupt at the wrong moment?
+Or is your STM32F4xx a slave in the protocol? In that case I could understand that you don&#8217;t want any interruption.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to use taskENTER_CRITICAL()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jeanalban">jeanalban</a> on March 6, 2015</div><div class="thread-post-content">Hi Hein,
+Yes I use the i2c library stm32f4xx_i2c.c but i&#8217;m not using any DMA variant.
+My i2c communication is badly interrupted because I send a message to the slave, then I wait for the slave multiple answers, and during this messages reception the task is swapped. When the task returns in the i2c function after the swap, the function still wait for the slave answer but this answer is already send: this is my problem with the  while(!i2c<em>message</em>is_received)
+My I2C is configured as the master.
+I hope it&#8217;s clear!
+Thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to use taskENTER_CRITICAL()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 6, 2015</div><div class="thread-post-content">I am not familiar with that part, but I am very surprised at your claimed data loss, as the master controls the timing of the I2C bus, and every I2C Controller I know will hold the cycle until you take the data. (If it is SMD compliant and you get swapped out for a long time, then it would abort the cycle). 
+Holding up the processor while you do the I2C transaction is VERY inefficient for the processor, this would be an ideal use of interrupts and letting everything else run while you are getting the results and then resuming. If the rest of your system is really that relaxed in requirements, then you probably don&#8217;t really need an RTOS, but can just turn your program into the simple big while loop type of implementation.
+One solution to your problem, if you can&#8217;t figure out where you are getting swapped out, is to boost your priority to be above every other task, then nothing can take over.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to use taskENTER_CRITICAL()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jeanalban">jeanalban</a> on March 10, 2015</div><div class="thread-post-content">Hi Richard,
+When I set a higher priority it&#8217;s working fine.
+I don&#8217;t understand why I loss datas wy the task is a low priority. I was holding the processor during the I2C transaction in order to quickly test the I2C communication and make a robust configuration the slave, but now I have to switch to a real time communication and use interrupts.
+Thanks for all your help and see you soon!
+Jean
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>calling vTaskResume() before the scheduler is started may lead to a call to portYIELD() - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_calling_vTaskResume_before_the_scheduler_is_started_may_lead_to_a_call_to_portYIELD_95453940j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="calling vTaskResume() before the scheduler is started may lead to a call to portYIELD() - FreeRTOS" />
+<meta property="og:description" content="calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()Posted by oprs on September 26, 2015Hi, The following code causes FreeRTOS 8.2.2 to crash (Hard Fault observed on STM32): ~~~~ include &lt;FreeRTOS.h&gt; include &lt;task.h&gt; static void task( void *x ) { (void)x; for( ;; ) vTaskDelay( 1000 / portTICKRATEMS ); } &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_calling_vTaskResume_before_the_scheduler_is_started_may_lead_to_a_call_to_portYIELD_95453940j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()Posted by oprs on September 26, 2015Hi, The following code causes FreeRTOS 8.2.2 to crash (Hard Fault observed on STM32): ~~~~ include &lt;FreeRTOS.h&gt; include &lt;task.h&gt; static void task( void *x ) { (void)x; for( ;; ) vTaskDelay( 1000 / portTICKRATEMS ); } [&hellip;]" />
+<meta name="twitter:title" content="calling vTaskResume() before the scheduler is started may lead to a call to portYIELD() - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202564' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202564' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202564' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202564' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145439' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_calling_vTaskResume_before_the_scheduler_is_started_may_lead_to_a_call_to_portYIELD_95453940j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_calling_vTaskResume_before_the_scheduler_is_started_may_lead_to_a_call_to_portYIELD_95453940j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145439">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2015_freertos_support_forum_archive_index.html/">September 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/oprs">oprs</a> on September 26, 2015</div><div class="thread-post-content">Hi,
+The following code causes FreeRTOS 8.2.2 to crash (Hard Fault observed on STM32):
+~~~~
+<h1>include &lt;FreeRTOS.h></h1>
+<h1>include &lt;task.h></h1>
+static void task( void *x )
+{
+   (void)x;
+   for( ;; )
+      vTaskDelay( 1000 / portTICK<em>RATE</em>MS );
+}
+int main( void )
+{
+   TaskHandle_t t1, t2;
+   (void)xTaskCreate( task, &#8220;task1&#8221;, 128, NULL, 1, &amp;t1 );
+   (void)xTaskCreate( task, &#8220;task2&#8221;, 128, NULL, 1, &amp;t2 );
+   vTaskSuspend( t1 );
+   vTaskResume( t1 );  // &lt;- crash
+   vTaskStartScheduler();
+   for( ;; );
+}
+~~~~
+(This is only a minimal, complete / verifiable example; basically I need to create a bunch of suspended tasks ready to be resumed later on, depending on the state my application finds itself in).
+I&#8217;ve traced the problem down to vTaskResume(), specifically around line 1443 in tasks.c
+~~~~
+  /* We may have just resumed a higher priority task. <em>/
+  if( pxTCB->uxPriority >= pxCurrentTCB->uxPriority )
+  {
+    /</em> This yield may not cause the task just resumed to run,
+    but will leave the lists in the correct state for the
+    next yield. */
+    taskYIELD_IF_USING_PREEMPTION();
+  }
+~~~~
+In my use case above, taskYIELD<em>IF</em>USING_PREEMPTION() gets called, eventually leading to a context switch before the scheduler is started which, in turn, leads to&#8230;
+~~~~
+*** HARD FAULT HANDLER ***
+   R0: 0x00000000
+   R1: 0x20006f00
+   R2: 0x20001ce8
+   R3: 0x20001ce8
+  R12: 0xa5a5a5a5
+   LR: 0x00000000
+   PC: 0x00000000
+  PSR: 0x4000000e
+ BFAR: 0xe000ed38
+ CFSR: 0x00020000
+ HFSR: 0x40000000
+ DFSR: 0x00000009
+ AFSR: 0x00000000
+~~~~
+note: the fact that both PC and LR show as NULL here sure didn&#8217;t help tracking down the problem.  I didn&#8217;t bother investingating much further though, as I&#8217;m not familiar enough with FreeRTOS internals to appreciate the possible ramifications of a context switch occuring outside the supervision of the scheduler.
+Anyway, the following patch seems to fix the issue for vTaskResume(), but then again I guess other functions (xTaskResumeAll(), and possibly xTaskResumeFromISR()) should be fixed as well.
+~~~~
+diff &#8211;git a/sat/sys/FreeRTOS/tasks.c b/sat/sys/FreeRTOS/tasks.c
+index 2fb4c2f..1534855 100644
+&#8212; a/sat/sys/FreeRTOS/tasks.c
++++ b/sat/sys/FreeRTOS/tasks.c
+@@ -1439,7 +1439,7 @@ StackType_t *pxTopOfStack;
+                    prvAddTaskToReadyList( pxTCB );
+<pre><code>                /* We may have just resumed a higher priority task. */
+</code></pre>
+&#8211;                       if( pxTCB->uxPriority >= pxCurrentTCB->uxPriority )
++                       if( ( pxTCB->uxPriority >= pxCurrentTCB->uxPriority ) &amp;&amp; ( xSchedulerRunning != pdFALSE ) )
+                    {<br />
+                        /* This yield may not cause the task just resumed to run,
+                        but will leave the lists in the correct state for the
+~~~~
+Does this workaround look reasonable to you guys ?  Should I create a ticket about this issue ?
+Cheers,
+  -Olivier.
+</div></div><div class="thread-post"><h3 class="thread-post-title">calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on September 27, 2015</div><div class="thread-post-content">Hi Olivier,
+Here below you find another way to create a task which will only start running when it is said to do so.
+It is a fragment from one of the examples in http://freertos.org/tcp It uses the couple <code>xTaskNotifyGive()</code> / <code>ulTaskNotifyTake()</code> to keep a task in a &#8216;suspended&#8217; state.
+~~~~~
+/* Handle of the task that runs the FTP and HTTP servers. */
+static TaskHandle_t xServerWorkTaskHandle = NULL;
+void main()
+{
+    /* Create the task that handles the FTP and HTTP servers.  This will
+    initialise the file system then wait for a notification from the network
+    event hook before creating the servers.  The task is created at the idle
+    priority, and sets itself to mainTCP<em>SERVER</em>TASK<em>PRIORITY after the file
+    system has initialised. */
+    xTaskCreate( prvServerWorkTask, &#8220;SvrWork&#8221;, mainTCP</em>SERVER<em>STACK</em>SIZE, NULL, tskIDLE_PRIORITY, &amp;xServerWorkTaskHandle );
+<pre><code>/* HT : 
+prvServerWorkTask() has been created, it will run, but only up until the
+ulTaskNotifyTake() statement. */
+vTaskStartScheduler();
+for( ;; );
+</code></pre>
+}
+static void prvServerWorkTask( void *pvParameters )
+{
+xTCPServer *pxTCPServer;
+<pre><code>....
+/* Wait until the network is up before creating the servers.  The
+notification is given from the network event hook. */
+ulTaskNotifyTake( pdTRUE, portMAX_DELAY );
+/* Create the servers defined by the xServerConfiguration array above. */
+pxTCPServer = FreeRTOS_CreateTCPServer( xServerConfiguration, sizeof( xServerConfiguration ) / sizeof( xServerConfiguration[ 0 ] ) );
+</code></pre>
+}
+/* Called by FreeRTOS+TCP when the network connects or disconnects.  Disconnect
+events are only received if implemented in the MAC driver. <em>/
+void vApplicationIPNetworkEventHook( eIPCallbackEvent_t eNetworkEvent )
+{
+    &#8230;
+    /</em> If the network has just come up&#8230;<em>/
+    if( eNetworkEvent == eNetworkUp )
+    {
+        #if( ( mainCREATE_FTP_SERVER == 1 ) || ( mainCREATE_HTTP_SERVER == 1 ) )
+        {
+            /</em> Let the server work task now it can now create the servers. */
+            xTaskNotifyGive( xServerWorkTaskHandle );
+        }
+        #endif
+    }
+}
+~~~~~
+A more general remark: FreeRTOS is a Real Time OS, and therefor it is as lean as possible. It hardly contains any code that protects the programmer against making mistakes, <strong>except</strong> the configASSERT() calls.
+I think that no configASSERT() was added to check the schedulerstate because then it should be added to hundreds of API&#8217;s and situations.
+<pre><code>/* Check if the scheduler is running. */
+configASSERT( xTaskGetSchedulerState() == taskSCHEDULER_RUNNING );
+/* Check for the scheduler being started. */
+configASSERT( xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED );
+</code></pre>
+Your &#8216;patch&#8217; would help avoid the problem, but it is not lean enough 🙂
+I hope the example helps for you.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on September 27, 2015</div><div class="thread-post-content">In my prevoious message I put a wrong URL for the tcp section, it should have been http://freertos.org/tcp of course
+Regards, Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/oprs">oprs</a> on September 27, 2015</div><div class="thread-post-content">Hello Hein,
+Ha, you just hit the nail on the head here;  obviously I need to wrap my head against the paradigms of Real Time OS programming.  At least should I have considered using binary semaphores, though task notifications seem even more appropriate indeed.
+Thanks a lot for your time and for your helpful insights.
+Regards,
+  -Olivier.
+</div></div><div class="thread-post"><h3 class="thread-post-title">calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on September 27, 2015</div><div class="thread-post-content">Hi Olivier,
+Finally some information about the speed of semaphores (queues), event-groups and task-notification.
+I created three tasks, running on the highest priority, and all constantly blocked on a call to:
+<pre><code>1) xSemaphoreTake();
+2) xEventGroupWaitBits();
+3) ulTaskNotifyTake();
+</code></pre>
+Then I unblocked each of the tasks and measured how long it took before the task actually became active. I tested on a Cortex M4, 120 MHz.
+Timings are in us (micro-seconds):
+<pre><code>[oops - sorry to be a party pooper - but we don't like numbers to be quoted so I removed them. Rationale in a separate post]
+</code></pre>
+<ul>
+<li>Event-groups can be unblocked from an interrupt, but it&#8217;s less optimal: it uses a timer-task to actually call <code>xEventGroupSetBits()</code>. The reason for this is that the duration of <code>xEventGroupSetBits()</code> may vary: in the worst case, several tasks are waiting for the event-group and more than one task must be woken-up. You don&#8217;t want to do this from within an ISR 🙂</li>
+</ul>
+The fastest and cheapest way to unblock a task is to use <code>xTaskNotifyGive()</code>.
+Here below some snapshots of the code that I used.
+I measured time with a TC timer running on 120 MHz.
+~~~~~
+    /* &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+     * Giving from a task:
+     */
+    xSemaphoreGive( xTestingSemaphore );
+<pre><code>/*
+ * Giving from an interrupt:
+ */
+xSemaphoreGiveFromISR( xTestingSemaphore, &amp;xWoken );
+portYIELD_FROM_ISR( xWoken );
+xResult = xSemaphoreTake( xTestingSemaphore, portMAX_DELAY );
+/* ------------------------------------------------------------------
+ * Setting bits from a task:
+ */
+xEventGroupSetBits( xTestingEventGroup, uxBitsToSet );
+/*
+ * Setting bits from an interrupt:
+ */
+xEventGroupSetBitsFromISR( xTestingEventGroup, uxBitsToSet, &amp;xWoken );
+portYIELD_FROM_ISR( xWoken );
+xResult = xEventGroupWaitBits( xTestingEventGroup, uxBitsToWaitFor,
+    pdTRUE, pdFALSE, portMAX_DELAY );
+/* ------------------------------------------------------------------
+ * Notifying bits from a task:
+ */
+xTaskNotifyGive( xTaskNotifyHandle );
+/*
+ * Notifying bits from an interrupt:
+ */
+vTaskNotifyGiveFromISR( xTaskNotifyHandle, &amp;xWoken );
+portYIELD_FROM_ISR( xWoken );
+ulResult = ulTaskNotifyTake( pdTRUE, portMAX_DELAY );
+</code></pre>
+~~~~~
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 27, 2015</div><div class="thread-post-content">&#8230;going back to your original post:
+<blockquote>
+  calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()
+</blockquote>
+Yes, that is not surprising &#8211; calling any function that attempts to switch to a task before the scheduler is running will crash because&#8230;..the scheduler is not running.  As a general rule of thumb don&#8217;t call any API function other than ones that create objects (tasks, semaphores, etc.) before the schedular has been started.  There are certain exceptions, notable vTaskSuspend(), because it is common to want to start a task in the suspended state, but the sequence:
+<blockquote>
+    vTaskSuspend( t1 );
+    vTaskResume( t1 );  // &lt;- crash
+    vTaskStartScheduler();
+</blockquote>
+Is not a sequence of code that would normally exist as it does not achieve anything &#8211; suspending a task then resuming it again before any scheduling has happened.  Either suspend it then resume it after the scheduler has started (which is a common thing to do to get start up sequences right), or don&#8217;t suspend it in the first place.
+I think you have worked this through with Hein&#8217;s help &#8211; but sometimes it is helpful when posting questions to mention what it is you are actually trying to acheive, then we can suggest alternatives.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/oprs">oprs</a> on September 27, 2015</div><div class="thread-post-content">Hi rtel,
+My motivation was to present a minimal example, stripped out of all context, in order to trigger the issue (with no or little concern on how ugly/stupid the code may end up looking like).  Sorry if I didn&#8217;t make my point clear about that.
+The issue I&#8217;m raising is the following:
+This sequence does induce a crash:
+~~~~
+   (void)xTaskCreate( task, &#8220;task1&#8221;, 128, NULL, 1, &amp;t1 );
+   (void)xTaskCreate( task, &#8220;task2&#8221;, 128, NULL, 1, &amp;t2 );
+   vTaskSuspend( t1 );
+   vTaskResume( t1 );
+~~~~
+This one does not:
+~~~~
+   (void)xTaskCreate( task, &#8220;task1&#8221;, 128, NULL, 1, &amp;t1 );
+   vTaskSuspend( t1 );
+   vTaskResume( t1 );
+~~~~
+Nor does this one (note the priority change on t2):
+~~~~
+   (void)xTaskCreate( task, &#8220;task1&#8221;, 128, NULL, 1, &amp;t1 );
+   (void)xTaskCreate( task, &#8220;task2&#8221;, 128, NULL, 2, &amp;t2 );
+   vTaskSuspend( t1 );
+   vTaskResume( t1 );
+~~~~
+Thus, the crash occurs where vTaskResume(t1) is called under the following conditions:
+<ul>
+<li>the scheduler hasn&#8217;t started yet,</li>
+<li>t1 is in xSuspendedTaskList,</li>
+<li>t2 is in pxReadyTasksLists[n], with n &lt;= t1&#8217;s uxPriority</li>
+</ul>
+Furthermore, I was able to observe that the crash only occurs after control is given to t1.  In my original example (top post), t1 calls vTaskDelay() in a loop; unsurprisingly, this is where it all goes wrong.
+Perhaps this is just me splitting hairs here.  As you said, this sequence does not achieve anything anyway.
+<hr />
+A quick word on the context since it might be relevant to the discussion.
+My application (micro-satellite) involves running several tasks, each in charge of one aspect of the mission: power monitoring, ground communication, attitude control, etc&#8230;  Which tasks are active at one given time depends on the mode the satellite is in.  The mission plan can be expressed in terms of a directed graph, with each node representing a mode.  Transitions between modes are triggered in response to external events (sensor readouts, commands from the ground, etc&#8230;).
+Also running along those tasks are (higher priority) driver tasks, essentially implementing a one-to-one threaded model;  I won&#8217;t bother you with this since I don&#8217;t believe it adds much to the discussion.
+The first code sequence above pretty much illustrates all that.  Say t1 and t2 are applicative tasks (initially suspended).  The dimwitted suspend/resume sequence that prompted my first post occurs during the setting up of the tasks associated to the initial state of my mission graph.
+Of course there are a million ways around this, the most obvious to me being to create a parent task (think &#8220;init&#8221; in unix terms) and to manage everything from there.  No more fiddling with task management before the scheduler is started -> problem gone.
+My initial point was just about what I thought was (and still think is 😉 a slight inconsistency in how FreeRTOS deals with vTaskSuspend()/vTaskResume() before control is passed to the scheduler (admittedly <em>very</em> marginal case).
+Thanks a lot for your input (to yourself and to Hein).  I have to say that getting a glimpse of the internals of FreeRTOS only increased my confidence in it.
+Regards,
+  -Olivier.
+</div></div><div class="thread-post"><h3 class="thread-post-title">calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/oprs">oprs</a> on September 27, 2015</div><div class="thread-post-content">Hello Hein,
+These are interesting figures indeed, not to mention that task notifications seem to be much easier on memory than binary semaphores and event groups.  In fact, task notifications are free (memory-wise) since they&#8217;re part of the TCB (assuming configUSE<em>TASK</em>NOTIFICATIONS is defined).  Great alternative to semaphores in many cases.
+Actually, that&#8217;s a feature I&#8217;ve been kind of overlooking up until now, but I&#8217;ll probably be using it soon for notifications from ISRs, as per <a href="http://www.freertos.org/RTOS_Task_Notification_As_Binary_Semaphore.html">this example</a> (I&#8217;m still using binary semaphores at the moment).
+Thanks for mentioning those 🙂
+Regards,
+  -Olivier.
+</div></div><div class="thread-post"><h3 class="thread-post-title">calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 27, 2015</div><div class="thread-post-content">Sorry people &#8211; I don&#8217;t mean to be a stick in the mud &#8211; but the numbers 
+have been removed.  Quoting numbers has led to many problems in the past 
+as they are open to deliberate mis-interpretation and mis-information by 
+third parties, which in turn leads to bad feeling in the community.
+There are so many variables effecting timing that people will get 
+different results, so the advice is just to measure it yourself.  For 
+example, if configASSERT() is defined (and how it is defined), what the 
+optimisation level was, the FreeRTOSConfig.h settings were, the version 
+of the compiler was used, the trace macros used, whether stack overflow 
+detection was on, etc. will all effect the measurements.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">calling vTaskResume() before the scheduler is started may lead to a call to portYIELD()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on September 28, 2015</div><div class="thread-post-content">@Richard,
+<blockquote>
+  so the advice is just to measure it yourself. For
+  example, if configASSERT() is defined (and how it is defined), what the
+  optimisation level was, the FreeRTOSConfig.h settings were
+</blockquote>
+Sorry about that but you&#8217;re 100% right. Especially these defines influence the latencies, as I just saw:
+~~~~~
+    configUSE<em>TRACE</em>FACILITY
+    configCHECK<em>FOR</em>STACK<em>OVERFLOW
+    configASSERT() / USE</em>FULL<em>ASSERT
+    configGENERATE</em>RUN<em>TIME</em>STATS
+~~~~~
+The reason that I&#8217;m interested in the latency between Give() and Take() is my desire to keep ISR&#8217;s as short as possible. Ideally an ISR will just clear a flag and signal some task.
+@Olivier :
+<blockquote>
+  A quick word on the context&#8230;
+</blockquote>
+That sounds like some great project.
+<blockquote>
+  Of course there are a million ways around this
+</blockquote>
+I often realise that when reading posts on this forum, there are many good ways to reach a target.
+<blockquote>
+   &#8230; the most obvious to me being to create a parent task
+  (think &#8220;init&#8221; in unix terms) and to manage everything
+  from there. No more fiddling with task management before
+  the scheduler is started -> problem gone.
+</blockquote>
+I&#8217;m much on the same line: avoid the problem by starting-up the scheduler as soon as possible.
+What I also like is to be able to have a task sleep (block) while initialising hardware and use that CPU-time for other useful things. The aim is often the same: short boot- and response-times.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

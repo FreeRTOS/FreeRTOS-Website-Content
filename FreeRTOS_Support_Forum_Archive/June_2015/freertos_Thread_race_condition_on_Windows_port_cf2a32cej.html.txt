@@ -1,0 +1,217 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thread race condition on Windows port? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2015/freertos_Thread_race_condition_on_Windows_port_cf2a32cej.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Thread race condition on Windows port? - FreeRTOS" />
+<meta property="og:description" content="Thread race condition on Windows port?Posted by hendrikdv on June 22, 2015I&#8217;ve got a lot of trouble getting my application to run on Windows. The threads go haywire or deadlock, and the result is different depending whether or not I look at them in Sysinternals Process Explorer. Very bizarre. Anyway, while debugging I did find &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2015/freertos_Thread_race_condition_on_Windows_port_cf2a32cej.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Thread race condition on Windows port?Posted by hendrikdv on June 22, 2015I&#8217;ve got a lot of trouble getting my application to run on Windows. The threads go haywire or deadlock, and the result is different depending whether or not I look at them in Sysinternals Process Explorer. Very bizarre. Anyway, while debugging I did find [&hellip;]" />
+<meta name="twitter:title" content="Thread race condition on Windows port? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202532' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202532' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202532' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202532' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145594' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2015%2Ffreertos_Thread_race_condition_on_Windows_port_cf2a32cej.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2015%2Ffreertos_Thread_race_condition_on_Windows_port_cf2a32cej.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145594">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2015_freertos_support_forum_archive_index.html/">June 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Thread race condition on Windows port?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hendrikdv">hendrikdv</a> on June 22, 2015</div><div class="thread-post-content">I&#8217;ve got a lot of trouble getting my application to run on Windows. The threads go haywire or deadlock, and the result is different depending whether or not I look at them in Sysinternals Process Explorer. Very bizarre.
+Anyway, while debugging I did find what I think is a potential bug.
+In prvProcessSimulatedInterrupts(), there is a piece of code to switch threads:
+~~~~~
+/* Suspend the old thread. */
+pxThreadState = ( xThreadState *) *( ( size_t * ) pvOldCurrentTCB );
+SuspendThread( pxThreadState->pvThread );
+/* Obtain the state of the task now selected to enter the
+Running state. */
+pxThreadState = ( xThreadState * ) ( *( size_t *) pxCurrentTCB );
+ResumeThread( pxThreadState->pvThread );
+~~~~~
+I think inbetween these two there needs to be a call to GetThreadContext, as described on the given URL.
+~~~~~
+CONTEXT context;
+BOOL success;
+/* Suspend the old thread. */
+pxThreadState = ( xThreadState *) *( ( size_t * ) pvOldCurrentTCB );
+SuspendThread( pxThreadState->pvThread );
+// Ensure the thread is really suspended by calling an operation on it
+// that only returns once once it is suspended.
+// See http://blogs.msdn.com/b/oldnewthing/archive/2015/02/05/10591215.aspx
+context.ContextFlags = CONTEXT_INTEGER; // Just ask some dummy register data
+success = GetThreadContext( pxThreadState->pvThread, &amp;context );
+configASSERT( success );
+/* Obtain the state of the task now selected to enter the
+Running state. */
+pxThreadState = ( xThreadState * ) ( *( size_t *) pxCurrentTCB );
+ResumeThread( pxThreadState->pvThread );
+~~~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread race condition on Windows port?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 22, 2015</div><div class="thread-post-content">Interesting &#8211; thanks for this nugget of information and link.
+We have used the Windows port to run very comprehensive tests over many days without any issues (see caveat below), but there are so many possible combinations of operating system, CPU models, caches, number of cores, etc. it is not surprising that issues could arise that we have not seen.
+The above mentioned caveat is when Windows IO system calls are used.  For example, if you call printf() from a FreeRTOS task (when using the FreeRTOS Windows port), or attempt to use the Windows TCP/IP stack, etc., then eventually under heavy load it will fall flat on its face.  Its possible your post is highlighting the reason for this.
+You may find the standard FreeRTOS Windows demo is calling printf() directly, and under low load it gets away with it.  The FreeRTOS+TCP and FreeRTOS+FAT demos however generate a much higher volume of logging information, and cannot output this directly without causing trouble.  
+In the FreeRTOS+TCP demo there are options to log to a UDP port using the FreeRTOS+UDP stack itself, to a disk file, or to stdout.  The former is no problem, as it only uses FreeRTOS calls, but the disk file and stdout will cause an issue if these outputs are accessed directly from a FreeRTOS task.  To get around this we have the FreeRTOS tasks send the log messages to a thread safe circular buffer, and have a standard Windows thread (one that is not under the control of the FreeRTOS scheduler) read the log message from the buffer and perform the actual output (printf() or write to disk).  That way the log messages get output without the FreeRTOS tasks generating any Windows IO system calls themselves.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread race condition on Windows port?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hendrikdv">hendrikdv</a> on June 23, 2015</div><div class="thread-post-content">Thank you for your feedback. Actually there are two issues in my original post, so I&#8217;ll try to keep them apart for clarity.
+<ol>
+<li>The crashes
+So far I&#8217;m not even doing any printfs from the crosscompiled embedded FreeRTOS program. I&#8217;m just trying to run an existing embedded application that writes to an LCD. So far on Windows I only modelled the LCD as a data buffer without any observer. Still the thread mechanism is doing bizarre stuff, I wonder if it&#8217;s an interaction with the MSVC debugger. Anyway, I&#8217;ll have to sort this out by myself but this is not the main reason I posted.
+For info: I&#8217;m using a Win7 64bit quadcore machine.
+Update: now that I think of it there is a file system layer somewhere that might be reading a data file, so thanks for the tip, I&#8217;ll see if this might be the culprit!</li>
+<li>The proposed patch to the source code. During my debugging of 1. I think I did find a real issue with the Windows port.c code you might want to backport into the source tree. See the URL for a description why SuspendThread only might not be enough. Unless some other scheduler internal condition with which I&#8217;m not familiar renders it safe to resume the next thread while SuspendThread might still leave the previous thread briefly running.</li>
+</ol>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread race condition on Windows port?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 23, 2015</div><div class="thread-post-content">We are using very similar machines then.  Let me know if the file system 
+layer turns out to be the cause of your problem or not.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread race condition on Windows port?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 23, 2015</div><div class="thread-post-content">Hi Hendrik,
+Not only the use of system I/O functions (files, streams, TCP/IP) may lead to instability, but any Windows system call that may possibly block will cause problems.
+<blockquote>
+  Unless some other scheduler internal condition with which
+  I&#8217;m not familiar renders it safe to resume the next thread
+  while SuspendThread might still leave the previous thread
+  briefly running.
+</blockquote>
+I haven&#8217;t tried-out your patch yet, it might help. But it might also disturb the timing of the scheduler in case GetThreadContext() blocks for a long time?
+In ./demo_logging.c you will see that regular stdio functions are used. Also networkInterface.c is doing system calls. That is possible because the system calls originate from <strong>normal</strong> Windows threads:
+<pre><code>DWORD WINAPI prvWin32LoggingThread( void *pvParam )
+DWORD WINAPI prvWinPcapRecvThread( void *pvParam )
+DWORD WINAPI prvWinPcapSendThread( void *pvParam )
+</code></pre>
+The communication/synchronisation between these Windows threads and FreeRTOS tasks is done with care.
+A FreeRTOS task may call <code>SetEvent( pvSendEvent )</code>, but it may not call <code>WaitForSingleObject( pvSendEvent, time )</code>, because the latter may block.
+Likewise, a real Windows thread shall not make use of FreeRTOS queues or FreeRTOS blocking calls.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread race condition on Windows port?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rixiusm">rixiusm</a> on March 1, 2016</div><div class="thread-post-content">Is there any news to this problem? I seem to have stumbled upon a similar problem, and the patch above seems not to work.
+By now I have added a Windows Critical Section around the SuspendThread() and ResumeThread() statements mentioned above. The Critical Section is entered for any memory allocation / release as well as any Windows TCP performed by FreeRTOS threads. Also I disabled all printf() and std::cerr/cout in FreeRTOS threads. However the application still stops responding pretty soon when I start to do I/O&#8230;
+What else might cause problems?
+What about malloc() and C++ &#8216;new / delete&#8217;, is it actually necessary to protect those?
+Has actually ANYBODY ever successfully coupled FreeRTOS code with additional Windows threads?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread race condition on Windows port?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 1, 2016</div><div class="thread-post-content">Yes &#8211; we do very comprehensive development and testing under Windows &#8211; including the FreeRTOS+TCP stack.  However, to do this <strong>all</strong> Windows IO system calls have to be banished from threads that are under the control of FreeRTOS.  Presumaby as described above (I&#8217;ve not read through the thread again) this is achieved by keeping IO in separate Windows threads, then using circual buffers to have the FreeRTOS and non-FreeRTOS threads communicate.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread race condition on Windows port?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 1, 2016</div><div class="thread-post-content">In addition to what Richard commented, maybe some more information to get a feeling of the problem:
+<blockquote>
+  Has actually ANYBODY ever successfully coupled FreeRTOS code
+  with additional Windows threads?
+</blockquote>
+Have you looked in detail how the FreeRTOS tasks are implemented?
+A task is indeed a (Windows) thread.
+Here in port.c you see a task switch:
+~~~~
+    SuspendThread( pxThreadState->pvThread );
+    /* change the current &#8216;pvThread&#8217; */
+    ResumeThread( pxThreadState->pvThread );
+~~~~
+The scheduler has decided that a new task (thread) must be come active. It calls <code>SuspendThread()</code> for the old task and it calls <code>ResumeThread()</code> for the new task.
+But imagine what happens if the old task was in the middle of a system call. It <strong>won&#8217;t get suspended</strong>. Hence: two tasks will be running simultaneously, something that is fatal for FreeRTOS.
+One of the consequences of the above is that it is very hard to synchronise FreeRTOS tasks with Windows threads. We tested and tried a long time to see if there is any solution for this, but I&#8217;m afraid there isn&#8217;t.
+If your task must do any W32 system call, implement it as a normal thread. If your task is part of the FreeRTOS application, don&#8217;t let it call <strong>any</strong> W32 system call.
+And if a task must cooperate with a W32 thread, use sync methods that are neither W32, nor FreeRTOS.
+<code>WaitForMultipleObjects</code> (etc) is in the W32 domain
+<code>xSemaphoreTake</code> (and all other) are in the FreeRTOS domain.
+Have a look at this file:
+<pre><code>DemoFreeRTOS_Plus_TCP_and_FAT_Windows_Simulatordemo_logging.c
+</code></pre>
+to see what I mean. In this module, all FreeRTOS tasks can send logging to the console. Of course it can not call the normal <code>printf()</code>. It will queue the logging strings and hand them over to a genuine Windows thread.
+If you know of ways to improve the cooperation between the W32 threads and FreeRTOS tasks, please tell.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

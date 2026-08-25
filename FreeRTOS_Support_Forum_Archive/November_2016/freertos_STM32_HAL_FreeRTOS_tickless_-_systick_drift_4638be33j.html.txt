@@ -1,0 +1,418 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STM32 HAL + FreeRTOS (tickless) -&gt; systick drift - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_STM32_HAL_FreeRTOS_tickless_-_systick_drift_4638be33j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="STM32 HAL + FreeRTOS (tickless) -&gt; systick drift - FreeRTOS" />
+<meta property="og:description" content="STM32 HAL + FreeRTOS (tickless) -&gt; systick driftPosted by embeddedoli on November 17, 2016Hello, we are using a STM32F0 with FreeRTOS. Code was generated using the ST CubeMX and therefore the ST HAL is implemented as well. We have FreeRTOS running in tickless idle mode and several task / peripherals. As our overall system was &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_STM32_HAL_FreeRTOS_tickless_-_systick_drift_4638be33j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="STM32 HAL + FreeRTOS (tickless) -&gt; systick driftPosted by embeddedoli on November 17, 2016Hello, we are using a STM32F0 with FreeRTOS. Code was generated using the ST CubeMX and therefore the ST HAL is implemented as well. We have FreeRTOS running in tickless idle mode and several task / peripherals. As our overall system was [&hellip;]" />
+<meta name="twitter:title" content="STM32 HAL + FreeRTOS (tickless) -&gt; systick drift - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202732' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202732' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202732' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202732' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146185' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_STM32_HAL_FreeRTOS_tickless_-_systick_drift_4638be33j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_STM32_HAL_FreeRTOS_tickless_-_systick_drift_4638be33j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146185">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2016_freertos_support_forum_archive_index.html/">November 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/embeddedoli">embeddedoli</a> on November 17, 2016</div><div class="thread-post-content">Hello,
+we are using a STM32F0 with FreeRTOS. Code was generated using the ST CubeMX and therefore the ST HAL is implemented as well. 
+We have FreeRTOS running in tickless idle mode and several task / peripherals. As our overall system was designed to rely on the systick and/or the accuracy of the FreeRTOS wait/delay/suspend features we run into problems if anything corrupts the system time. 
+The HAL uses a timer as timebase generating a tick every ms. Same for FreeRTOS &#8211; we expect the systick to increase by 1 each ms.
+At the very moment we figured out that sometimes we run into a SPI error condition. In this condition the HAL waits for 50ms for a certain flag (that will not be changed) and runs into a timeout after (all in the ISR). We absolutely understand that this is not a desired behaviour but the HAL is implemented that way. 
+But from this behaviour we figured out a problem that seems bigger than that. The systick in idle mode seems to miss all the time that is passed in an ISR. So even if all our interrupts are handled within several µs we miss those times on the system clock. That leads to the problem that those missed times summ up to a huge drift of about 100ms each 10s runtime. This highly depends on the amount and the time passed in the interrupts that occure during the sleep. 
+If we disable the tickless idle feature our power consumption goes up but we see a better tick. It seems like in this case we only miss interrupts that are longer than 1ms &#8211; but I&#8217;m not sure about this. We know that the drift in time is smaller without the tickless idle feature but if the huge lock in the SPI ISR occures we still miss those 50ms on the clock. 
+We do not understand why the systick misses the times of the interrupts. We understand that as long as an interrupt is active no change to the systick can be achieved but we do not understand why the missed time is not corrected as soon as the next &#8220;tick correction&#8221; takes place (probably directly after the ISR is handled)
+Are any of my assumptions wrong? Is there anything we can do about this issue? 
+So there are two issues:
+1.) Drift in systick in tickless idle mode
+2.) All time passed in an ISR is lost for the sysclock
+We are using the latest Cube HAL (1.6.0) for the STM32F072 and the FreeRTOS 8.2.3.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 17, 2016</div><div class="thread-post-content">When using tickless idle mode the clock is stopped and started as it is 
+reprogrammed to change the time at which the next interrupt is 
+generated.  For that reason it is expected that the time will drift a 
+little bit &#8211; and that is well documented.  I&#8217;m not sure if 100ms in 10 
+seconds is &#8216;normal&#8217; or not, although some of the ST ISRs do take a 
+little longer than some as there are busy loop timeouts inside the ISRs.
+There is a fiddle factor used to compensate for this, which you can try 
+playing with as its default value is set according to the system clock. 
+  Have a look at the constant portMISSED<em>COUNTS</em>FACTOR in 
+FreeRTOS/Source/portable/[compiler]/ARM<em>CMn/port.c, and how it is used 
+to set ulStoppedTimerCompensation, and then how the 
+ulStoppedTimerCompensation variable itself is set.  You can then 
+increase or decrease the value of portMISSED</em>COUNTS_FACTOR as 
+appropriate to see if it helps.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/embeddedoli">embeddedoli</a> on November 18, 2016</div><div class="thread-post-content">Hello,
+thanks for the reply. I already tried to change that value according to the amount each interrupt takes. Unfortunately this amount does compensation in respect to the &#8220;normal&#8221; drift. 
+What we now figured out is that the logical order after the wfi instructions is somehow strange as it excludes the time passed in the ISR from the calculation:
+~~~
+xModifiableIdleTime = xExpectedIdleTime;
+            configPRE<em>SLEEP</em>PROCESSING( &amp;xModifiableIdleTime );
+            if( xModifiableIdleTime > 0 )
+            {
+                __DSB();
+                __WFI();
+                __ISB();
+            }
+            configPOST<em>SLEEP</em>PROCESSING( &amp;xExpectedIdleTime );
+<pre><code>        /* Stop SysTick.  Again, the time the SysTick is stopped for is
+        accounted for as best it can be, but using the tickless mode will
+        inevitably result in some tiny drift of the time maintained by the
+        kernel with respect to calendar time. */
+        ulSysTickCTRL = portNVIC_SYSTICK_CTRL;
+        portNVIC_SYSTICK_CTRL = ( ulSysTickCTRL &amp; ~portNVIC_SYSTICK_ENABLE );
+        /* Re-enable interrupts - see comments above __disable_interrupt()
+        call above. */
+        __enable_interrupt();
+</code></pre>
+~~~
+The point is the position on which the interrupts are enabled again (<code>__enable_interrupt()</code>). Right before that instruction the systick is disabled. The problem is that if a normal interrupt starts it will start at the <code>__WFI();</code> instruction and go further till the <code>__enable_interrupt();</code> statement. Right there the context switch takes place and the control is handed over to the ISR. So all time passed in the ISR is missed by the systick counter!
+So if the order is switched to enable the interrupt right before the stop of the systick the time of the interrupt that caused the wakeup will be took into consideraton aswell.
+Somehow this looks to easy for a solution and I think that changing this order will have negativ side effects as well.
+So can you maybe explain why this order has been chosen and/or what I&#8217;m missing in my assumptions here?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 18, 2016</div><div class="thread-post-content">This is getting into a rather detailed area so will need to study a bit 
+more &#8211; like you say side effects are easy to introduce in this area.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 21, 2016</div><div class="thread-post-content">Working through this I think the following code change, which would help 
+the scenario you describe, would be safe.  Do you agree?
+<pre>
+xModifiableIdleTime = xExpectedIdleTime;
+configPRE_SLEEP_PROCESSING( xModifiableIdleTime );
+if( xModifiableIdleTime > 0 )
+{
+     __asm volatile( "dsb" );
+     __asm volatile( "wfi" );
+     __asm volatile( "isb" );
+}
+configPOST_SLEEP_PROCESSING( xExpectedIdleTime );
+/*** CODE ABOVE HERE UNCHANGED, CODE BELOW HERE HAS CHANGED. ***/
+/* Re-enable interrupts - see comments above the cpsid instruction()
+above. */
+__asm volatile( "cpsie i" );
+/* Disable the SysTick clock without reading the
+portNVIC_SYSTICK_CTRL_REG register to ensure the
+portNVIC_SYSTICK_COUNT_FLAG_BIT is not cleared if it is set. */
+portNVIC_SYSTICK_CTRL_REG = ( portNVIC_SYSTICK_CLK_BIT | 
+portNVIC_SYSTICK_INT_BIT );
+/* Determine if the SysTick clock has already counted to zero and
+been set back to the current reload value (the reload back being
+correct for the entire expected idle time) or if the SysTick is yet
+to count to zero (in which case an interrupt other than the SysTick
+must have brought the system out of sleep mode). */
+if( ( portNVIC_SYSTICK_CTRL_REG & portNVIC_SYSTICK_COUNT_FLAG_BIT ) != 0 )
+{
+</pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/embeddedoli">embeddedoli</a> on November 22, 2016</div><div class="thread-post-content">Hello and thanks for the reply again!
+I&#8217;ve tried to implement the code you gave me. You probably did not use the CM0 port but that doesn&#8217;t matter that much. I&#8217;ve tried to use the CM0 defines instead. 
+So from my current perspective it seems like you do not disable the tick at all now?
+The <code>portNVIC_SYSTICK_CTRL_REG = ( portNVIC_SYSTICK_CLK_BIT | portNVIC_SYSTICK_INT_BIT );</code> statement will set the clock and interrupt bit but the old code &#8220;removed&#8221; the clock bit. If this is the case do we really need to set those bits here? I mean the clock is probably still running and the interrupt should be active as well&#8230;
+Furthermore you adapted the order change that I performed &#8211; the first instruction you mention is the enable interrupt statement. In the old code the instruction was performed after the clock was put into suspension state. Has that been put into consideration? 
+What I understood from your reply was that it might be unsafe to read the complete control register as we might remove the count flag. In the CM0 port the control register is read and saved for this case at the very beginning. So the first statment is <code>ulSysTickCTRL = portNVIC_SYSTICK_CTRL;</code> followed by the changes to the control register. All further calculations are so based on the here saved value. If I&#8217;m not mistaken your implementation is based on the actual control register and it is not saved before. For example the check of the count flag is directly performed on the register &#8211; in the CM0 port the saved value is used: <code>if( ( portNVIC_SYSTICK_CTRL_REG &amp; portNVIC_SYSTICK_COUNT_FLAG_BIT ) != 0 ) {</code> vs. CM0 implementaion: <code>if( ( ulSysTickCTRL &amp; portNVIC_SYSTICK_COUNT_FLAG ) != 0 )</code>
+So I think the issue you targeted with your change might not apply to the CM0 port.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 22, 2016</div><div class="thread-post-content"><blockquote>
+  I&#8217;ve tried to implement the code you gave me.
+</blockquote>
+Note the posted code was the result of an analysis &#8211; I didn&#8217;t actually 
+try compiling or running it &#8211; so there is the potential for err.
+<blockquote>
+  You probably did not
+  use the CM0 port but that doesn&#8217;t matter that much. I&#8217;ve tried to use
+  the CM0 defines instead.
+</blockquote>
+I don&#8217;t think we provide a tickless idle for the M0, although it can be 
+copied from the M3, M4F or M7 code.  I was looking at code that used a 
+different compiler though, so some of the compiler specifics will have 
+been different &#8211; for example how the lines of asm code are added in to 
+the C code.
+<blockquote>
+  So from my current perspective it seems like you do not disable the
+  tick at all now?
+</blockquote>
+Um, if that is the case, it was not intended!
+<blockquote>
+  The |portNVIC<em>SYSTICK</em>CTRL<em>REG = ( portNVIC</em>SYSTICK<em>CLK</em>BIT |
+  portNVIC<em>SYSTICK</em>INT_BIT );| statement will set the clock and
+  interrupt bit but the old code &#8220;removed&#8221; the clock bit. If this is
+  the case do we really need to set those bits here? I mean the clock
+  is probably still running and the interrupt should be active as
+  well&#8230;
+</blockquote>
+When the system is running normally (with ticks) the 
+portNVIC<em>SYSTICK</em>CTRL<em>REG register has the portNVIC</em>SYSTICK<em>CLK</em>BIT, 
+portNVIC<em>SYSTICK</em>INT<em>BIT and portNVIC</em>SYSTICK<em>ENABLE</em>BIT set.  That is, 
+bits 0, 1 and 2 set.
+The old code:
+<pre>
+ulSysTickCTRL = portNVIC_SYSTICK_CTRL_REG;
+portNVIC_SYSTICK_CTRL_REG = ( ulSysTickCTRL & 
+~portNVIC_SYSTICK_ENABLE_BIT );
+</pre>
+read the portNVIC<em>SYSTICK</em>CTRL<em>REG (SYST</em>CSR) value, then wrote back the 
+value with the portNVIC<em>SYSTICK</em>ENABLE<em>BIT bit (bit 0) clear.  That will 
+stop the counter and clear the COUNTFLAG bit (reading the register 
+clears the COUNTFLAG bit).  After the write the 
+portNVIC</em>SYSTICK<em>CTRL</em>REG register will still have bits 1 and 2 set, but 
+bit 0 clear.
+The <em>intention</em> of the new code, which as per my comments above I didn&#8217;t 
+actually run:
+<pre>
+portNVIC_SYSTICK_CTRL_REG = ( portNVIC_SYSTICK_CLK_BIT | 
+portNVIC_SYSTICK_INT_BIT );
+if( ( portNVIC_SYSTICK_CTRL_REG & portNVIC_SYSTICK_COUNT_FLAG_BIT ) != 0 )
+</pre>
+is to clear bit 0 (ENABLE) in the portNVIC<em>SYSTICK</em>CTRL_REG register 
+without reading the register first.  Avoiding reading the register 
+avoids clearing the COUNTFLAG bit.  The register is set to have bits 1 
+and 2 set, and bit 0 clear, just as per the old code (?).  So the net 
+result should not be different between the new and old, other than the 
+fact that this is now happening after interrupts have been disabled 
+rather than before.
+The if() condition then simultaneously tests and, because it reads the 
+portNVIC<em>SYSTICK</em>CTRL_REG register, clears the COUNTFLAG bit.
+<blockquote>
+  Furthermore you adapted the order change that I performed &#8211; the first
+   instruction you mention is the enable interrupt statement. In the
+  old code the instruction was performed after the clock was put into
+  suspension state. Has that been put into consideration?
+</blockquote>
+Repeating myself just for emphasis &#8211; yes it has been considered and 
+analysis (but not experimentation) suggests that the above code change 
+will be ok.  This would need more testing though.
+<blockquote>
+  What I understood from your reply was that it might be unsafe to read
+   the complete control register as we might remove the count flag. In
+  the CM0 port the control register is read and saved for this case at
+  the very beginning. So the first statment is |ulSysTickCTRL =
+  portNVIC<em>SYSTICK</em>CTRL;| followed by the changes to the control
+  register. All further calculations are so based on the here saved
+  value. If I&#8217;m not mistaken your implementation is based on the actual
+  control register and it is not saved before. For example the check of
+  the count flag is directly performed on the register &#8211; in the CM0
+  port the saved value is used: |if( ( portNVIC<em>SYSTICK</em>CTRL<em>REG &amp;
+  portNVIC</em>SYSTICK<em>COUNT</em>FLAG<em>BIT ) != 0 ) {| vs. CM0 implementaion:
+  |if( ( ulSysTickCTRL &amp; portNVIC</em>SYSTICK<em>COUNT</em>FLAG ) != 0 )|
+  So I think the issue you targeted with your change might not apply to
+   the CM0 port.
+</blockquote>
+Your interpretation of how the code change is reading the count flag is 
+correct, but I don&#8217;t fully understand the point you are making at the 
+end of this paragraph.  As far as I know it shouldn&#8217;t make any 
+difference if this is running on the M0, M3, M4F or M7.  Does my 
+explanation above help our mutual understanding?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/embeddedoli">embeddedoli</a> on November 23, 2016</div><div class="thread-post-content">Hello again,
+I think now I understand what your intention was. From my perspective we both do the same now. Save the count flag -> Stop  the systick by removing the enable flag -> Check all other conditions.
+The order change was applied and tested by us. It seem to work fine. So if you do not see any negative side effects by now we will keep the change unless we recognize other impacts.
+So just as a final statement, can this be considered a bug and we have been the first that found it or is that some kind of unexpected behaviour we implemented? I made a small research and think others might have the same issue but used the missed<em>counts</em>factor to comprise the missed interrupts (e.g. https://sourceforge.net/p/freertos/discussion/382005/thread/dac50e55/)
+Furthermore taken from the CM3 port.c line 501:
+~~~
+portNVIC<em>SYSTICK</em>LOAD = ( ( ulCompleteTickPeriods + 1 ) * ulTimerCountsForOneTick ) &#8211; ulCompletedSysTickDecrements;
+            }
+<pre><code>        /* Restart SysTick so it runs from portNVIC_SYSTICK_LOAD_REG
+        again, then set portNVIC_SYSTICK_LOAD_REG back to its standard
+        value.  The critical section is used to ensure the tick interrupt
+        can only execute once in the case that the reload register is near
+        zero. */
+        portNVIC_SYSTICK_CURRENT_VALUE = 0UL;
+        portENTER_CRITICAL();
+        {
+            portNVIC_SYSTICK_CTRL |= portNVIC_SYSTICK_ENABLE;
+            vTaskStepTick( ulCompleteTickPeriods );
+            portNVIC_SYSTICK_LOAD = ulTimerCountsForOneTick - 1UL;
+        }
+        portEXIT_CRITICAL();
+</code></pre>
+~~~
+There is some issue here with the <code>portNVIC_SYSTICK_LOAD</code> value. It is first calulated and then overwritten with a default value in the critical section! Should I open an other topic for this? This looks quite obvious as a bug.
+And sorry for the confusion regarding the CM0 port. CubeMX seems to implement a port.c from any other CM type than the CM0, as you do not provide tickless as you mentioned! (I&#8217;ve just looked into the 9.0 release and did not found one in the CM0 port 😉 )
+Best regards,
+Oliver
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 23, 2016</div><div class="thread-post-content"><blockquote>
+  portNVIC<em>SYSTICK</em>LOAD = ( ( ulCompleteTickPeriods + 1 ) * ulTimerCountsForOneTick ) &#8211; ulCompletedSysTickDecrements;
+</blockquote>
+This sets the portNVIC<em>SYSTICK</em>LOAD value to be correct for the next 
+[adjusted] period which brings the tick interrupt back in line with the 
+regular frequency after the tick has been stopped.
+<blockquote>
+  }
+  /* Restart SysTick so it runs from portNVIC<em>SYSTICK</em>LOAD<em>REG
+  again, then set portNVIC</em>SYSTICK<em>LOAD</em>REG back to its standard
+  value.  The critical section is used to ensure the tick interrupt
+  can only execute once in the case that the reload register is near
+  zero. */
+  portNVIC_SYSTICK_CURRENT_VALUE = 0UL;
+  portENTER_CRITICAL();
+  {
+     portNVIC_SYSTICK_CTRL |= portNVIC_SYSTICK_ENABLE;
+</blockquote>
+This starts the tick again, which starts from the value loaded into the 
+portNVIC<em>SYSTICK</em>LOAD register above.  The SysTick is now running and 
+the portNVIC<em>SYSTICK</em>LOAD register value is not used until the SysTick 
+count reaches zero.
+<blockquote>
+  vTaskStepTick( ulCompleteTickPeriods );
+  portNVIC<em>SYSTICK</em>LOAD = ulTimerCountsForOneTick &#8211; 1UL;
+</blockquote>
+Now the SysTick clock is running, the portNVIC<em>SYSTICK</em>LOAD register is 
+updated again so the next time the SysTick clock reaches zero it is 
+reloaded with the value necessary to create the normal tick frequency.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/embeddedoli">embeddedoli</a> on November 24, 2016</div><div class="thread-post-content">Edit:
+Okay, after further investigation I guess the systick load is immediately taken for the immediate reload that happens as soon as the timer is enabled again and the &#8220;next&#8221; reload value is loaded to be used as the default value for future ticks&#8230;In this case the code looks ok.
+<hr />
+Obsolete:
+Well that&#8217;s the point:
+First the register is loaded with the correct adjusted value:
+~~~
+portNVIC<em>SYSTICK</em>LOAD = ( ( ulCompleteTickPeriods + 1 ) * ulTimerCountsForOneTick ) &#8211; ulCompletedSysTickDecrements;
+~~~
+and right after that it is overwritten with the value for a normal tick
+~~~
+portNVIC<em>SYSTICK</em>LOAD = ulTimerCountsForOneTick &#8211; 1UL;
+~~~
+As a result the corrected and adjusted value is lost and never put into consideration&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 24, 2016</div><div class="thread-post-content">I think the bit you are missing is this from my previous email &#8220;This starts the tick again, which starts from the value loaded into the portNVIC<em>SYSTICK</em>LOAD register above.&#8221;.  So the adjusted value IS used before it gets overwritten.  When the timer starts, it starts from the value in the portNVIC<em>SYSTICK</em>LOAD regster, and only then is it overwritten (it is overwritten AFTER the timer has started, and therefore AFTER the adjusted value has been used).
+Does that make sense?  Let me know if you think I am wrong on this.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/embeddedoli">embeddedoli</a> on November 25, 2016</div><div class="thread-post-content">No, makes perfect sense and looks good to me.  So I dont have any further questions regarding this issue. Thanks for your help. I guess the issue with the changed order of interrupt activation might be an issue for other people aswell but the other thing seems fine.
+Best regards,
+Oliver
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/janoshnosh">janoshnosh</a> on November 28, 2016</div><div class="thread-post-content">Hello,
+I have a follow-up question on this topic, perhaps you can give advise on it too.
+As I see it, the tickless-idle mode after sleeping acts like this:
+1. We wake up because of an interrupt (the systick timer is running)
+2. We turn on interrupts to immediately serve them (the systick timer is still running)
+3. We want to calculate the next tick-time. For this case we stop the systick timer in order to calculate it. (the systick timer is halted)
+4. We set the systick timer interrupt for the calculated value (the systick timer is running).
+But now in point 3. i see the problem, that again an interrupt could kick in and would be served immediately &#8211; with a halted systick timer. Isn&#8217;t this a problem?
+Why isn&#8217;t the critical section extended to the whole time where the systick timer is halted? Or even simpler, why aren&#8217;t the interrupts only enabled after the re-setting of the systick timer?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 28, 2016</div><div class="thread-post-content">Again I will have to look at this in some detail, with the code in front 
+of me, to give a proper answer so will get back to you after that.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/janoshnosh">janoshnosh</a> on December 2, 2016</div><div class="thread-post-content">Hello, do you have any update on this?
+Thanks and have a good weekend.
+Cheers Janos
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 2, 2016</div><div class="thread-post-content">Not yet &#8211; but will do.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/janoshnosh">janoshnosh</a> on December 15, 2016</div><div class="thread-post-content">Hello again,
+are there any news here?
+Can I ask an intermediate question to keep the thread running: Who is actually providing the ARM CM0 port for FreeRTOS and the tickless idle mode? Is it developed by FreeRTOS developers, or by specific ARM vendors?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 15, 2016</div><div class="thread-post-content">Sorry not to get back yet.
+We provide the tickless mode for M3/M4F/M7 parts.  I&#8217;m not sure if we 
+have an example for M0 too, but I know people are using the exact same 
+implementation on M0 parts.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/janoshnosh">janoshnosh</a> on January 9, 2017</div><div class="thread-post-content">Hello and a good year to you all.
+Have you had the chance to look at this issue yet?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 9, 2017</div><div class="thread-post-content">Not yet &#8211; but will do &#8211; I need to roll the changes into all the Cortex-M 
+ports and re-test so it will get done.  Sorry to not be more specific as 
+to when but things are VERY busy at the moment.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 25, 2017</div><div class="thread-post-content">So attached is an experimental implementation (NOT TESTED!) that only enables interrupts after all calculations have been completed.  This will no doubt help the tick drift, but comes at the expense of needing to perform the caluclations before the interrupt that brings the system out of sleep mode can execute.  Comments?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 HAL + FreeRTOS (tickless) -> systick drift</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/janoshnosh">janoshnosh</a> on February 13, 2017</div><div class="thread-post-content">Thank you very much for attending to the issue and for your example.
+So in this example you have implemented my last (&#8220;simpler&#8221;) suggestion, to only enable the interrupts after everything is done.
+I understand the dilemma. We would lose the response time of the interrupt that wakes up the system.
+However, if we would implement my first suggestion, extend the critical section to the whole calculation, we would serve the wakening interrupt directly &#8211; with a running SysTick. The SysTick however would be incorrect because we haven&#8217;t adjusted the sleep time yet. Do you agree with that?
+So it looks like, in order to have a consistent system, the best that can be done is:
+1. Wake up by an interrupt
+2. Perform the time calculations.
+3. Enable interrupts and serve the causing interrupt.
+This way, we should keep the following constraints:
+1. The system never misses time. (no interrupts are executed with halted time).
+2. The system time is always correct. (the system time is up-to-date in interrupts).
+What are your thoughts on this?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS + FAT FF_FlushCache Function Implementation - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2019/freertos_FreeRTOS_FAT_FF_FlushCache_Function_Implementation_772ff53adfj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS + FAT FF_FlushCache Function Implementation - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS + FAT FF_FlushCache Function ImplementationPosted by kydong2019 on May 6, 2019Hello Recently, I am studying the FreeRTOS + FAT source code FreeRTOS-Plus-FAT-160919a-MIT.zip. I have some confusion for the implementation of the function FF_FlushCache() &gt; When after flush the write cache buffer, why it&#8217;s needed to search for other buffers that used this sector ? &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2019/freertos_FreeRTOS_FAT_FF_FlushCache_Function_Implementation_772ff53adfj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS + FAT FF_FlushCache Function ImplementationPosted by kydong2019 on May 6, 2019Hello Recently, I am studying the FreeRTOS + FAT source code FreeRTOS-Plus-FAT-160919a-MIT.zip. I have some confusion for the implementation of the function FF_FlushCache() &gt; When after flush the write cache buffer, why it&#8217;s needed to search for other buffers that used this sector ? [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS + FAT FF_FlushCache Function Implementation - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203115' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203115' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203115' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203115' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147745' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2019%2Ffreertos_FreeRTOS_FAT_FF_FlushCache_Function_Implementation_772ff53adfj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2019%2Ffreertos_FreeRTOS_FAT_FF_FlushCache_Function_Implementation_772ff53adfj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147745">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2019_freertos_support_forum_archive_index.html/">May 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kydong2019">kydong2019</a> on May 6, 2019</div><div class="thread-post-content">Hello
+Recently, I am studying the FreeRTOS + FAT source code FreeRTOS-Plus-FAT-160919a-MIT.zip.
+I have some confusion for the implementation of the function 
+ FF_FlushCache() >
+When after flush the write cache buffer, why it&#8217;s needed to search for other buffers that used this sector ?
+Because if the only method to get buffer is by the function &lt;FF<em>GetBuffer()>, then the &lt;FF</em>GetBuffer()> make sure that there is only one buffer corresponds to one sector, there isn&#8217;t a possibility that would make more than one buffer to correspond to one sector. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on May 6, 2019</div><div class="thread-post-content">Hi Kevin, you&#8217;re right that <code>FF_GetBuffer()</code> is the only function issuing caching buffers.
+It is also true that a given sector can either have a READ, or a WRITE buffer.
+And finally: a READ buffer can be shared by many, a WRITE sector has temporary exclusive access.
+I also think that this if clause never succeeds:
+~~~
+FF<em>Error</em>t FF<em>FlushCache( FF</em>IOManager<em>t *pxIOManager )
+{
+    <snip>
+    /* Search for other buffers that used this sector, and mark them as modified
+    So that further requests will result in the new sector being fetched. */
+    for( xIndex2 = 0; xIndex2 &lt; pxIOManager->usCacheSize; xIndex2++ )
+    {
+        if( ( xIndex != xIndex2 ) &amp;&amp;
+            ( pxIOManager->pxBuffers[ xIndex2 ].ulSector == pxIOManager->pxBuffers[ xIndex ].ulSector ) &amp;&amp;
+            ( pxIOManager->pxBuffers[ xIndex2 ].ucMode == FF</em>MODE_READ ) )
+        {
+            pxIOManager->pxBuffers[ xIndex2 ].bModified = pdTRUE;
+        }
+    }
+~~~
+and I think that the code can be removed without getting any side-effects.
+Thanks for taking the effort to report this.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kydong2019">kydong2019</a> on May 7, 2019</div><div class="thread-post-content">Hi Hein 
+Thanks for your confirmation.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kydong2019">kydong2019</a> on May 7, 2019</div><div class="thread-post-content">Hi Hein
+The usage for CacheMemory imposed by FF_GetBuffer() is: a Read buffer can be shared by many, a Write sector has temporary exclusive access. 
+But the function prvGetFromFATBuffers( ) violate this usage which  let Write FATBuffers can be shared. and FATBuffers are initially got by FF_GetBuffer().
+So could I know why FATBuffers processed in such way ?
+~~~
+FF<em>Buffer</em>t <em>prvGetFromFATBuffers( FF_IOManager_t *pxIOManager, FF_FATBuffers_t *pxFATBuffers, BaseType_t xBufferIndex,
+    uint32_t ulFATSector, FF_Error_t *pxError, uint8_t ucMode )
+{
+        <snip>
+            if(
+                ( pxBuffer->ulSector == ulFATSector ) &amp;&amp;
+                ( ( ( ucMode &amp; FF_MODE_WRITE ) == 0 ) ||
+                  ( ( pxBuffer->ucMode &amp; FF_MODE_WRITE ) != 0 ) )
+            )
+            {
+                /</em> Same sector, AND
+                write-permission is not required OR the buffer has write permission:
+                it can be reused. <em>/
+                #if ffconfigFAT_USES_STAT
+                {
+                    fatStat.reuseCount[ ( ucMode &amp; FF_MODE_WRITE ) ? 1 : 0 ]++;
+                }
+                #endif /</em> ffconfigFAT<em>USES</em>STAT */
+            }
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on May 7, 2019</div><div class="thread-post-content">Kevin, you&#8217;re diving deep into it 🙂
+A task that calls <code>prvGetFromFATBuffers()</code> is reading from, and/or writing to the FAT area.
+It has a buffer of the type <code>FF_FATBuffers_t</code>, which contains either 1 or 2 cache buffers, depending on whether a shadow FAT must be maintained.
+In an earlier version, <code>prvGetFromFATBuffers()</code> did not exists yet, and <code>FF_GetBuffer()</code> was called directly.
+It turned out useful to reuse buffers whenever possible. You also see that the usefulness was empirically tested by maintaining statistics ( <code>ffconfigFAT_USES_STAT</code> ).
+The rule that I mentioned earlier:
+<ul>
+<li>A WRITE buffer can only have a single user</li>
+<li>A READ buffer can have multiple users</li>
+<li>You can not obtain a WRITE buffer as long as a READ buffer exists ( and has owners )</li>
+<li>You can not obtain a READ buffer as long as a WRITE buffer exists ( and has an owner )</li>
+</ul>
+<code>prvGetFromFATBuffers()</code> is obeying the rules except one situation: when it is looking for READ access and it finds that it already owns a WRITE buffer <strong>for the same sector</strong>.  That is considered OK.  It saves this action:
+~~~
+    /* Release the buffer with FF<em>MODE</em>WRITE access. <em>/
+    FF_ReleaseBuffer( pxIOManager, pxBuffer );
+    /</em> Get a buffer with READ access. */
+    pxBuffer = FF_GetBuffer( pxIOManager, ulFATSector, FF_MODE_READ );
+~~~
+The above would be quite costly and have no advantage.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kydong2019">kydong2019</a> on May 8, 2019</div><div class="thread-post-content">Hi Hein
+Although this method saves some costly action, but it also bypass the mechanism that around the <code>pxMatchingBuffer-&gt;usNumHandles</code> and <code>pxMatchingBuffer-&gt;usPersistance</code>.  Does it OK?
+Does the situation that<code>when it is looking for READ access and it finds that it already owns a WRITE buffer for the same sector</code> can only be appropriate to FATBuffer, or it can be appropriate to all CacheBuffer ? 
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on May 8, 2019</div><div class="thread-post-content"><blockquote>
+  it also bypass the mechanism that around the pxMatchingBuffer->usNumHandles
+  and pxMatchingBuffer->usPersistance. Does it OK?
+</blockquote>
+It does not bypass these rules, it is not a back-door. <code>usNumHandles</code> and <code>usPersistance</code> are maintained by <code>FF_GetBuffer()</code> and <code>FF_ReleaseBuffer</code>.
+The only thing special that it can do is the combination of read/write on a WRITE buffer: which is very efficient when updating FAT sectors.
+Something about WRITE buffers: when obtaining a buffer in WRITE mode, you can choose to either read the contents of the sector from disk, or have the buffer cleared.
+When you write data to an ever growing file, it is useless to read newly allocated sectors: you will overwrite all data. In this situation, the pseudo attribute <code>FF_MODE_WR_ONLY</code> is used:
+~~~
+<h1>define FF<em>MODE</em>READ      0x01  /* Buffer / FILE Mode for Read Access. */</h1>
+<h1>define FF<em>MODE</em>WRITE     0x02  /* Buffer / FILE Mode for Write Access. */</h1>
+<h1>define FF<em>MODE</em>WR_ONLY   0x42  /* Buffer for Write-only Access */</h1>
+~~~
+The FAT functions will typically <strong>not</strong> use the write-only mode, and always read the FAT sector before updating it.
+But even if <code>FF_MODE_WR_ONLY</code> is being used, you may read back what you have just written to a cache buffer.
+No your question:
+<blockquote>
+  Does the situation that when it is looking for READ access and it finds that it already
+  owns a WRITE buffer for the same sector can only be appropriate to FATBuffer, or it can
+  be appropriate to all CacheBuffer ?
+</blockquote>
+Other functions that access the contents of files and directories, or special sectors can also read from a WRITE buffer.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kydong2019">kydong2019</a> on May 8, 2019</div><div class="thread-post-content">Hi Hein
+Thanks for your explaination.
+So why not change <code>FF_GetBuffer</code> as below to make life easy ?
+~~~
+FF<em>Buffer</em>t <em>FF_GetBuffer( FF_IOManager_t *pxIOManager, uint32_t ulSector, uint8_t ucMode ){
+        /</em> A Match was found process! */
+            if( ( ucMode == FF_MODE_READ ) &amp;&amp; ( pxMatchingBuffer->ucMode == FF_MODE_READ ) )
+            {
+                pxMatchingBuffer->usNumHandles += 1;
+                pxMatchingBuffer->usPersistance += 1;
+                break;
+            }
+<pre><code>      if( ( ( ucMode &amp; FFMODEWRITE ) == 0 ) ||
+                    ( ( pxBuffer-&gt;ucMode &amp; FFMODEWRITE ) != 0 )
+        )
+        {
+              pxMatchingBuffer-&gt;usNumHandles += 1;
+              pxMatchingBuffer-&gt;usPersistance += 1;
+              break;
+        }
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on May 8, 2019</div><div class="thread-post-content">No, that would violate the  rule: &#8220;a WRITE buffer has at most one owner&#8221;.
+It would allow to obtain a WRITE buffer that is already owned by another task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kydong2019">kydong2019</a> on May 8, 2019</div><div class="thread-post-content">So In<code>prvGetFromFATBuffers()</code>,   the <code>FF_LockFAT</code> and  <code>FF_UnlockFAT</code>  make sure the WRITE buffer is owned by one task,  
+In <code>prvGetFromFATBuffers</code>, it&#8217;s a scenario that the same task reuse the Write Buffer it previously used。 
+There isn&#8217;t a possibility that Two Tasks  share the Write Buffer through <code>prvGetFromFATBuffers</code>
+Do I understand right ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + FAT    FF_FlushCache Function Implementation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kydong2019">kydong2019</a> on May 8, 2019</div><div class="thread-post-content">So In<code>prvGetFromFATBuffers()</code>,   the <code>FF_LockFAT</code> and  <code>FF_UnlockFAT</code>  make sure the WRITE buffer is owned by one task,  
+In <code>prvGetFromFATBuffers</code>, it&#8217;s a scenario that the same task reuse the Write Buffer it previously used。 
+There isn&#8217;t a possibility that Two Tasks  share the Write Buffer through <code>prvGetFromFATBuffers</code>
+Do I understand right ?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

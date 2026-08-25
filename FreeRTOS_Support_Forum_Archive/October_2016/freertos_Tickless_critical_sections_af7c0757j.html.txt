@@ -1,0 +1,227 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tickless critical sections - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2016/freertos_Tickless_critical_sections_af7c0757j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tickless critical sections - FreeRTOS" />
+<meta property="og:description" content="Tickless critical sectionsPosted by lantczak on October 3, 2016I see possible issue in using critical sections in function vPortSuppressTicksAndSleep(). ~~~ /* Stop the SysTick momentarily. The time the SysTick is stopped for is accounted for as best it can be, but using the tickless mode will inevitably result in some tiny drift of the time &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2016/freertos_Tickless_critical_sections_af7c0757j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Tickless critical sectionsPosted by lantczak on October 3, 2016I see possible issue in using critical sections in function vPortSuppressTicksAndSleep(). ~~~ /* Stop the SysTick momentarily. The time the SysTick is stopped for is accounted for as best it can be, but using the tickless mode will inevitably result in some tiny drift of the time [&hellip;]" />
+<meta name="twitter:title" content="Tickless critical sections - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202711' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202711' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202711' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202711' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146104' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2016%2Ffreertos_Tickless_critical_sections_af7c0757j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2016%2Ffreertos_Tickless_critical_sections_af7c0757j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146104">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2016_freertos_support_forum_archive_index.html/">October 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Tickless critical sections</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/lantczak">lantczak</a> on October 3, 2016</div><div class="thread-post-content">I see possible issue in using critical sections in function vPortSuppressTicksAndSleep().
+~~~
+        /* Stop the SysTick momentarily.  The time the SysTick is stopped for
+        is accounted for as best it can be, but using the tickless mode will
+        inevitably result in some tiny drift of the time maintained by the
+        kernel with respect to calendar time. */
+        portNVIC_SYSTICK_CTRL_REG &amp;= ~portNVIC_SYSTICK_ENABLE_BIT;
+<pre><code>    /* Calculate the reload value required to wait xExpectedIdleTime
+    tick periods.  -1 is used because this code will execute part way
+    through one of the tick periods. */
+    ulReloadValue = portNVIC_SYSTICK_CURRENT_VALUE_REG + ( ulTimerCountsForOneTick * ( xExpectedIdleTime - 1UL ) );
+    if( ulReloadValue &gt; ulStoppedTimerCompensation )
+    {
+        ulReloadValue -= ulStoppedTimerCompensation;
+    }
+    /* Enter a critical section but don't use the taskENTER_CRITICAL()
+    method as that will mask interrupts that should exit sleep mode. */
+    __asm volatile( "cpsid i" );
+    __asm volatile( "dsb" );
+    __asm volatile( "isb" );
+</code></pre>
+~~~
+If interrupt occur after SYSTICK stop and before critical section it will provide inaccuracy in uReloadValue calculation.
+Similar issue is present in wakeup case:
+~~~
+            if( xModifiableIdleTime > 0 )
+            {
+                __asm volatile( &#8220;dsb&#8221; );
+                __asm volatile( &#8220;wfi&#8221; );
+                __asm volatile( &#8220;isb&#8221; );
+            }
+            configPOST<em>SLEEP</em>PROCESSING( xExpectedIdleTime );
+<pre><code>        /* Stop SysTick.  Again, the time the SysTick is stopped for is
+        accounted for as best it can be, but using the tickless mode will
+        inevitably result in some tiny drift of the time maintained by the
+        kernel with respect to calendar time. */
+        ulSysTickCTRL = portNVIC_SYSTICK_CTRL_REG;
+        portNVIC_SYSTICK_CTRL_REG = ( ulSysTickCTRL &amp; ~portNVIC_SYSTICK_ENABLE_BIT );
+        /* Re-enable interrupts - see comments above the cpsid instruction()
+        above. */
+        __asm volatile( "cpsie i" );
+</code></pre>
+~~~
+The interrupt is enabled and systick is not running if IRQ occur before systick start then time spend in IRQ will cause inaccuracy.
+<strong>Improvement proposition:</strong>
+The critical sections should be moved to protect regions when systick reload value is calculated. Do you agree?
+<strong>Additional possible improvement:</strong>
+There is a define portMISSED<em>COUNTS</em>FACTOR used to tune tickles time drift. It would be better to use Program Counter to calculate &#8216;real&#8217; time when systick was off and use it to compensate time drift
+Best regards
+Lukasz Antczak
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 3, 2016</div><div class="thread-post-content">Thank you for your feedback.
+If you stop and start the clock it is inevitable that there will be 
+drift, and the ulStoppedTimerCompensation variable is used to alleviate 
+that, but not fix that.  I think that is made clear in the comments and 
+documentation pages.
+<blockquote>
+  If interrupt occur after SYSTICK stop and before critical section it
+  will provide inaccuracy in uReloadValue calculation.
+</blockquote>
+If that happens then the call to eTaskConfirmSleepModeStatus() which 
+occurs immediately after the snippet you posted will return eAbortSleep 
+because xYieldPending would be true &#8211; and the entry into sleep mode 
+would be aborted and the systick returned to its original frequency.
+>
+<blockquote>
+  Similar issue is present in wakeup case:
+<pre><code>         if( xModifiableIdleTime &gt; 0 )
+         {
+             __asm volatile( "dsb" );
+             __asm volatile( "wfi" );
+             __asm volatile( "isb" );
+         }
+         configPOST_SLEEP_PROCESSING( xExpectedIdleTime );
+         /* Stop SysTick.  Again, the time the SysTick is stopped for is
+         accounted for as best it can be, but using the tickless mode will
+         inevitably result in some tiny drift of the time maintained by the
+         kernel with respect to calendar time. */
+         ulSysTickCTRL = portNVIC_SYSTICK_CTRL_REG;
+         portNVIC_SYSTICK_CTRL_REG = ( ulSysTickCTRL &amp; ~portNVIC_SYSTICK_ENABLE_BIT );
+         /* Re-enable interrupts - see comments above the cpsid instruction()
+         above. */
+         __asm volatile( "cpsie i" );
+</code></pre>
+  The interrupt is enabled and systick is not running if IRQ occur before
+  systick start then time spend in IRQ will cause inaccuracy.
+</blockquote>
+It is necessary to stop the counter so it is possible to determine how 
+long the system was asleep for.  It is also desirable that an interrupt 
+that caused the system to leave a sleep state gets processed as quickly 
+as possible &#8211; extending the critical section could improve time keeping 
+but it would be at the expense of responsiveness.  Adding additional 
+compensation calculations would again improve time keeping at the 
+expense of responsiveness.
+What you are looking at is the &#8216;default&#8217; implementation.  The needs of 
+each application are different, and even the clock used is likely to be 
+different as using the SysTick does not allow entry into deep sleeps 
+where the SysTick would not even be running.  Therefore all the default 
+implementations (for all the compilers) are weakly defined symbols to 
+allow you to replace the default with any implementation you need.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/lantczak">lantczak</a> on October 3, 2016</div><div class="thread-post-content">Thank you for fast response.
+Small clarification:
+The xYieldPending will be set only if IRQ is switching some task to ready state. If IRQ is doing some work and  doesn&#8217;t switch task from block to ready state then IRQ execution time will cause inaccuracy.
+Is my understanding correct?
+I will try to use cycle counter to calculate time when systick was off. It should solve time drift issue. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 3, 2016</div><div class="thread-post-content">The &#8220;suppress ticks and sleep&#8221; function is called with the scheduler 
+suspended, which means any tick interrupt occurring will set 
+xYieldPending to true.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

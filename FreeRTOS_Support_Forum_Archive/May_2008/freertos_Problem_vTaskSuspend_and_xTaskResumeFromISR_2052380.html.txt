@@ -1,0 +1,419 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Problem vTaskSuspend and xTaskResumeFromISR - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2008/freertos_Problem_vTaskSuspend_and_xTaskResumeFromISR_2052380.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Problem vTaskSuspend and xTaskResumeFromISR - FreeRTOS" />
+<meta property="og:description" content="Problem vTaskSuspend and xTaskResumeFromISRPosted by wellingj on May 26, 2008Hi. I&#8217;m using gcc version 4.3.0 and FreeRTOS V5.0.0 for reference. I&#8217;m trying to use the vTaskSuspend and xTaskResumeFromISR to debug some servo code that I had modified. Theory of operation is that I have a task that does nothing, until all my ticks of my &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2008/freertos_Problem_vTaskSuspend_and_xTaskResumeFromISR_2052380.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Problem vTaskSuspend and xTaskResumeFromISRPosted by wellingj on May 26, 2008Hi. I&#8217;m using gcc version 4.3.0 and FreeRTOS V5.0.0 for reference. I&#8217;m trying to use the vTaskSuspend and xTaskResumeFromISR to debug some servo code that I had modified. Theory of operation is that I have a task that does nothing, until all my ticks of my [&hellip;]" />
+<meta name="twitter:title" content="Problem vTaskSuspend and xTaskResumeFromISR - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201617' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201617' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201617' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201617' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140758' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2008%2Ffreertos_Problem_vTaskSuspend_and_xTaskResumeFromISR_2052380.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2008%2Ffreertos_Problem_vTaskSuspend_and_xTaskResumeFromISR_2052380.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140758">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2008_freertos_support_forum_archive_index.html/">May 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Problem vTaskSuspend and xTaskResumeFromISR</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wellingj">wellingj</a> on May 26, 2008</div><div class="thread-post-content">Hi.
+I&#8217;m using gcc version 4.3.0 and FreeRTOS V5.0.0 for reference.
+I&#8217;m trying to use the vTaskSuspend and xTaskResumeFromISR to debug some servo code that I had modified.
+Theory of operation is that I have a task that does nothing, until all my ticks of my servo code has gone through and I have all the data, then it gets output onto a serial port using some avrlib stuff. The code is below. What boggles me is that I&#8217;ve used the vTaskSuspend and xTaskResumeFromISR in this manner for a I2C command processing with FreeRTOS V 4.3 and it worked wonderfully and so I did a direct port. When it didn&#8217;t work, meaning the DebugServo task never runs after it&#8217;s first suspension, I started throwing in toggles on a led to see where the code was going and where it wasn&#8217;t and I&#8217;ve marked which calls to LED&#95;TOGGLE&#40; YELLOW &#41; don&#8217;t work &#40;no flashing light&#41;. The only other task running is just changes the servo position ever 50 milliseconds. I&#8217;m running this at a really high rate of 1ms ticks, but I don&#8217;t think that should be the problem&#8230;
+Any Ideas?
+/&#42;&#33; file servo&#95;class.c brief Interrupt-driven RC Servo function library. &#42;/
+//&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;
+//
+// File Name&nbsp;&nbsp;&nbsp; : &#8216;servo.c&#8217;
+// Title&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Interrupt-driven RC Servo function library
+// Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Pascal Stang &#8211; Copyright &#40;C&#41; 2002
+// Modified&nbsp;&nbsp;&nbsp;&nbsp; : Jesse Welling &#8211; Copyright &#40;C&#41; 2008
+// Created&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 7/31/2002
+// Revised&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 4/02/2008
+// Version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 1.1
+// Target MCU&nbsp;&nbsp; : Atmel AVR Series
+// Editor Tabs&nbsp; : 3 spaces = 1 tab
+//
+// This code is distributed under the GNU Public License
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; which can be found at http://www.gnu.org/licenses/gpl.txt
+//
+//&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;
+&#35;include &lt;avr/io.h&gt;
+&#35;include &lt;avr/interrupt.h&gt;
+&#35;include &quot;FreeRTOS.h&quot;
+&#35;include &quot;task.h&quot;
+&#35;include &quot;semphr.h&quot;
+&#35;include &quot;../avrlib/global.h&quot;
+&#35;include &quot;../avrlib/uart.h&quot;&nbsp;&nbsp;&nbsp; // include uart function library
+&#35;include &quot;../avrlib/rprintf.h&quot; // include printf function library
+&#35;include &quot;servo.h&quot;
+&#35;include &quot;../Robostix.h&quot;
+/&#42;roll over number&#42;/
+&#35;define TOP&nbsp;&nbsp; &#40;&#40;uint16&#95;t&#41;40000u&#41;
+// handy to think with values
+&#35;define CENTER&#95;POSITION&#95;MSX100&nbsp;&nbsp; 1500u
+&#35;define MIN&#95;POSITION&#95;MSX100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1000u
+&#35;define MAX&#95;POSITION&#95;MSX100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2000u
+// actual raw values
+&#35;define CENTER&#95;POSITION&#95;RAW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40;CENTER&#95;POSITION&#95;MSX100 &#42; 2&#41;&nbsp; // 3000
+&#35;define MIN&#95;POSITION&#95;RAW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40;MIN&#95;POSITION&#95;MSX100 &#42; 2&#41; // 2000
+&#35;define MAX&#95;POSITION&#95;RAW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40;MAX&#95;POSITION&#95;MSX100 &#42; 2&#41; // 4000
+/&#42; Note: Since only 500 millisecondsX100 is between center and min, and likewise center to max, when multiplied
+ &#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by 2 to get the raw value that gives 1000 which then can be used as a signed percentX10 from center.
+ &#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nifty&#33; But only for 16Mhz clocks
+ &#42;/
+// Global variables
+// servo channel registers
+static volatile uint16&#95;t ServoPosTics;
+static volatile uint8&#95;t&nbsp; ServoChannel;
+static const uint16&#95;t ServoPeriodTics = TOP;
+xTaskHandle ServoDebugTaskHandle;
+typedef struct
+&#123;&nbsp; 
+&nbsp;&nbsp; uint8&#95;t&nbsp; chan;
+&nbsp;&nbsp; uint16&#95;t inc;
+&nbsp;&nbsp; uint16&#95;t nxt;
+&nbsp;&nbsp; uint16&#95;t ocval;
+&nbsp;&nbsp; uint16&#95;t srvpos;
+&#125;TimerDebug&#95;T;
+TimerDebug&#95;T ServoTimerDebugBuffer&#91;3&#93;;
+// functions
+static void DebugServo&#40; void &#42; param&#41;;
+//&#33; initializes software PWM system
+void servoInit&#40;void&#41;
+&#123;
+&nbsp;&nbsp; uint8&#95;t channel;
+&nbsp;&nbsp; 
+&nbsp;&nbsp; //TODO REMOVE DEBUG
+&nbsp;&nbsp; uartInit&#40;&#41;;
+&nbsp;&nbsp; uartSetBaudRate&#40;115200&#41;;
+&nbsp;&nbsp; rprintfInit&#40;uartSendByte&#41;;
+&nbsp;&nbsp; // disble the timer3 output compare A interrupt
+&nbsp;&nbsp; cbi&#40;ETIMSK, OCIE3A&#41;;
+&nbsp;&nbsp; /&#42; setup timer 3
+&nbsp;&nbsp;&nbsp; &#42; 
+&nbsp;&nbsp;&nbsp; &#42; TCCR3A Bit 7:6 – COMnA1:0: Compare Output Mode for Channel A
+&nbsp;&nbsp;&nbsp; &#42; TCCR3A Bit 5:4 – COMnB1:0: Compare Output Mode for Channel B
+&nbsp;&nbsp;&nbsp; &#42; TCCR3A Bit 3:2 – COMnC1:0: Compare Output Mode for Channel C
+&nbsp;&nbsp;&nbsp; &#42; TCCR3A Bit 1:0 – WGMn1:0: Waveform Generation Mode
+&nbsp;&nbsp;&nbsp; &#42;
+&nbsp;&nbsp;&nbsp; &#42; TCCR3B Bit 4:3 – WGMn3:2: Waveform Generation Mode
+&nbsp;&nbsp;&nbsp; &#42; TCCR3B Bit 2:0 – CSn2:0: Clock Select
+&nbsp;&nbsp;&nbsp; &#42;
+&nbsp;&nbsp;&nbsp; &#42; TCCR3C Bit 7 – FOCnA: Force Output Compare for Channel A
+&nbsp;&nbsp;&nbsp; &#42; TCCR3C Bit 6 – FOCnB: Force Output Compare for Channel B
+&nbsp;&nbsp;&nbsp; &#42; TCCR3C Bit 5 – FOCnC: Force Output Compare for Channel C
+&nbsp;&nbsp;&nbsp; &#42;
+&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp; TCCR3A |= 0x00; 
+&nbsp;&nbsp; TCCR3B = 0x02;
+&nbsp;&nbsp; TCCR3C |= 0x00; 
+&nbsp;&nbsp; // enable and clear channels
+&nbsp;&nbsp; for&#40;channel=0; channel&lt;NumberOfServoChannels; channel++&#41;
+&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // set minimum position as default
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ServoChannels&#91;channel&#93;-&gt;duty&#95;raw = CENTER&#95;POSITION&#95;RAW;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // set up DDR for each port.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;DDR&#40;ServoChannels&#91;ServoChannel&#93;-&gt;port&#41; |= ServoChannels&#91;ServoChannel&#93;-&gt;pin&#95;mask;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // turn off current channel to break out of tristate. see page 67 of the data sheet
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;&#40;ServoChannels&#91;ServoChannel&#93;-&gt;port&#41; &amp;= ~&#40;ServoChannels&#91;ServoChannel&#93;-&gt;pin&#95;mask&#41;;
+&nbsp;&nbsp; &#125;
+&nbsp;&nbsp; // set PosTics
+&nbsp;&nbsp; ServoPosTics = 0;
+&nbsp;&nbsp; // Start at just past the last forcing the intrrupts to start processing the first.
+&nbsp;&nbsp; ServoChannel = NumberOfServoChannels + 1;
+&nbsp;&nbsp; // set initial interrupt time
+&nbsp;&nbsp; uint16&#95;t OCValue = 0;
+&nbsp;&nbsp; // read in current value of output compare register OCR3A
+&nbsp;&nbsp; //OCValue = OCR3A;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // read OCR3A
+&nbsp;&nbsp; OCValue =&nbsp; inb&#40;OCR3AL&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // read low byte of OCR3A
+&nbsp;&nbsp; OCValue += inb&#40;OCR3AH&#41;&lt;&lt;8;&nbsp;&nbsp; // read high byte of OCR3A
+&nbsp;&nbsp; // increment OCR3A value by nextTics
+&nbsp;&nbsp; OCValue += ServoPeriodTics; 
+&nbsp;&nbsp; ServoTimerDebugBuffer&#91;0&#93;.ocval = ServoPeriodTics; 
+&nbsp;&nbsp; ServoTimerDebugBuffer&#91;1&#93;.ocval = ServoPeriodTics; 
+&nbsp;&nbsp; ServoTimerDebugBuffer&#91;2&#93;.ocval = ServoPeriodTics; 
+&nbsp;&nbsp; // set future output compare time to this new value
+&nbsp;&nbsp; //OCR3A = OCValue;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // write 16bit 
+&nbsp;&nbsp; outb&#40;OCR3AH, &#40;OCValue&gt;&gt;8&#41;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // write high byte
+&nbsp;&nbsp; outb&#40;OCR3AL, &#40;OCValue &amp; 0x00FF&#41;&#41;;&nbsp;&nbsp; // write low byte
+&nbsp;&nbsp; // enable the timer3 output compare A interrupt
+&nbsp;&nbsp; sbi&#40;ETIMSK, OCIE3A&#41;;
+&#125;
+//&#33; turns off software PWM system
+void servoOff&#40;void&#41;
+&#123;
+&nbsp;&nbsp; // disable the timer3 output compare A interrupt
+&nbsp;&nbsp; cbi&#40;ETIMSK, OCIE3A&#41;;
+&#125;
+//&#33; set servo position on channel
+void servoSetPosition&#40;ServoChannel&#95;T&#42; this, int16&#95;t percentX10&#41;
+&#123;
+&nbsp;&nbsp; // input should be between 0 and SERVO&#95;POSITION&#95;MAX
+&nbsp;&nbsp; uint16&#95;t pos&#95;scaled;
+&nbsp;&nbsp; percentX10 = MAX&#40;percentX10, -1000&#41;;
+&nbsp;&nbsp; percentX10 = MIN&#40;percentX10, 1000&#41;;
+&nbsp;&nbsp; 
+&nbsp;&nbsp; // calculate scaled position
+&nbsp;&nbsp; pos&#95;scaled = &#40;uint16&#95;t&#41;&#40; percentX10 + CENTER&#95;POSITION&#95;RAW&#41;;
+&nbsp;&nbsp; // set position
+&nbsp;&nbsp; servoSetPositionRaw&#40;this, pos&#95;scaled&#41;;
+&#125;
+//&#33; get servo position on channel
+int16&#95;t servoGetPosition&#40;ServoChannel&#95;T&#42; this&#41;
+&#123;
+&nbsp;&nbsp; return &#40; &#40;int16&#95;t&#41;servoGetPositionRaw&#40;this&#41; &#8211; CENTER&#95;POSITION&#95;RAW &#41;;
+&#125;
+//&#33; set servo position on channel &#40;raw unscaled format&#41;
+void servoSetPositionRaw&#40;ServoChannel&#95;T&#42; this, uint16&#95;t position&#41;
+&#123;
+&nbsp;&nbsp; // bind to limits
+&nbsp;&nbsp; position = MAX&#40;position, MIN&#95;POSITION&#95;RAW&#41;;
+&nbsp;&nbsp; position = MIN&#40;position, MAX&#95;POSITION&#95;RAW&#41;;
+&nbsp;&nbsp; // set position
+&nbsp;&nbsp; this-&gt;duty&#95;raw = position;
+&nbsp;&nbsp; //TODO REMOVE DEBUG
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp; /&#42;
+&nbsp;&nbsp; rprintfu08&#40;this-&gt;pin&#95;mask&#41;;
+&nbsp;&nbsp; rprintfChar&#40;&#8217;@&#8217;&#41;;
+&nbsp;&nbsp; rprintfu08&#40;this-&gt;port&#41;;
+&nbsp;&nbsp; rprintfChar&#40;&#8217;:&#8217;&#41;;
+&nbsp;&nbsp; rprintfu16&#40;this-&gt;duty&#95;raw&#41;;
+&nbsp;&nbsp; rprintfCRLF&#40;&#41;;
+&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp; 
+&#125;
+//&#33; get servo position on channel &#40;raw unscaled format&#41;
+uint16&#95;t servoGetPositionRaw&#40;ServoChannel&#95;T&#42; this&#41;
+&#123;
+&nbsp;&nbsp; return this-&gt;duty&#95;raw;
+&#125;
+void PrintServoDebug&#40;void&#41;
+&#123;
+&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu08&#40;ServoTimerDebugBuffer&#91;0&#93;.chan&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;0&#93;.inc&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;0&#93;.ocval&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;0&#93;.nxt&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;0&#93;.srvpos&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfCRLF&#40;&#41;;
+&nbsp;&nbsp; &#125;
+&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu08&#40;ServoTimerDebugBuffer&#91;1&#93;.chan&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;1&#93;.inc&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;1&#93;.ocval&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;1&#93;.nxt&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;1&#93;.srvpos&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfCRLF&#40;&#41;;
+&nbsp;&nbsp; &#125;
+&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu08&#40;ServoTimerDebugBuffer&#91;2&#93;.chan&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;2&#93;.inc&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;2&#93;.ocval&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;2&#93;.nxt&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfChar&#40;&#8217; &#8216;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfu16&#40;ServoTimerDebugBuffer&#91;2&#93;.srvpos&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rprintfCRLF&#40;&#41;;
+&nbsp;&nbsp; &#125;
+&#125;
+void StartDebugServoTask&#40;void&#41;
+&#123;
+&nbsp;&nbsp; xTaskCreate &#40;DebugServo, &quot;DbSrv&quot;, configMINIMAL&#95;STACK&#95;SIZE, NULL, &#40; tskIDLE&#95;PRIORITY + 2&#41;, &amp;ServoDebugTaskHandle&#41;;
+&#125;
+static void DebugServo&#40; void &#42; param&#41;
+&#123;
+&nbsp;&nbsp; for&#40;;;&#41;
+&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PrintServoDebug&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vTaskSuspend&#40; NULL &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //The toggle does not work here
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //LED&#95;TOGGLE&#40; YELLOW &#41;;
+&nbsp;&nbsp; &#125;
+&#125;
+ISR&#40;TIMER3&#95;COMPA&#95;vect&#41;
+&#123;
+&nbsp;&nbsp; uint16&#95;t nextTics;
+&nbsp;&nbsp; // schedule next interrupt
+&nbsp;&nbsp; uint16&#95;t OCValue;
+&nbsp;&nbsp; if&#40;ServoChannel &lt; NumberOfServoChannels&#41;
+&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // turn off current channel
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;&#40;ServoChannels&#91;ServoChannel&#93;-&gt;port&#41; &amp;= ~&#40;ServoChannels&#91;ServoChannel&#93;-&gt;pin&#95;mask&#41;;
+&nbsp;&nbsp; &#125;
+&nbsp;&nbsp; 
+&nbsp;&nbsp; // next channel
+&nbsp;&nbsp; ServoChannel++;
+&nbsp;&nbsp; if&#40;ServoChannel &#33;= NumberOfServoChannels&#41;
+&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // loop to channel 0 if needed
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;ServoChannel &gt; NumberOfServoChannels&#41;&nbsp;&nbsp; ServoChannel = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // turn on new channel
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;&#40;ServoChannels&#91;ServoChannel&#93;-&gt;port&#41; |= ServoChannels&#91;ServoChannel&#93;-&gt;pin&#95;mask;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // schedule turn off time
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nextTics = ServoChannels&#91;ServoChannel&#93;-&gt;duty&#95;raw;
+&nbsp;&nbsp; &#125;
+&nbsp;&nbsp; else //&#40;Channel == NumberOfServoChannels&#41;
+&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &#42;&#42;&#42;we could save time by precalculating this
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // schedule end-of-period
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nextTics = ServoPeriodTics &#8211; ServoPosTics;
+&nbsp;&nbsp; &#125;
+&nbsp;&nbsp; // read in current value of output compare register OCR3A,
+&nbsp;&nbsp; // but within an interrupt so this direct access is safe
+&nbsp;&nbsp; OCValue = OCR3A;&nbsp;&nbsp; // read all 16 bits of OCR3A
+&nbsp;&nbsp; //OCValue =&nbsp; inb&#40;OCR3AL&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // read low byte of OCR3A
+&nbsp;&nbsp; //OCValue += inb&#40;OCR3AH&#41;&lt;&lt;8;&nbsp;&nbsp; // read high byte of OCR3A
+&nbsp;&nbsp; //TODO REMOVE DEBUG
+&nbsp;&nbsp; ServoTimerDebugBuffer&#91;ServoChannel&#93;.chan = ServoChannel;
+&nbsp;&nbsp; ServoTimerDebugBuffer&#91;ServoChannel&#93;.ocval = OCValue;
+&nbsp;&nbsp; ServoTimerDebugBuffer&#91;ServoChannel&#93;.inc++;
+&nbsp;&nbsp; // increment OCR3A value by nextTics
+&nbsp;&nbsp; OCValue += nextTics;
+&nbsp;&nbsp; //&nbsp;&nbsp; OCR3A+=nextTics; // but must protect the register so byte wise shift it in
+&nbsp;&nbsp; // set future output compare time to this new value
+&nbsp;&nbsp; // but within an interrupt so this direct access is safe
+&nbsp;&nbsp; OCR3A = OCValue;
+&nbsp;&nbsp; //outb&#40;OCR3AH, &#40;OCValue&gt;&gt;8&#41;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // write high byte
+&nbsp;&nbsp; //outb&#40;OCR3AL, &#40;OCValue &amp; 0x00FF&#41;&#41;;&nbsp;&nbsp; // write low byte
+&nbsp;&nbsp; // set our new tic position
+&nbsp;&nbsp; ServoPosTics += nextTics;
+&nbsp;&nbsp; //TODO REMOVE DEBUG
+&nbsp;&nbsp; ServoTimerDebugBuffer&#91;ServoChannel&#93;.nxt = nextTics;
+&nbsp;&nbsp; ServoTimerDebugBuffer&#91;ServoChannel&#93;.srvpos = ServoPosTics;
+&nbsp;&nbsp; if&#40;ServoPosTics &gt;= ServoPeriodTics&#41;
+&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ServoPosTics = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //The toggle works here
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LED&#95;TOGGLE&#40; YELLOW &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40;xTaskResumeFromISR&#40;ServoDebugTaskHandle&#41; == pdTRUE&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //The toggle does not work here
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //LED&#95;TOGGLE&#40; YELLOW &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; taskYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp; &#125;
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem vTaskSuspend and xTaskResumeFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/woops_">woops_</a> on May 26, 2008</div><div class="thread-post-content">The ResumeFromISR function has the following statement
+vTaskResumeFromISR&#40;&#41; should not be used to synchronise a task with an interrupt if there is a chance that the interrupt could arrive prior to the task being suspended &#8211; as this can lead to interrupts being missed. Use of a semaphore as a synchronisation mechanism would avoid this eventuality.
+could that be the problem?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem vTaskSuspend and xTaskResumeFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wellingj">wellingj</a> on May 27, 2008</div><div class="thread-post-content">That was exactly it&#8230;
+Coincidentally, The example for vTaskResumeFromISR&#40;&#41; has a &quot;xSemaphoreCreateBinary&#40;&#41;&quot; when it should be a &quot;vSemaphoreCreateBinary&#40;&#41;&quot;. Had to look at the .h file to figure that one out ;&#41;
+Thanks a bunch&#33;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem vTaskSuspend and xTaskResumeFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wellingj">wellingj</a> on May 27, 2008</div><div class="thread-post-content">Correction: The example for xSemaphoreGiveFromISR&#40;&#41; had the error&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem vTaskSuspend and xTaskResumeFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 27, 2008</div><div class="thread-post-content">&gt;Correction: The example for xSemaphoreGiveFromISR&#40;&#41; had the error
+Fixed &#8211; thanks for pointing this out.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

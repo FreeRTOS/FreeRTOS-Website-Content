@@ -1,0 +1,664 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticker Changeover to Real Time Timer on ATSAMG55 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2016/freertos_Ticker_Changeover_to_Real_Time_Timer_on_ATSAMG55_85626a78j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Ticker Changeover to Real Time Timer on ATSAMG55 - FreeRTOS" />
+<meta property="og:description" content="Ticker Changeover to Real Time Timer on ATSAMG55Posted by exgreyfox on September 8, 2016Hello, I am currently doing development on the ATSAMG55 using FreeRTOS version 8.0.1 and I have a need for changing the RTOS ticker from using to default SysTick to use the ATSAMG55&#8217;s Real Time Timer (RTT). The reason for this is due &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2016/freertos_Ticker_Changeover_to_Real_Time_Timer_on_ATSAMG55_85626a78j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Ticker Changeover to Real Time Timer on ATSAMG55Posted by exgreyfox on September 8, 2016Hello, I am currently doing development on the ATSAMG55 using FreeRTOS version 8.0.1 and I have a need for changing the RTOS ticker from using to default SysTick to use the ATSAMG55&#8217;s Real Time Timer (RTT). The reason for this is due [&hellip;]" />
+<meta name="twitter:title" content="Ticker Changeover to Real Time Timer on ATSAMG55 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202701' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202701' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202701' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202701' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146070' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2016%2Ffreertos_Ticker_Changeover_to_Real_Time_Timer_on_ATSAMG55_85626a78j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2016%2Ffreertos_Ticker_Changeover_to_Real_Time_Timer_on_ATSAMG55_85626a78j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146070">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2016_freertos_support_forum_archive_index.html/">September 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/exgreyfox">exgreyfox</a> on September 8, 2016</div><div class="thread-post-content">Hello,
+I am currently doing development on the ATSAMG55 using FreeRTOS version 8.0.1 and I have a need for changing the RTOS ticker from using to default SysTick to use the ATSAMG55&#8217;s Real Time Timer (RTT). The reason for this is due to the fact that my application requires me to use the lowest power mode that the SAMG55 has (Wait Mode) however the Systick is not a wakeup source for this mode so a new tick source (RTT) that is supported by wait mode as a wakeup source is my goal.  
+I have followed the instructions here on how to do this regarding &#8220;Generating a tick interrupt from a clock other than SysTick&#8221;: http://www.freertos.org/low-power-ARM-cortex-rtos.html
+I have dumbed things down by keeping tickless idle mode disabled so that I can install the RTT tick interrupt and watch it run a single task that toggles an LED then blocks for x ticks without any sleep modes for now. 
+I have enabled the tick hook and I am toggling a pin inside vApplicationTickHook at the rate of my RTT interrupt to verify that the ticker is working and it is. I see the pin toggle. The problem that I am having however is that my task does not run. When I swap back to the SysTick ticker source my task runs fine, but it does not seem to want to run from the RTT tick interrupt.
+-I have made sure to comment out the following inside FreeRTOSConfig.h so that the kernel does not install the SysTick as the default interrupt : #define xPortSysTickHandler SysTick<em>Handler
+-I have set configTICK</em>RATE<em>HZ to 128Hz
+-I have verified that my RTT handler ticks at a rate of 128Hz to match configTICK</em>RATE_HZ
+Here is my implementation. Thank you for any help:
+~~~
+int main (void)
+{
+    /* ASF function to setup clocking. */
+    sysclk_init();
+    board_init();
+<pre><code>/* Debugging traces */
+ioport_set_pin_dir(EXT1_PIN_3, IOPORT_DIR_OUTPUT); /* Task1 */
+ioport_set_pin_dir(EXT1_PIN_4, IOPORT_DIR_OUTPUT); /* TickHook */
+ioport_set_pin_dir(EXT1_PIN_5, IOPORT_DIR_OUTPUT); /* PreSleep PostSleep */
+ioport_set_pin_dir(EXT1_PIN_6, IOPORT_DIR_OUTPUT); /* IdleHook */
+ioport_set_pin_dir(EXT1_PIN_7, IOPORT_DIR_OUTPUT); /* RTT ISR */
+/* Create the queue. */
+xQueue = xQueueCreate( mainQUEUE_LENGTH, sizeof( unsigned long ) );
+configASSERT( xQueue );
+xTaskCreate( prvTask1, "Task1", configMINIMAL_STACK_SIZE, NULL, configTASK1_TASK_PRIORITY, NULL );
+/* Start the scheduler running running. */
+vTaskStartScheduler();
+/* If all is well the next line of code will not be reached as the
+scheduler will be running.  If the next line is reached then it is likely
+there was insufficient FreeRTOS heap available for the idle task and/or
+timer task to be created.  See http://www.freertos.org/a00111.html. */
+for( ;; ) {
+}
+</code></pre>
+}
+static void prvTask1( void <em>pvParameters )
+{
+    /</em> Remove compiler warning about unused parameter. */
+    ( void ) pvParameters;
+<pre><code>for( ;; )
+{
+    ioport_set_pin_level(EXT1_PIN_3, IOPORT_PIN_LEVEL_HIGH);
+    vTestToggleLED(mainQUEUE_LED);
+    delay_ms(10); 
+    ioport_set_pin_level(EXT1_PIN_3, IOPORT_PIN_LEVEL_LOW);
+    vTaskDelay( task1Delay ); /* Delay 1000ms */
+}
+</code></pre>
+}
+void vPortSetupTimerInterrupt( void )
+{
+    rtt<em>write</em>alarm<em>time(RTT,0x01);
+    configure</em>rtt();
+}
+void vApplicationTickHook( void )
+{
+    ioport<em>toggle</em>pin<em>level(EXT1</em>PIN_4);
+}
+void configure<em>rtt(void)
+{
+    uint32</em>t ul<em>previous</em>time;
+<pre><code>/* Configure RTT for a 128 Hz ticker */
+rtt_init(RTT,256); /* us_prescalar for 128Hz RTOS tick ISR */
+ul_previous_time = rtt_read_timer_value(RTT);
+while (ul_previous_time == rtt_read_timer_value(RTT));
+/* Enable RTT interrupt */
+NVIC_DisableIRQ(RTT_IRQn);
+NVIC_ClearPendingIRQ(RTT_IRQn);
+NVIC_SetPriority(RTT_IRQn, 10);
+NVIC_EnableIRQ(RTT_IRQn);
+rtt_enable_interrupt(RTT, RTT_MR_ALMIEN);
+</code></pre>
+}
+void RTT<em>Handler(void)
+{
+    uint32</em>t ul<em>status;
+    uint32</em>t ul<em>previous</em>time;
+<pre><code>/* Protect incrementing the tick with an interrupt safe critical section. */
+( void ) portSET_INTERRUPT_MASK_FROM_ISR();
+{
+    if( xTaskIncrementTick() != pdFALSE )
+    {
+        portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+    }
+    /* Just completely clear the interrupt mask on exit by passing 0 because
+    it is known that this interrupt will only ever execute with the lowest
+    possible interrupt priority. */
+}
+portCLEAR_INTERRUPT_MASK_FROM_ISR( 0 );
+ioport_toggle_pin_level(EXT1_PIN_7);
+/* Get RTT status */
+ul_status = rtt_get_status(RTT);
+rtt_write_alarm_time(RTT,0x01);
+configure_rtt();
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 9, 2016</div><div class="thread-post-content">What a great support request &#8211; others please take note!  The poster has 
+worked through the problem, and provided lots of information.
+<blockquote>
+  I am currently doing development on the ATSAMG55 using FreeRTOS version
+  8.0.1
+</blockquote>
+You know the latest is V9?
+<blockquote>
+  and I have a need for changing the RTOS ticker from using to
+  default SysTick to use the ATSAMG55&#8217;s Real Time Timer (RTT).
+</blockquote>
+This should be &#8220;easy&#8221; (ha), although the exact details depend on the 
+compiler you are using.
+Which compiler are you using?
+So as I understand it:
+<ul>
+<li>We know the RTT is interrupting at the correct frequency, because the 
+tick hook function is toggling its pin at the correct frequency.  That 
+means the clock is configured correctly, and the interrupt handler is 
+installed correctly.</li>
+<li>If the tick hook is executing then xTaskIncrementTick() must be 
+executing, which should unblock your task.</li>
+<li>For some reason, even though xTaskIncrementTick() is executing the 
+task isn&#8217;t, so we need to track that through.</li>
+</ul>
+Brainstorming why this might be:
+1) Perhaps, even though xTaskIncrementTick() is running, for some reason 
+the tick count is not increasing.  That could happen, for example, if 
+the scheduler thought it was suspended (in which case the tick 
+increments are held pending until the scheduler is unsuspended).  Please 
+let the system run for a short while, then put a break point in your 
+tick hook function.  When the break point is hit, use the debugger to 
+step out of the tick hook.  When the tick hook function returns you will 
+end up in the tasks.c source file &#8211; when in the tasks.c source file 
+inspect the xTickCount variable &#8211; its value should equal the number of 
+tick interrupts that have occurred.  Does it?
+2) Perhaps the PendSV interrupt is not executing (the context switch 
+actually occurs in the PendSV interrupt.  Try setting a break point on 
+the line:
+portNVIC<em>INT</em>CTRL<em>REG  =  portNVIC</em>PENDSVSET_BIT;
+in RTT_Handler().  Does it get hit?  If so, try running the system again 
+with a volatile counter variable that counts the number of times the 
+line executes.
+If the line does execute, does the vPortPendSVHandler() (in 
+FreeRTOS/Source/portable/[compiler]/ARM_CM4F/port.c) ever execute?
+3) Perhaps something in your code is causing a problem.  Try the following:
+a) Remove the call to delay_ms(10);  That is probably using the SysTick 
+and could conceivable cause an issue (or not, I don&#8217;t know how it is 
+implemented).
+b) Ensure the priority of the RTT interrupt is set to the lowest 
+possible.  That is done by the line NVIC<em>SetPriority(RTT</em>IRQn,  10);  It 
+might be that 10 is the lowest priority, but I doubt it.  Also check the 
+subpriority is set to 0, as you seem to leave that undefined, but will 
+probably default to 0.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/exgreyfox">exgreyfox</a> on September 9, 2016</div><div class="thread-post-content">Greetings to you guys from FreeRTOS and thank you for the quick reply. To answer your questions:
+I am using Atmel Studio 7 which uses the ARM/GNU C compiler.
+I am aware that the latest FreeRTOS version is v9 however V9 is not available in the Atmel Software Framework. This is ok becuase V8.0.1 also supports tickless idle mode.
+<blockquote>
+  So as I understand it:
+  We know the RTT is interrupting at the correct frequency, because the 
+  tick hook function is toggling its pin at the correct frequency. That 
+  means the clock is configured correctly, and the interrupt handler is 
+  installed correctly.
+  If the tick hook is executing then xTaskIncrementTick() must be 
+  executing, which should unblock your task.
+  For some reason, even though xTaskIncrementTick() is executing the 
+  task isn&#8217;t, so we need to track that through.
+</blockquote>
+Yes these are all correct.
+<blockquote>
+  1) Perhaps, even though xTaskIncrementTick() is running, for some reason 
+  the tick count is not increasing. That could happen, for example, if 
+  the scheduler thought it was suspended (in which case the tick 
+  increments are held pending until the scheduler is unsuspended). Please 
+  let the system run for a short while, then put a break point in your 
+  tick hook function. When the break point is hit, use the debugger to 
+  step out of the tick hook. When the tick hook function returns you will 
+  end up in the tasks.c source file &#8211; when in the tasks.c source file 
+  inspect the xTickCount variable &#8211; its value should equal the number of 
+  tick interrupts that have occurred. Does it?
+</blockquote>
+The variable that I see is called uxPendedTicks and the debugger returns inside the folloiwing condition with uxPendedTicks = 0
+~~~
+<h1>if ( configUSE<em>TICK</em>HOOK == 1 )</h1>
+{
+    /* Guard against the tick hook being called when the pended tick
+    count is being unwound (when the scheduler is being unlocked). */
+    if( uxPendedTicks == ( UBaseType_t ) 0U )
+    {
+        vApplicationTickHook();
+    }
+    else
+    {
+        mtCOVERAGE_TEST_MARKER();
+    }
+}
+<h1>endif /* configUSE<em>TICK</em>HOOK */</h1>
+~~~
+<blockquote>
+  2) Perhaps the PendSV interrupt is not executing (the context switch 
+  actually occurs in the PendSV interrupt. Try setting a break point on 
+  the line:
+  portNVIC<em>INT</em>CTRL<em>REG = portNVIC</em>PENDSVSET<em>BIT;
+  in RTT</em>Handler(). Does it get hit? If so, try running the system again 
+  with a volatile counter variable that counts the number of times the 
+  line executes.
+</blockquote>
+Yes this line is getting hit.
+<blockquote>
+  If the line does execute, does the vPortPendSVHandler() (in 
+  FreeRTOS/Source/portable/[compiler]/ARM_CM4F/port.c) ever execute?
+</blockquote>
+xPortPendSVHandler is not getting hit.
+<blockquote>
+  3) Perhaps something in your code is causing a problem. Try the following:
+  a) Remove the call to delay_ms(10); That is probably using the SysTick 
+  and could conceivable cause an issue (or not, I don&#8217;t know how it is 
+  implemented).
+</blockquote>
+Removed the 10ms delay. No change in result. 
+<blockquote>
+  b) Ensure the priority of the RTT interrupt is set to the lowest 
+  possible. That is done by the line NVIC<em>SetPriority(RTT</em>IRQn, 10); It 
+  might be that 10 is the lowest priority, but I doubt it. Also check the 
+  subpriority is set to 0, as you seem to leave that undefined, but will 
+  probably default to 0.
+</blockquote>
+I set the priority to 10 in order to be graeter or equal to configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY which is defined as follows in FreeRTOSConfig.h:
+~~~
+/* The highest interrupt priority that can be used by any interrupt service
+routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
+INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER
+PRIORITY THAN THIS! (higher priorities are lower numeric values. */
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY    10</h1>
+~~~
+I also set the RTT priority back to the lowest in NVIC which is 5.
+To clarify something I have been wondering about&#8230;.I am running this test with Tickless Idle Mode disabled becuse I am attempting to get things working incrementally. Before I enable tickless idle mode uisng the RTT, I would just like to get the ticker to be switched over to the RTT and then tackle getting tickless Idle mode working seperately. This should be fine right? In other words I am doing this effort assuming that RTOS allows me to switch over to a different ticker interrupt source with tickless Idle mode disabled. Another way to put it is that I am assuming that FreeRTOS&#8217; capability to switch ticker sources isn&#8217;t exclusive only to tickless idle mode. 
+Another thing, as far as properly installing the RTT_Handler as the new ticker handler, I have commented out the following line in FreeRTOSConfig.c:
+<code>#define xPortSysTickHandler                   SysTick_Handler</code>
+Is it an absolute necessity for me to replace this with something like this? :
+<code>#define xPortSysTickHandler                   RTT_Handler</code>
+I noticed that in the FreeRTOSv9.0.0 demo example named CORTEX<em>M4</em>ATSAM4L<em>Atmel</em>Studio #define xPortSysTickHandler was left defined as SysTick<em>Handler despite the fact that they used the SAM4L&#8217;s AST timer as the source of the ticker so I wasn&#8217;t sure how to handle this aspect of the implementation. In my implementation I tried both commenting it out and leaving it defined with no difference in result. Also I was not able to do the #define xPortSysTickHandler RTT</em>Handler due to it creating multiple definitions of the RTT<em>Handler. I assume that as long as I have the xTaskIncrementTick() callback in my RTT</em>Handler I can leave the #define xPortSystickHandler defined as SysTick_Handler without it hurting anything. But please correct me if I&#8217;m wrong on any of these assumptions. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 9, 2016</div><div class="thread-post-content"><blockquote>
+  xPortPendSVHandler is not getting hit.
+</blockquote>
+That would seem to be the issue then.
+You correctly removed the following line from FreeRTOSConfig.h:
+~~~
+<h1>define xPortSysTickHandler SysTick_Handler</h1>
+~~~
+but did you leave
+~~~
+<h1>define xPortPendSVHandler PendSV_Handler</h1>
+~~~
+in?  Assuming your vector table is using the default PendSV<em>Handler() 
+name for the PendSV handler, then that line maps the FreeRTOS handler to 
+the PendSV</em>Handler() name.
+<blockquote>
+  I set the priority to 10 in order to be graeter or equal to
+  configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY which is defined as follows
+  in FreeRTOSConfig.h:
+</blockquote>
+The timer interrupt needs to be the lowest priority possible (so a 
+higher numeric value), rather than the maximum sys call priority (which 
+is the highest that can use the FreeRTOS API) &#8211; but this is a future 
+attraction, I don&#8217;t think it is the issue right now.
+<blockquote>
+  To clarify something I have been wondering about&#8230;.I am running this
+  test with Tickless Idle Mode disabled becuse I am attempting to get
+  things working icnremetnally.
+</blockquote>
+Which is the best way of doing it.  So presumably you have 
+configUSE<em>TICKLESS</em>IDLE set to 0.
+<blockquote>
+  Before I enable tickless idle mode uisng
+  the RTT, I would just like to get the ticker to be switched over to the
+  RTT and then tackle getting tickless Idle mode working seperately. This
+  should be fine right?
+</blockquote>
+Yes, absolutely.  That is how I would do it.
+In other words I am doing this effort assuming
+<blockquote>
+  that RTOS allows me to switch over to a different ticker interrupt
+  source with tickless Idle mode disabled. Another way to put it is that I
+  am assuming that FreeRTOS&#8217; capability to switch ticker sources isn&#8217;t
+  exclusive only to tickless idle mode.
+</blockquote>
+In the GCC port vPortSetupTimerInterrupt() is simply defined as a weak 
+symbol.  So defining vPortSetupTimerInterrupt() yourself is enough to 
+get your version called instead of the default.  Then you just have to 
+ensure you install the interrupt handler and have the interrupt handler 
+call the correct code &#8211; which I think you are doing.  In this case it 
+would seem the tick interrupt is working, but the PendSV is not.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/exgreyfox">exgreyfox</a> on September 9, 2016</div><div class="thread-post-content"><blockquote>
+  but did you leave
+  <code>#define xPortPendSVHandler PendSV_Handler</code>
+</blockquote>
+Yes correct. I did leave this the way it was by default.
+<blockquote>
+  The timer interrupt needs to be the lowest priority possible (so a 
+  higher numeric value), rather than the maximum sys call priority (which 
+  is the highest that can use the FreeRTOS API) &#8211; but this is a future 
+  attraction, I don&#8217;t think it is the issue right now.
+</blockquote>
+I attempted to set the RTT interrupt priority as follows instead:
+<code>NVIC_SetPriority(RTT_IRQn, configLIBRARY_LOWEST_INTERRUPT_PRIORITY);</code>
+It was also done this way in the working SAM4L freertos demo example uisng the AST as the tick interrupt and it works for them, but for me, it causes my RTT interrupt to not fire at all so I left it at priority level 10 for now. This is actually strange as I dont see areason why setting the RTT interrupt priority in the NVIC to the minimum FreeRTOS defined level would completely kill the interrupt unless there is another one that is continuously firing and has the same or identical subpriority so to remove that doubt, I called the following before the kernel is started:
+<code>NVIC_SetPriorityGrouping( 0 );</code>
+But this has no effect either. 
+So at least now we have something that resembles a root cause and that would be the supervisory call handler  PendSV handler not firing.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/exgreyfox">exgreyfox</a> on September 9, 2016</div><div class="thread-post-content">Perhaps it would be of more help if I posted the entire contents of my FreeRTOSConfig.h file:
+~~~
+<h1>ifndef FREERTOS<em>CONFIG</em>H</h1>
+<h1>define FREERTOS<em>CONFIG</em>H</h1>
+/* For documentation for all the configuration symbols, go to:
+ * http://www.freertos.org/a00110.html.
+ */
+<h1>if defined (<strong>GNUC</strong>) || defined (<strong>ICCARM</strong>)</h1>
+/* Important: put #includes here unless they are also meant for the assembler.
+ */
+<h1>include &lt;stdint.h></h1>
+<h1>include &#8220;sysclk.h&#8221;</h1>
+void assert<em>triggered( const char * file, uint32</em>t line );
+<h1>endif</h1>
+<h1>define ConfigFREERTOS<em>LOW</em>POWER                0</h1>
+<h1>if ConfigFREERTOS<em>LOW</em>POWER == 1</h1>
+<pre><code>#define configUSE_TICKLESS_IDLE             1
+#define configSYSTICK_CLOCK_HZ              ( sysclk_get_cpu_hz() / 8 )
+#define configCPU_CLOCK_HZ                  ( sysclk_get_cpu_hz() )
+#define configTICK_RATE_HZ                  ( ( TickType_t ) 100 )
+</code></pre>
+<h1>else</h1>
+<pre><code>#define configUSE_TICKLESS_IDLE             0
+#define configCPU_CLOCK_HZ                  ( sysclk_get_cpu_hz() )
+#define configTICK_RATE_HZ                  ( ( TickType_t ) 100 )
+</code></pre>
+<h1>endif /* ConfigFREERTOS<em>LOW</em>POWER */</h1>
+<h1>define configUSE_PREEMPTION                    1</h1>
+<h1>define configUSE<em>IDLE</em>HOOK                     1</h1>
+<h1>define configUSE<em>TICK</em>HOOK                     1</h1>
+<h1>define configPRIO_BITS                         2</h1>
+<h1>define configMAX<em>PRIORITIES                    ( ( uint32</em>t ) 5 )</h1>
+<h1>define configMINIMAL<em>STACK</em>SIZE                ( ( uint16_t ) 100 )</h1>
+/* configTOTAL<em>HEAP</em>SIZE is not used when heap_3.c is used. */
+<h1>define configTOTAL<em>HEAP</em>SIZE                   ( ( size_t ) ( 15000 ) )</h1>
+<h1>define configMAX<em>TASK</em>NAME_LEN                 ( 8 )</h1>
+<h1>define configUSE<em>TRACE</em>FACILITY                0</h1>
+<h1>define configUSE<em>16</em>BIT_TICKS                  0</h1>
+<h1>define configIDLE<em>SHOULD</em>YIELD                 1</h1>
+<h1>define configUSE_MUTEXES                       1</h1>
+<h1>define configQUEUE<em>REGISTRY</em>SIZE               0</h1>
+<h1>define configCHECK<em>FOR</em>STACK_OVERFLOW          0</h1>
+<h1>define configUSE<em>RECURSIVE</em>MUTEXES             1</h1>
+<h1>define configUSE<em>MALLOC</em>FAILED_HOOK            0</h1>
+<h1>define configUSE<em>COUNTING</em>SEMAPHORES           1</h1>
+<h1>define configUSE<em>QUEUE</em>SETS                    1</h1>
+<h1>define configGENERATE<em>RUN</em>TIME_STATS           0</h1>
+<h1>define configENABLE<em>BACKWARD</em>COMPATIBILITY     0</h1>
+/* Co-routine definitions. */
+<h1>define configUSE<em>CO</em>ROUTINES                   0</h1>
+<h1>define configMAX<em>CO</em>ROUTINE_PRIORITIES         ( 2 )</h1>
+/* Software timer definitions. */
+<h1>define configUSE_TIMERS                        1</h1>
+<h1>define configTIMER<em>TASK</em>PRIORITY               ( 2 )</h1>
+<h1>define configTIMER<em>QUEUE</em>LENGTH                2</h1>
+<h1>define configTIMER<em>TASK</em>STACK_DEPTH            ( 80 )</h1>
+/* Set the following definitions to 1 to include the API function, or zero
+to exclude the API function. */
+<h1>define INCLUDE_vTaskPrioritySet                1</h1>
+<h1>define INCLUDE_uxTaskPriorityGet               1</h1>
+<h1>define INCLUDE_vTaskDelete                     1</h1>
+<h1>define INCLUDE_vTaskSuspend                    1</h1>
+<h1>define INCLUDE_xResumeFromISR                  1</h1>
+<h1>define INCLUDE_vTaskDelayUntil                 1</h1>
+<h1>define INCLUDE_vTaskDelay                      1</h1>
+<h1>define INCLUDE_xTaskGetSchedulerState          1</h1>
+<h1>define INCLUDE_xTaskGetCurrentTaskHandle       1</h1>
+<h1>define INCLUDE_uxTaskGetStackHighWaterMark     0</h1>
+<h1>define INCLUDE_xTaskGetIdleTaskHandle          0</h1>
+<h1>define INCLUDE_xTimerGetTimerDaemonTaskHandle  0</h1>
+<h1>define INCLUDE_pcTaskGetTaskName               0</h1>
+<h1>define INCLUDE_eTaskGetState                   0</h1>
+/* Normal assert() semantics without relying on the provision of an assert.h
+header file. */
+<h1>define configASSERT( x ) </h1>
+<pre><code>    if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); for( ;; ); }
+</code></pre>
+/* The configPRE<em>SLEEP</em>PROCESSING() and configPOST<em>SLEEP</em>PROCESSING() macros
+allow the application writer to add additional code before and after the MCU is
+placed into the low power state respectively.  The empty implementations
+provided in this demo can be extended to save even more power. */
+void vPreSleepProcessing( unsigned long xExpectedIdleTime );
+void vPostSleepProcessing( unsigned long xExpectedIdleTime );
+<h1>define configPRE<em>SLEEP</em>PROCESSING( xExpectedIdleTime ) vPreSleepProcessing( xExpectedIdleTime );</h1>
+<h1>define configPOST<em>SLEEP</em>PROCESSING( xExpectedIdleTime ) vPostSleepProcessing( xExpectedIdleTime );</h1>
+/* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
+standard names &#8211; or at least those used in the unmodified vector table. */
+<h1>define vPortSVCHandler                       SVC_Handler</h1>
+<h1>define xPortPendSVHandler                    PendSV_Handler</h1>
+//#define xPortSysTickHandler                   SysTick_Handler
+/* The lowest interrupt priority that can be used in a call to a &#8220;set priority&#8221;
+function. */
+<h1>define configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY         0x0f</h1>
+/* The highest interrupt priority that can be used by any interrupt service
+routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
+INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER
+PRIORITY THAN THIS! (higher priorities are lower numeric values. */
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY    10</h1>
+/* Interrupt priorities used by the kernel port layer itself.  These are generic
+to all Cortex-M ports, and do not rely on any particular library functions. */
+<h1>define configKERNEL<em>INTERRUPT</em>PRIORITY         ( configLIBRARY<em>LOWEST</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+<h1>define configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY    ( configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+<h1>endif /* FREERTOS<em>CONFIG</em>H */</h1>
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 10, 2016</div><div class="thread-post-content">Your configPRIOR_BITS setting is almost certainly wrong.
+I just looked at the SAMG55 user guide, where I find the statement
+&#8220;The Cortex-M4 processor closely integrates a configurable NVIC, to 
+deliver industry-leading interrupt
+performance. The NVIC includes a non-maskable interrupt (NMI), and 
+provides up to 256 interrupt priority levels.&#8221;
+That would imply there were 8 bits, but I suspect that is not the case 
+either (it sounds like it is describing the maximum the NVIC can 
+support, not the number actually supported by the SAMG55.  I would 
+expect the number to be in the range of 3 to 5 inclusive.
+Do you have a cmsis header file for this part?  If so it should define a 
+constant called __NVIC<em>PRIO</em>BITS, which should in theory give you the 
+correct setting (although I have known even the cmsis header files to 
+get this wrong sometimes).
+Later versions of FreeRTOS have more asserts to try and catch this type 
+of misconfiguration.
+Find the implementation of xPortStartScheduler() in the following file:
+https://sourceforge.net/p/freertos/code/HEAD/tree/trunk/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c#l318
+It is on line 318 at the time of writing.
+In that function you will see the lines:
+~~~
+while( ( ucMaxPriorityValue &amp; portTOP<em>BIT</em>OF<em>BYTE ) == portTOP</em>BIT<em>OF</em>BYTE )
+{
+   ulMaxPRIGROUPValue&#8211;;
+   ucMaxPriorityValue &lt;&lt;= ( uint8_t ) 0x01;
+}
+~~~
+What this is doing is writing 255 to a priority register, then reading 
+the value held in the priority register back, and looping to see how 
+many bits are set.  Any bits that are not implemented will be read back 
+as 0.  The not implemented bits will be the least significant bits.  So, 
+for example, if the value read back is binary 11100000 then 
+configPRIOR<em>BITS should be 3.  If the value read back is 11110000 then 
+configPRIOR</em>BITS should be 4.  Etc.
+The two blocks that start with
+~~~
+<h1>ifdef __NVIC<em>PRIO</em>BITS</h1>
+~~~
+then
+~~~
+<h1>ifdef configPRIO_BITS</h1>
+~~~
+are new.  If you cut and paste those into your code then the code will 
+get stuck in the assert if the constants are wrong in FreeRTOSConfig.h.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/exgreyfox">exgreyfox</a> on September 10, 2016</div><div class="thread-post-content"><blockquote>
+  Your configPRIOR_BITS setting is almost certainly wrong.
+</blockquote>
+Correct, I have since removed the erroneous leftover definition of configPRIO_BITS 2 and replaced it with the folloiwng in my FreeRTOSConfig.h
+~~~
+/* Cortex-M specific definitions. */
+<h1>ifdef __NVIC<em>PRIO</em>BITS</h1>
+/* __NVIC<em>PRIO</em>BITS will be specified when CMSIS is being used. */
+<h1>define configPRIO_BITS             __NVIC_PRIO_BITS</h1>
+<h1>else</h1>
+<h1>define configPRIO_BITS             4        /* 15 priority levels */</h1>
+<h1>endif</h1>
+~~~
+<blockquote>
+  Do you have a cmsis header file for this part? If so it should define a 
+  constant called __NVIC<em>PRIO</em>BITS, which should in theory give you the 
+  correct setting (although I have known even the cmsis header files to 
+  get this wrong sometimes).
+</blockquote>
+Yes I did check the CMSIS header for my chip and NVIC<em>PRIO</em>BITS are in fact 4. 
+<blockquote>
+  What this is doing is writing 255 to a priority register, then reading 
+  the value held in the priority register back, and looping to see how 
+  many bits are set. Any bits that are not implemented will be read back 
+  as 0. The not implemented bits will be the least significant bits. So, 
+  for example, if the value read back is binary 11100000 then 
+  configPRIOR<em>BITS should be 3. If the value read back is 11110000 then 
+  configPRIOR</em>BITS should be 4. Etc.
+  The two blocks that start with
+  ~~~
+  <h1>ifdef __NVIC<em>PRIO</em>BITS</h1>
+  then
+  <h1>ifdef configPRIO_BITS</h1>
+  ~~~
+</blockquote>
+I verified that this works when I set the configPRIO_BITS to an incorrect value so I will leave this in my code from now on as its a useful error trap. 
+So after proper initialization of configPRIO_BITS, xPortPendSVHandler is still not firing. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/exgreyfox">exgreyfox</a> on September 16, 2016</div><div class="thread-post-content">Hello RTEL folks. Is there any chance that we might be able to get in touch with you regarding this issue? I&#8217;ve spent a couple of more days digging into but the efforts have been futile. The project we are currently working on will eventually hit a critical brick wall so due to that, we are willing to compensate you guys if we can take some of your time on the matter. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 16, 2016</div><div class="thread-post-content">If you zip up a project that I can built &#8216;out of the box&#8217; (without 
+having to set any paths to files, etc.) and send it to r [dot] barry 
+<em>at</em> freertos (<em>dot</em>) org, along with a description of the most 
+immediate issue, then I can take a look for you &#8211; but I can&#8217;t promise 
+any more than taking a look.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/exgreyfox">exgreyfox</a> on September 16, 2016</div><div class="thread-post-content">Thanks sir. This will be an Atmel Studio 7 project that will build out of the box. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 16, 2016</div><div class="thread-post-content">The PendSV handler is installed correctly, I can see that by viewing a disassembly of the vector table and comparing it to the address of the correct handler in the map file.
+The first problem is that the RTT interrupt is executing before the scheduler starts &#8211; which should not be possible if the interrupt priority was set correctly.  Commenting out:
+~~~
+NVIC_SetPriorityGrouping( 0 );
+~~~
+and updating the RTT initialisation function to replace the 20 with configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY fixes that:
+~~~
+NVIC<em>SetPriority(RTT</em>IRQn, configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY);
+~~~
+However, I don&#8217;t think either of those issues are your most immediate issue as the PendSV is still not executing.
+I don&#8217;t think configure_rtt is a function you want to be calling from inside the RTT interrupt handler.  It is doing all sorts that is not necessary, and contains loops that could take a long time to execute.  It might be that you are just consuming too much time in the interrupt handler.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 16, 2016</div><div class="thread-post-content">Actually, then PendSV interrupt is executing now.  First the timer task 
+runs, then your application task, then the idle task&#8230;.but that is all. 
+  My best estimate is that the route of the problem is in the 
+RTT_Handler() implementation.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hassan789">hassan789</a> on October 8, 2016</div><div class="thread-post-content">Stan,
+Not sure if this is still an issue or not&#8230;
+your problem is this:
+<code>rtt_write_alarm_time(RTT,0x01); //wrong!!</code>
+<code>configure_rtt()</code>
+should be this:
+<code>rtt_write_alarm_time(RTT, rtt_read_timer_value(RTT) + 1);</code> //no need to reconfigure
+I am running a tickless SAMG55&#8230; if your still have problems, post back here or PM me
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eike2017">eike2017</a> on September 11, 2017</div><div class="thread-post-content">Hello,
+I am also trying to implement Tickless Mode on Atmel G55.
+So i would highly appreciate a working code example.
+Thanks in advance!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 11, 2017</div><div class="thread-post-content">That is a Cortex-M4 part, so the generic Cortex-M tickless mode will 
+work on it (so there is nothing to do other than set 
+configUSE<em>TICKLESS</em>IDLE to 1).  If you want to use a lower power mode 
+that switches the systick clock off then you will need to create your 
+own port, for which I would suggest using one of the examples in the 
+FreeRTOS download (for another part) as a reference.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eike2017">eike2017</a> on September 11, 2017</div><div class="thread-post-content">Thanks for your answer,
+to be more specific: I want to use the RTT (Real Time Timer) which source is an external 32 kHz Oscillator to generate the ticks. I use the code from this thread. The ticks are working, but the SAMG55 does not go into any sleep mode, since the current consumption stays steady.
+So I have to rewrite vPortSuppressTicksAndSleep() to fulfill my needs?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 11, 2017</div><div class="thread-post-content">Yes, are you are using a clock specific to that family of parts you will 
+have to write the piece of code that re-programs the clock to generate 
+an interrupt at the appropriate time when entering the tickless mode, 
+and then re-starts the regular tick when exiting sleep mode.  This 
+provides an overview, and has links to examples you can use as a 
+reference http://www.freertos.org/low-power-tickless-rtos.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Ticker Changeover to Real Time Timer on ATSAMG55</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hassan789">hassan789</a> on September 13, 2017</div><div class="thread-post-content">Hello, I have posted a simple example to use tickless on the Microchip Atmel SamG55 chip here:
+https://github.com/hchaudhary1/SAMG55<em>Tickless</em>example
+Thanks
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

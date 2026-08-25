@@ -1,0 +1,270 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CANBUS example for LPC17xx - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2016/freertos_CANBUS_example_for_LPC17xx_f7c63288j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="CANBUS example for LPC17xx - FreeRTOS" />
+<meta property="og:description" content="CANBUS example for LPC17xxPosted by snarlingfox on May 15, 2016Hi folks, I&#8217;m looking to try utilising FreeRTOS with a NXP LPC1788 MPU (Specifically the HY-LPC1788-CORE board), however I&#8217;ve had difficulties getting the CAN IRQ to fire or read any usable data. My setup is as follows; LPC1788 as above FreeRTOS included with LPCOpen (FreeRTOS version &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2016/freertos_CANBUS_example_for_LPC17xx_f7c63288j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="CANBUS example for LPC17xxPosted by snarlingfox on May 15, 2016Hi folks, I&#8217;m looking to try utilising FreeRTOS with a NXP LPC1788 MPU (Specifically the HY-LPC1788-CORE board), however I&#8217;ve had difficulties getting the CAN IRQ to fire or read any usable data. My setup is as follows; LPC1788 as above FreeRTOS included with LPCOpen (FreeRTOS version [&hellip;]" />
+<meta name="twitter:title" content="CANBUS example for LPC17xx - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202642' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202642' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202642' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202642' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145843' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2016%2Ffreertos_CANBUS_example_for_LPC17xx_f7c63288j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2016%2Ffreertos_CANBUS_example_for_LPC17xx_f7c63288j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145843">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2016_freertos_support_forum_archive_index.html/">May 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">CANBUS example for LPC17xx</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/snarlingfox">snarlingfox</a> on May 15, 2016</div><div class="thread-post-content">Hi folks,
+I&#8217;m looking to try utilising FreeRTOS with a NXP LPC1788 MPU (Specifically the <a href="http://www.hotmcu.com/hylpc1788core-p-40.html?cPath=1_21">HY-LPC1788-CORE board</a>), however I&#8217;ve had difficulties getting the CAN IRQ to fire or read any usable data.
+My setup is as follows;
+<ul>
+<li>LPC1788 as above</li>
+<li>FreeRTOS included with LPCOpen (FreeRTOS version 7.3.0 &#8211; yep I know it&#8217;s old)</li>
+<li>Keil uVision v4.71.2.0</li>
+</ul>
+The issue seems to be the CAN IRQ isn&#8217;t firing, if I manually poke it with Keils debugger, there&#8217;s no usable data. I&#8217;d class myself as an intermediate developer (not an expert) but my gut feeling is the CAN subsystem / memory space isn&#8217;t being initialised properly.
+I am aware of the LPC17xx IRQ priority inversion, I have tried tweaking numerous values and I&#8217;ve hopefully ruled this out by manually firing an IRQ in the code. When this happens, my IRQ handler code is executed but alas no usable data.
+My small project works as a standard non-RTOS project, albeit with performance issues (which is why I want to rewrite it with an RTOS).
+What I was hoping for is a working example from one of you wonderful people in the hope to further my knowledge and get my little project working in what looks like an excellent framework (I love the idea of semaphores and queues) 🙂
+</div></div><div class="thread-post"><h3 class="thread-post-title">CANBUS example for LPC17xx</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 16, 2016</div><div class="thread-post-content">Am I right in thinking from your description that the CAN ISR is 
+executing correctly in an application that is running without FreeRTOS, 
+but is not executing when you are running FreeRTOS?  If so, are you 
+trying the ISR after the scheduler has started, or before the scheduler 
+has started?  As soon as you start using FreeRTOS API functions 
+interrupts will remain disabled until the scheduler is started &#8211; that is 
+done to prevent interrupts trying to use FreeRTOS calls prior to 
+FreeRTOS actually running.
+Other than that &#8211; FreeRTOS does not do anything itself with interrupts, 
+and as long as you have the interrupt&#8217;s priority set at or below 
+configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY if you want to use an API function, 
+then you should not notice any difference with or without FreeRTOS.
+If the ISR is being called, but the code in the ISR is not doing what 
+you want or expect, then please post the code.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CANBUS example for LPC17xx</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/snarlingfox">snarlingfox</a> on May 17, 2016</div><div class="thread-post-content">Hi there,
+I&#8217;ve had CANBUS working successfully on the LPC1788 platform for a good couple of years, using the standard CMSIS / LPCOpen frameworks.
+I&#8217;m less inclined to believe it&#8217;s IRQ related as even when I manually trigger the IRQ using Keils debugger, the program will return gibberish. I know for a fact there should be something in the buffer because I&#8217;m firing data at it from an MBED LPC1768 which is received fine using non-RTOS code.
+I honestly don&#8217;t know if it&#8217;s my setup, if I&#8217;m incorrectly initialising the CAN subsystem or what. Possibly the memory isn&#8217;t assigned properly. Attempting to send fails too with a transmission timeout.
+Here&#8217;s a slimmed down code block (it may not compile as I&#8217;ve removed non-relevant blocks), it&#8217;s also hasn&#8217;t been touched in months as I took a break;
+~~~
+/*********************************
+* Includes and required variables *
+&#42;********************************/
+<h1>include &#8220;board.h&#8221;</h1>
+<h1>include &#8220;FreeRTOS.h&#8221;</h1>
+<h1>include &#8220;task.h&#8221;</h1>
+<h1>include &#8220;queue.h&#8221;</h1>
+<h1>include &#8220;semphr.h&#8221;</h1>
+<h1>include &lt;stdlib.h></h1>
+<h1>include &lt;string.h></h1>
+// #include &lt;stdarg.h>
+LPC<em>CAN</em>T *CANPort;
+bool CANIRQInitialised;
+const unsigned char CAN_INTERFACE = 0;
+<h1>define CAN<em>BAUD</em>RATE 500000UL</h1>
+<h1>define CAN<em>FILTER</em>FRAMES 0</h1>
+xSemaphoreHandle xCANReceiveSemaphore;
+typedef struct {
+    unsigned char length;
+    char *data;
+} xMessage;
+/*********************************
+* Callable functions              *
+&#42;********************************/
+/* Sets up the CAN controller */
+void InitCAN(void) {
+    if (CANIRQInitialised) {
+        Chip_CAN_IntDisable(CANPort, CAN_IER_BITMASK);
+        Chip_CAN_DeInit(CANPort);
+    }
+    if (CAN_INTERFACE == 1) CANPort = LPC_CAN2;
+    else                    CANPort = LPC_CAN1;
+    Chip_CAN_Init(CANPort);
+    Chip_CAN_SetBitRate(CANPort, CAN_BAUD_RATE);
+    Chip_CAN_SetAFMode(LPC_CANAF, CAN_AF_BYBASS_MODE);
+    Chip_CAN_IntEnable(CANPort, CAN_IER_BITMASK);
+    CANIRQInitialised = 1;
+}
+/* Sets up system hardware */
+static void prvSetupHardware (void) {
+    Board_Init();
+    InitCAN();
+}
+/*********************************
+* Tasks                           *
+&#42;********************************/
+/* CAN receive task */
+static void vTaskCANReceive (void *pvParameters) {
+    xMessage message;
+    portBASE_TYPE xQueueStatus;
+    CAN_MSG_T canframe;
+    xSemaphoreTake(xCANReceiveSemaphore, 0);
+    while (1) {
+        Chip_CAN_IntEnable(CANPort, CAN_IER_BITMASK);
+        message.length = 12;
+        message.data = (char *)calloc(12, 0x0);
+        while (Chip_CAN_Receive(CANPort, &amp;canframe)) {
+            canframe.ID &amp;= ~CAN_EXTEND_ID_USAGE;
+            message.data[0] = ((canframe.ID >> 24) &amp; 0xFF);
+            message.data[1] = ((canframe.ID >> 16) &amp; 0xFF);
+            message.data[2] = ((canframe.ID >> 8) &amp; 0xFF);
+            message.data[3] = ((canframe.ID >> 0) &amp; 0xFF);
+            memcpy(message.data + 4, canframe.Data, 8);
+            DEBUGOUT(&#8220;Received: %s&#8221;, &amp;message);
+        }
+    }
+}
+/*********************************
+* Interrupt handlers              *
+&#42;********************************/
+/* CAN IRQ handler */
+void CAN_IRQHandler(void) {
+    portBASE_TYPE xCurrentTaskInterrupted = pdFALSE;
+    unsigned long IRQStatus = Chip_CAN_GetIntStatus(CANPort);
+    DEBUGOUT(&#8220;CAN IRQ received: 0x%04Xrn&#8221;, IRQStatus);
+    if (!(IRQStatus &amp; CAN_ICR_RI)) return;
+    NVIC_ClearPendingIRQ(CAN_IRQn);
+    Chip_CAN_IntDisable(CANPort, CAN_IER_BITMASK);
+    DEBUGOUT(&#8220;-&#8220;);
+    xSemaphoreGiveFromISR(xCANReceiveSemaphore, &amp;xCurrentTaskInterrupted);
+    portEND_SWITCHING_ISR(xCurrentTaskInterrupted);
+}
+/*********************************
+* Main function                   *
+&#42;********************************/
+int main (void) {
+    /* Init */
+    unsigned long i;
+    prvSetupHardware();
+<pre><code>/* Queues and Semaphore */
+vSemaphoreCreateBinary(xCANReceiveSemaphore); if (xCANReceiveSemaphore == NULL) { DEBUGOUT("Unable to create xCANReceiveSemaphorern"); return 1; }
+/* IRQs */
+Chip_UART_IntConfig(LPC_UART0, UART_INTCFG_RBR, ENABLE);
+NVIC_SetPriority(UART0_IRQn, configKERNEL_INTERRUPT_PRIORITY);
+NVIC_EnableIRQ(UART0_IRQn);
+DEBUGOUT("Waiting for CAN init... ");
+InitCAN();
+for (i=0; i&lt;50000000; i++) { }
+NVIC_SetPriority(CAN_IRQn, configKERNEL_INTERRUPT_PRIORITY - 1);
+NVIC_EnableIRQ(CAN_IRQn);
+CANIRQInitialised = 1;
+AddFrameToAFLUT(0, 0x600UL, 0x700UL);
+InitCAN();
+DEBUGOUT("Done!rn");
+/* Tasks */
+xTaskCreate(vTaskCANReceive, (signed char *) "CAN Receive", configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL), (xTaskHandle *) NULL);
+/* Start the scheduler */
+vTaskStartScheduler();
+/* Should never arrive here */
+return 1;
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">CANBUS example for LPC17xx</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on May 17, 2016</div><div class="thread-post-content">What does DEBUGOUT() do? If it uses semihosting to output chars that could be your issue as it will interfere with FreeRTOS interrupts. Even if it is not using semihosting I would recommend trying without DEBUGOUT() as you are calling it from tasks and interrupts.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CANBUS example for LPC17xx</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/snarlingfox">snarlingfox</a> on May 17, 2016</div><div class="thread-post-content">Hi MEdwards,
+DEBUGOUT is a simple function to write a message (filtered through printf) to the debug UART so I can get some measure of feedback over what is exactly happening.
+I&#8217;m unsure it&#8217;ll be tampering with much. I&#8217;m just firing up the code now to see exactly what was failing.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

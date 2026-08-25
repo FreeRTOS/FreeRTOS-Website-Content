@@ -1,0 +1,233 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>i2c on arm9 causing data abort - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/December_2007/freertos_i2c_on_arm9_causing_data_abort_1900942.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="i2c on arm9 causing data abort - FreeRTOS" />
+<meta property="og:description" content="i2c on arm9 causing data abortPosted by bones23 on December 28, 2007I am trying to get an i2c driver running in freeRTOS on an str912. All it does right now is send a message continuously from the arm9 to a test device I have hooked up to the i2c bus. The i2c thread will run &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/December_2007/freertos_i2c_on_arm9_causing_data_abort_1900942.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="i2c on arm9 causing data abortPosted by bones23 on December 28, 2007I am trying to get an i2c driver running in freeRTOS on an str912. All it does right now is send a message continuously from the arm9 to a test device I have hooked up to the i2c bus. The i2c thread will run [&hellip;]" />
+<meta name="twitter:title" content="i2c on arm9 causing data abort - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201554' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201554' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201554' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201554' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139728' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2007%2Ffreertos_i2c_on_arm9_causing_data_abort_1900942.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2007%2Ffreertos_i2c_on_arm9_causing_data_abort_1900942.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139728">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/December_2007_freertos_support_forum_archive_index.html/">December 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">i2c on arm9 causing data abort</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bones23">bones23</a> on December 28, 2007</div><div class="thread-post-content">I am trying to get an i2c driver running in freeRTOS on an str912. All it does right now is send a message continuously from the arm9 to a test device I have hooked up to the i2c bus. The i2c thread will run several hundred times just fine but will then throw a Prefetch abort. After stepping through the program I found that this happens in the call to vTaskDelay&#40;&#41; made after the call to I2C&#95;WriteData&#40;&#41; has finished. Any ideas on what could be causing this?
+//i2c thread
+void prvRunI2C&#40;void&#41;&#123;
+&nbsp; u8 i2cmsg&#91;&#93; = &quot;test&quot;;
+&nbsp; 
+&nbsp; for&#40;;;&#41;&#123;
+&nbsp;&nbsp;&nbsp; I2C&#95;WriteData&#40;0x6e, i2cmsg, 4&#41;;
+&nbsp;&nbsp;&nbsp; vTaskDelay&#40; mainLCD&#95;DELAY &#41;;
+&nbsp; &#125;
+&#125;
+//I2C&#95;WriteData&#40;&#41;
+void I2C&#95;WriteData&#40;u8 address, u8 &#42;msg, u8 count&#41;
+&#123;
+&nbsp; portENTER&#95;CRITICAL&#40;&#41;;
+&nbsp; I2C0&#95;Buffer&#95;Tx= msg;
+&nbsp; i2c&#95;buffer&#95;size=count;
+&nbsp; i2c&#95;slave&#95;address = address;
+&nbsp; Direction = I2C&#95;MODE&#95;TRANSMITTER;
+&nbsp; Tx&#95;Idx=0;
+&nbsp; &#123;
+&nbsp;&nbsp;&nbsp; char hex1&#91;3&#93;;
+&nbsp;&nbsp;&nbsp; char hex2&#91;3&#93;;
+&nbsp;&nbsp;&nbsp; char hex3&#91;3&#93;;
+&nbsp;&nbsp;&nbsp; hex1&#91;2&#93; = hex2&#91;2&#93; = hex3&#91;2&#93; = 0;
+&nbsp;&nbsp;&nbsp; byte2hex&#40;I2C0&#95;Buffer&#95;Tx&#91;0&#93;, hex1&#41;;
+&nbsp;&nbsp;&nbsp; byte2hex&#40;I2C0&#95;Buffer&#95;Tx&#91;1&#93;, hex2&#41;;
+&nbsp;&nbsp;&nbsp; byte2hex&#40;I2C0&#95;Buffer&#95;Tx&#91;2&#93;, hex3&#41;;
+&nbsp; &#125;
+&nbsp; I2C&#95;GenerateStart&#40;I2C0, ENABLE&#41;;
+/&#42; Test on EV5 and clear it &#42;/
+&nbsp; while&#40; &#33; I2C&#95;CheckEvent&#40;I2C0, I2C&#95;EVENT&#95;MASTER&#95;MODE&#95;SELECT&#41; &#41;&nbsp; // EV5
+&nbsp;&nbsp;&nbsp; &#123;;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp; /&#42; Send I2C1 Address for write &#42;/
+&nbsp; I2C&#95;Send7bitAddress &#40;I2C0, i2c&#95;slave&#95;address, I2C&#95;MODE&#95;TRANSMITTER&#41;;
+&nbsp; /&#42; Test on EV6 and clear it &#42;/
+&nbsp; while&#40; &#33; I2C&#95;CheckEvent&#40;I2C0, I2C&#95;EVENT&#95;MASTER&#95;MODE&#95;SELECTED&#41; &#41;;&nbsp; // EV6
+&nbsp; /&#42; Clear EV6 by set again the PE bit &#42;/
+&nbsp; I2C&#95;Cmd &#40;I2C0, ENABLE&#41;;
+&nbsp; /&#42; Send Data to write on I2C1 slave &#42;/
+&nbsp; while &#40;Tx&#95;Idx &lt; i2c&#95;buffer&#95;size&#41;// &amp;&amp; &#33;stop&#41;
+&nbsp; &#123; 
+&nbsp;&nbsp;&nbsp; /&#42;snprintf&#40;out&#95;buf, 80, &quot;sending byte: %drn&quot;, Tx&#95;Idx&#41;;
+&nbsp;&nbsp;&nbsp; send&#95;data&#40;DEBUG&#95;UART, out&#95;buf, strlen&#40;out&#95;buf&#41; &#41;;
+&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; /&#42; Send Master data &#42;/
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; I2C&#95;SendData&#40;I2C0, I2C0&#95;Buffer&#95;Tx&#91;Tx&#95;Idx++&#93;&#41;;
+&nbsp;&nbsp;&nbsp; /&#42; Test on EV8 and clear it &#42;/
+&nbsp;&nbsp;&nbsp; while&#40;&#33;I2C&#95;CheckEvent&#40;I2C0, I2C&#95;EVENT&#95;MASTER&#95;BYTE&#95;TRANSMITTED&#41;&#41;//&nbsp; &amp;&amp; &#33;stop&#41;&nbsp; //EV8
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp; u16&nbsp; wLastEvent = I2C&#95;GetLastEvent&#40;I2C0&#41;;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; switch &#40;wLastEvent&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; 16 means that the BUSY flag is set, but not the M/SL flag.&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Since we mean to act only as a master, the M/SL flag should be
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set anytime we are in the middle of transmission&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;case 16:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stop = 1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; snprintf&#40;out&#95;buf, 80, &quot;I2C Error, wLastEvent==16rn&quot;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; send&#95;data&#40;DEBUG&#95;UART, out&#95;buf, strlen&#40;out&#95;buf&#41;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40;wLastEvent == I2C&#95;ARBITRATION&#95;LOST&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; snprintf&#40;out&#95;buf, 80, &quot;I2C Arbitration Lostrn&quot;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; send&#95;data&#40;DEBUG&#95;UART, out&#95;buf, strlen&#40;out&#95;buf&#41;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stop=1; //Leave the while loop
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40;wLastEvent == I2C&#95;BUS&#95;ERROR&#95;DETECTED&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; snprintf&#40;out&#95;buf, 80, &quot;I2C Bus Errorrn&quot;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; send&#95;data&#40;DEBUG&#95;UART, out&#95;buf, strlen&#40;out&#95;buf&#41;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stop=1; //Leave the while loop
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case 0:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; snprintf&#40;out&#95;buf, 80, &quot;I2C status of 0, stoppingrn&quot;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; send&#95;data&#40;DEBUG&#95;UART, out&#95;buf, strlen&#40;out&#95;buf&#41;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stop = 1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CASE&#95;ERROR&#40;I2C&#95;EVENT&#95;SLAVE&#95;ADDRESS&#95;MATCHED&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CASE&#95;ERROR&#40;I2C&#95;EVENT&#95;SLAVE&#95;BYTE&#95;RECEIVED&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CASE&#95;ERROR&#40;I2C&#95;EVENT&#95;SLAVE&#95;BYTE&#95;TRANSMITTED&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CASE&#95;ERROR&#40;I2C&#95;EVENT&#95;MASTER&#95;MODE&#95;SELECT&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CASE&#95;ERROR&#40;I2C&#95;EVENT&#95;MASTER&#95;MODE&#95;SELECTED&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CASE&#95;ERROR&#40;I2C&#95;EVENT&#95;MASTER&#95;BYTE&#95;RECEIVED&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //CASE&#95;ERROR&#40;I2C&#95;EVENT&#95;MASTER&#95;BYTE&#95;TRANSMITTED&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case I2C&#95;EVENT&#95;MASTER&#95;BYTE&#95;TRANSMITTED:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CASE&#95;ERROR&#40;I2C&#95;EVENT&#95;MASTER&#95;MODE&#95;ADDRESS10&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CASE&#95;ERROR&#40;I2C&#95;EVENT&#95;SLAVE&#95;STOP&#95;DETECTED&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CASE&#95;ERROR&#40;I2C&#95;EVENT&#95;SLAVE&#95;ACK&#95;FAILURE&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case 18: /&#42;This is the correct busy state, busy flag, plus m/sl flag&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; default:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UART&#95;printf&#40;DEBUG&#95;UART, &quot;unknown event: %d on byte: %drn&quot;, wLastEvent, Tx&#95;Idx&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp; &#125;
+&nbsp; 
+&nbsp; /&#42; Generate STOP condition to close communication &#42;/
+&nbsp; I2C&#95;GenerateSTOP &#40;I2C0, ENABLE&#41;;
+&nbsp; /&#42; Disable I2C0 &#42;/
+&nbsp; //I2C&#95;Cmd&#40;I2C0, DISABLE&#41;;
+&nbsp; portEXIT&#95;CRITICAL&#40;&#41;;
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">i2c on arm9 causing data abort</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on December 30, 2007</div><div class="thread-post-content">Have you checked that you are not running out of stack?&nbsp; I notice you are using snprintf&#40;&#41; which can take up a lot of stack space.
+First of all try simply increasing the stack allocated to the task.
+Next you could try actually inspecting the stack.&nbsp; When the abort happens, inspect the pxCurrentTCB variable to see which task was running.&nbsp; From the structure you will be able to get the location of the stack the task was using.&nbsp; The stack was filled with 0xa5 when the task was created, so if all the 0xa5&#8217;s have been overwritten then you know you are out of stack.
+There are some cut down versions of the printf&#40;&#41; family of functions included in the FreeRTOS.org download.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">i2c on arm9 causing data abort</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bones23">bones23</a> on January 15, 2008</div><div class="thread-post-content">Your right, I did not give this one enough stack space.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

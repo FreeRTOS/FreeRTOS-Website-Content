@@ -1,0 +1,485 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Can vTickIsr() be called from IRQ_Handler? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2012/freertos_Can_vTickIsr_be_called_from_IRQ_Handler_6178971.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Can vTickIsr() be called from IRQ_Handler? - FreeRTOS" />
+<meta property="og:description" content="Can vTickIsr() be called from IRQ_Handler?Posted by ozsmit on November 15, 2012I am calling : void vTickISR&#040; void &#041; &#095;&#095;attribute&#095;&#095;&#040;&#040;naked&#041;&#041;; void vTickISR&#040; void &#041; &#123; /&#042; Save the context of the interrupted task. &#042;/ portSAVE&#095;CONTEXT&#040;&#041;; /&#042; Increment the RTOS tick count, then look for the highest priority task that is ready to run. &#042;/ &#095;&#095;asm &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2012/freertos_Can_vTickIsr_be_called_from_IRQ_Handler_6178971.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Can vTickIsr() be called from IRQ_Handler?Posted by ozsmit on November 15, 2012I am calling : void vTickISR&#040; void &#041; &#095;&#095;attribute&#095;&#095;&#040;&#040;naked&#041;&#041;; void vTickISR&#040; void &#041; &#123; /&#042; Save the context of the interrupted task. &#042;/ portSAVE&#095;CONTEXT&#040;&#041;; /&#042; Increment the RTOS tick count, then look for the highest priority task that is ready to run. &#042;/ &#095;&#095;asm [&hellip;]" />
+<meta name="twitter:title" content="Can vTickIsr() be called from IRQ_Handler? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202196' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202196' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202196' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202196' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144215' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2012%2Ffreertos_Can_vTickIsr_be_called_from_IRQ_Handler_6178971.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2012%2Ffreertos_Can_vTickIsr_be_called_from_IRQ_Handler_6178971.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144215">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2012_freertos_support_forum_archive_index.html/">November 2012 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 15, 2012</div><div class="thread-post-content">I am calling :  
+void vTickISR&#40; void &#41; &#95;&#95;attribute&#95;&#95;&#40;&#40;naked&#41;&#41;;<br />
+void vTickISR&#40; void &#41;<br />
+&#123;<br />
+/&#42; Save the context of the interrupted task. &#42;/<br />
+portSAVE&#95;CONTEXT&#40;&#41;;   
+/&#42; Increment the RTOS tick count, then look for the highest priority<br />
+task that is ready to run. &#42;/<br />
+&#95;&#95;asm volatile&#40; &#8220;bl vTaskIncrementTick&#8221; &#41;;  
+&#35;if configUSE&#95;PREEMPTION == 1<br />
+&#95;&#95;asm volatile&#40; &#8220;bl vTaskSwitchContext&#8221; &#41;;<br />
+&#35;endif  
+/&#42; clear timer interrupt. &#42;/<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OSTIMER1&#95;CTRL |= 0x00000008;  
+/&#42; Restore the context of the new task. &#42;/<br />
+portRESTORE&#95;CONTEXT&#40;&#41;;  
+From my IRQ&#95;Handler and program execution never returns back to IRQ&#95;Handler,&nbsp; instead it eventually enters again the IRQ&#95;Handler from the beggining eventhough IRQ is disabled.&nbsp; This eventually causes the stack corruption and program hangs.  
+void IRQ&#95;Handler&#40;void&#41; &#95;&#95;attribute&#95;&#95;&#40;&#40;interrupt &#40;&#8221;IRQ&#8221;&#41;&#41;&#41;;  
+void IRQ&#95;Handler&#40;void&#41;<br />
+&#123;  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;asm volatile&#40; &#8220;bl vTickISR&#8221; &#41;;  
+&#125;  
+If I leave out the Call to vTickIsr above and replace it with nop&#8217;s the code execution completes the IRQ&#95;Handler and returns PC to the previous location before exception happened. And, everthing works fine.. I can get endless interrupts, but tick count is not being incremented.  
+I have tried using portENTER&#95;CRITICAL&#40;&#41;; and portENTER&#95;CRITICAL&#40;&#41;; around the call to vTickIsr in IRQ&#95;Handler but that doesnt make much difference.  
+How do I call vTickIsr&#40;&#41; from IRQ&#95;Handler?&nbsp; Or must it be called outside the context of the IRQ?  
+This seems to be the last item keeping me from running the OS on my platform..  
+I am using ARM7&#95;LPC2138&#95;Rowley sample project with Xstudio on an ARM926ej-s processor.. Its actually a dual core though, but other side is disabled.  
+Can some one shed some light on this?  
+Thanks,<br />
+Ozmit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 15, 2012</div><div class="thread-post-content">Left out this:  
+&#8220;If I leave out the Call to vTickIsr above and replace it with nop&#8217;s the code execution completes the IRQ&#95;Handler and returns PC to the previous location before exception happened. And, everthing works fine.. I can get endless interrupts, but tick count is not being incremented.&#8221;  
+I also add clearing the timer Interrupt flag naturally so code can return back to regular program execution until the next timer Interrupt occurs.  
+Ozmit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 15, 2012</div><div class="thread-post-content">There are two important things here.  
+1&#41; Context switches can occur from a tick interrupt, or from a SWI interrupt.&nbsp; In both cases, the stack frame must be identical because a task may be switched out from an SWI and in from a tick, or visa versa.  
+2&#41; Because your ISR is naked, the function will not have a stack frame.&nbsp; All the code in your ISR is asm code, which is fine, other than &#8220;OSTIMER1&#95;CTRL |= 0x00000008;&#8221;, which is C code.&nbsp; Have you checked that the C code is not attempting to use the stack?  
+I would not recommend changing the code from the example you are copying, unless you can step through the asm code and know for sure why the change is necessary and why it is ok once it has changed &#40;keeping in mind point 1 above&#41;.  
+Personally I would first try to ascertain why the function is not returning &#8211; at what point does it go wrong and why &#8211; and that will probably require stepping through the C code until something goes wrong, then returning to the same point and stepping through the assembly code.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 15, 2012</div><div class="thread-post-content">The code does not touch the stack.  
+&#35;define OSTIMER1&#95;BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40;0xD0050000UL&#41;<br />
+&#35;define OSTIMER1&#95;CTRL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40;&#42;&#40;volatile unsigned long &#42;&#41;OSTIMER1&#95;BASE&#41;  
+Compiles to:  
+&nbsp;&nbsp;&nbsp; E59F3054&nbsp;&nbsp;&nbsp; ldr r3, 0x00008064 &lt;vTickISR+0xC0&gt;<br />
+&nbsp;&nbsp;&nbsp; E59F2050&nbsp;&nbsp;&nbsp; ldr r2, 0x00008064 &lt;vTickISR+0xC0&gt;<br />
+&nbsp;&nbsp;&nbsp; E5922000&nbsp;&nbsp;&nbsp; ldr r2,<br />
+&nbsp;&nbsp;&nbsp; E3822008&nbsp;&nbsp;&nbsp; orr r2, r2, &#35;8<br />
+&nbsp;&nbsp;&nbsp; E5832000&nbsp;&nbsp;&nbsp; str r2,   
+I will look into finding out why it doesnt return back to the IRQ&#95;Handler.&nbsp;   
+Thanks,<br />
+Ozmit  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 15, 2012</div><div class="thread-post-content">Richard,  
+After the code returns from the call to TaskSwitchContext, the timer is Interrupt flag is cleared&#40;In vTickIsr&#41;. Then the portRestoreContext macro executes and this is where the problem seems to be happening.  
+Instead of returning back to the IRQ&#95;Handler, the code returns to :  
+static portTASK&#95;FUNCTION&#40; prvSemaphoreTest, pvParameters &#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp; E92D4800&nbsp;&nbsp;&nbsp; push &#123;r11, lr&#125;<br />
+&nbsp;&nbsp;&nbsp; E28DB004&nbsp;&nbsp;&nbsp; add r11, sp, &#35;4<br />
+&nbsp;&nbsp;&nbsp; E24DD018&nbsp;&nbsp;&nbsp; sub sp, sp, &#35;24<br />
+&nbsp;&nbsp;&nbsp; E50B001C&nbsp;&nbsp;&nbsp; str r0,   
+Which was probably where the execution was prior to the Timer Interrupt triggering.  
+Isnt it suppose to return to the IRQ&#95;Handler to restore stack values that were pushed?  
+The other problem I dont understand is that since I am tracing through the end of vTckIsr, in the portRESTORE&#95;CONTEXT macro, my timer interrupt triggers again, and all though IRQ is disabled, this vector is fetched.&nbsp;   
+In order to see what was really going on, I disabled the Timer interrupt for now after my first Interrupt.&nbsp; Why would this be happening?  
+Thanks,<br />
+Ozmit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 15, 2012</div><div class="thread-post-content">Richard,  
+This is what my IRQ&#95;Handler looks like in asm.&nbsp;&nbsp; For now I just assume Im here for the Timer INT.  
+void IRQ&#95;Handler&#40;void&#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp; E52DB004&nbsp;&nbsp;&nbsp; str r11, &#33;<br />
+&nbsp;&nbsp;&nbsp; E28DB000&nbsp;&nbsp;&nbsp; add r11, sp, &#35;0<br />
+&#8212; mainISR.c &#8211; 130 &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;  
+&#95;&#95;asm volatile&#40; &#8220;bl vTickISR&#8221; &#41;;<br />
+&nbsp;&nbsp;&nbsp; EB001577&nbsp;&nbsp;&nbsp; bl 0x00007FA4 &lt;vTickISR&gt;<br />
+&#8212; mainISR.c &#8211; 136 &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;  
+&#125;<br />
+&nbsp;&nbsp;&nbsp; E28BD000&nbsp;&nbsp;&nbsp; add sp, r11, &#35;0<br />
+&nbsp;&nbsp;&nbsp; E8BD0800&nbsp;&nbsp;&nbsp; pop &#123;r11&#125;<br />
+&nbsp;&nbsp;&nbsp; E25EF004&nbsp;&nbsp;&nbsp; subs pc, lr, &#35;4  
+Does this look right?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 15, 2012</div><div class="thread-post-content">Ok &#8211; I missed this the first time on reading but it has become clearer after reading your second post.  
+From your other posts I seem to recall you are using an ARM9, is this correct?&nbsp; If it is then you need to be vectoring directly to the vTickISR&#40;&#41;, and not vectoring to IRQ&#95;Handler and then having IRQ&#95;Handler call vTickISR&#40;&#41;.&nbsp; vTickISR&#40;&#41; &#42;is&#42; the handler and has to be so the save context macro is the first thing that runs.&nbsp; The save context macro has the entry code.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 15, 2012</div><div class="thread-post-content">Richard,  
+For right now, my system only generates the Timer INT, but eventually other things in my system can cause an interrupt of which all of them are fetched from the same Vector IRQ&#95;INT&#40;0x00000018&#41;.&nbsp; Do I add code in vTickIsr&#40;&#41; to mask out non Timer INTs? and jump to those ISR&#8217;s repectively?&nbsp; Wouldn&#8217;t that cause a similar problem?  
+Also are you saying that only when I get a Timer INT, I need to engage OS by calling vTaskSwitchContext&#40;&#41;?  
+Thanks,<br />
+Ozzy 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 15, 2012</div><div class="thread-post-content">Does your MCU have an interrupt controller that allows vectoring directly to a specific ISR?&nbsp; This is common, and the interrupt controller provides a register that holds the address of the correct ISR to execute, and the IRQ vector itself is populated with a simple jump to that address.  
+When this is the case, you have two ways of writing your interrupt:  
+1&#41; You can either write each handler separately, and have the save context and restore context code in each interrupt handler, and the IRQ vector populated with code that just immediately branches to the right palce, or…  
+2&#41; You can install a single interrupt handler so the save and restore context code only appears in one place, and have the interrupt handler read the address to jump to itself.  
+In both cases, the first code executed &#42;must&#42; be the portSAVE&#95;CONTEXT&#40;&#41; macro because that expects the stack frame to be exactly as that set up for each task when the task is created.  
+If your interrupt controller is less sophisticated and only allows a single entry point, then you have to use method 2 as above.  
+The same is true of all interrupts that can cause a context switch &#8211; the first code that executes &#40;other than a branch to the ISR&#41; must be the portSAVE&#95;CONTEXT&#40;&#41; macro.&nbsp; To that end, the tick interrupt is no different to any other interrupt that causes a context switch &#8211; the context is saved, C code is executed, and the context is restored.&nbsp; If the C code includes code that switches the TCB pointer then the task that is restored could be different to that which was saved.  
+I&#8217;m sure it is possible to have other configurations, some of which may required the stack set up for a task when it is created to be modified, and others maybe for the stack frame to remain the same, but having portSAVE&#95;CONTEXT execute first is the way it is designed to work at the moment.  
+So to answer your question &#40;eventually&#41;, because the ARM 7/9 &#40;unlike Cortex-M&#41; ports does not have interrupt nesting there is no need to mask out other interrupt anywhere, and the tick interrupt does not need to call any other interrupts as each interrupt should be called separately &#40;although may share an entry point as per scenario 2 above &#8211; which only a couple of demos actually use&#41;.  
+I hope I have helped and not caused more confusion.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 15, 2012</div><div class="thread-post-content">OK… some what confusing but I think I get it.  
+I am obviously scenario &#35;2 as my MCU does not have the luxury of installing ISR routines in registers so that they are fetched immediately.&nbsp; I have to first index into a table in RAM that has the address of the ISR functions and then call that function.  
+So In my IRQ Handler&nbsp; will look something like this:  
+void IRQ&#95;Handler&#40;void&#41; &#95;&#95;attribute&#95;&#95;&#40;&#40;interrupt &#40;&#8221;IRQ&#8221;&#41;, naked&#41;&#41;;  
+void IRQ&#95;Handler&#40;void&#41;<br />
+&#123;  
+/&#42; Save the context of the interrupted task. &#42;/<br />
+portSAVE&#95;CONTEXT&#40;&#41;;   
+if Timer Interrupt<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Increment the RTOS tick count, then look for the highest priority<br />
+task that is ready to run. &#42;/<br />
+&#95;&#95;asm volatile&#40; &#8220;bl vTaskIncrementTick&#8221; &#41;;  
+&#35;if configUSE&#95;PREEMPTION == 1<br />
+&#95;&#95;asm volatile&#40; &#8220;bl vTaskSwitchContext&#8221; &#41;;<br />
+&#35;endif  
+/&#42; clear timer interrupt. &#42;/<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OSTIMER1&#95;CTRL |= 0x00000008;<br />
+//OSTIMER1&#95;CTRL = 0x00000000A;<br />
+&#125;<br />
+esle<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; look up Index in ISR&nbsp; Function Table<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bl &#8211; to that ISR  
+&#125;<br />
+/&#42; Restore the context of the new task. &#42;/<br />
+portRESTORE&#95;CONTEXT&#40;&#41;;  
+&#125;  
+Should I make the Handler Naked?  
+Thanks&#33;<br />
+Ozmit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 15, 2012</div><div class="thread-post-content">Richard,  
+I tried what you suggest both making ISR Naked or not and still have the same problem that the PC never gets to the end of the IRQ&#95;Handler and return to the previous code that the processor was executing.  
+Here is my latest IRQ&#95;Handler:<br />
+void IRQ&#95;Handler&#40;void&#41; &#95;&#95;attribute&#95;&#95;&#40;&#40;interrupt &#40;&#8221;IRQ&#8221;&#41;&#41;&#41;;  
+void IRQ&#95;Handler&#40;void&#41;<br />
+&#123;  
+/&#42; Save the context of the interrupted task. &#42;/<br />
+portSAVE&#95;CONTEXT&#40;&#41;;   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Increment the RTOS tick count, then look for the highest priority<br />
+task that is ready to run. &#42;/<br />
+&#95;&#95;asm volatile&#40; &#8220;bl vTaskIncrementTick&#8221; &#41;;  
+&#35;if configUSE&#95;PREEMPTION == 1<br />
+&#95;&#95;asm volatile&#40; &#8220;bl vTaskSwitchContext&#8221; &#41;;<br />
+&#35;endif  
+/&#42; clear timer interrupt. &#42;/<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OSTIMER1&#95;CTRL |= 0x00000008;<br />
+//OSTIMER1&#95;CTRL = 0x00000000A;<br />
+/&#42; Restore the context of the new task. &#42;/  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portRESTORE&#95;CONTEXT&#40;&#41;;  
+&#125;  
+The bottom line is when the Context is restored, The PC is not pointing back to the end of the IRQ&#95;Handler Routine.   
+Here is the ASM of the Handler:  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br />
+void IRQ&#95;Handler&#40;void&#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp; E92D080C&nbsp;&nbsp;&nbsp; push &#123;r2-r3, r11&#125;<br />
+&nbsp;&nbsp;&nbsp; E28DB008&nbsp;&nbsp;&nbsp; add r11, sp, &#35;8<br />
+&#8212; mainISR.c &#8211; 129 &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;<br />
+/&#42; Save the context of the interrupted task. &#42;/<br />
+portSAVE&#95;CONTEXT&#40;&#41;;<br />
+&nbsp;&nbsp;&nbsp; E92D0001&nbsp;&nbsp;&nbsp; push &#123;r0&#125;<br />
+&nbsp;&nbsp;&nbsp; E94D2000&nbsp;&nbsp;&nbsp; stmdb sp, &#123;sp&#125;^<br />
+&nbsp;&nbsp;&nbsp; E1A00000&nbsp;&nbsp;&nbsp; mov r0, r0<br />
+&nbsp;&nbsp;&nbsp; E24DD004&nbsp;&nbsp;&nbsp; sub sp, sp, &#35;4<br />
+&nbsp;&nbsp;&nbsp; E8BD0001&nbsp;&nbsp;&nbsp; pop &#123;r0&#125;<br />
+&nbsp;&nbsp;&nbsp; E9204000&nbsp;&nbsp;&nbsp; stmdb r0&#33;, &#123;lr&#125;<br />
+&nbsp;&nbsp;&nbsp; E1A0E000&nbsp;&nbsp;&nbsp; mov lr, r0<br />
+&nbsp;&nbsp;&nbsp; E8BD0001&nbsp;&nbsp;&nbsp; pop &#123;r0&#125;<br />
+&nbsp;&nbsp;&nbsp; E94E7FFF&nbsp;&nbsp;&nbsp; stmdb lr, &#123;r0-lr&#125;^<br />
+&nbsp;&nbsp;&nbsp; E1A00000&nbsp;&nbsp;&nbsp; mov r0, r0<br />
+&nbsp;&nbsp;&nbsp; E24EE03C&nbsp;&nbsp;&nbsp; sub lr, lr, &#35;0x3C<br />
+&nbsp;&nbsp;&nbsp; E14F0000&nbsp;&nbsp;&nbsp; mrs r0, spsr<br />
+&nbsp;&nbsp;&nbsp; E92E0001&nbsp;&nbsp;&nbsp; stmdb lr&#33;, &#123;r0&#125;<br />
+&nbsp;&nbsp;&nbsp; E59F0094&nbsp;&nbsp;&nbsp; ldr r0, 0x00002A90 &lt;IRQ&#95;Handler+0xD8&gt;<br />
+&nbsp;&nbsp;&nbsp; E5900000&nbsp;&nbsp;&nbsp; ldr r0,<br />
+&nbsp;&nbsp;&nbsp; E92E0001&nbsp;&nbsp;&nbsp; stmdb lr&#33;, &#123;r0&#125;<br />
+&nbsp;&nbsp;&nbsp; E59F008C&nbsp;&nbsp;&nbsp; ldr r0, 0x00002A94 &lt;IRQ&#95;Handler+0xDC&gt;<br />
+&nbsp;&nbsp;&nbsp; E5900000&nbsp;&nbsp;&nbsp; ldr r0,<br />
+&nbsp;&nbsp;&nbsp; E580E000&nbsp;&nbsp;&nbsp; str lr,<br />
+&nbsp;&nbsp;&nbsp; E59F3070&nbsp;&nbsp;&nbsp; ldr r3, 0x00002A84 &lt;IRQ&#95;Handler+0xCC&gt;<br />
+&nbsp;&nbsp;&nbsp; E5933000&nbsp;&nbsp;&nbsp; ldr r3,<br />
+&nbsp;&nbsp;&nbsp; E59F306C&nbsp;&nbsp;&nbsp; ldr r3, 0x00002A88 &lt;IRQ&#95;Handler+0xD0&gt;<br />
+&nbsp;&nbsp;&nbsp; E5933000&nbsp;&nbsp;&nbsp; ldr r3,<br />
+&#8212; mainISR.c &#8211; 133 &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;<br />
+/&#42; Increment the RTOS tick count, then look for the highest priority<br />
+task that is ready to run. &#42;/<br />
+&#95;&#95;asm volatile&#40; &#8220;bl vTaskIncrementTick&#8221; &#41;;<br />
+&nbsp;&nbsp;&nbsp; EB0010B7&nbsp;&nbsp;&nbsp; bl 0x00006D00 &lt;vTaskIncrementTick&gt;<br />
+&#8212; mainISR.c &#8211; 138 &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;<br />
+&#35;if configUSE&#95;PREEMPTION == 1<br />
+&#95;&#95;asm volatile&#40; &#8220;bl vTaskSwitchContext&#8221; &#41;;<br />
+&nbsp;&nbsp;&nbsp; EB00113C&nbsp;&nbsp;&nbsp; bl 0x00006F18 &lt;vTaskSwitchContext&gt;<br />
+&#8212; mainISR.c &#8211; 141 &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;<br />
+&#35;endif<br />
+/&#42; clear timer interrupt. &#42;/<br />
+OSTIMER1&#95;CTRL |= 0x00000008;<br />
+&nbsp;&nbsp;&nbsp; E59F3060&nbsp;&nbsp;&nbsp; ldr r3, 0x00002A8C &lt;IRQ&#95;Handler+0xD4&gt;<br />
+&nbsp;&nbsp;&nbsp; E59F205C&nbsp;&nbsp;&nbsp; ldr r2, 0x00002A8C &lt;IRQ&#95;Handler+0xD4&gt;<br />
+&nbsp;&nbsp;&nbsp; E5922000&nbsp;&nbsp;&nbsp; ldr r2,<br />
+&nbsp;&nbsp;&nbsp; E3822008&nbsp;&nbsp;&nbsp; orr r2, r2, &#35;8<br />
+&nbsp;&nbsp;&nbsp; E5832000&nbsp;&nbsp;&nbsp; str r2,<br />
+&#8212; mainISR.c &#8211; 145 &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;<br />
+//OSTIMER1&#95;CTRL = 0x00000000A;<br />
+/&#42; Restore the context of the new task. &#42;/<br />
+portRESTORE&#95;CONTEXT&#40;&#41;;<br />
+&nbsp;&nbsp;&nbsp; E59F0054&nbsp;&nbsp;&nbsp; ldr r0, 0x00002A94 &lt;IRQ&#95;Handler+0xDC&gt;<br />
+&nbsp;&nbsp;&nbsp; E5900000&nbsp;&nbsp;&nbsp; ldr r0,<br />
+&nbsp;&nbsp;&nbsp; E590E000&nbsp;&nbsp;&nbsp; ldr lr,<br />
+&nbsp;&nbsp;&nbsp; E59F0044&nbsp;&nbsp;&nbsp; ldr r0, 0x00002A90 &lt;IRQ&#95;Handler+0xD8&gt;<br />
+&nbsp;&nbsp;&nbsp; E8BE0002&nbsp;&nbsp;&nbsp; ldm lr&#33;, &#123;r1&#125;<br />
+&nbsp;&nbsp;&nbsp; E5801000&nbsp;&nbsp;&nbsp; str r1,<br />
+&nbsp;&nbsp;&nbsp; E8BE0001&nbsp;&nbsp;&nbsp; ldm lr&#33;, &#123;r0&#125;<br />
+&nbsp;&nbsp;&nbsp; E169F000&nbsp;&nbsp;&nbsp; msr spsr&#95;cf, r0<br />
+&nbsp;&nbsp;&nbsp; E8DE7FFF&nbsp;&nbsp;&nbsp; ldmia lr, &#123;r0-lr&#125;^<br />
+&nbsp;&nbsp;&nbsp; E1A00000&nbsp;&nbsp;&nbsp; mov r0, r0<br />
+&nbsp;&nbsp;&nbsp; E59EE03C&nbsp;&nbsp;&nbsp; ldr lr,<br />
+&nbsp;&nbsp;&nbsp; E25EF004&nbsp;&nbsp;&nbsp; subs pc, lr, &#35;4<br />
+&nbsp;&nbsp;&nbsp; E59F3014&nbsp;&nbsp;&nbsp; ldr r3, 0x00002A84 &lt;IRQ&#95;Handler+0xCC&gt;<br />
+&nbsp;&nbsp;&nbsp; E5933000&nbsp;&nbsp;&nbsp; ldr r3,<br />
+&nbsp;&nbsp;&nbsp; E59F3010&nbsp;&nbsp;&nbsp; ldr r3, 0x00002A88 &lt;IRQ&#95;Handler+0xD0&gt;<br />
+&nbsp;&nbsp;&nbsp; E5933000&nbsp;&nbsp;&nbsp; ldr r3,<br />
+&#8212; mainISR.c &#8211; 149 &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;<br />
+&#125;<br />
+&nbsp;&nbsp;&nbsp; E24BD008&nbsp;&nbsp;&nbsp; sub sp, r11, &#35;8<br />
+&nbsp;&nbsp;&nbsp; E8BD080C&nbsp;&nbsp;&nbsp; pop &#123;r2-r3, r11&#125;<br />
+&nbsp;&nbsp;&nbsp; E25EF004&nbsp;&nbsp;&nbsp; subs pc, lr, &#35;4<br />
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+The strange this is the compiler is placing the parethesis at the end of the Restore context Macro, when in fact the end should be the restore of resgisters and reload of PC and SPSR…  
+&nbsp;&nbsp;&nbsp; E24BD008&nbsp;&nbsp;&nbsp; sub sp, r11, &#35;8<br />
+&nbsp;&nbsp;&nbsp; E8BD080C&nbsp;&nbsp;&nbsp; pop &#123;r2-r3, r11&#125;<br />
+&nbsp;&nbsp;&nbsp; E25EF004&nbsp;&nbsp;&nbsp; subs pc, lr, &#35;4  
+Here is my stack configuration, just in case you see a problem with that.<br />
+.heap&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0000f9b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x400<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0000f9b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;heap&#95;start&#95;&#95; = .<br />
+&#42;&#40;.heap .heap.&#42;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0000fdb4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ALIGN &#40;MAX &#40;&#40;&#95;&#95;heap&#95;start&#95;&#95; + &#95;&#95;HEAPSIZE&#95;&#95;&#41;, .&#41;, 0x4&#41;<br />
+&#42;fill&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0000f9b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x400 00<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0000fdb4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;heap&#95;end&#95;&#95; = &#40;&#95;&#95;heap&#95;start&#95;&#95; + SIZEOF &#40;.heap&#41;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0000fdb4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;heap&#95;load&#95;end&#95;&#95; = &#95;&#95;heap&#95;end&#95;&#95;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00000001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ASSERT &#40;&#40;&#40;&#95;&#95;heap&#95;end&#95;&#95; &gt;= &#95;&#95;SRAM&#95;segment&#95;start&#95;&#95;&#41; &amp;&amp; &#40;&#95;&#95;heap&#95;end&#95;&#95; &lt;= &#95;&#95;SRAM&#95;segment&#95;end&#95;&#95;&#41;&#41;, error: .heap is too large to fit in SRAM memory segment&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0000fdb4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;load&#95;start&#95;&#95; = ALIGN &#40;&#95;&#95;heap&#95;end&#95;&#95;, 0x4&#41;  
+.stack&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0000fdb4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x400<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0000fdb4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;start&#95;&#95; = .<br />
+&#42;&#40;.stack .stack.&#42;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000101b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ALIGN &#40;MAX &#40;&#40;&#95;&#95;stack&#95;start&#95;&#95; + &#95;&#95;STACKSIZE&#95;&#95;&#41;, .&#41;, 0x4&#41;<br />
+&#42;fill&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0000fdb4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x400 00<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000101b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;end&#95;&#95; = &#40;&#95;&#95;stack&#95;start&#95;&#95; + SIZEOF &#40;.stack&#41;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000101b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;load&#95;end&#95;&#95; = &#95;&#95;stack&#95;end&#95;&#95;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00000001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ASSERT &#40;&#40;&#40;&#95;&#95;stack&#95;end&#95;&#95; &gt;= &#95;&#95;SRAM&#95;segment&#95;start&#95;&#95;&#41; &amp;&amp; &#40;&#95;&#95;stack&#95;end&#95;&#95; &lt;= &#95;&#95;SRAM&#95;segment&#95;end&#95;&#95;&#41;&#41;, error: .stack is too large to fit in SRAM memory segment&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000101b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;irq&#95;load&#95;start&#95;&#95; = ALIGN &#40;&#95;&#95;stack&#95;end&#95;&#95;, 0x4&#41;  
+.stack&#95;irq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000101b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x100<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000101b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;irq&#95;start&#95;&#95; = .<br />
+&#42;&#40;.stack&#95;irq .stack&#95;irq.&#42;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000102b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ALIGN &#40;MAX &#40;&#40;&#95;&#95;stack&#95;irq&#95;start&#95;&#95; + &#95;&#95;STACKSIZE&#95;IRQ&#95;&#95;&#41;, .&#41;, 0x4&#41;<br />
+&#42;fill&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000101b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x100 00<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000102b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;irq&#95;end&#95;&#95; = &#40;&#95;&#95;stack&#95;irq&#95;start&#95;&#95; + SIZEOF &#40;.stack&#95;irq&#41;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000102b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;irq&#95;load&#95;end&#95;&#95; = &#95;&#95;stack&#95;irq&#95;end&#95;&#95;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00000001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ASSERT &#40;&#40;&#40;&#95;&#95;stack&#95;irq&#95;end&#95;&#95; &gt;= &#95;&#95;SRAM&#95;segment&#95;start&#95;&#95;&#41; &amp;&amp; &#40;&#95;&#95;stack&#95;irq&#95;end&#95;&#95; &lt;= &#95;&#95;SRAM&#95;segment&#95;end&#95;&#95;&#41;&#41;, error: .stack&#95;irq is too large to fit in SRAM memory segment&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000102b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;fiq&#95;load&#95;start&#95;&#95; = ALIGN &#40;&#95;&#95;stack&#95;irq&#95;end&#95;&#95;, 0x4&#41;  
+.stack&#95;fiq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000102b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x100<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000102b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;fiq&#95;start&#95;&#95; = .<br />
+&#42;&#40;.stack&#95;fiq .stack&#95;fiq.&#42;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000103b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ALIGN &#40;MAX &#40;&#40;&#95;&#95;stack&#95;fiq&#95;start&#95;&#95; + &#95;&#95;STACKSIZE&#95;FIQ&#95;&#95;&#41;, .&#41;, 0x4&#41;<br />
+&#42;fill&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000102b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x100 00<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000103b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;fiq&#95;end&#95;&#95; = &#40;&#95;&#95;stack&#95;fiq&#95;start&#95;&#95; + SIZEOF &#40;.stack&#95;fiq&#41;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000103b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;fiq&#95;load&#95;end&#95;&#95; = &#95;&#95;stack&#95;fiq&#95;end&#95;&#95;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00000001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ASSERT &#40;&#40;&#40;&#95;&#95;stack&#95;fiq&#95;end&#95;&#95; &gt;= &#95;&#95;SRAM&#95;segment&#95;start&#95;&#95;&#41; &amp;&amp; &#40;&#95;&#95;stack&#95;fiq&#95;end&#95;&#95; &lt;= &#95;&#95;SRAM&#95;segment&#95;end&#95;&#95;&#41;&#41;, error: .stack&#95;fiq is too large to fit in SRAM memory segment&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000103b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;svc&#95;load&#95;start&#95;&#95; = ALIGN &#40;&#95;&#95;stack&#95;fiq&#95;end&#95;&#95;, 0x4&#41;  
+.stack&#95;svc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000103b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x200<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000103b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;svc&#95;start&#95;&#95; = .<br />
+&#42;&#40;.stack&#95;svc .stack&#95;svc.&#42;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ALIGN &#40;MAX &#40;&#40;&#95;&#95;stack&#95;svc&#95;start&#95;&#95; + &#95;&#95;STACKSIZE&#95;SVC&#95;&#95;&#41;, .&#41;, 0x4&#41;<br />
+&#42;fill&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000103b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x200 00<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;svc&#95;end&#95;&#95; = &#40;&#95;&#95;stack&#95;svc&#95;start&#95;&#95; + SIZEOF &#40;.stack&#95;svc&#41;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;svc&#95;load&#95;end&#95;&#95; = &#95;&#95;stack&#95;svc&#95;end&#95;&#95;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00000001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ASSERT &#40;&#40;&#40;&#95;&#95;stack&#95;svc&#95;end&#95;&#95; &gt;= &#95;&#95;SRAM&#95;segment&#95;start&#95;&#95;&#41; &amp;&amp; &#40;&#95;&#95;stack&#95;svc&#95;end&#95;&#95; &lt;= &#95;&#95;SRAM&#95;segment&#95;end&#95;&#95;&#41;&#41;, error: .stack&#95;svc is too large to fit in SRAM memory segment&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;abt&#95;load&#95;start&#95;&#95; = ALIGN &#40;&#95;&#95;stack&#95;svc&#95;end&#95;&#95;, 0x4&#41;  
+.stack&#95;abt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;abt&#95;start&#95;&#95; = .<br />
+&#42;&#40;.stack&#95;abt .stack&#95;abt.&#42;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ALIGN &#40;MAX &#40;&#40;&#95;&#95;stack&#95;abt&#95;start&#95;&#95; + &#95;&#95;STACKSIZE&#95;ABT&#95;&#95;&#41;, .&#41;, 0x4&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;abt&#95;end&#95;&#95; = &#40;&#95;&#95;stack&#95;abt&#95;start&#95;&#95; + SIZEOF &#40;.stack&#95;abt&#41;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;abt&#95;load&#95;end&#95;&#95; = &#95;&#95;stack&#95;abt&#95;end&#95;&#95;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00000001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ASSERT &#40;&#40;&#40;&#95;&#95;stack&#95;abt&#95;end&#95;&#95; &gt;= &#95;&#95;SRAM&#95;segment&#95;start&#95;&#95;&#41; &amp;&amp; &#40;&#95;&#95;stack&#95;abt&#95;end&#95;&#95; &lt;= &#95;&#95;SRAM&#95;segment&#95;end&#95;&#95;&#41;&#41;, error: .stack&#95;abt is too large to fit in SRAM memory segment&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;und&#95;load&#95;start&#95;&#95; = ALIGN &#40;&#95;&#95;stack&#95;abt&#95;end&#95;&#95;, 0x4&#41;  
+.stack&#95;und&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;und&#95;start&#95;&#95; = .<br />
+&#42;&#40;.stack&#95;und .stack&#95;und.&#42;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ALIGN &#40;MAX &#40;&#40;&#95;&#95;stack&#95;und&#95;start&#95;&#95; + &#95;&#95;STACKSIZE&#95;UND&#95;&#95;&#41;, .&#41;, 0x4&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;und&#95;end&#95;&#95; = &#40;&#95;&#95;stack&#95;und&#95;start&#95;&#95; + SIZEOF &#40;.stack&#95;und&#41;&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;stack&#95;und&#95;load&#95;end&#95;&#95; = &#95;&#95;stack&#95;und&#95;end&#95;&#95;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00000001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . = ASSERT &#40;&#40;&#40;&#95;&#95;stack&#95;und&#95;end&#95;&#95; &gt;= &#95;&#95;SRAM&#95;segment&#95;start&#95;&#95;&#41; &amp;&amp; &#40;&#95;&#95;stack&#95;und&#95;end&#95;&#95; &lt;= &#95;&#95;SRAM&#95;segment&#95;end&#95;&#95;&#41;&#41;, error: .stack&#95;und is too large to fit in SRAM memory segment&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x000105b4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;&#95;tbss&#95;load&#95;start&#95;&#95; = ALIGN &#40;&#95;&#95;stack&#95;und&#95;end&#95;&#95;, 0x4&#41;  
+Thanks  
+Ozmit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 15, 2012</div><div class="thread-post-content">Richard,  
+When I remove the context switching from the IRQ Handler code, it works perfect.&nbsp; Bad things happen when I try portRESTORE&#95;CONTEXT&#40;&#41;;&nbsp;   
+Can there be something wrong with the Startup.s file?&nbsp; Maybe I have omitted something?&nbsp; Or even crto.s file the Rowley creates?  
+Thanks,<br />
+Ozmit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 15, 2012</div><div class="thread-post-content">Another piece of Info is that the code is executing in System Mode is that the norm?  
+Out of Reset its Supervisor&nbsp; and in IRQ Handler its IRQ mode of course.&nbsp; But after Context Switch its stays in System mode.  
+Hope this is a clue.  
+Ozmit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 16, 2012</div><div class="thread-post-content">Richard,  
+What ever clues, hints, suggestions etc, you can share before you leave for the weekend would greatly be appreciated.&nbsp; Im trying to get this OS up and running for a customer that will be licensing FreeRTOS through OpenRTOS.  
+Have a great weekend.  
+Ozmit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 17, 2012</div><div class="thread-post-content">I have actually answered this already, don&#8217;t know why it didn&#8217;t show up.&nbsp; Maybe I closed the browser window too soon.  
+You need to set up stacks for Supervisor mode and IRQ mode.&nbsp; FIQ mode too if you use FIQ, there is another thread on the limitations of doing that.  
+main&#40;&#41; should be called in Supervisor mode.&nbsp; When the tasks run the MCU will be in System mode, but you don&#8217;t need to set up a system mode stack because the stack is allocated from the FreeRTOS heap when the task is created.&nbsp; When an interrupt is taken the MCU automatically enters IRQ mode and returns back to System mode when the interrupt completes.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 18, 2012</div><div class="thread-post-content">My stacks are setup per my previous reply.&nbsp; System Stack, IRQ, FIQ and Supervisor.&nbsp;&nbsp; I didnt know about the System stack so I defined it anyways.&nbsp; The CrossStudio project properties file did not have one defined so I guess it was done for a&nbsp; purpose.&nbsp; I will remove it then.&nbsp; But, It doesnt affect the outcome.&nbsp;   
+Modes are setup as per your request.   
+I have it working finally,&nbsp; I the tick count is being incremented and I am getting the &#8220;Pass&#8221; message to print out of the Debug Terminal window.  
+void IRQ&#95;Handler&#40;void&#41; &#95;&#95;attribute&#95;&#95;&#40;&#40;interrupt &#40;&#8221;IRQ&#8221;&#41;, naked&#41;&#41;;<br />
+void IRQ&#95;Handler&#40;void&#41;<br />
+&#123;  
+/&#42; Save the context of the interrupted task. &#42;/<br />
+portSAVE&#95;CONTEXT&#40;&#41;;   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Increment the RTOS tick count, then look for the highest priority<br />
+task that is ready to run. &#42;/<br />
+&#95;&#95;asm volatile&#40; &#8220;bl vTaskIncrementTick&#8221; &#41;;  
+&#35;if configUSE&#95;PREEMPTION == 1<br />
+&#95;&#95;asm volatile&#40; &#8220;bl vTaskSwitchContext&#8221; &#41;;<br />
+&#35;endif  
+/&#42; clear timer interrupt. &#42;/<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OSTIMER1&#95;CTRL |= 0x00000008;  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portRESTORE&#95;CONTEXT&#40;&#41;;  
+&#125;  
+Now I have to write the other ISR handlers for my system.  
+Thanks&#33;<br />
+Ozmit  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ksashtekar">ksashtekar</a> on November 19, 2012</div><div class="thread-post-content">Hello Ozmit,  
+Could you please share what was your exact problem and what you did to solve it ?<br />
+I get the feeling from your last reply that stack wasn&#8217;t your problem.  
+Thanks,<br />
+Kaustubh
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 19, 2012</div><div class="thread-post-content">Kaustubh,  
+It seems like the context switching was corrupting the stack.&nbsp; The stack were defined so that wasnt the problem.  
+My first IRQ&#95;HANDLER was not &#8220;Naked&#8221; and was calling vTickISR in C.&nbsp;&nbsp; Richard quickly pointed out that I basically had to remove that call and make vTickIsr my IRQ&#95;Handler.&nbsp;&nbsp;&nbsp;&nbsp; I made this change but still was having an issue because the Function was still not declared as naked.&nbsp;&nbsp; THerefore it was touching the stack at the begging and the end.&nbsp; This was a problem because after calling macro portRESTORE&#95;CONTEXT&#40;&#41;&nbsp; everything is popped from the stack leaving the stack code at the end of the IRQ&#95;Handler dangling and thus leading to stack corruption.  
+I hope that helps..  
+Ozmit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ksashtekar">ksashtekar</a> on November 20, 2012</div><div class="thread-post-content">Hello Ozmit,  
+So IIUC, in &#95;non&#95; FreeRTOS case the &#8220;&#95;&#95;attribute&#95;&#95;&#40;&#40;interrupt &#40;&#8221;IRQ&#8221;&#41;&#41;&#41;&#8221; is enough but since FreeRTOS uses portRESTORE&#95;CONTEXT and thus does the restoration itself &#40;without depending on the compiler&#41;, adding &#8220;naked&#8221; attribute is mandatory.  
+Regards,<br />
+Kaustubh
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 20, 2012</div><div class="thread-post-content">If you are writing a standard non FreeRTOS IRQ in a non FreeRTOS application you can use the IRQ function attribute if you are lucky enough to have a version of GCC in which it works.&nbsp; Maybe it is ok in newer copies of GCC, but when the port was written different GCC versions had different &#40;and very subtle&#41; IRQ attribute bugs that made it easier just to write the entry/exit code yourself.  
+If you are writing an IRQ in a FreeRTOS application and the IRQ can perform a context switch then you must use the naked attribute as described above and must &#42;not&#42; use the IRQ attribute.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 20, 2012</div><div class="thread-post-content">Richard,  
+I left the IRQ attribute on mine and it seems to be working just fine.&nbsp; I am using Rowley&#8217;s Cross Studio ver 2.2.0.  
+The naked attribute coupled with not having to make the extra call from the IRQ instead making my IRQ vTickIsr&#40;&#41; where the keys.  
+Thanks again,<br />
+Ozmit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Can vTickIsr() be called from IRQ_Handler?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ozsmit">ozsmit</a> on November 20, 2012</div><div class="thread-post-content">Richard,  
+Question, now that I have the IRQ&#95;Handler working, I need to add checks for the other system Interrupt sources, like buttons, I/O, DMA, etc.  
+Can I call another Handler routine that will do these functions from the IRQ handler using C function calls, or must I use &#8220;fromISR&#8221; calls to do this.  
+example:  
+I get a an interrupt for a button press, and that event requires an action of some type. Do I perform that action within the context of the IRQ or do I wait to return from the IRQ to begin that action?&nbsp;&nbsp; Do I send a message to that task to signal to it that an action needs to take place?  
+What is the best method?  
+Thanks,<br />
+Ozmit
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

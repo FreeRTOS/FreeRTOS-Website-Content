@@ -1,0 +1,321 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS with Altera / Intel NIOS II, exception handling clash. - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2018/freertos_FreeRTOS_with_Altera_Intel_NIOS_II_exception_handling_clash._57e382901bj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS with Altera / Intel NIOS II, exception handling clash. - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS with Altera / Intel NIOS II, exception handling clash.Posted by andrewparlane on November 30, 2018I have a NIOS II softcore design running on a cyclone V FPGA. I would like to run FreeRTOS but have been having some weird issues with spurious interrupts. Looking into it further it appears that both FreeRTOS and the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2018/freertos_FreeRTOS_with_Altera_Intel_NIOS_II_exception_handling_clash._57e382901bj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS with Altera / Intel NIOS II, exception handling clash.Posted by andrewparlane on November 30, 2018I have a NIOS II softcore design running on a cyclone V FPGA. I would like to run FreeRTOS but have been having some weird issues with spurious interrupts. Looking into it further it appears that both FreeRTOS and the [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS with Altera / Intel NIOS II, exception handling clash. - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203045' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203045' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203045' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203045' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147475' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2018%2Ffreertos_FreeRTOS_with_Altera_Intel_NIOS_II_exception_handling_clash._57e382901bj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2018%2Ffreertos_FreeRTOS_with_Altera_Intel_NIOS_II_exception_handling_clash._57e382901bj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147475">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2018_freertos_support_forum_archive_index.html/">November 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS with Altera / Intel NIOS II, exception handling clash.</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andrewparlane">andrewparlane</a> on November 30, 2018</div><div class="thread-post-content">I have a NIOS II softcore design running on a cyclone V FPGA. I would like to run FreeRTOS but have been having some weird issues with spurious interrupts. Looking into it further it appears that both FreeRTOS and the NIOS BSP contain interrupt handling code, which the linker script merges together into some horrendous mismash of code.
+Specifically the linker script contains:
+<blockquote>
+  .exceptions :
+      {
+          PROVIDE (<strong>ram<em>exceptions</em>start = ABSOLUTE(.));
+          . = ALIGN(0x20);
+          KEEP (<em>(.irq));
+          KEEP (</em>(.exceptions.entry.label));
+          KEEP (<em>(.exceptions.entry.user));
+          KEEP (</em>(.exceptions.entry.ecc_fatal));
+          KEEP (*(.exceptions.entry));
+          KEEP (*(.exceptions.irqtest.user));
+          KEEP (*(.exceptions.irqtest));
+          KEEP (*(.exceptions.irqhandler.user));
+          KEEP (*(.exceptions.irqhandler));
+          KEEP (*(.exceptions.irqreturn.user));
+          KEEP (*(.exceptions.irqreturn));
+          KEEP (*(.exceptions.notirq.label));
+          KEEP (*(.exceptions.notirq.user));
+          KEEP (*(.exceptions.notirq));
+          KEEP (*(.exceptions.soft.user));
+          KEEP (*(.exceptions.soft));
+          KEEP (*(.exceptions.unknown.user));
+          KEEP (*(.exceptions.unknown));
+          KEEP (*(.exceptions.exit.label));
+          KEEP (*(.exceptions.exit.user));
+          KEEP (*(.exceptions.exit));
+          KEEP (*(.exceptions));
+          PROVIDE (</strong>ram<em>exceptions</em>end = ABSOLUTE(.));
+      } > foobar
+</blockquote>
+Then in the bsp alt<em>irq</em>entry.S there is some code that gets put in to some of those sections. Specifically:
+<blockquote>
+    Line 54:         .section .exceptions.entry.label, &#8220;xa&#8221;
+    Line 62:         .section .exceptions.irqtest, &#8220;xa&#8221;
+    Line 85:         .section .exceptions.irqhandler, &#8220;xa&#8221;
+    Line 93:         .section .exceptions.irqreturn, &#8220;xa&#8221;
+    Line 97:         .section .exceptions.notirq.label, &#8220;xa&#8221;
+    Line 106:         .section .exceptions.exit.label
+</blockquote>
+Then FreeRTOS port_asm.S has other code which is put into these sections too:
+<blockquote>
+    Line 36: .section .exceptions.entry, &#8220;xa&#8221;<br />
+    Line 78:    .section .exceptions.irqtest, &#8220;xa&#8221;<br />
+    Line 90:    .section .exceptions.irqhandler, &#8220;xa&#8221;
+    Line 94:     .section .exceptions.irqreturn, &#8220;xa&#8221;
+    Line 135:   .section .exceptions.soft, &#8220;xa&#8221;
+</blockquote>
+The map file created by the linker contains:
+<blockquote>
+  .exceptions     0x0000000000000020      0x2fc
+                  [!provide]                        PROVIDE (<strong>ram<em>exceptions</em>start, ABSOLUTE (.))
+                  0x0000000000000020                . = ALIGN (0x20)
+   *(.irq)
+   *(.exceptions.entry.label)
+   .exceptions.entry.label
+                  0x0000000000000020        0x0 ../bsp/libhal_bsp.a(alt_irq_entry.o)
+                  0x0000000000000020                alt_irq_entry
+   .exceptions.entry.label
+                  0x0000000000000020        0x0 ../bsp/libhal_bsp.a(alt_exception_entry.o)
+                  0x0000000000000020                alt_exception
+   *(.exceptions.entry.user)
+   *(.exceptions.entry.ecc_fatal)
+   *(.exceptions.entry)
+   .exceptions.entry
+                  0x0000000000000020       0x8c obj/default/FreeRTOSv10.1.1/Source/portable/GCC/NiosII/port_asm.o
+   .exceptions.entry
+                  0x00000000000000ac       0x54 ../bsp/libhal_bsp.a(alt_exception_entry.o)
+   *(.exceptions.irqtest.user)
+   *(.exceptions.irqtest)
+   .exceptions.irqtest
+                  0x0000000000000100       0x14 obj/default/FreeRTOSv10.1.1/Source/portable/GCC/NiosII/port_asm.o
+   .exceptions.irqtest
+                  0x0000000000000114       0x10 ../bsp/libhal_bsp.a(alt_irq_entry.o)
+   *(.exceptions.irqhandler.user)
+   *(.exceptions.irqhandler)
+   .exceptions.irqhandler
+                  0x0000000000000124        0x4 obj/default/FreeRTOSv10.1.1/Source/portable/GCC/NiosII/port_asm.o
+   .exceptions.irqhandler
+                  0x0000000000000128        0x4 ../bsp/libhal_bsp.a(alt_irq_entry.o)
+   *(.exceptions.irqreturn.user)
+   *(.exceptions.irqreturn)
+   .exceptions.irqreturn
+                  0x000000000000012c       0x8c obj/default/FreeRTOSv10.1.1/Source/portable/GCC/NiosII/port_asm.o
+                  0x000000000000012c                restore_sp_from_pxCurrentTCB
+   .exceptions.irqreturn
+                  0x00000000000001b8        0x4 ../bsp/libhal_bsp.a(alt_irq_entry.o)
+   *(.exceptions.notirq.label)
+   .exceptions.notirq.label
+                  0x00000000000001bc        0x0 ../bsp/libhal_bsp.a(alt_irq_entry.o)
+   *(.exceptions.notirq.user)
+   *(.exceptions.notirq)
+   .exceptions.notirq
+                  0x00000000000001bc        0x8 ../bsp/libhal_bsp.a(alt_exception_entry.o)
+   *(.exceptions.soft.user)
+   *(.exceptions.soft)
+   .exceptions.soft
+                  0x00000000000001c4       0x2c obj/default/FreeRTOSv10.1.1/Source/portable/GCC/NiosII/port_asm.o
+   *(.exceptions.unknown.user)
+   *(.exceptions.unknown)
+   .exceptions.unknown
+                  0x00000000000001f0        0x4 ../bsp/libhal_bsp.a(alt_exception_entry.o)
+   *(.exceptions.exit.label)
+   .exceptions.exit.label
+                  0x00000000000001f4        0x0 ../bsp/libhal_bsp.a(alt_irq_entry.o)
+   .exceptions.exit.label
+                  0x00000000000001f4        0x0 ../bsp/libhal_bsp.a(alt_exception_entry.o)
+   *(.exceptions.exit.user)
+   *(.exceptions.exit)
+   .exceptions.exit
+                  0x00000000000001f4       0x54 ../bsp/libhal_bsp.a(alt_exception_entry.o)
+   *(.exceptions)
+   .exceptions    0x0000000000000248       0xd4 ../bsp/libhal_bsp.a(alt_irq_handler.o)
+                  0x0000000000000248                alt_irq_handler
+                  [!provide]                        PROVIDE (</strong>ram<em>exceptions</em>end, ABSOLUTE (.))
+                  [!provide]                        PROVIDE (__flash<em>exceptions</em>start, LOADADDR (.exceptions))
+</blockquote>
+Which shows how the code gets mashed together.
+Finally looking at the objdump we can the final code:
+<blockquote>
+  00000020 <alt_exception>:
+    20: ef7fff04    addi    ea,ea,-4
+    24: deffe304    addi    sp,sp,-116
+    28: dfc00015    stw ra,0(sp)
+    2c: d8400215    stw at,8(sp)
+    30: d8800315    stw r2,12(sp)
+    34: d8c00415    stw r3,16(sp)
+    38: d9000515    stw r4,20(sp)
+    3c: d9400615    stw r5,24(sp)
+    40: d9800715    stw r6,28(sp)
+    44: d9c00815    stw r7,32(sp)
+    48: da000915    stw r8,36(sp)
+    4c: da400a15    stw r9,40(sp)
+    50: da800b15    stw r10,44(sp)
+    54: dac00c15    stw r11,48(sp)
+    58: db000d15    stw r12,52(sp)
+    5c: db400e15    stw r13,56(sp)
+    60: db800f15    stw r14,60(sp)
+    64: dbc01015    stw r15,64(sp)
+    68: 000b307a    rdctl   r5,estatus
+    6c: d9401115    stw r5,68(sp)
+    70: df401215    stw ea,72(sp)
+    74: dc001315    stw r16,76(sp)
+    78: dc401415    stw r17,80(sp)
+    7c: dc801515    stw r18,84(sp)
+    80: dcc01615    stw r19,88(sp)
+    84: dd001715    stw r20,92(sp)
+    88: dd401815    stw r21,96(sp)
+    8c: dd801915    stw r22,100(sp)
+    90: ddc01a15    stw r23,104(sp)
+    94: de801b15    stw gp,108(sp)
+    98: df001c15    stw fp,112(sp)
+  0000009c <save_sp_to_pxcurrenttcb>:
+    9c: 06000074    movhi   et,1
+    a0: c61ef004    addi    et,et,31680
+    a4: c6000017    ldw et,0(et)
+    a8: c6c00015    stw sp,0(et)
+    ac: deffed04    addi    sp,sp,-76
+    b0: dfc00015    stw ra,0(sp)
+    b4: d8400215    stw at,8(sp)
+    b8: d8800315    stw r2,12(sp)
+    bc: d8c00415    stw r3,16(sp)
+    c0: d9000515    stw r4,20(sp)
+    c4: d9400615    stw r5,24(sp)
+    c8: d9800715    stw r6,28(sp)
+    cc: d9c00815    stw r7,32(sp)
+    d0: 000b307a    rdctl   r5,estatus
+    d4: da000915    stw r8,36(sp)
+    d8: da400a15    stw r9,40(sp)
+    dc: da800b15    stw r10,44(sp)
+    e0: dac00c15    stw r11,48(sp)
+    e4: db000d15    stw r12,52(sp)
+    e8: db400e15    stw r13,56(sp)
+    ec: db800f15    stw r14,60(sp)
+    f0: dbc01015    stw r15,64(sp)
+    f4: d9401115    stw r5,68(sp)
+    f8: ebffff04    addi    r15,ea,-4
+    fc: dbc01215    stw r15,72(sp)
+</blockquote>
+addresses 20 &#8211; a8 are from FreeRTOS code, and ac &#8211; fc is the BSP code. Note how the ea register is handled by both chunks of code.
+An even more obvoious example is:
+<blockquote>
+  00000124 <hw_irq_handler>:
+   124: 00002480    call    248 <alt_irq_handler>
+   128: 00002480    call    248 <alt_irq_handler>
+</blockquote>
+alt<em>irq</em>handler is in the BSP and is written in such a way that if the ipending register is 0, it locks up. Which is guaranteed to happen the second time it&#8217;s called, because interupts are disabled and the first call should handle all of the pending interrupts.
+So that sumarizes the issue pretty well (I think), the question is what to do about this. One option is to delete the exception handling code from the BSP, but that&#8217;s auto generated and would get replaced every time you generate the BSP. I could write a patch that auto delets it on generation, but that seems a bit hacky. Any ideas?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS with Altera / Intel NIOS II, exception handling clash.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 2, 2018</div><div class="thread-post-content">The NIOS demo in the FreeRTOS download is pretty old &#8211; but how does it 
+deal with this issue?  I suspect it has done as you suggest.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS with Altera / Intel NIOS II, exception handling clash.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andrewparlane">andrewparlane</a> on December 2, 2018</div><div class="thread-post-content">I&#8217;ve been unable to build the demo app. It includes system.h which is part of the BSP but there isn&#8217;t a BSP project. There&#8217;s a syslib project, but when I import that into the NIOS build tools (eclipse) the standard NIOS2 option isn&#8217;t in the menu to generate the BSP.
+I&#8217;ve been assuming that you have to have your own hardware config and then create your own BSP project from that, which I could do, but would end up having the same issues as I&#8217;m having.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS with Altera / Intel NIOS II, exception handling clash.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 2, 2018</div><div class="thread-post-content">Sorry I can&#8217;t remember how the project was created &#8211; but can&#8217;t see any 
+exception handling code in the project that would have been 
+auto-generated so removing that from your project to see if it fixes the 
+problem would seem to be a good suggestion &#8211; if that works then the 
+question will be how to prevent it being auto generated again&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS with Altera / Intel NIOS II, exception handling clash.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/andrewparlane">andrewparlane</a> on December 2, 2018</div><div class="thread-post-content">I have temporarily removed the alt<em>irq</em>entry.S and alt<em>exception</em>entry.S files, and after that everything works fine.
+It doesn&#8217;t strike me as the best fix ever, but I can&#8217;t think of anything else that would work. Obviously those files will be replaced next time I generate the BSP, but I should be able to set up a patch to delete them each time.
+The other option would be to remove the exception handling from freeRTOS, but I expect that&#8217;d cause other issues.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linker Script for C++ on SAM7 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2011/freertos_Linker_Script_for_C_on_SAM7_4635574.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Linker Script for C++ on SAM7 - FreeRTOS" />
+<meta property="og:description" content="Linker Script for C++ on SAM7Posted by sven-de on August 2, 2011Hi, along my journey into embedded OO I stumbled upon another problem: The linker script doesn&#8217;t supply a .ctors-section and won&#8217;t link global objects. I consulted these two ressources: http://www.state-machine.com/arm/Building_bare-metal_ARM_with_GNU.pdf http://gandalf.arubi.uni-kl.de/avr_projects/arm_projects/index_at91.html#at91_cpp But at the end of the day I realised, that I&#8217;d really need &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2011/freertos_Linker_Script_for_C_on_SAM7_4635574.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Linker Script for C++ on SAM7Posted by sven-de on August 2, 2011Hi, along my journey into embedded OO I stumbled upon another problem: The linker script doesn&#8217;t supply a .ctors-section and won&#8217;t link global objects. I consulted these two ressources: http://www.state-machine.com/arm/Building_bare-metal_ARM_with_GNU.pdf http://gandalf.arubi.uni-kl.de/avr_projects/arm_projects/index_at91.html#at91_cpp But at the end of the day I realised, that I&#8217;d really need [&hellip;]" />
+<meta name="twitter:title" content="Linker Script for C++ on SAM7 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202017' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202017' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202017' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202017' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139216' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2011%2Ffreertos_Linker_Script_for_C_on_SAM7_4635574.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2011%2Ffreertos_Linker_Script_for_C_on_SAM7_4635574.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139216">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2011_freertos_support_forum_archive_index.html/">August 2011 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Linker Script for C++ on SAM7</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sven-de">sven-de</a> on August 2, 2011</div><div class="thread-post-content">Hi,<br />
+along my journey into embedded OO I stumbled upon another problem: The linker script doesn&#8217;t supply a .ctors-section and won&#8217;t link global objects. I consulted these two ressources:<br />
+<a href="http://www.state-machine.com/arm/Building_bare-metal_ARM_with_GNU.pdf">http://www.state-machine.com/arm/Building_bare-metal_ARM_with_GNU.pdf</a><br />
+<a href="http://gandalf.arubi.uni-kl.de/avr_projects/arm_projects/index_at91.html#at91_cpp">http://gandalf.arubi.uni-kl.de/avr_projects/arm_projects/index_at91.html#at91_cpp</a><br />
+But at the end of the day I realised, that I&#8217;d really need some time to understand how linker-script, startup and low-level-init work within as well as together. So I just copied this between prog: and .data:  
+<pre><code>.ctors :
+    {
+        PROVIDE(__ctors_start__ = .);
+        KEEP(*(SORT(.ctors.*)))
+        KEEP(*(.ctors))
+        PROVIDE(__ctors_end__ = .);
+    } &gt;flash
+    .dtors :
+    {
+        PROVIDE(__dtors_start__ = .); 
+        KEEP(*(SORT(.dtors.*)))
+        KEEP(*(.dtors))
+        PROVIDE(__dtors_end__ = .);
+    } &gt;flash
+</code></pre>
+But got more errors. I&#8217;ve a weak understanding what the code in the two above ressources does, but have absolutely no clue about those &#40;sparsely commented&#41; files supplied with FreeRTOS. So I tend to swap atmel-rom.ld, boot.s und syscalls.c with those from the second ressource. Is that possible, or do they currently contain anything specific to FreeRTOS I have to take care of? Or are there even more files involved, such as Cstartup&#95;SAM7.c and Cstartup.s79 in SRCAtmel?  
+Is there any other way to achieve this without having to go deeply into GNU ld, and start-up procedures?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Linker Script for C++ on SAM7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 2, 2011</div><div class="thread-post-content">The linker script has nothing FreeRTOS specific as far as I know.  
+The start up file must set up a stack for both Supervisor and IRQ modes, as a minimum &#40;FIQ too if you use that&#41;, and install vPortYieldProcessor&#40;&#41; as the SWI interrupt handler.  
+There has been lots of discussion here on the topic of C++ in the past, and some C++ projects posted to the FreeRTOS Interactive site too.&nbsp; <a href="http://interactive.freertos.org/">http://interactive.freertos.org</a>  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Linker Script for C++ on SAM7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sven-de">sven-de</a> on August 2, 2011</div><div class="thread-post-content">Richard, your response time makes me once again forget, that you aren&#8217;t earning a single dime with this support &#40;except those few bucks I paid for the eBook&#41;. Thanks&#33;  
+I suppose&nbsp; with &#8220;start up file&#8221; you mean <em>boot.s</em> which apparently sets vPortYieldProcessor&#40;&#41; as SoftwareInterrupt. But there&#8217;s another file <em>./SrcAtmel/Cstartup.s97</em> which does the same. May I assume, since it&#8217;s not linked, called or compiled anywhere, that this one is obsolete?  
+I was a bit confused to find LowLevelInit&#40;&#41;-funtion in <em>./SrcAtmel/C</em>startup<em>&#95;SAM7.c</em>. All documentation I read until now treats low-level-init and startup-code as two different things &#8211; perhaps the naming could be changed with the next update of this demo.  
+Am I right, that <em>syscalls.c</em> has nothing to do with this? In 2009 you said that FreeRTOS doesn&#8217;t even use of any of it&#8217;s functions…  
+When this is my lucky day Richard Damon will soon come around the corner and post a platinum grade linker-script for C++ ;-&#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Linker Script for C++ on SAM7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 2, 2011</div><div class="thread-post-content">Which directory are you getting these files from?&nbsp; Just from the file name, I would say that Cstartup.s97 is probably an &#40;old&#41; IAR V.4x source file, and therefore should not be built with GCC.&nbsp; It is a long time since I did any SAM7 stuff, but I think the demos in the FreeRTOS download are for IAR, unless I did an Eclipse version at some time too.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Linker Script for C++ on SAM7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sven-de">sven-de</a> on August 2, 2011</div><div class="thread-post-content">Yes, I&#8217;m using the GCC/Eclipse demo which has <em>SrcAtmel/</em> right in <em>RTOSDemo/</em>. And your guess is probably right since the head-comment in <em>Cstartup.s97</em> mentions IAR.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Linker Script for C++ on SAM7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 2, 2011</div><div class="thread-post-content">Yes &#8211; ignore the .s79 file then &#8211; it is just part of the standard files received from Atmel, but not used in that particular demo.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Linker Script for C++ on SAM7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sven-de">sven-de</a> on August 8, 2011</div><div class="thread-post-content">Hi, currently I&#8217;m swopping the demo&#8217;s linker-script and startup-code with the aforementioned code by Martin Thomas &#40;second link&#41;.&nbsp; While doing this I stumbled upon this section in the original linker-script of the SAM7 GCC-Demo:
+<pre><code>    prog : 
+    {
+        *(.text)
+        *(.rodata)
+        *(.rodata*)
+        *(.glue_7)
+        *(.glue_7t)
+    } &gt;flash
+</code></pre>
+It&#8217;s the <em>prog</em> that puzzles me. From other linkerscripts I&#8217;d expect an <em>.text</em> &#40;note the dot&#41; in it&#8217;s location instead. Since I couldn&#8217;t find anything about this on the net, I assume it&#8217;s some sort of custom section &#40;which doesn&#8217;t matter as long it&#8217;s places in the right location&#41;. But is there any reason for not using the common <em>.text</em> here?  
+&#40;sorry for questions this far from the actual rtos&#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Linker Script for C++ on SAM7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/johandc">johandc</a> on August 9, 2011</div><div class="thread-post-content">Here&#8217;s a script that works for C++.  
+<pre><code>OUTPUT_FORMAT(elf32-littlearm)
+OUTPUT_ARCH(arm)
+ENTRY(_start)
+MEMORY
+{
+    sram  : ORIGIN = 0x00000000,    LENGTH = 0x1000
+    rom   : ORIGIN = 0x40000000,    LENGTH = 0x400000
+    flash : ORIGIN = 0x48000000,    LENGTH = 0x400000
+    ram   : ORIGIN = 0x50100000,    LENGTH = 0x100000
+}
+SECTIONS 
+{
+    . = 0;
+    _sfixed = .;
+    .text :
+    {
+        KEEP(*(.init))
+        . = 0x100;
+        KEEP(*(.jump))
+        *(.text)
+        *(.text.*)
+        *(.rodata*)
+        . = ALIGN(8);
+        PROVIDE (__init_array_start = .);
+        KEEP(*(.init_array))
+        PROVIDE (__init_array_end = .);
+    } &gt;rom
+    .ARM.extab (NOLOAD) : {
+        *(.ARM.extab* .gnu.linkonce.armextab.*)
+    } &gt;rom
+    __exidx_start = .;
+    .ARM.exidx (NOLOAD) : {
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+    } &gt; rom
+   __exidx_end = .;
+   _efixed = .;
+    .data : {
+        _data_lma = LOADADDR(.data);
+        _data_start = .;
+        *(.ramfunc)
+        *(.data)
+        *(.data.*)
+        _data_end = .;
+    } &gt;ram AT&gt; rom
+    .sram 0x40 : {
+        _sram_lma = LOADADDR(.sram);
+        _sram_start = .;
+        *(.sram.text)
+        *(.sram.data)
+        _sram_end = .;
+    } &gt;sram AT&gt; rom
+    .bss (NOLOAD) : {
+        _szero = .;
+        *(.bss)
+        *(.bss.*)
+        . = ALIGN(8);
+        _ezero = .;
+    } &gt;ram
+    __heap_start__ = .;
+    __heap_end__ = 0x50200000 - 8 - 40000;
+    .ram_persist __heap_end__ (NOLOAD) : {
+        *(.ram_persist)
+    } &gt; ram
+    _sstack = 0x50200000 - 8;
+}
+[/code
+Then before starting a C++ function, or even before main do this:
+[code]
+    /* C++ static constructors */
+    extern void (*__init_array_start []) (void) __attribute__((weak));
+    extern void (*__init_array_end []) (void) __attribute__((weak));
+    int count = __init_array_end - __init_array_start, i;
+    for (i = 0; i &lt; count; i++)
+        __init_array_start[i]();
+[/code]
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Linker Script for C++ on SAM7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sven-de">sven-de</a> on September 5, 2011</div><div class="thread-post-content">Thank you all for your kind help. I finally took the abovementioned files from Martin Thomas an merged them mit the demo from FreeRTOS.org. Acutally I completely replaced the linker script, kept <em>CstartupSAM7.c</em> and just joined the two startup-files <em>boot.s</em> and <em>Cstartup.S</em> which resulted in the code below. It&#8217;s working.  
+<pre><code>/*------------------------------------------------------------------------------
+//*-         ATMEL Microcontroller Software Support  -  ROUSSET  -
+//*-----------------------------------------------------------------------------
+//* The software is delivered "AS IS" without warranty or condition of any
+//* kind, either express, implied or statutory. This includes without
+//* limitation any warranty or condition with respect to merchantability or
+//* fitness for any particular purpose, or against the infringements of
+//* intellectual property rights of others.
+//*-----------------------------------------------------------------------------
+//*- File source          : Cstartup.s
+//*- Object               : Generic CStartup for KEIL and GCC
+//*- Compilation flag     : None
+//*
+//*- 1.0 18/Oct/04 JPP    : Creation
+//*- 1.1 21/Feb/05 JPP    : Set Interrupt
+//*- 1.1 01/Apr/05 JPP    : save SPSR 
+//*
+//* This file (along with the linker script and Cstartup_SAM7.c) was taken from
+//* Martin Thomas due to it's support for C++. Originally it also allowed to
+//* place parts of code as well as the vectors in ROM. This functionality was
+//* removed by Sven Gruener in Aug/2011 while adapting it to FreeRTOS
+//*---------------------------------------------------------------------------*/
+.print "ROM-Version: Vectors at start of Code, just variables in RAM"
+/*-----------------------------------------------------------------------------
+//*- Exception vectors 
+//*--------------------
+//*- These vectors can be read at address 0 or at RAM address
+//*- They ABSOLUTELY requires to be in relative addresssing mode in order to
+//*- guarantee a valid jump. For the moment, all are just looping.
+//*- If an exception occurs before remap, this would result in an infinite loop.
+//*- To ensure if a exeption occurs before start application to infinite loop.
+//*--------------------------------------------------------------------------*/
+.print "Vectors in section .vectorg -&gt; .text"
+.section .vectorg, "ax"
+            LDR     PC,Reset_Addr       /* 0x00 Reset handler */    
+            LDR     PC,Undef_Addr       /* 0x04 Undefined Instruction */
+            LDR     PC,SWI_Addr         /* 0x08 Software Interrupt */
+            LDR     PC,PAbt_Addr        /* 0x0C Prefetch Abort */
+            LDR     PC,DAbt_Addr        /* 0x10 Data Abort */
+            NOP                         /* 0x14 reserved  */
+            LDR     PC,[PC,#-0xF20]     /* 0x18 IRQ */
+            LDR     PC,FIQ_Addr         /* 0x1c FIQ */
+Reset_Addr:     .word   InitReset
+Undef_Addr:     .word   Undef_Handler
+SWI_Addr:       .word   vPortYieldProcessor      /* in portISR.c */
+PAbt_Addr:      .word   PAbt_Handler
+DAbt_Addr:      .word   DAbt_Handler
+/*IRQ_Addr:     .word   IRQ_Handler_Entry   */
+FIQ_Addr:       .word   FIQ_Handler
+Undef_Handler:  B       Undef_Handler
+PAbt_Handler:   B       PAbt_Handler
+DAbt_Handler:   B       DAbt_Handler
+FIQ_Handler:    B       FIQ_Handler
+/*--- End of exception vectors ----------------------------------------------*/
+.arm
+.section .init, "ax"
+.global _startup
+.func   _startup
+_startup:
+reset: 
+.RAM_TOP:
+    .word   __TOP_STACK 
+InitReset:
+/*-----------------------------------------------------------------------------
+/*- Low level Init (PMC, AIC, ? ....) by C function AT91F_LowLevelInit
+/*---------------------------------------------------------------------------*/
+/*- minumum C initialization, call  AT91F_LowLevelInit( void) */
+            .extern   AT91F_LowLevelInit
+            ldr     sp, .RAM_TOP    /* temporary stack in internal RAM (**) */
+/*--Call Low level init function in ABSOLUTE through the Interworking   */
+            ldr     r0,=AT91F_LowLevelInit
+            mov     lr, pc
+            bx      r0
+/*------------------------------------------------------------------------------
+//*- Stack size and location Definition
+//*------------------------------------
+//*- Interrupt Stack requires 2 words x 8 priority level x 4 bytes when using
+//*- the vectoring. This assume that the IRQ management.
+//*- The Interrupt Stack must be adjusted depending on the interrupt handlers.
+//*- The System stack size is not defined and is limited by the free internal
+//*- SRAM.
+//*---------------------------------------------------------------------------*/
+    /* Stack Sizes */
+    .equ  UND_STACK_SIZE, 0x00000004
+    .equ  ABT_STACK_SIZE, 0x00000004
+    .equ  FIQ_STACK_SIZE, 0x00000004
+    .equ  IRQ_STACK_SIZE, 0X00000400
+    .equ  SVC_STACK_SIZE, 0x00000400
+    /* Standard definitions of Mode bits and Interrupt (I &amp; F) flags in PSRs */
+    .equ  MODE_USR, 0x10            /* User Mode */
+    .equ  MODE_FIQ, 0x11            /* FIQ Mode */
+    .equ  MODE_IRQ, 0x12            /* IRQ Mode */
+    .equ  MODE_SVC, 0x13            /* Supervisor Mode */
+    .equ  MODE_ABT, 0x17            /* Abort Mode */
+    .equ  MODE_UND, 0x1B            /* Undefined Mode */
+    .equ  MODE_SYS, 0x1F            /* System Mode */
+    .equ  I_BIT, 0x80               /* when I bit is set, IRQ is disabled */
+    .equ  F_BIT, 0x40               /* when F bit is set, FIQ is disabled */
+/*------------------------------------------------------------------------------
+//*- Setup the stack for each mode
+//*-------------------------------*/
+    mov     r0, sp /* see (**) */
+    msr   CPSR_c, #MODE_UND|I_BIT|F_BIT /* Undefined Instruction Mode */
+    mov   sp, r0
+    sub   r0, r0, #UND_STACK_SIZE
+    msr   CPSR_c, #MODE_ABT|I_BIT|F_BIT /* Abort Mode */
+    mov   sp, r0
+    sub   r0, r0, #ABT_STACK_SIZE
+    msr   CPSR_c, #MODE_FIQ|I_BIT|F_BIT /* FIQ Mode */
+    mov   sp, r0
+    sub   r0, r0, #FIQ_STACK_SIZE
+    msr   CPSR_c, #MODE_IRQ|I_BIT|F_BIT /* IRQ Mode */
+    mov   sp, r0
+    sub   r0, r0, #IRQ_STACK_SIZE
+    msr   CPSR_c, #MODE_SVC|I_BIT|F_BIT /* Supervisor Mode */
+    mov   sp, r0
+    sub   r0, r0, #SVC_STACK_SIZE
+    msr   CPSR_c, #MODE_SYS|I_BIT|F_BIT /* System Mode */
+    mov   sp, r0
+    /* We want to start in supervisor mode.  Operation will switch to system
+    mode when the first task starts. */
+    msr   CPSR_c, #MODE_SVC|I_BIT|F_BIT
+                mov     sp, r0          /* Init stack Sup */
+/*------------------------------------------------------------------------------
+//*- Relocation of .data section (ROM-&gt;RAM)
+//*---------------------------------------*/
+/* Relocate .data section (Copy from ROM to RAM) 
+   This will also copy the .vectmapped and .fastrun */
+                LDR     R1, =_etext
+                LDR     R2, =_data
+                LDR     R3, =_edata
+LoopRel:        CMP     R2, R3
+                LDRLO   R0, [R1], #4
+                STRLO   R0, [R2], #4
+                BLO     LoopRel
+/*------------------------------------------------------------------------------
+//*- Clear .bss section (Zero init)
+//*-------------------------------*/
+                MOV     R0, #0
+                LDR     R1, =__bss_start__
+                LDR     R2, =__bss_end__
+LoopZI:         CMP     R1, R2
+                STRLO   R0, [R1], #4
+                BLO     LoopZI
+/*------------------------------------------------------------------------------
+//*- call C++ constructors of global objects
+//*----------------------------------------*/
+        LDR     r0, =__ctors_start__
+        LDR     r1, =__ctors_end__
+ctor_loop:
+        CMP     r0, r1
+        BEQ     ctor_end
+        LDR     r2, [r0], #4
+        STMFD   sp!, {r0-r1}
+        MOV     lr, pc
+/*      MOV     pc, r2 */
+        BX r2 /* mthomas 8/2006 */
+        LDMFD   sp!, {r0-r1}
+        B       ctor_loop
+ctor_end:
+/*------------------------------------------------------------------------------
+//*- call main()
+//*------------*/
+        ldr lr,=exit
+        ldr r0,=main
+        bx  r0
+        .size   _startup, . - _startup
+        .endfunc
+/* "exit" dummy added by mthomas to avoid sbrk write read etc. needed
+   by the newlib default "exit" */
+        .global exit
+        .func   exit
+exit:
+        b    .
+        .size   exit, . - exit
+        .endfunc
+/*----------------------------------------------------------------------------*/
+.end
+</code></pre>
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

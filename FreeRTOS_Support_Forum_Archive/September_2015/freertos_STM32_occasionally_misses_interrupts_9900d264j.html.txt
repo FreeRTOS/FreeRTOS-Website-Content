@@ -1,0 +1,248 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STM32 occasionally misses interrupts - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_STM32_occasionally_misses_interrupts_9900d264j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="STM32 occasionally misses interrupts - FreeRTOS" />
+<meta property="og:description" content="STM32 occasionally misses interruptsPosted by rousea on September 7, 2015I have an STM32 system that works correctly most of the time but occasionally fails to service interrupts. I wonder if there is something I am missing in my understanding of the NVIC: The system is built around FreeRTOS and uses, among other things, three USART’s &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_STM32_occasionally_misses_interrupts_9900d264j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="STM32 occasionally misses interruptsPosted by rousea on September 7, 2015I have an STM32 system that works correctly most of the time but occasionally fails to service interrupts. I wonder if there is something I am missing in my understanding of the NVIC: The system is built around FreeRTOS and uses, among other things, three USART’s [&hellip;]" />
+<meta name="twitter:title" content="STM32 occasionally misses interrupts - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202557' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202557' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202557' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202557' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145447' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_STM32_occasionally_misses_interrupts_9900d264j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_STM32_occasionally_misses_interrupts_9900d264j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145447">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2015_freertos_support_forum_archive_index.html/">September 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">STM32 occasionally misses interrupts</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rousea">rousea</a> on September 7, 2015</div><div class="thread-post-content">I have an STM32 system that works correctly most of the time but occasionally fails to service interrupts. I wonder if there is something I am missing in my understanding of the NVIC:
+The system is built around FreeRTOS and uses, among other things, three USART’s and a real time clock.  The RTC produces a one second tick on GPIO input E1 which is configured to generate the EXTI1 interrupt.  I have proved that the system sometimes misses this interrupt, and I suspect that it sometimes also misses USART interrupts:
+The EXTI1 interrupt service routine simply gives an RTOS semaphore:
+**
+xSemaphoreGiveFromISR(System.Semaphore.SecondTick, &amp;xHigherPriorityTaskWoken);
+ **
+One of the FreeRTOS tasks waits for this semaphore, but times out if it is not received within 1.02 seconds:
+**if (xSemaphoreTake(System.Semaphore.SecondTick, 1020) == pdFAIL){
+.
+.
+} else {
+.
+.
+}
+**
+This should obviously never fail, but occasionally it does.
+If I run the system through a debugger (OpenOCD) and pause it at random times I often see that the EXTIPR and the NVIC  ISPR registers both indicate that the EXTI1 interrupt is pending.  I would expect any pending interrupt to be handled immediately and cleared by the ISR.  The only reason I can imagine why this is not happening is if the interrupt is disabled.
+As far as I can see the only mechanism for disabling interrupts is to set BASEPRI to a value numerically lower than the priority of the interrupt.  SCB AIRCR PRIGROUP is set to 3 (i.e. 16 group priority levels, no sub-priorities) and the NVIC IPR for EXTI is set to 0x50. In FreeRTOSconfig.h the value for configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY is set to 0x30.
+According to my understanding  FreeRTOS sets BASEPRI to configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY when it is executing a task that can’t be interrupted and 0 at all other times.  I don’t believe that I can monitor BASEPRI  directly.   However, I think FreeRTOS copies it to pxCurrentTCB->uxBasePriority, and whenever I pause the debugger this reads 0.
+Can anyone give any suggestions why the interrupts are failing?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 occasionally misses interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 7, 2015</div><div class="thread-post-content">If configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY is 0x30, and the interrupt&#8217;s priority is 0x50, then the interrupt will be masked while you are inside a critical section, but BASEPRI should enable all interrupts while you are outside of a critical section (as you say, it sets BASEPRI to 0, which enables all interrupts).  What is BASEPRI actually set to when the problem occurs?  You should be able to read it using OpenOCD &#8211; and it is *not* copied to pxCurrentTCB->uxBasePriority.  uxBasePriority holds a task priority, which is not related to an interrupt priority.
+For the interrupt to execute five things must be done &#8211; the peripheral must be configured to generate interrupts, the interrupt must be enabled in the NVIC, the BASEPRI register must be set to allow the interrupt&#8217;s priority, the priority group must be set as you expect, and interrupts must be globally enabled in the CPU itself &#8211; did you check all four things?  Maybe one of them got disabled and not re-enabled along the way.
+Are you calling any FreeRTOS API functions from a critical section, or when the scheduler is suspended &#8211; or are you calling any non-interrupt safe API functions from an interrupt?
+As you are using an STM32, did you call NVIC<em>PriorityGroupConfig( NVIC</em>PriorityGroup_4 ) anywhere, or did you set the PRIGROUP register yourself?  These things can get quite confusing.
+Are you using STM32 Cube, or have you created your own drivers?
+Do you have <a href="http://www.freertos.org/a00110.html#configASSERT">configASSERT()</a> defined &#8211; if not, please define it as it may highlight the problem.
+As an aside, consider using a <a href="http://www.freertos.org/RTOS-task-notifications.html">direct to task notification</a> in place of the semaphore &#8211; it is faster and uses less RAM.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 occasionally misses interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rousea">rousea</a> on September 7, 2015</div><div class="thread-post-content">Thanks for your prompt response.  I added a call to get_BASEPRI() within the fail code above (to copy BASEPRI to a variable) followed by a breakpoint.  When this breakpoint was hit I checked various registers to follow your points:
+1. EXT>IMR = 0xFF22, showing that EXTI1 interrupt is enabled.  Furthermore EXTI>PR = 0x02, showing that EXTI1 has a pending interrupt
+2. NVIC>PR byte 7 = 0x50, showing that EXTI1 is enabled at priority level 0x50.  NVIC>ISER = 0xE000E100, showing that EXTI1 interrupt is enabled.  NVIC ISPR = 0xE000E200, showing that EXTI1 interrupt is pending.
+3. BASEPRI = 0
+4. SCB>AIRCR = 0xFA050300, showing that PRIGROUP = 3 (i.e. 16 group levels, no sub-groups)
+5. I may be missing something but I can&#8217;t find any way to globally enable/disable interrupts.  The nearest I can find is SCB>ICSR, which reads:
+<pre><code>ICSR    {...}   
+    Word    0xc35000    
+    &lt;anonymous struct&gt;  {...}   
+        VECTACTIVEL 0x0 
+        VECTACTIVEH 0x0 
+        RETTOBASE   0x0 
+        VECTPENDING_0_3 0x5 
+        VECTPENDING_4_7 0x3 
+        ISRPENDING  0x1 
+        ISRPREEMPT  0x1 
+        PENDSTCLR   0x0 
+        PENDSTSET   0x0 
+        PENDSVCLR   0x0 
+        PENDSVSET   0x0 
+        NMIPENDSET  0x0 
+</code></pre>
+This confirms that there is a pending ISR but confuses me by saying the vector is 0x35 = dec 53 = USART5.  I am not using USART5!
+I checked through all the ISR&#8217;s and none of them call non interrupt safe API&#8217;s.
+I am not impressed by the drivers in STM32 Cube.  They are not intuitive, are not flexible and don&#8217;t allow register contents to be easily analysed.  I have therefore created my own drivers, hence the report shown above for SCB>ICSR.  It is not therefore practical for me to use ConfigASSERT().
+I am currently using FreeRTOS 8.1.2. RTOS task notifications weren&#8217;t introduced until V8.2.0.  When I resolve this problem I will consider upgrading.
+I am therefore no further forward
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 occasionally misses interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 7, 2015</div><div class="thread-post-content">The CPSR register in the Cortex-M core itself (not the NVIC) has an &#8216;i&#8217; 
+bit that is used for globally enabling and disabling interrupts.  This 
+is not a &#8216;mask&#8217;, in that it doesn&#8217;t just disable some priorities, it 
+just bluntly disables all priorities.
+However, it sounds like your issue might be due to the unexpected vector 
+address.  Is that correct?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 occasionally misses interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rousea">rousea</a> on September 8, 2015</div><div class="thread-post-content">The vector shown in the ICSR register is baffling, because it points to the USART5 interrupt, which is not enabled or configured in any way, so I can&#8217;t explain it.  I am therefore assuming it is a &#8220;red herring&#8221;.  I am still left with the problem that there is a pending interrupt, but no ISR is invoked to handle it.
+I can&#8217;t find any reference to a CPSR register.  The Eclipse/OpenOCD combination I use for development can display the processor registers, including the xPSR register. The STM32 documentation (PM0056 Programming Manual) says this combines the APSR, IPSR and EPSR but none of these has an interrupt enable flag.
+Although I can&#8217;t prove conclusively that the system is missing USART interrupts, I can prove it misses the EXTI1 interrupt (which is hard-wired through GPIO E1 to an RTC 1 second clock pulse). The problem seems to only occur when unsynchronised data is being received on one or more USARTs. I am exploring the possibility that if a USART and an EXTI interrupt occur simultaneously one is ignored.
+Do you think there is any benefit in upgrading to FreeRTOS 8.2.0 regarding this problem?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 occasionally misses interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rousea">rousea</a> on September 8, 2015</div><div class="thread-post-content">I have found where the ICSR Vector Pending address is set to 0x35:  It is when FreeRTOS executes vPortYield():
+void vPortYield( void )
+{
+    /* Set a PendSV to request a context switch. */
+    portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+<pre><code>/* Barriers are normally not required but do ensure the code is completely
+within the specified behaviour for the architecture. */
+__asm volatile( "dsb" );
+__asm volatile( "isb" );
+</code></pre>
+}
+portNVIC<em>INT</em>CTRL<em>REG points to the SCB ICSR register. Writing portNVIC</em>PENDSVSET_BIT to it sets the PENDSVSET bit and simultaneously changes VECTPENDING to 0x35.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 occasionally misses interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 8, 2015</div><div class="thread-post-content">My apologies sending you down the wrong path looking for an i bit &#8211; I 
+was getting my ARM architectures muddled up (I use a lot of different 
+ones).  I believe The equivalent on the Cortex-M is the PRIMASK register.
+I would not think updating the version would make a difference to the issue.
+I know you said it was not practical to defined configASSERT() &#8211; but I 
+can&#8217;t remember why.  It may still provide the answer.
+Take care with the vector numbering as it might be that the 0 vector is 
+taken as the first user definable vector, rather than the first vector 
+in the table (the first few vectors being used for the system interrupts 
+such as PendSV).
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 occasionally misses interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alainm3">alainm3</a> on September 18, 2015</div><div class="thread-post-content">Hi, I am following this issue, it could hurt me too&#8230;
+Has this been identified and fixed? How?
+Thanks,
+Alain
+(Yes I did read the sourceforge discussion and ther is nothing there)
+Em 08-09-2015 08:28, Alan escreveu:
+>
+<blockquote>
+  I have found where the ICSR Vector Pending address is set to 0x35: It 
+  is when FreeRTOS executes vPortYield():
+  void vPortYield( void )
+  {
+  //Set a PendSV to request a context switch. //
+  portNVIC<em>INT</em>CTRL<em>REG = portNVIC</em>PENDSVSET_BIT;
+  /* Barriers are normally not required but do ensure the code is completely
+  within the specified behaviour for the architecture. */
+  __asm  volatile(  &#8220;dsb&#8221;  );
+  __asm  volatile(  &#8220;isb&#8221;  );
+  }
+  portNVIC<em>INT</em>CTRL<em>REG points to the SCB ICSR register. Writing 
+  portNVIC</em>PENDSVSET_BIT to it sets the PENDSVSET bit and simultaneously 
+  changes VECTPENDING to 0x35.
+  <hr />
+  STM32 occasionally misses interrupts 
+  <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/9900d264/?limit=25#fe23">https://sourceforge.net/p/freertos/discussion/382005/thread/9900d264/?limit=25#fe23</a>
+  <hr />
+  Sent from sourceforge.net because you indicated interest in 
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit 
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 occasionally misses interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 21, 2015</div><div class="thread-post-content"><blockquote>
+  Hi, I am following this issue, it could hurt me too&#8230;
+  Has this been identified and fixed? How?
+</blockquote>
+I didn&#8217;t realise there was anything that needed fixing &#8211; the setting the 
+PendSV bit makes an interrupt pending, that is its intended behaviour.
+If you think there is something wrong please start another thread that 
+explains what.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

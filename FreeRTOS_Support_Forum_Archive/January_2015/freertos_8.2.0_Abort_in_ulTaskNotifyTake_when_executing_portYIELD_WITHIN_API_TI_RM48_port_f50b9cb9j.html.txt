@@ -1,0 +1,405 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port) - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2015/freertos_8.2.0_Abort_in_ulTaskNotifyTake_when_executing_portYIELD_WITHIN_API_TI_RM48_port_f50b9cb9j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port) - FreeRTOS" />
+<meta property="og:description" content="8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)Posted by detoxie on January 30, 2015Hi, I get an abort exception when using the ulTaskNotifyTake function and executing the portYIELDWITHINAPI macro (row 3874 in tasks.c). I don&#8217;t get it in other functions, e.g. xQueueGenericReceive. The portYIELDWITHINAPI() macro expands to: { portSYSSSIR1REG = portSYSSSIR1SSKEY; asm( &#8221; &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2015/freertos_8.2.0_Abort_in_ulTaskNotifyTake_when_executing_portYIELD_WITHIN_API_TI_RM48_port_f50b9cb9j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)Posted by detoxie on January 30, 2015Hi, I get an abort exception when using the ulTaskNotifyTake function and executing the portYIELDWITHINAPI macro (row 3874 in tasks.c). I don&#8217;t get it in other functions, e.g. xQueueGenericReceive. The portYIELDWITHINAPI() macro expands to: { portSYSSSIR1REG = portSYSSSIR1SSKEY; asm( &#8221; [&hellip;]" />
+<meta name="twitter:title" content="8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port) - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202477' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202477' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202477' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202477' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145682' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2015%2Ffreertos_8.2.0_Abort_in_ulTaskNotifyTake_when_executing_portYIELD_WITHIN_API_TI_RM48_port_f50b9cb9j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2015%2Ffreertos_8.2.0_Abort_in_ulTaskNotifyTake_when_executing_portYIELD_WITHIN_API_TI_RM48_port_f50b9cb9j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145682">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2015_freertos_support_forum_archive_index.html/">January 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/detoxie">detoxie</a> on January 30, 2015</div><div class="thread-post-content">Hi,
+I get an abort exception when using the ulTaskNotifyTake function and executing the portYIELD<em>WITHIN</em>API macro (row 3874 in tasks.c). I don&#8217;t get it in other functions, e.g. xQueueGenericReceive. 
+The portYIELD<em>WITHIN</em>API() macro expands to: 
+{ portSYS<em>SSIR1</em>REG = portSYS<em>SSIR1</em>SSKEY;  asm( &#8221; DSB &#8221; ); asm( &#8221; ISB &#8221; ); }
+I have copied a 8.1.2 project in CCS and replaced the old OS files with the new 8.2.0 version. 
+The FreeRTOSConfig.h files are identical except for the #define configUSE<em>TASK</em>NOTIFICATIONS 1
+I&#8217;m using the new portmacro.h file. 
+Kind regards,
+Lars
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 30, 2015</div><div class="thread-post-content">Does this happen the first time you call ulTaskNotifyTake(), or are you 
+able to call it a few times successfully before it happens?
+Does the abort happen on one of the lines in the macro, or can you step 
+the code a little further through the function before it happens.
+In your case calling portYIELD<em>WITHIN</em>API() should pend a software 
+interrupt, but because the call is inside a critical section the 
+interrupt should remain pending until you exit the critical section on 
+line 3886.  So you should be able to step through the 
+portYEIDL<em>WITHIN</em>API() macro, then onto the taskEXIT_CRITICAL(), without 
+the yield being attempted.  If you can step through this code and let us 
+know exactly on which instruction the abort occurs that will be very 
+helpful in diagnosing its cause.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/detoxie">detoxie</a> on February 1, 2015</div><div class="thread-post-content"><blockquote>
+  Does this happen the first time you call ulTaskNotifyTake()&#8230;
+  No, it happens the second time because the first time I got the semaphore and the macro isn&#8217;t executed. So, the abort happens the FIRST time the MACRO is executed.
+  Does the abort happen on one of the lines in the macro&#8230;
+  I will test this on tuesday when I come to the office.
+</blockquote>
+Meanwhile, here is the code: 
+<h1>ISR</h1>
+<pre><code>#!cpp
+#define USE_NOTIFICATION 0
+#if ( USE_NOTIFICATION == 1 )
+extern TaskHandle_t xSPIUARTTask;
+#endif
+void gioHighLevelInterrupt(void)
+{
+#if ( USE_NOTIFICATION == 0 )
+static ISR_INT6_SPI_UART_GotInt_Queue gotintqueue6;
+#endif
+static BaseType_t xHigherPriorityTaskWoken;
+    /* Loop until all interrupts are processed */
+    do
+    {
+        offset = gioREG-&gt;OFF1;
+        switch (offset - 1U)
+        {
+            /*
+             * SPI-UART interrupt input (GPIOA(6))
+             */
+            case 6U:
+            #if ( USE_NOTIFICATION == 0 )
+                gotintqueue6.gotInt = true;
+                (void) xQueueOverwriteFromISR( xISR_INT6_SPI_UART_GotInt_Queue, &amp;gotintqueue6, &amp;xHigherPriorityTaskWoken );
+            #else
+                vTaskNotifyGiveFromISR( xSPIUARTTask, &amp;xHigherPriorityTaskWoken );
+            #endif
+                portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+            break;
+            default:
+            break;
+        }
+    } while (offset != 0U);
+}
+</code></pre>
+<h1>Task</h1>
+<pre><code>#!cpp
+#define USE_NOTIFICATION 0
+void vSPIUARTTask( void *pvParameters )
+{
+    for( ;; )
+    {
+#if ( USE_NOTIFICATION == 0 )
+        if ((xQueueReceive( xISR_INT6_SPI_UART_GotInt_Queue, &amp;spiuartQueue, portMAX_DELAY)
+            == pdTRUE) &amp;&amp; (spiuartQueue.gotInt == true))
+#else
+        if (ulTaskNotifyTake( pdTRUE, portMAX_DELAY ) == pdTRUE)
+#endif
+        {
+            code...
+        }
+        code...
+    }
+}
+</code></pre>
+The xQueueReceive works but not ulTaskNotifyTake. When I get the first interrupt, ulTaskNotifyTake returns pdTRUE but when ulTaskNotifyTake is called again (and the macro executes), I get the abort exception. 
+I might very well have messed up it in some other area of the code (which I may have missed when did the copy [and also did comparisons afterwards]) but it&#8217;s a bit strange that xQueueReceive works but not ulTaskNotifyTake. :/
+I get back to you when I have stepped through the macro. 
+Kind regards,
+Lars
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/detoxie">detoxie</a> on February 3, 2015</div><div class="thread-post-content">Hi again,
+I&#8217;ve debugged now and this is the result. The abort occurs at this line:
+portSYS<em>SSIR1</em>REG = portSYS<em>SSIR1</em>SSKEY (in ulTaskNotifyTake)
+portmacro.h
+<pre><code>#!c
+#define portSYS_SSIR1_REG ( * ( ( volatile uint32_t * ) 0xFFFFFFB0 ) )
+#define portSYS_SSIR1_SSKEY ( 0x7500UL )
+</code></pre>
+tasks.c &#8211; ulTaskNotifyTake
+<pre><code>#!c
+&lt;snip&gt;
+/* All ports are written to allow a yield in a critical
+section (some will yield immediately, others wait until the
+critical section exits) - but it is not something that
+application code should ever do. */
+// portYIELD_WITHIN_API();
+portSYS_SSIR1_REG = portSYS_SSIR1_SSKEY;  &lt;-- abort
+asm( " DSB " );
+asm( " ISB " );
+&lt;snip&gt;
+</code></pre>
+queue.c &#8211; xQueueGenericReceive
+<pre><code>#!c
+&lt;snip&gt;
+vTaskPlaceOnEventList( &amp;( pxQueue-&gt;xTasksWaitingToReceive ), xTicksToWait );
+prvUnlockQueue( pxQueue );
+if( xTaskResumeAll() == pdFALSE )
+{
+    // portYIELD_WITHIN_API();
+    portSYS_SSIR1_REG = portSYS_SSIR1_SSKEY;  &lt;-- Does not abort
+    asm( " DSB " );
+    asm( " ISB " );
+}
+&lt;snip&gt;
+</code></pre>
+It seems it&#8217;s not allowed to write to the address 0xFFFFFFB0 in ulTaskNotifyTake. 
+I have also posted a topic to the TI HALCoGen guys about this and asked when they will have a HALCoGen version for 8.2.0. As I said, I could very well have messed up something which I&#8217;ve missed. We could wait for the answer from Texas. One thing is that I&#8217;ve used HALCoGen&#8217;s sys<em>link.cmd file and not the file from your demo project. But I use the same sys</em>link.cmd file for the 8.1.2 project. 
+Kind regards,
+Lars
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/detoxie">detoxie</a> on February 3, 2015</div><div class="thread-post-content">Noticed that the comment got lost. But I think you understood that the abort does not happen in queue.c &#8211; xQueueGenericReceive. 
+Regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 3, 2015</div><div class="thread-post-content">In the xQueueGenericReeive() case the portYIELD<em>WITHIN</em>API() call is not inside a critical section.  In the ulTaskNotifyTake() case it is.  I wonder if that has anything to do with it &#8211; although it would seem odd if it were the case as the yield in the TMS570 case is performed by pending a software interrupt &#8211; if the software interrupt is masked by the critical section that I would have thought it would just remain pending until the critical section was exited (which is how ports such as the Cortex-M3 and RX work, which use a similar pended software interrupt scheme for yielding).
+There was a time when yielding from a critical section was done all over the place, whereas having just had a quick scan of the code that does not seem to be the case any more.
+We can check this theory quickly by exiting then entering the critical section around the call to taskYIELD():
+taskEXIT<em>CRITICAL();
+portYIELD</em>WITHIN<em>API();
+taskENTER</em>CRITICAL();
+Only do that for this quick test though &#8211; don&#8217;t leave it in the code as there is the potential for a race condition with an interrupt.
+If that is proven to fix the issue then I will have to get the TMS570 manual out, it might be something to do with the priority of the software interrupt, if it is configurable, I can&#8217;t remember.  Although perhaps if this is an issue just restructuring the function to use a scheduler lock could also be an option.
+Please let me know the result.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/detoxie">detoxie</a> on February 3, 2015</div><div class="thread-post-content">Hi,
+I will come back to you in about 20 minutes. The hardware engineers are updating my mock-up board. 🙂 
+And it&#8217;s not the TMS570. We&#8217;re using the RM48L952 MCU. 
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/detoxie">detoxie</a> on February 3, 2015</div><div class="thread-post-content">No, it still crashes on that line. 
+<pre><code>#!c
+/* All ports are written to allow a yield in a critical
+section (some will yield immediately, others wait until the
+critical section exits) - but it is not something that
+application code should ever do. */
+//    portYIELD_WITHIN_API();
+taskEXIT_CRITICAL();
+portSYS_SSIR1_REG = portSYS_SSIR1_SSKEY;
+asm( " DSB " );
+asm( " ISB " );
+taskENTER_CRITICAL();
+</code></pre>
+The portSYS<em>SSIR1</em>REG expands to ( * ( ( volatile uint32_t * ) 0xFFFFFFB0 ) )
+It seems that accessing this address is illegal at that moment? 
+Regards,
+Lars  
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 3, 2015</div><div class="thread-post-content">&#8230;and calling taskEXIT_CRITICAL() caused interrupts to be re-enabled? 
+The only reason they wouldn&#8217;t would be if critical sections were nested.
+Just to check &#8211; you are calling the function from a task, not an interrupt?
+I will have to dig out the manual to see what could be causing this.  I 
+don&#8217;t have the compiler installed at the moment, and it will take a long 
+time to install (its of non-trivial size!).
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/detoxie">detoxie</a> on February 3, 2015</div><div class="thread-post-content">I&#8217;ve debugged and at taskEXIT_CRITICAL() you land here (after the vPortSWI jumptable).
+;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+; swiPortExitCritical
+        .asmfunc
+swiPortExitCritical
+        ldr     r0, ulCriticalNestingConst
+        ldr     r12, [r0]
+        cmp     r12, #0
+        bxeq    r14
+        subs    r12, r12, #1
+        str     r12, [r0]
+        bxne    r14
+        mrs     r0, SPSR
+        bic     r0, r0, #0x80
+        msr     SPSR_c, r0
+        bx      r14
+        .endasmfunc
+Yes, I am calling the ulTaskNotifyTake from vSPIUARTTask, se above.
+You: I will have to dig out the manual&#8230;
+It&#8217;s no hurry, take your time. I can go forward with 8.1.2.
+Regards,
+Lars
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/detoxie">detoxie</a> on February 6, 2015</div><div class="thread-post-content">Hi again,
+I mentioned this above:
+&#8220;One thing is that I&#8217;ve used HALCoGen&#8217;s sys<em>link.cmd file and not the file from your demo project. But I use the same sys</em>link.cmd file (HALCoGen produced) for the 8.1.2 project.&#8221; 
+I have now tested the demo project with 8.2.0. Added some of my code with the GIO ISR and the notification stuff, and it works!! 🙂
+So maybe the Texas (HALCoGen) memory mapping and the section configuration is causing this abort. I don&#8217;t know but maybe it&#8217;s a hint. 
+But as I said, I can continue with 8.1.2. I will share this information to the HALCoGen team too. But if you have an idea to what to do/change to make it work I will of course be grateful. Regards, Lars
+Demo sys_link.cmd file
+= = = = = = = = = = = =
+<pre><code>#!c
+/* Memory Map                                                                 */
+MEMORY
+{
+    VECTORS (X)  : origin=0x00000000 length=0x00000020
+    FLASH0  (RX) : origin=0x00000020 length=0x0017FFE0
+    FLASH1  (RX) : origin=0x00180000 length=0x00180000
+    STACKS  (RW) : origin=0x08000000 length=0x00000200
+    RAM     (RW) : origin=0x08000200 length=0x0003FE00
+ }
+/*----------------------------------------------------------------------------*/
+/* Section Configuration                                                      */
+SECTIONS
+{
+    .intvecs : {} &gt; VECTORS
+    .text    : {} &gt; FLASH0 | FLASH1
+    .const   : {} &gt; FLASH0 | FLASH1
+    .cinit   : {} &gt; FLASH0 | FLASH1
+    .pinit   : {} &gt; FLASH0 | FLASH1
+    .heap    : {} &gt; RAM
+    .bss     : {} &gt; RAM
+    .data    : {} &gt; RAM
+/*  .sysmem  : {} &gt; RAM */
+}
+/*----------------------------------------------------------------------------*/
+</code></pre>
+HALCoGen sys_link.cmd file
+= = = = = = = = = = = = = 
+<pre><code>#!c
+/*----------------------------------------------------------------------------*/
+/* Linker Settings                                                            */
+--retain="*(.intvecs)"
+/*----------------------------------------------------------------------------*/
+/* Memory Map                                                                 */
+MEMORY
+{
+    VECTORS (X)  : origin=0x00000000 length=0x00000020
+    KERNEL  (RX) : origin=0x00000020 length=0x00008000 
+    FLASH0  (RX) : origin=0x00008020 length=0x00177FE0
+    FLASH1  (RX) : origin=0x00180000 length=0x00180000
+    STACKS  (RW) : origin=0x08000000 length=0x00001500
+    KRAM    (RW) : origin=0x08001500 length=0x00000800
+    RAM     (RW) : origin=(0x08001500+0x00000800) length=(0x0003eb00 - 0x00000800)
+}
+/*----------------------------------------------------------------------------*/
+/* Section Configuration                                                      */
+SECTIONS
+{
+    .intvecs : {} &gt; VECTORS
+    /* FreeRTOS Kernel in protected region of Flash */
+    .kernelTEXT   : { sys_startup.obj(.const)
+                      tasks.obj (.const:.string)
+                      -l=rtsv7R4_T_le_v3D16_eabi.lib&lt;auto_init.obj&gt; (.text)
+                      -l=rtsv7R4_T_le_v3D16_eabi.lib&lt;copy_decompress_rle.obj&gt; (*)
+                      -l=rtsv7R4_T_le_v3D16_eabi.lib&lt;cpy_tbl.obj&gt; (*)
+                      -l=rtsv7R4_T_le_v3D16_eabi.lib&lt;copy_zero_init.obj&gt; (*)
+                      -l=rtsv7R4_T_le_v3D16_eabi.lib&lt;copy_decompress_none.obj&gt; (*)
+                      -l=rtsv7R4_T_le_v3D16_eabi.lib&lt;icall32.obj&gt; (.text)
+                      -l=rtsv7R4_T_le_v3D16_eabi.lib&lt;memset32.obj&gt; (.text)
+                      -l=rtsv7R4_T_le_v3D16_eabi.lib&lt;memcpy32.obj&gt; (.text)
+                    } &gt; KERNEL
+    .cinit        : {} &gt; KERNEL
+    .pinit        : {} &gt; KERNEL
+    /* Rest of code to user mode flash region */
+    .text         : {} &gt; FLASH0 | FLASH1
+    .const        : {} &gt; FLASH0 | FLASH1
+    /* FreeRTOS Kernel data in protected region of RAM */
+    .kernelBSS    : {} &gt; KRAM
+    .kernelHEAP   : {} &gt; RAM
+    .bss          : {} &gt; RAM
+    .data         : {} &gt; RAM    
+    .sysmem       : {} &gt; RAM
+    FEE_TEXT_SECTION : {} &gt; FLASH0 | FLASH1
+    FEE_CONST_SECTION : {} &gt; FLASH0 | FLASH1
+    FEE_DATA_SECTION : {} &gt; RAM
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ssharonov">ssharonov</a> on September 11, 2015</div><div class="thread-post-content">I encountered the same problem. FreeRTOS is 8.2.0, hardware is Freescale Kinetis Cortex M4F. So this is not TI CPU related. Any updates on this issue? Anybody else sees the same error?
+Thanks,
+Sergei
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 11, 2015</div><div class="thread-post-content">Could you please start a new thread so we can help you with this &#8211; the 
+existing thread is a bit long to see the conclusions easily.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">8.2.0: Abort in ulTaskNotifyTake when executing portYIELD_WITHIN_API (TI RM48 port)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ssharonov">ssharonov</a> on September 15, 2015</div><div class="thread-post-content">Appologies, false alarm. Wild function pointer landed (of all places!) in vPortSVCHandler and corrupted stack trace.
+Regards,
+Sergei
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STM32F2/4 vs. vPortValidateInterruptPriority - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2013/freertos_STM32F2_4_vs._vPortValidateInterruptPriority_8550890.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="STM32F2/4 vs. vPortValidateInterruptPriority - FreeRTOS" />
+<meta property="og:description" content="STM32F2/4 vs. vPortValidateInterruptPriorityPosted by almesber on July 22, 2013portable/GCC/ARM&#095;CM3/port.c:vPortValidateInterruptPriority requires that SCB&#095;AIRCR.PRIGROUP be zero. It assumes that zero means that all the bits are used for group/preemption priority and none for a subpriority. On STM32F2/4, only the values 3 through 7 are documented for PRIGROUP, with 3 meaning that there are no subpriority bits. I &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2013/freertos_STM32F2_4_vs._vPortValidateInterruptPriority_8550890.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="STM32F2/4 vs. vPortValidateInterruptPriorityPosted by almesber on July 22, 2013portable/GCC/ARM&#095;CM3/port.c:vPortValidateInterruptPriority requires that SCB&#095;AIRCR.PRIGROUP be zero. It assumes that zero means that all the bits are used for group/preemption priority and none for a subpriority. On STM32F2/4, only the values 3 through 7 are documented for PRIGROUP, with 3 meaning that there are no subpriority bits. I [&hellip;]" />
+<meta name="twitter:title" content="STM32F2/4 vs. vPortValidateInterruptPriority - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202278' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202278' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202278' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202278' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144410' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2013%2Ffreertos_STM32F2_4_vs._vPortValidateInterruptPriority_8550890.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2013%2Ffreertos_STM32F2_4_vs._vPortValidateInterruptPriority_8550890.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144410">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2013_freertos_support_forum_archive_index.html/">July 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">STM32F2/4 vs. vPortValidateInterruptPriority</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/almesber">almesber</a> on July 22, 2013</div><div class="thread-post-content">portable/GCC/ARM&#95;CM3/port.c:vPortValidateInterruptPriority requires that SCB&#95;AIRCR.PRIGROUP be zero. It assumes that zero means that all the bits are used for group/preemption priority and none for a subpriority.  
+On STM32F2/4, only the values 3 through 7 are documented for PRIGROUP, with 3 meaning that there are no subpriority bits. I tried setting PRIGROUP to zero in an attempt to please vPortValidateInterruptPriority, but this causes great confusion in interrupt handling &#40;I still get some interrupts, but others fire just once, never to be seen again&#41;.  
+Setting PRIGROUP to 3 and adapting the test in vPortValidateInterruptPriority accordingly makes things work as expected.  
+I suppose this has something to do with the STM32 only having four priority bits. Perhaps the correct value for PRIGRP should be calculated as&nbsp; &#40;configPRIO&#95;BITS == 8 ? 0 : 7-configPRIO&#95;BITS&#41;&nbsp; ?  
+The check for 8 is necessary because &#8211; according to Table 4.18 on <a href="http://infocenter.arm.com/help/topic/com.arm.doc.dui0552a/Cihehdge.html">http://infocenter.arm.com/help/topic/com.arm.doc.dui0552a/Cihehdge.html</a>&nbsp; &#45; even 0 still leaves one subpriority bit, so on a core that actually implemented all 8 bits, the calculation would wrap around 0.   
+I&#8217;ve seen this on an STM32F207 &#40;CM3&#41; and it seems that the same should also apply to STM32F4xxx &#40;CM4F&#41;, and possibly others.  
+&#45; Werner
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F2/4 vs. vPortValidateInterruptPriority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 22, 2013</div><div class="thread-post-content">Thanks for your report.&nbsp; I can replicate this on an STM32 and will investigate further.&nbsp; The function was tested on Cortex-M parts from three different manufacturers &#40;two with 4 priority bits, one with three priority bits&#41;, but not unfortunately the STM32, so it might be STM32 specific.  
+I will report back here when I have more information.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F2/4 vs. vPortValidateInterruptPriority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 22, 2013</div><div class="thread-post-content">This looks like it might be related to a persistent incompatibility between the ST peripheral driver library and **generic ** Cortex-M code.  
+The binary point &#40;priority group&#41; bits are actually defaulted to zero when the Cortex-M powers up, so on all implementations of the Cortex-M 0 is a valid number as that is Cortex-M specific, not STM32 specific.&nbsp; Zero is a generic value that will work on all chips, and is normally never changed during the lifetime of an application.&nbsp; vPortValidateInterruptPriority&#40;&#41; checks that the value is zero.&nbsp; However….  
+Due to the implementation of the STM32 peripheral library we have always had to provide specific instruction to STM32 users &#40;note numerous support request answers and the bold red text on FreeRTOS.org web pages specific to Cortex-M&#41; to ensure they call NVIC&#95;PriorityGroupConfig&#40; NVIC&#95;PriorityGroup&#95;4 &#41; before starting the scheduler.&nbsp; This is an extra step necessary for STM32 applications only.&nbsp; That call changes the binary point setting, and causes vPortValidateInterruptPriority&#40;&#41; to trigger a failure, but is necessary in order to use other STM32 peripheral driver functions.&nbsp; A colleague of mine has just pointed out/reminded me as to why this is.  
+If you look at the implementation of the function NVIC&#95;Init&#40;&#41; library function you will see the following code:  
+<pre><code>    tmppriority = (0x700 - ((SCB-&gt;AIRCR) &amp; (uint32_t)0x700))&gt;&gt; 0x08;
+    tmppre = (0x4 - tmppriority);
+</code></pre>
+Now assume you pass the priority in as 15 when the binary point register is 0.&nbsp; tmppriority will then be calculated as:  
+<pre><code>tmppriority = (0x700 - 0) &gt;&gt; 8;
+                  = 7;
+</code></pre>
+On the next line the 4 is hard coded, resulting in tmppre being calculated as:  
+<pre><code>tmppre = 4 - 7;
+</code></pre>
+… which is negative &#40;actually as this is unsigned maths it is a huge positive&#41;, and you have a problem.  
+The question now is, what to do about this?&nbsp; We can&#8217;t have a portable layer that is specific to the STM32, nor can we force users of all other chips to set a binary point value.&nbsp; I suspect we will have to issue a maintenance release that implements&nbsp;&nbsp;&nbsp;&nbsp;<br />
+vPortValidateInterruptPriority&#40;&#41; to check for either 0 <strong>or</strong> an acceptable value given the number of implemented priority bits.&nbsp; That will naturally add some overhead.  
+I appreciate you pointed this out so quickly.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F2/4 vs. vPortValidateInterruptPriority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/almesber">almesber</a> on July 22, 2013</div><div class="thread-post-content">Thanks for the amazingly quick analysis &#33; It is indeed unfortunate that this ST quirk produces a regression in FreeRTOS.  
+I think that allowing all values that produce the desired behaviour would be the best choice. With a decent compiler, a test for PRIGROUP &gt;= &#40;configPRIO&#95;BITS == 8 ? 0 : 7-configPRIO&#95;BITS&#41;&nbsp; should have negligible overhead &#40;if any&#41;&nbsp; compared to the current check, since all the calculations are with constants anyway.  
+Thanks,<br />
+&#45; Werner
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F2/4 vs. vPortValidateInterruptPriority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 22, 2013</div><div class="thread-post-content">I have updated the code to perform a &#8220;less than or equal to a maximum permissible value&#8221; check in place of the &#8220;equals zero&#8221; check.&nbsp; I have tested this on the STM32 first this time :o&#41;&nbsp;   
+Currently I have it in GCC only.&nbsp; Which compiler are you using?&nbsp; If you are using GCC I can send you the file to try.&nbsp; If you are using a different compiler then I will update the port layer for that compiler next so you can try it.  
+If you want to try it then send an email to the email address on the <a href="http://www.freertos.org/contact">Real Time Engineers Contact</a> page so I have your address.&nbsp; Please don&#8217;t post your email address to this forum.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F2/4 vs. vPortValidateInterruptPriority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/almesber">almesber</a> on July 22, 2013</div><div class="thread-post-content">Yes, I use GCC. I sent a mail to the info address &#40;there&#8217;s no openly visible e-mail address on the contact page&#41;. BTW, my e-mail address isn&#8217;t exactly a secret, so getting an extra serving of spam wouldn&#8217;t be a concern :&#41;  
+Thanks,<br />
+&#45; Werner
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F2/4 vs. vPortValidateInterruptPriority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/flash86">flash86</a> on July 23, 2013</div><div class="thread-post-content">Hi&#33;  
+I assume this problem is also occuring with my setup: I am using an STM32F4, since the latest FreeRTOS 7.5.0 I get stuck with vPortValidateInterruptPriority&#40;&#41;. The priority settings are right, as the documentation of FreeRTOS instructs it: &#40;PRIORITY&#95;GROUP to 4 and all my ISRs which use FreeRTOS API calls have a priority lower than configLIBRARY&#95;MAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY = 5&#41;. In my case the USART2 Priority is set to 9.  
+Can you please post your solution here, so that I can try it, or are the chages too much to post it here? I am also using GCC.  
+Kind regards,<br />
+franz
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F2/4 vs. vPortValidateInterruptPriority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/flash86">flash86</a> on July 24, 2013</div><div class="thread-post-content">Is there any chance to get an answer on this?   
+thanks in advance, regards<br />
+franz
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F2/4 vs. vPortValidateInterruptPriority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 24, 2013</div><div class="thread-post-content">Sorry &#8211; I missed your email.&nbsp; The solution is already provided in the FreeRTOS V7.5.2 maintenance release available from Sourceforge.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F2/4 vs. vPortValidateInterruptPriority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/flash86">flash86</a> on July 24, 2013</div><div class="thread-post-content">Thanks&#33; I will try it&#33;  
+Regards,<br />
+franz
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

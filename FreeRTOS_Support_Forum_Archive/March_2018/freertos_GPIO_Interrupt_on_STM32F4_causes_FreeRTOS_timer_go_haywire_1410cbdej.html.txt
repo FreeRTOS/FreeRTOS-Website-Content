@@ -1,0 +1,571 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2018/freertos_GPIO_Interrupt_on_STM32F4_causes_FreeRTOS_timer_go_haywire_1410cbdej.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire - FreeRTOS" />
+<meta property="og:description" content="GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywirePosted by aarbee on March 27, 2018Friends, I am working on STM32F4 and using FreeRTOS. When I enable the EXTI1 interrupt and there are interrupts coming on this pin, I see that the FreeRTOS timers start expiring sooner than the scheduled time. When there are no interrupts &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2018/freertos_GPIO_Interrupt_on_STM32F4_causes_FreeRTOS_timer_go_haywire_1410cbdej.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywirePosted by aarbee on March 27, 2018Friends, I am working on STM32F4 and using FreeRTOS. When I enable the EXTI1 interrupt and there are interrupts coming on this pin, I see that the FreeRTOS timers start expiring sooner than the scheduled time. When there are no interrupts [&hellip;]" />
+<meta name="twitter:title" content="GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202920' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202920' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202920' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202920' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147002' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2018%2Ffreertos_GPIO_Interrupt_on_STM32F4_causes_FreeRTOS_timer_go_haywire_1410cbdej.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2018%2Ffreertos_GPIO_Interrupt_on_STM32F4_causes_FreeRTOS_timer_go_haywire_1410cbdej.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147002">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2018_freertos_support_forum_archive_index.html/">March 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on March 27, 2018</div><div class="thread-post-content">Friends,
+I am working on STM32F4 and using FreeRTOS. 
+<strong>When I enable the EXTI1 interrupt and there are interrupts coming on this pin, I see that the FreeRTOS timers start expiring sooner than the scheduled time.</strong> When there are no interrupts coming every timer is on time. It is when interrupts come that is when I see freeRTOS going into this state. I have already confirmed that I have:
+configASSERT is define,
+ NVIC<em>PriorityGroupConfig( NVIC</em>PriorityGroup_4 ); is defined
+and everything said here: https://www.freertos.org/RTOS-Cortex-M3-M4.html   is taken care of.
+What could it be?
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 28, 2018</div><div class="thread-post-content">When you say timers, do you mean software timers (as in FreeRTOS&#8217;s 
+software timer feature), or do you mean just block times are expiring 
+too soon in general.
+It is hard to see what correlation there could be.  I think if all 
+software timers are expiring early, or all block times are expiring 
+early, then it must be that the tick interrupt is executing more often 
+than it should &#8211; or at least the increment tick function is executing 
+more often than it should.  That could be because the clock driving the 
+hardware sped up, or for some other software reason.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on March 28, 2018</div><div class="thread-post-content">Thank you  for responding.
+Yes all software timers expires sooner.  I was guessing the same i.e., the tick timer is expiring too soon when interrupts kick in. What are &#8220;block times&#8221;?
+Timers are defined as anybody would:
+<blockquote>
+  TimerHandle<em>t pulse</em>counter<em>timer =
+      xTimerCreate((const char *) &#8220;pulse</em>counter<em>timer&#8221;,
+                   5000,
+                   pdTRUE,
+                   (void*) 0,
+                   pulse</em>harvest<em>timer</em>callback);
+  if (pulse<em>counter</em>timer != NULL) {
+      xTimerStart(pulse<em>counter</em>timer, 0); // Start the Timer
+  } else {
+      printf(&#8220;Could not start Pulse Counter Timern&#8221;);
+      return;
+  }
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 28, 2018</div><div class="thread-post-content">By block time I mean any timeout specified in a call such as 
+vTaskDelay() or xQueueReceive().
+Do block times also expire too soon?  For example, if you call 
+vTaskDelay( pdMS<em>TO</em>TICKS( 500 ) ) does it expire every 500ms, or are 
+only software timers effected.
+Software timers are stored with a pre-calculated expire time &#8211; there is 
+no single place in a data structure that could get corrupted that would 
+cause them all to expire too soon &#8211; unless the tick count value itself 
+was somehow corrupt or incrementing too quickly.
+How are you ascertaining that the timers are expiring too early?  Are 
+you 100% sure that is the symptom you are observing?  Have you otherwise 
+validated that the tick interrupt is executing at the frequency you 
+expect both before and after this issue occurs?
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on March 28, 2018</div><div class="thread-post-content">I am 100% sure that the timers are expiring. I tested it via:
+a) Printing the timestamp in task that is woken up by the Timer (by releasing the semaphore).
+b) Using a stop clock (Visual observation).
+c) Toggling a GPIO low and high very time the timer expires and observing the GPIO Toggle on the oscilloscope. The time delta betweent he GPIO pulses gives very accurate representation of what is happening.
+Once the interrupts stop, timers go back to normal.
+I have not observed vTaskDelay though. That is what I will do next and post here.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on March 28, 2018</div><div class="thread-post-content">Yes, it impacts vTaskDelay(..) as well.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 28, 2018</div><div class="thread-post-content">Well without knowing more or being able to experiment myself it sounds 
+like something is messing with the timing that the tick is occurring &#8211; 
+did you try toggling an LED or something from the tick hook so you can 
+see the frequency it is executing at?
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on March 28, 2018</div><div class="thread-post-content">Thanks a lot for taking time to respond. I will try that and post the results as I debug it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on March 30, 2018</div><div class="thread-post-content">This is what I have discovered until now.
+Task A  during it&#8217;s execution creates another task B and when Task A is done with what was needed from Task B, it deletes the task B. To delete the task it updates a global variable (lets call it terminate<em>now). Task B is looping on terminate</em>now and as soon as Task A sets the variable terminate_now to 1, Task B calls vTaskDelete(NULL); to kill itself. 
+**As soon that happens, the timers start going haywire.
+**
+If Task A kills Task B by directly calling vTaskDelete(Handle<em>to</em>task_B), everything is fine!
+Why?
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 30, 2018</div><div class="thread-post-content">Trying to replicate now.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 30, 2018</div><div class="thread-post-content">I&#8217;ve not been able to replicate this using the code below, so would be grateful if you can send me your example so I can see exactly what your code is doing in the hope that I can set up a similar case ehre.  Please take out everything that is not necessary to show the issue &#8211; hopefully you can strip it back ot just the Task A and Task B mentioned in your previous post.  Also please let me know the compiler, compiler version, FreeRTOS version, and any other information pertinent to replicating your system.  You can zip the project up and send it to r dot barry <em>at</em> FreeRTOS dot org. 
+<pre>
+static void prvQueueReceiveTask( void *pvParameters )
+{
+    /* Prevent the compiler warning about the unused parameter. */
+    ( void ) pvParameters;
+    for( ;; )
+    {
+        /* Create the other task, checking it is created successfully. */
+        configASSERT( xTaskCreate( prvQueueSendTask,
+                      "TX",
+                      configMINIMAL_STACK_SIZE,
+                      NULL, mainQUEUE_SEND_TASK_PRIORITY,
+                      NULL ) );
+        /* Let it run a bit. */
+        vTaskDelay( 4 );
+        /* Tell it to delete itself. */
+        xDeleteNow = pdTRUE;
+        /* Let it delete itself. */
+        vTaskDelay( 4 );
+        configASSERT( xDeleteNow == pdFALSE );
+    }
+}
+/*-----------------------------------------------------------*/
+static void prvQueueSendTask( void *pvParameters )
+{
+    ( void ) pvParameters;
+    for( ;; )
+    {
+        if( xDeleteNow != pdFALSE )
+        {
+            xDeleteNow = pdFALSE;
+            vTaskDelete( NULL );
+        }
+    }
+}
+/*-----------------------------------------------------------*/
+static void prvQueueSendTimerCallback( TimerHandle_t xTimerHandle )
+{
+    /* Print from the timer callback so the frequency can be seen. */
+    ulTimers = 0;
+    printf( "%d, ", (int)xPortGetFreeHeapSize() );
+}
+/*-----------------------------------------------------------*/
+</pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 30, 2018</div><div class="thread-post-content">(ignore the names of the tasks in the code I posted &#8211; I just adapted an existing &#8216;hello world&#8217; style project I had)
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on March 30, 2018</div><div class="thread-post-content">Thanks I will post my code. Please note that the timers get messed up only when there are continuous interrupts occurring on the GPIOs. Otherwise everything appears to be normal.
+As soon as interrupts stop, timers get back to normal. Also if interrupts are not enabled on the GPIO, there are no issues. Even when GPIO interrupt is enabled, there is no issue as long as interrupt is not triggered.
+I have Anemometer connected to the GPIO so I can easily spin it to generated a series of pulses causing interrupts on the GPIO to reproduce the issue.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 2, 2018</div><div class="thread-post-content">It definitely appears to be linked to deleting a task from another task. No matter how I delete the task vTaskDelete(NULL) or vTaskDelete(task_handle), it ends up messing the timers when interrupts starts coming right after deletion. If I don&#8217;t kill the task (let it running) no issues or if I Delete the task but don&#8217;t have interrupts coming, no issues either.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 2, 2018</div><div class="thread-post-content">Are you any closer to being able to send me a cut-down project?
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 8, 2018</div><div class="thread-post-content">Richard,
+I removed a lot of code to do some more debugging and here is where I am. More confused.
+Here is the code
+~~~
+    int init<em>synctask</em>freeRTOS(void)
+      {
+          synctask_semaphore = xSemaphoreCreateBinary();
+<pre><code>      if (synctask_semaphore == NULL) {
+          printf("Synctask Semaphore couldn't be created.n");
+          return pdFALSE;
+      }
+      xSemaphoreTake(sync_freq_mutex, portMAX_DELAY);
+      xSyncSoftwareTimer = xTimerCreate((const char *) "SyncTimer",
+                                        (sync_frequency * 60000),
+                                        pdTRUE,   
+                                        (void*) 0,
+                                        vSyncTimerCallback);
+      xSemaphoreGive(sync_freq_mutex);
+     if (xSyncSoftwareTimer == NULL) {
+         return pdFALSE;
+     }
+     int ret = xTaskCreate(synctask_thread,
+                           "synctask_thread",
+                           configMINIMAL_STACK_SIZE,
+                           NULL,
+                           &amp;synctask_handle);
+     if (ret != pdTRUE) {
+         printf("Cannot create synctask_threadn");
+         return pdFALSE;
+     }
+     return ret;
+ }
+ void vSyncTimerCallback(TimerHandle_t xTimer)
+ {
+     xSemaphoreGive(synctask_semaphore);
+ }
+ void synctask_thread(void *thread_id)
+ {
+     synctask_active = true;
+     if (othertask_isActive()) {
+          PP_PRINTF("setting var to kill task..n");
+          // This func call should cause the othertask
+          // to kill itself..
+         othertask_setvar(1);
+     }
+     xTimerStart(xSyncSoftwareTimer, 0);
+     while (1) {
+             xSemaphoreTake(synctask_semaphore, portMAX_DELAY);
+            // Do some stuff here
+     }
+ }
+</code></pre>
+~~~
+If I call the following two together, All timers start expiring before the scheduled time as soon as the interrupts start showing up at the GPIO. Faster the interrupts, sooner the timers would expire..
+<pre><code>       othertask_setvar(1);   &lt;-- Kill the task
+       xSemaphoreTake(synctask_semaphore, portMAX_DELAY); &lt;- wait on semaphore
+</code></pre>
+If I call only one of these two everything is fine.. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 8, 2018</div><div class="thread-post-content">Is init<em>synctask</em>freeRTOS() called before the scheduler is started?  If 
+so, then don&#8217;t try blocking on a semaphore because there is nothing else 
+that can run and you couldn&#8217;t block anyway (as the scheduler is not 
+running and no tasks are running yet).  I&#8217;m not sure why you would take 
+then give the semaphore around the call to xTimerCreate() anyway.
+Can you please also post the code for the &#8220;other task&#8221; (the one that 
+kills itself), including the code that creates the task so I can see its 
+priority, etc. &#8211; and also show the code for the ISR.  Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 8, 2018</div><div class="thread-post-content">xSemaphoreTake(sync<em>freq</em>mutex, portMAX<em>DELAY); 
+This mutex is taken because the variable &#8216;sync</em>frequency&#8217; may be in use in some other task.
+init<em>synctask</em>freeRTOS is not called before the scheduler is started. The main function creates a Task called inittask as:
+~~~
+int main(void) {
+  uint8_t ret;
+  HAL<em>Init();
+  SEGGER</em>RTT<em>Init();
+  ret = xTaskCreate(init</em>task,<br />
+                 &#8220;inittask&#8221;, 
+                  4 * configMINIMAL<em>STACK</em>SIZE, 
+                  NULL, 1, NULL);
+  if (ret == pdTRUE) {
+    printf(&#8220;Starting scheduler!n&#8221;);
+    vTaskStartScheduler();  // should never return
+  } else {
+    printf(&#8220;System Error!n&#8221;);
+  }
+  for (;;) {}
+}
+~~~
+init<em>task would then call init</em>synctask<em>freeRTOS to create the sync</em>task<em>thread and init</em>other_task to create the other task. Other Task creation and execution looks like:
+~~~
+int othertask<em>isActive(void)
+{
+    return other</em>task_running;
+}
+void othertask<em>setvar(bool var)
+{
+    if (var)  {
+        waitvar = true;
+    } else {
+        waitvar = false;
+    }
+}
+void other</em>task(void *p)
+{
+   while (!waitvar) {
+       vTaskDelay(5);
+   }
+    printf(&#8220;Other task Killing itselfn&#8221;);
+    vTaskDelete(0);
+   }
+int init<em>other</em>task(void)
+{
+    other<em>task</em>running = true;
+    if (xTaskCreate(other<em>task,
+                    &#8220;other</em>task&#8221;,
+                    configMINIMAL<em>STACK</em>SIZE,
+                    NULL,
+                    1,
+                    &amp;other<em>task</em>handle) != pdTRUE) {
+        PP_ERROR(&#8220;Cannot create other taskn&#8221;);
+        return pdFALSE;
+    }
+    return pdTRUE;
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 9, 2018</div><div class="thread-post-content">Interrupt handler is:
+<code>void interrupt_handler(void)
+{
+   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1) != RESET) {
+        __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
+        if (HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == GPIO_PIN_SET) {
+           rising_edges++;
+        } else {
+           falling_edges++;
+        }
+    }
+}</code>
+Interrupt is configured as:
+~~~
+HAL<em>NVIC</em>DisableIRQ(EXTI1_IRQn);
+GPIO<em>InitTypeDef gpio;
+gpio.Pin  = GPIO</em>PIN<em>1;
+gpio.Mode = GPIO</em>MODE<em>IT</em>RISING<em>FALLING;
+gpio.Pull = GPIO</em>PULLUP;
+gpio.Speed = GPIO<em>SPEED</em>FAST;
+HAL<em>GPIO</em>Init(GPIOD, &amp;gpio);
+HAL<em>NVIC</em>SetPriority(EXTI1<em>IRQn, configLIBRARY</em>LOWEST<em>INTERRUPT</em>PRIORITY,1);
+HAL<em>NVIC</em>EnableIRQ(EXTI1_IRQn);
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 9, 2018</div><div class="thread-post-content">Plot thickens. 
+Only this other task, if deleted causes trouble. I delete other tasks and no issues.  Not only this, if I create another task while creating this &#8216;other task&#8217;, no issues. This &#8220;other<em>task&#8221; is the first task created by init</em>task when the device boots.
+~~~
+synctask_   R   1   1769  11
+inittask    R   1   1564  1
+IDLE        R   0   485   2
+Tmr Svc     B   2   972   3
+other<em>tas   B   1   406   4&lt;&#8212; Killing this task from synctask, trouble!
+change</em>sy   B   3   981   10
+button      B   1   467   9
+~~~
+Now I create another task named dummytask along with other_task and there is no issues killing this task from synctask.. Interrupts don&#8217;t cause any issues anymore!
+~~~
+inittask    R   1   1714  1
+synctask_   R   1   1758  12
+datalogge   R   1   460   13
+IDLE        R   0   485   2
+dummytask   B   1   477   4 &lt;&#8211;Magically fixes problem while doing nothing!
+Tmr Svc     B   2   972   3
+other<em>tas   B   1   405   5 &lt;&#8212;Killing this ok since I have dummytask!
+change</em>sy   B   3   981   11
+button      B   1   467   10
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 10, 2018</div><div class="thread-post-content">Maybe a long shot, but what happens if you take out the calls to 
+printf()?  Fist just from &#8216;other task&#8217;, which may get deleted before all 
+the output has been output (depending on how printf() is implemented), 
+and second removing printf() from all tasks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 10, 2018</div><div class="thread-post-content">Disabling all Prints from all over the code didn&#8217;t help.  I am using Segger RTT for prints. So I disabled it all together.  It seems there is something special about deleting that first ever task.
+If I kill that dummy task as well (along with other_task), I see the problem again. So it seems one of those tasks created in the beginning must stay in the task list.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 10, 2018</div><div class="thread-post-content">I think RTT is just the output method.  Did you actually comment out the 
+calls to printf()?  Otherwise it will make little difference to the 
+libraries being called by printf(), and the stack used by printf(), in 
+order to prepare the string that will be output.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 10, 2018</div><div class="thread-post-content">In the printf function, I just returned without calling any functions thus effectively bypassing any calls to the functions. Individually commenting out each print statment would be a lot of statements to comment out&#8230;
+Something like:
+~~~
+int p_printf(const char *format, &#8230;)
+{
+<pre><code>return 0;
+if (xSemaphoreTake(printf_mutex, 3000) == pdFALSE) {
+    return -1;
+}
+va_list args;
+va_start(args, format);
+int loglen = vsnprintf(LOG_BUFFER, LOG_BUFFER_SIZE, format, args);
+va_end(args);
+int ret = SEGGER_RTT_Write(0, LOG_BUFFER, loglen);
+xSemaphoreGive(printf_mutex);
+return ret;
+</code></pre>
+}
+~~~
+Also removed Segger initialization.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 10, 2018</div><div class="thread-post-content">If I kill the dummytask as well, I start seeing the problem again. Also the dummy task must be running for it to fix the issue..
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 10, 2018</div><div class="thread-post-content">So here is what I have concluded till now.
+**If dummy taks is<em>blocked</em> for more than twice the expiry time of the fastest timer, the GPIO interrupts will cause all timers to start expiring sooner than the scheduled expiry.
+**
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 10, 2018</div><div class="thread-post-content">That seems to be good info.  I can try and replicate but don&#8217;t have the 
+interrupt executing as you do.
+Do I have this write:
+1) Create an app with multiple tasks and a timer.
+2) Make sure the tasks are blocking for more than twice the timer&#8217;s 
+expire time.
+3) Have one of the tasks delete itself and watch what happens to the 
+timer expiry time.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 10, 2018</div><div class="thread-post-content">Yes. That would work but interrupts coming on a GPIO is what triggers the issues. No interrupts = No issue.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 10, 2018</div><div class="thread-post-content">I am doing more debugging so if I find anything else I will post.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 10, 2018</div><div class="thread-post-content">One thing to note that may help.  If a timer is due to expire every 
+10ms, and it is blocked from running for 30ms, then it will execute 3 
+times in quick succession to &#8216;catch up&#8217; with where it should have been. 
+That can make it look like all of a sudden it is running too quickly &#8211; 
+whereas in reality, once it is caught up with itself, it will return to 
+its proper frequency.
+I don&#8217;t think that is what is happening in this case, so just something 
+to be aware of.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 10, 2018</div><div class="thread-post-content">Let me rephrase what I see:
+<strong>There has to be atleast one task in the Running state. If all tasks are blocked, GPIO interrupts will cause timers to start expiring before the scheduled time</strong>
+I removed the dummy task I created and I put a loop at the end of the inittask so that the init task never ends. This fixes the problem because now I have at least one task (inittask) which is in Runnign state while all others are in blocked state.
+This is what changed at the end of the inittask:
+~~~
+// vTaskDelete(NULL);   &lt;&#8212; Commented this so this task doesn&#8217;t end
+while (1) {             &lt;&#8212; Kept it running for ever
+    vTaskDelay(10);
+     }
+} /<em>end of inittask</em>/
+~~~
+I am testing it now to make sure it stands the test of time.. I will let it run for a while.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 10, 2018</div><div class="thread-post-content">Interesting. So if it exectues three times in  a succession, all the logic around it will execute three times as well. That would be a disaster for some applications.
+Also, will a GPIO interrupt cause the timer to be blocked for the duration of the ISR execution causing the above behavior?
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 11, 2018</div><div class="thread-post-content"><blockquote>
+  Interesting. So if it exectues three times in a succession, all the 
+  logic around it will execute three times as well. That would be a 
+  disaster for some applications.
+</blockquote>
+Likewise it would be a disaster for some applications if it is supposed 
+to execute three times within a given period and in fact it only 
+executes once.  Or if it missed its deadline by a single tick, so opted 
+not to execute.  Executing exactly the required number of times seems 
+the best option.
+<blockquote>
+  Also, will a GPIO interrupt cause the timer to be blocked?
+</blockquote>
+Only if the interrupt too a verrrrry long time to execute, or if the 
+interrupt was not cleared properly so was continuously being re-entered. 
+  It looks like your interrupt is being cleared &#8211; assuming the code in 
+your post is correct &#8211; though.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 11, 2018</div><div class="thread-post-content">Also, if you want non-catchup operation, just set the timer not to repeat and retrigger it as part of the timer callback.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 11, 2018</div><div class="thread-post-content">There is ALWAYS a task in the ready to run state, as the Idle task that is automatically created will never block (and if you enable the idle hook, you must not block in it).
+Your inittask above isn&#8217;t in the &#8216;Running&#8217; state for most of its time, as it is blocked with vTaskDelay().
+A task that deletes itself will have its final clean up  defered to being done in the idle task.<br />
+Some thoughts that pop up:
+Are you using the idle hook?
+Are you using tickless idle? Having a task aways ready to wake up soon can block going into tickless idle, and if tickless idle isn&#8217;t setup right, it could throw off your time base.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 11, 2018</div><div class="thread-post-content">Richard, 
+You got it.
+Thanks for the response. 
+<strong><em>I am using tickless idle and that was the culprit. I changed the configUSETICKLESSIDLE to 0 and problem goes away.</em></strong>
+I am using idle hook too and I suspected that earlier. It uses &#8216;Wait for Interrupt&#8217; in it. I commented it out but that didn&#8217;t help..
+~~~
+void vApplicationIdleHook(void) {
+   asm(&#8220;WFI&#8221;);
+}
+~~~
+What is this supposed to mean? Can&#8217;t use GPIO interrupts along with Tick less Idle? I am using default port implentation of the tick less idle.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 11, 2018</div><div class="thread-post-content">WFI stopps the processor until an interrupt comes. This can save power. It shouldn&#8217;t normally cause issues, as if you are in the idle task, there isn&#8217;t anything else to do, but wait for some interrupt.
+The possible issue with tickless idle is that something isn&#8217;t configured right. In tickless idle, if the kernal sees that nothing will be needed to be done for awhile, it reconfigures the system to stop interrupting every tick, but to go to sleep for a longer period of time, until an interrupt occurs or that long period of time expires. If it gets woken up by an interrupt, it then needs to figure out approximately how much time has expired by looking at the timer it setup and then advance time by that much. This process is NOT exact, and there can be some time slipage, and I think the tick hook may get called repeatedly (if you are using the tick hook,  you may not want to use tickless idle). If you have some of the hardware configured differently than FreeRTOS is expecting, this time estimate could be off more signficantly.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 11, 2018</div><div class="thread-post-content">I have the tick hook enabled by
+<code>#define configUSE_TICK_HOOK                             1</code>
+but the the function does nothing.
+~~~
+void vApplicationTickHook(void) {
+}
+~~~
+What else to look at?
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 11, 2018</div><div class="thread-post-content"><blockquote>
+  <em>/I am using tickless idle and that was the culprit. I changed the 
+  configUSETICKLESSIDLE to 0 and problem goes away./</em>
+</blockquote>
+I vital piece of information you omitted!  ;o)
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 11, 2018</div><div class="thread-post-content"><blockquote>
+  If you have some of the hardware configured differently than FreeRTOS is expecting, this time estimate could be off more signficantly.
+</blockquote>
+What does FreeRTOS expect?
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 11, 2018</div><div class="thread-post-content">I want to use tickless idle to save power and at the same time I want to use the GPIO interrupts. Can I use both? Currently it seems if I enable tickless Idle, I can&#8217;t use GPIO interrupt as it causes the timers to go nuts.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 11, 2018</div><div class="thread-post-content">Yes you can use both &#8211; tickless idle is meant to allow the CPU to sleep 
+until either an interrupt or a timeout occurs.
+How have you implemented the tickless mode?
+Remind me which FreeRTOS version you are using.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 11, 2018</div><div class="thread-post-content">Richard,
+I am using 8.2.3 version 
+For tickless mode, I have just enabled
+ configUSETICKLESSIDLE to 1 and configUSE<em>TICK</em>HOOK to 1 and application tickhook function is doing nothing:
+~~~
+void vApplicationTickHook(void) {
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 11, 2018</div><div class="thread-post-content">The STM32 port uses processor&#8217;s STOP (low power) mode. This code to put the device in STOP mode is called in vPortSuppressTicksAndSleep function. In this mode, RTC Wakeup timer is used to get out of the stop mode.
+This is the code that is causing all the trouble.
+If I keep Tickless Idle ON but disable STOP Mode, it works but then the device obviously wouldn&#8217;t go to low power mode.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 12, 2018</div><div class="thread-post-content">My guess is that the RTC_Wakeup timer is running at a different rate than what FreeRTOS thinks it is. That can cause all kind of havok when the processor wakes back up from the interrupt, as FreeRTOS may think more time has passed than really has.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 12, 2018</div><div class="thread-post-content">What rate does FreeRTOS thinks it is running? I mean what variable?
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 12, 2018</div><div class="thread-post-content">There is probably one of two issues here:
+1) The version you are using is old and some original versions of 
+tickless idle didn&#8217;t allow the simultaneous use of software timers.  I&#8217;m 
+not sure without checking the version history when that was changed, but 
+it&#8217;s probably worth updating the FreeRTOS kernel files (including header 
+files and port layer files) to the latest version in case that is your 
+issue.
+2) From your description it is clear you are not using the &#8216;generic&#8217; 
+tickless idle mode, which cannot enter a very deep sleep as it uses the 
+SysTick timer, but a chip specific version, which is using a low power 
+timer and entering a much deeper sleep mode.  It could be the 
+implementation is not re-calculating the time correctly when low power 
+mode is exited because of an interrupt &#8211; and that is making it appear 
+that time has moved on past where the timers should have expired, and 
+that the timers are catching up with where they should have been if the 
+time were correct.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 13, 2018</div><div class="thread-post-content">I am suspecting #2 i.e., STM32 port not returning correct ticks after getting out of sleep mode.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 19, 2018</div><div class="thread-post-content">The problem was in STM32 port code. For STM32 there is  mode called STOP mode which is used in conjunction with TicklessDelay feature.  When Stop mode is used to put device in sleep, vPortSuppressTicksAndSleep function (in file port.c) makes call to function xPortSTM32StopMode (in file freertos_stopmode.c). This function puts the device  in stop mode and returns the amount of time it slept, after it wakes up.
+The existing code uses RTC Wakeup Interrupt to wake up the device and the interrupt timer is set to expire at the end of the duration for which the device is supposed to sleep (i.e., the argument to the functon xPortSTM32StopMode).  This function always returns the same value (=value it was supposed to sleep). This works as long as only the Wakeup interrupt wakes it up. If GPIO interrupt wakes it up, it doesn&#8217;t re-calculate how long it slept. It just returns (the incorrect) value which it was supposed to return if Wakeup interrupt woke it up. That means it returns a value much larger thatn the time for which it actually slept.  This further means the freeRTOS is provided incorrect info and the timers will now expire fast.
+Fix for this problem is to read the RTC minutes/seconds/SubSeconds register before and after the device goes to sleep and on wakeup and then calculate the elapsed time and return. This fixed it for me.
+Make sure to :
+1. Change resolution of the subseconds register by changing the prediv<em>a and prediv</em>s registers
+2. Disable shadow registers update
+3. Read the subseconds register twice, compare and if it doesn&#8217;t match read again.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aarbee">aarbee</a> on April 19, 2018</div><div class="thread-post-content">Thanks Richard Barry and Richard Damon for helping me out.
+</div></div><div class="thread-post"><h3 class="thread-post-title">GPIO Interrupt on STM32F4 causes FreeRTOS timer go haywire</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 19, 2018</div><div class="thread-post-content">Thanks for reporting back.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

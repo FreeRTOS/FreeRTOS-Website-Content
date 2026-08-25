@@ -1,0 +1,179 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS on MSP430FF528 understanding stack management - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2014/freertos_FreeRTOS_on_MSP430FF528_understanding_stack_management_65a8579cj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS on MSP430FF528 understanding stack management - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS on MSP430FF528 understanding stack managementPosted by nelsonpina on January 24, 2014Hello, I&#8217;m trying to implement my application using FreeRTOS on the MSP430F5528, using IAR, and it has been difficult for me to understand how does the FreeRTOS deals with the task stack&#8230; For what I read in the documentation I bought, each task should &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2014/freertos_FreeRTOS_on_MSP430FF528_understanding_stack_management_65a8579cj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS on MSP430FF528 understanding stack managementPosted by nelsonpina on January 24, 2014Hello, I&#8217;m trying to implement my application using FreeRTOS on the MSP430F5528, using IAR, and it has been difficult for me to understand how does the FreeRTOS deals with the task stack&#8230; For what I read in the documentation I bought, each task should [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS on MSP430FF528 understanding stack management - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202346' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202346' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202346' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202346' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143741' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2014%2Ffreertos_FreeRTOS_on_MSP430FF528_understanding_stack_management_65a8579cj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2014%2Ffreertos_FreeRTOS_on_MSP430FF528_understanding_stack_management_65a8579cj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143741">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2014_freertos_support_forum_archive_index.html/">January 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nelsonpina">nelsonpina</a> on January 24, 2014</div><div class="thread-post-content">Hello,
+I&#8217;m trying to implement my application using FreeRTOS on the MSP430F5528, using IAR, and it has been difficult for me to understand how does the FreeRTOS deals with the task stack&#8230;
+For what I read in the documentation I bought, each task should have it&#8217;s how stack, and every variables I declare in a task should be stored on that task stack.. Well when I analyze the memory, that is not what&#8217;s happening. The variables, non-static, I declare on tasks are placed near the end of that tasks memory region yes, but randomly ones are inside and others are outside of that task memory region..
+My code will run well for some random time, sometimes days other times only a few minutes,  when eventually I get the FreeRTOS stack overflow error&#8230; I check the RAM memory when this happens and I notice that must of the stack space that I&#8217;m given to each task it&#8217;s never being used, always showing 0xA5&#8230;
+Can anyone please give some hints on this?
+Thanks a lot. 
+Best regards,
+Nelson
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on January 24, 2014</div><div class="thread-post-content">You have some C source files and use IAR to compile them, so IAR decides where the variables end up, not FreeRTOS. If they are local and not static then they have to be on the stack or in a register, because it is C code. Where you may get confused is that the stack used by a task is not going to be in the stack region declared by the IAR linker. When you create a task FreeRTOS grabs some RAM from the FreeRTOS heap to use as the task&#8217;s stack because as you said each task has its own stack. The IAR debugger does not expect to find the stack pointer outside of the stack region it knows, and will output a warning when it finds it pointing somewhere else.
+FreeRTOS will move the stack pointer from stack to stack as tasks are start and stop running, but has no control over what is on each stack.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nelsonpina">nelsonpina</a> on January 27, 2014</div><div class="thread-post-content">Hi MEdwards,
+thanks for your feedback.
+I&#8217;m not getting confused to see that the Stack Pointer is not pointing to the stack region defined in the IAR linker.. That´s obviously what should happen, since the FreeRTOS manipulates the Stack Pointer to be on the memory region of the task that is being executed&#8230;
+The problem starts when the FreeRTOS is running one task, and the Stack Pointer is not pointing to the memory region allocated to that task&#8230; Normally it&#8217;s pointing to memory regions somewhere between tasks, or even worse, it&#8217;s pointing to memory regions that belong to other task&#8230;
+I believe that something should be wrong on my FreeRTOS configuration for the MSP430F5528&#8230;
+I appreciate if someone can give me some hints on this.
+Thanks,
+Nelson
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 27, 2014</div><div class="thread-post-content">As that part has 128K of Flash I&#8217;m guessing it is an MSP430X part.  So the first question (sorry if it is obvious) is are you using the MSP430X port rather than the standard MSP430 port?  Assuming you are, which memory model are you using?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nelsonpina">nelsonpina</a> on January 27, 2014</div><div class="thread-post-content">Hi,
+thanks for your feedback.. 
+Yes, I&#8217;m using the MSP430X port and the Small Data Model&#8230;
+Best regards,
+Nelson
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 27, 2014</div><div class="thread-post-content">Hmm, the small data/small code model is the simplest case so it is curious you would have an issue.  I presume you are using the official port rather than a contributed port?
+Are there any architectural differences in the core used in the MSP430F5528 compared to the core used in the MSP430F5438 on which the port was developed?
+What is the smallest application you are able to create that exhibits this behaviour &#8211; and can it be replicated in the simulator (so I could try using the project)?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nelsonpina">nelsonpina</a> on January 27, 2014</div><div class="thread-post-content">Yes, I&#8217;m using the official FreeRTOS port for the MSP430. I started by developing with the 7.3 version and now I&#8217;m trying the newest FreeRTOS 7.6&#8230;
+I don&#8217;t believe that there are any differences between the core (instruction set) of the MSP430F5438 and the MSP430F5528&#8230; The MSP430F5438 has more RAM, 16KB compared with the 8KB on the MSP430F5528 I&#8217;m using but that should not be a problem.
+Another thing I already tried was to use the default linker configuration file &#8220;lnk430F5528.xcl&#8221; instead of using the one I replicated, adjusting the memory regions, from the demo project provided but I didn&#8217;t notice any difference&#8230;
+I will try to develop a simple application, that we can run from the simulator, that shows this behavior and then I will send it to you..
+Thanks a lot..
+Best Regards,
+Nelson
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 27, 2014</div><div class="thread-post-content">You can send it to the &#8220;business contact&#8221; emaili address found on http://www.freertos.org/contact
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nelsonpina">nelsonpina</a> on January 27, 2014</div><div class="thread-post-content">I don&#8217;t think I can simulate the MSP430 peripherals using the IAR simulator so it will be difficult to generate the Tick interrupt for the FreeRTOS&#8230; Do you have any suggestions?
+Otherwise I can just send you the code I just did with 3 task, each one declaring an array with 100 integers, and you can see that those variables are being stored on RAM outside of the memory region of each task&#8230; Without tick you can only run the tasks when they are being declared..
+Thanks.
+Best Regards,
+Nelson
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 27, 2014</div><div class="thread-post-content">Although the peripherals are not simulated as such, there is some way of using IAR&#8217;s C spy to trigger interrupts, you would have to refer to their documentation as I can&#8217;t recall exactly how it is done.
+However, if I am able to see the problem by simply stepping through the code that starts the first task, and in so doing ending up in the context of the first task, then that is probably good enough.  Please ensure the project can be built &#8216;out of the box&#8217; &#8211; with no absolute paths or anything similar.
+[I presume your stack is large enough to hold 100 integers?]
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nelsonpina">nelsonpina</a> on January 27, 2014</div><div class="thread-post-content">Yes I gave 512 bytes of RAM to each task..
+I will prepare the code and I will send it to you shortly..
+Thanks a lot.
+Best regards,
+Nelson
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS on MSP430FF528 understanding stack management</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 29, 2014</div><div class="thread-post-content">I have the project building in the simulator now, but am not sure that I can see an issue.
+Some screen shots are attached.  
+In the first images you can see the situation exactly as task 1 is entered.  In the image you can see the stack pointer is set to 0x2714, and the assembly instruction at address 0x53d6 allocates 20 bytes of stack space to hold the 20 byte array (the &#8220;sub.w #14, sp&#8221; instruction).
+In image 2 you can see the memory at 0x2714 (the highlighted 1a in the middle of the Memory window).  The stack grows down in memory from there, which is up the screen as the memory is shown in the window.
+Next I step through the loop that fills the array with &#8216;a&#8217; (by the way, your loop writes outside of the array when it writes to the arraya_l[ 20 ] as 19 is the maximum index).  Image 3 shows the memory after the loop has completed.  You can see the 20 bytes that have been set to 0 all fall within the stack space.  You can also see the stack pointer (after the 20 byte adjustment as per the first image) is pointing to the stack after the space that was allocated for the array.
+Is this what you see also?  Am I looking at the wrong thing?  If so, please provide instructions on how to get the erroneous condition.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

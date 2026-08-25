@@ -1,0 +1,520 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receiving Data Using Zero-Copy driver - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2017/freertos_Receiving_Data_Using_Zero-Copy_driver_164ad452j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Receiving Data Using Zero-Copy driver - FreeRTOS" />
+<meta property="og:description" content="Receiving Data Using Zero-Copy driverPosted by yanvasilij on February 1, 2017Hello, I&#8217;m trying to create Zero-Copy driver for my stm32f429. As describe here I should to declare handler (standard RTOS task) where DMA descriptor with incoming frame (that references the Ethernet buffer containing the received data) are swapped with free FreeRTOS+TCP descriptor. But in my &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2017/freertos_Receiving_Data_Using_Zero-Copy_driver_164ad452j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Receiving Data Using Zero-Copy driverPosted by yanvasilij on February 1, 2017Hello, I&#8217;m trying to create Zero-Copy driver for my stm32f429. As describe here I should to declare handler (standard RTOS task) where DMA descriptor with incoming frame (that references the Ethernet buffer containing the received data) are swapped with free FreeRTOS+TCP descriptor. But in my [&hellip;]" />
+<meta name="twitter:title" content="Receiving Data Using Zero-Copy driver - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202763' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202763' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202763' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202763' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146316' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2017%2Ffreertos_Receiving_Data_Using_Zero-Copy_driver_164ad452j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2017%2Ffreertos_Receiving_Data_Using_Zero-Copy_driver_164ad452j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146316">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2017_freertos_support_forum_archive_index.html/">February 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Receiving Data Using Zero-Copy driver</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/yanvasilij">yanvasilij</a> on February 1, 2017</div><div class="thread-post-content">Hello,
+I&#8217;m trying to create Zero-Copy driver for my stm32f429. As describe <a href="http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/Embedded_Ethernet_Porting.html">here</a> I should to declare handler (standard RTOS task) where DMA descriptor with incoming frame (that references the Ethernet buffer containing the received data) are swapped with free FreeRTOS+TCP descriptor. But in my MCU DMA descriptor have only 3 parameters:
+~~~
+/* DMA Descriptors. */
+typedef struct {
+  volatile u32 Stat;
+  u32 Ctrl;
+  u32 Addr;
+  u32 Next;
+} RX_Desc;
+~~~
+So I can&#8217;t just swap two pointers. So I am trying to bind DMA descriptors with buffers in Pre-created FreeRTOS+TCP descriptors:
+~~~
+static void rx<em>descr</em>init (void) 
+{
+  u32 i,next;
+  realisedDesc = xQueueCreate(3, sizeof(int));
+  RxBufIndex = 0;
+  for (i = 0, next = 0; i &lt; NUM<em>RX</em>BUF; i++) {
+    if (++next == NUM<em>RX</em>BUF) next = 0;
+<pre><code>/* this descriptors bind to DMA */
+activeFrRtsDesc[i] = pxGetNetworkBufferWithDescriptor(
+        ipTOTAL_ETHERNET_FRAME_SIZE, 0 );
+/* this free descriptors are for swapping when frame come  */
+freeFrtsDesc[i] = pxGetNetworkBufferWithDescriptor(
+        ipTOTAL_ETHERNET_FRAME_SIZE, 0 );
+/* Binding DMA and FreeRTOS descriptors */
+Rx_Desc[i].Stat = DMA_RX_OWN;
+Rx_Desc[i].Ctrl = DMA_RX_RCH | ETH_BUF_SIZE;
+Rx_Desc[i].Addr = (u32)&amp;activeFrRtsDesc[i]-&gt;pucEthernetBuffer;
+Rx_Desc[i].Next = (u32)&amp;Rx_Desc[next];
+</code></pre>
+  }
+  ETH->DMARDLAR = (u32)&amp;Rx_Desc[0];
+}
+~~~
+When Ethernet interrupt occurs I swap activeFrRtsDesc and freeFrtsDesc:
+~~~
+void ETH<em>IRQHandler( void )
+{
+    u32 i = RxBufIndex;
+    do
+    {
+        if (Rx</em>Desc[i].Stat &amp; DMA<em>RX</em>ERROR<em>MASK)
+        {
+        }
+        else if ((Rx</em>Desc[i].Stat &amp; DMA<em>RX</em>SEG<em>MASK) != DMA</em>RX<em>SEG</em>MASK)
+        {
+        }
+        else
+        {
+            /* save data len */
+            activeFrRtsDesc[i]->xDataLength = 
+                ((Rx_Desc[i].Stat >> 16) &amp; 0x3FFF) &#8211; 4;
+<pre><code>        /* swap activeFrRtsDesc and freeFrtsDesc */
+        NetworkBufferDescriptor_t * tmp;
+        tmp = activeFrRtsDesc[i];
+        activeFrRtsDesc[i] = freeFrtsDesc[i];
+        Rx_Desc[i].Addr = (u32)&amp;activeFrRtsDesc[i]-&gt;pucEthernetBuffer;
+        freeFrtsDesc[i] = tmp;
+        /* activate freeRtos task that frees realised descriprors */
+        xQueueSendFromISR(realisedDesc, &amp;i, NULL);
+    }
+    Rx_Desc[i].Stat = DMA_RX_OWN;
+    if (++i == NUM_RX_BUF) i = 0;
+}while ( (Rx_Desc[i].Stat &amp; DMA_RX_OWN) == 0);
+RxBufIndex = i;
+if (ETH-&gt;DMASR &amp; INT_RBUIE) 
+{
+    /* Rx DMA suspended, resume DMA reception. */
+    ETH-&gt;DMASR   = INT_RBUIE;
+    ETH-&gt;DMARPDR = 0;
+    ETH-&gt;DMASR |= INT_RBUIE;
+}
+/* Clear the interrupt pending bits. */
+ETH-&gt;DMASR = INT_NISE | INT_RIE;
+</code></pre>
+}
+~~~
+In prvEMACHandlerTask I proceed and free realised FreeRTOS+TCP descriptors:
+~~~
+static void prvEMACHandlerTask( void *pvParameters )
+{
+    IPStackEvent_t xRxEvent;
+    int realisedBuffer;
+    emacInit(); 
+<pre><code>for( ;; )
+{
+    if (xQueueReceive( realisedDesc, &amp;realisedBuffer, portMAX_DELAY) == pdFALSE)
+        continue;
+    /* processing realised descriptor */
+    if( eConsiderFrameForProcessing( freeFrtsDesc[realisedBuffer]-&gt;pucEthernetBuffer )
+            == eProcessBuffer )
+    {
+        /* The event about to be sent to the TCP/IP is an Rx event. */
+        xRxEvent.eEventType = eNetworkRxEvent;
+        /* pvData is used to point to the network buffer descriptor that
+           now references the received data. */
+        xRxEvent.pvData = ( void * ) freeFrtsDesc[realisedBuffer];
+        /* Send the data to the TCP/IP stack. */
+        if( xSendEventStructToIPTask( &amp;xRxEvent, 0 ) == pdFALSE )
+        {
+            /* The buffer could not be sent to the IP task so the buffer
+               must be released. */
+            vReleaseNetworkBufferAndDescriptor( freeFrtsDesc[realisedBuffer] );
+            /* Make a call to the standard trace macro to log the
+               occurrence. */
+            iptraceETHERNET_RX_EVENT_LOST();
+        }
+        else
+        {
+            /* The message was successfully sent to the TCP/IP stack.
+               Call the standard trace macro to log the occurrence. */
+            iptraceNETWORK_INTERFACE_RECEIVE();
+        }
+    }
+    else
+    {
+        /* The Ethernet frame can be dropped, but the Ethernet buffer
+           must be released. */
+        vReleaseNetworkBufferAndDescriptor( freeFrtsDesc[realisedBuffer] );
+    }
+    /* alloc new descriptor for future */
+    freeFrtsDesc[realisedBuffer] = pxGetNetworkBufferWithDescriptor(ipTOTAL_ETHERNET_FRAME_SIZE, 0 );
+}
+</code></pre>
+}
+~~~
+Does it correct? I get hardfault on eConsiderFrameForProcessing(). What am I doing wrong?
+Regards,
+Vasilij
+</div></div><div class="thread-post"><h3 class="thread-post-title">Receiving Data Using Zero-Copy driver</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 1, 2017</div><div class="thread-post-content">Its very difficult to get into chip specifics without digging through 
+the hardware manual, etc., so perhaps I can take a different approach 
+and ask what is causing the hard fault?  Is it a null reference, an 
+invalid memory reference, or something else?
+The following might help: 
+http://www.freertos.org/Debugging-Hard-Faults-On-Cortex-M-Microcontrollers.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Receiving Data Using Zero-Copy driver</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on February 2, 2017</div><div class="thread-post-content">Hi Vasilij,
+It <strong>is</strong> complex to write a zero-copy NetworkInterface.
+<blockquote>
+  I&#8217;m trying to create Zero-Copy driver for my stm32f429.
+  As describe here I should to declare handler (standard
+  RTOS task) where DMA descriptor with incoming frame (that
+  references the Ethernet buffer containing the received data)
+  are swapped with free FreeRTOS+TCP descriptor. But in my MCU
+  DMA descriptor have only 3 parameters:
+</blockquote>
+~~~~
+// DMA Descriptors.
+typedef struct {
+    volatile u32 Stat;
+    u32 Ctrl;
+    u32 Addr;
+    u32 Next;
+} RX_Desc;
+~~~~
+You only need to set the <code>Addr</code> field. DMA will read from that address while transmitting, or it will write to that address when receiving a packet.
+This is <strong>wrong</strong>:
+~~~~
+    Rx_Desc[i].Addr = (u32)&amp;activeFrRtsDesc[i]->pucEthernetBuffer;
+~~~~
+This is what you meant to do, without the <code>&amp;</code>,l translating a <code>uint8_t*</code> to a <code>uint32_t</code> :
+~~~~
+    Rx_Desc[i].Addr = (u32)activeFrRtsDesc[i]->pucEthernetBuffer;
+~~~~
+Now DMA will write to your <code>pucEthernetBuffer</code> in stead of <strong>currupting</strong> your Network Buffer 🙂
+<blockquote>
+  So I can&#8217;t just swap two pointers. So I am trying to bind DMA
+  descriptors with buffers in Pre-created FreeRTOS+TCP descriptors
+</blockquote>
+Your text is correct.
+I wouldn&#8217;t use arrays <code>activeFrRtsDesc</code> and <code>freeFrtsDesc</code>. The actual descriptors (<code>Rx_Desc</code> and <code>Tx_Desc</code>) will store the pointers for you and no-one will change them.
+The following function translates from a <code>uint8_t* pucEthernetBuffer</code> back to <code>NetworkBufferDescriptor_t *</code>:
+~~~~
+    NetworkBufferDescriptor<em>t *pxPacketBuffer</em>to_NetworkBuffer( void *pvBuffer );
+~~~~
+So when a transmission is complete, you can do the following:
+~~~~
+    uint8<em>t* ucBuffer = ( uint8</em>t * )Tx<em>Desc[i].Addr;
+    NetworkBufferDescriptor</em>t <em>pxNetworkBuffer = pxPacketBuffer_to_NetworkBuffer( ( void * )ucBuffer );
+    /</em> Remove the reference. <em>/
+    Tx_Desc[i].Addr = ( uint32_t )0u;
+    /</em> Release the buffer because it has been sent. */
+    vReleaseNetworkBufferAndDescriptor( pxNetworkBuffer );
+~~~~
+Sending a packet will need:
+~~~~
+    /* Pass the buffer to the descriptor. <em>/
+    Tx_Desc[i].Addr = ( uint32_t )pxDescriptor->pucEthernetBuffer;
+    /</em> Ask to set the IPv4 checksum. Also need an Interrupt on Completion <em>/
+    Tx_Desc[i].Stat |= ETH_DMATXDESC_CHECKSUMTCPUDPICMPFULL | ETH_DMATXDESC_IC;
+    /</em> The Network Buffer has been passed to DMA, no need to release it. */
+    bReleaseAfterSend = pdFALSE;
+~~~~
+<blockquote>
+  When Ethernet interrupt occurs I swap activeFrRtsDesc and freeFrtsDesc:
+</blockquote>
+My advice is: do as little as possible from within an ETH ISR.
+Two interrupts will be interesting for a zero-copy driver: reception and transmission complete. When these interrupts occur, just set a (volatile) flag and wake-up your <code>prvEMACHandlerTask()</code>. As is done in all examples of NetworkInterface.c
+From<code>prvEMACHandlerTask()</code>, a normal task, you will follow <code>Rx_Desc[]</code> as long as the <code>DMA_RX_OWN</code> bit is low.
+~~~~
+    NetworkBufferDescriptor<em>t *pxNetworkBuffer = ( NetworkBufferDescriptor</em>t * )Rx<em>Desc[i].Addr;
+    /* Now pass pxNetworkBuffer to the IP-task in a normal way,
+    using xSendEventStructToIPTask(). */
+    pxNetworkBuffer = pxGetNetworkBufferWithDescriptor( );
+    if( pxNetworkBuffer != NULL )
+    {
+        Rx</em>Desc[i].Addr = pxNetworkBuffer->pucEthernetBuffer;
+    }
+~~~~
+<blockquote>
+  In prvEMACHandlerTask I proceed and free realised FreeRTOS+TCP descriptors:
+  Does it correct? I get hardfault on eConsiderFrameForProcessing().
+  What am I doing wrong?
+</blockquote>
+At least one assignment was wrong.
+But as I said above, I wouldn&#8217;t do processing from within the ISR. <code>prvEMACHandlerTask()</code> should have a pretty high priority so that after the ISR, it will quickly become active.
+The task will send the Network Buffers received to the IP-task, set new buffers, and it will release TX buffers that have been sent.
+The handling of received packets in your <code>prvEMACHandlerTask()</code> looks good. Call <code>eConsiderFrameForProcessing()</code> as early as possible in order to spare a Network Buffer. If you&#8217;re not taking a Network Buffer, there is no need to release it.  All you&#8217;d have to do is to set <code>DMA_RX_OWN</code> again.
+Do not forget to set <code>ipconfigETHERNET_DRIVER_FILTERS_FRAME_TYPES = 1</code> because you already filter the packets.
+Good luck
+</div></div><div class="thread-post"><h3 class="thread-post-title">Receiving Data Using Zero-Copy driver</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/yanvasilij">yanvasilij</a> on February 3, 2017</div><div class="thread-post-content">Hello Hein Tibosch,
+Thank you a lot for explanations! It realy helped. I wrote own zero-copy NetworkInterface as you said. It works! Here my NetworkInterface:
+</div></div><div class="thread-post"><h3 class="thread-post-title">Receiving Data Using Zero-Copy driver</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on February 3, 2017</div><div class="thread-post-content">Hi Vasilij,
+A lot is good now, here below I added some &#8220;//&#8221; comments to make things even better 🙂
+~~~~
+BaseType<em>t xNetworkInterfaceInitialise( void )
+{
+    if( xEMACTaskHandle == NULL )
+    {
+        xTaskCreate( prvEMACHandlerTask, &#8220;EMAC&#8221;, 20 * configMINIMAL</em>STACK<em>SIZE, NULL,
+                configMAX</em>PRIORITIES &#8211; 1, &amp;xEMACTaskHandle );
+    }
+// Only return pdPASS if you have detected a Link Status and if the device (PHY) is usable.
+// The function will be called again and again until it returns pdPASS
+    return pdPASS;
+}
+~~~~
+~~~~
+BaseType<em>t xNetworkInterfaceOutput( xNetworkBufferDescriptor</em>t * const pxDescriptor,
+        BaseType_t bReleaseAfterSend )
+{
+    static u8 TxBufIndex = 0;
+    u32 ulTransmitSize = pxDescriptor->xDataLength;
+<pre><code>u32 i = TxBufIndex;
+/* Wait until previous packet transmitted. */
+</code></pre>
+// In a later version you might want to make this blocking and get woken-up
+// by an ISR: TX-complete or so.
+    while (Tx<em>Desc[i].CtrlStat &amp; DMA</em>TX_OWN);
+// The TX-complete event could also trigger cleaning up old TX buffers.
+// Now you&#8217;re leaving Network Buffers unused for a longer period
+// of time.
+<pre><code>uint8_t* ucBuffer = ( uint8_t * )Tx_Desc[i].Addr;
+if ( ucBuffer != 0 )
+{
+    NetworkBufferDescriptor_t *pxNetworkBuffer = 
+        pxPacketBuffer_to_NetworkBuffer( ( void * )ucBuffer );
+    vReleaseNetworkBufferAndDescriptor( pxNetworkBuffer );
+    Tx_Desc[i].Addr = ( uint32_t )0u;
+}
+// Before actually sending a packet, please check if the Link Status
+// is still high. If it is low, just do not send anything and release
+// the Network Buffer as below.
+...
+Tx_Desc[i].Addr = ( uint32_t )pxDescriptor-&gt;pucEthernetBuffer;
+// You are passing the ownership of 'pxDescriptor' to DMA, soa you may not
+// release it anymore. Set bReleaseAfterSend to false here:
+bReleaseAfterSend = pdFALSE;
+// Also make sure that '#define ipconfigZERO_COPY_TX_DRIVER   1'
+Tx_Desc[i].Size = ulTransmitSize;
+Tx_Desc[i].CtrlStat |= DMA_TX_OWN;
+if (++i == NUM_TX_BUF) i = 0;
+TxBufIndex = i;
+/* Start frame transmission. */
+ETH-&gt;DMASR   = DSR_TPSS;
+ETH-&gt;DMATPDR = 0;
+iptraceNETWORK_INTERFACE_TRANSMIT();
+if( bReleaseAfterSend != pdFALSE )
+{
+    vReleaseNetworkBufferAndDescriptor( pxDescriptor );
+}
+</code></pre>
+~~~~
+~~~~
+void ETH<em>IRQHandler( void )
+{
+// What I miss here is the checks for the RX and TX-complete interrupts
+// These would be good reasons to wake-up your task.
+    BaseType</em>t pxHigherPriorityTaskWoken;
+    vTaskNotifyGiveFromISR( xEMACTaskHandle, &amp;pxHigherPriorityTaskWoken );
+// I tend to put &#8216;portYIELD<em>FROM</em>ISR()&#8217; as the last call in an ISR
+    portYIELD<em>FROM</em>ISR( pxHigherPriorityTaskWoken );
+    if (ETH->DMASR &amp; INT<em>RBUIE) 
+    {
+        /* Rx DMA suspended, resume DMA reception. */
+        ETH->DMASR   = INT</em>RBUIE;
+        ETH->DMARPDR = 0;
+        ETH->DMASR |= INT<em>RBUIE;
+    }
+    /* Clear the interrupt pending bits. */
+    ETH->DMASR = INT</em>NISE | INT_RIE;
+}
+~~~~
+~~~~
+static void prvEMACHandlerTask( void *pvParameters )
+{
+    IPStackEvent_t xRxEvent;
+    uint8_t *pucTemp;
+    NetworkBufferDescriptor_t *pxDescriptor;
+<pre><code>_xNetworkInterfaceInitialise();
+for( ;; )
+{
+    ulTaskNotifyTake( pdFALSE, portMAX_DELAY );
+    u32 i = RxBufIndex;
+    do
+    {
+        if (Rx_Desc[i].Stat &amp; DMA_RX_ERROR_MASK)
+        {
+</code></pre>
+// What here? Reset the descriptor maybe and carry on?
+            }
+            else if ((Rx<em>Desc[i].Stat &amp; DMA</em>RX<em>SEG</em>MASK) != DMA<em>RX</em>SEG<em>MASK)
+            {
+// What does &#8216;DMA</em>RX<em>SEG</em>MASK&#8217; stand for?
+            }
+            else
+            {
+                pxDescriptor = pxGetNetworkBufferWithDescriptor( ipTOTAL<em>ETHERNET</em>FRAME_SIZE, 0 );
+                pucTemp = pxDescriptor->pucEthernetBuffer;
+<pre><code>            pxDescriptor-&gt;xDataLength = ((Rx_Desc[i].Stat &gt;&gt; 16) &amp; 0x3FFF) - 4;
+            pxDescriptor-&gt;pucEthernetBuffer = (u8 *)(Rx_Desc[i].Addr);
+            Rx_Desc[i].Addr = (u32)pucTemp;
+</code></pre>
+// Oops: you don&#8217;t have to do such difficult things !
+// The IP-task will have done this and there are access functions for this, most importantly:
+// NetworkBufferDescriptor<em>t *pxPacketBuffer</em>to_NetworkBuffer( void *pvBuffer )
+// Here is some new code:
+<pre><code>// Get the char buffer:
+uint8_t *pucBuffer = (uint8_t *)(Rx_Desc[i].Addr);
+// Lookup to which Network Buffer it belongs (using the back-pointer) :
+NetworkBufferDescriptor_t *pxDescriptor = pxPacketBuffer_to_NetworkBuffer( (void *)pucBuffer );
+// And take the buffer away, assign NULL or a new buffer:
+Rx_Desc[i].Addr = (u32)NULL;
+            *( ( NetworkBufferDescriptor_t ** )
+                    ( pxDescriptor-&gt;pucEthernetBuffer - ipBUFFER_PADDING ) ) = 
+                pxDescriptor;
+            if( eConsiderFrameForProcessing( pxDescriptor-&gt;pucEthernetBuffer )
+                    == eProcessBuffer )
+            {
+                xRxEvent.eEventType = eNetworkRxEvent;
+                xRxEvent.pvData = ( void * ) pxDescriptor;
+                if( xSendEventStructToIPTask( &amp;xRxEvent, 0 ) == pdFALSE )
+                {
+                    vReleaseNetworkBufferAndDescriptor( pxDescriptor );
+                    iptraceETHERNET_RX_EVENT_LOST();
+                }
+                else
+                {
+                    iptraceNETWORK_INTERFACE_RECEIVE();
+                }
+            }
+            else
+            {
+</code></pre>
+// You&#8217;re dropping this packet but you could re-use it for the next DMA transaction
+// That would save time
+<pre><code>                /* The Ethernet frame can be dropped, but the Ethernet buffer
+                   must be released. */
+                vReleaseNetworkBufferAndDescriptor( pxDescriptor );
+            }
+        }
+</code></pre>
+// Don&#8217;t set &#8220;Stat = DMA<em>RX</em>OWN&#8221; but &#8220;Stat |= DMA<em>RX</em>OWN&#8221;
+// Unless you want to clear all other flags.
+            Rx<em>Desc[i].Stat = DMA</em>RX_OWN;
+// So what I&#8217;m missing here is reloading the &#8216;Addr&#8217; field
+<pre><code>        if (++i == NUM_RX_BUF) i = 0;
+    }while ( (Rx_Desc[i].Stat &amp; DMA_RX_OWN) == 0);
+    RxBufIndex = i;
+}
+</code></pre>
+}
+~~~~
+If things aren&#8217;t clear, please ask.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Receiving Data Using Zero-Copy driver</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/yanvasilij">yanvasilij</a> on February 14, 2017</div><div class="thread-post-content">Hello Hein Tibosch,
+Thank you a lot for help. I have not impruved my driver accoding your tips, but I will:).
+I have a problem with current zero-copy dirver: I figured out that it works with tcp fine, but does not pinging at all. I checked ipconfigREPLY<em>TO</em>INCOMING_PINGS it sets to 1 (my FreeRTOSIPConfig.h in attachments). 
+And I have some question about your tips:
+<blockquote>
+  Only return pdPASS if you have detected a Link Status and if the device (PHY) is usable. The function will be called again and again until it returns pdPASS
+</blockquote>
+I can create FreeRTOS+TCP buffer descriptors only after sheduler starting, isn&#8217;t it? I use it for first initialization of rx and tx DMA descriptors for EMAC. So I can to init my EMAC and phy only after sheduler starting (for example in prvEMACHandlerTask). That why I init my EMAC and PHY not in xNetworkInterfaceInitialise. Haw can I to workaround it?
+<blockquote>
+  Don&#8217;t set &#8220;Stat = DMA<em>RX</em>OWN&#8221; but &#8220;Stat |= DMA<em>RX</em>OWN&#8221; Unless you want to clear all other flags.
+</blockquote>
+But I don&#8217;t need any additional flags in Stat, why shouldn&#8217;t to erase them?
+Regards,
+Vasilij
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

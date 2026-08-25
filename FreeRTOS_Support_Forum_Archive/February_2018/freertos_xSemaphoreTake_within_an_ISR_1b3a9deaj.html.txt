@@ -1,0 +1,212 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xSemaphoreTake within an ISR - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2018/freertos_xSemaphoreTake_within_an_ISR_1b3a9deaj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="xSemaphoreTake within an ISR - FreeRTOS" />
+<meta property="og:description" content="xSemaphoreTake within an ISRPosted by k1mgy on February 11, 2018Processor SAMG55 Dev System: Atmel Studio with ASF version of FreeRTOS (version 8.0.1) I am using xSemaphoreTake ( semaphorescreated using xSemaphoreCreateMutex()). These work perfectly except&#8230; One particular semaphore protects TWI communications so that, under circumstances where one process has TWI in work and an interrupt is &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2018/freertos_xSemaphoreTake_within_an_ISR_1b3a9deaj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="xSemaphoreTake within an ISRPosted by k1mgy on February 11, 2018Processor SAMG55 Dev System: Atmel Studio with ASF version of FreeRTOS (version 8.0.1) I am using xSemaphoreTake ( semaphorescreated using xSemaphoreCreateMutex()). These work perfectly except&#8230; One particular semaphore protects TWI communications so that, under circumstances where one process has TWI in work and an interrupt is [&hellip;]" />
+<meta name="twitter:title" content="xSemaphoreTake within an ISR - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202900' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202900' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202900' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202900' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146916' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2018%2Ffreertos_xSemaphoreTake_within_an_ISR_1b3a9deaj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2018%2Ffreertos_xSemaphoreTake_within_an_ISR_1b3a9deaj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146916">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2018_freertos_support_forum_archive_index.html/">February 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">xSemaphoreTake within an ISR</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/k1mgy">k1mgy</a> on February 11, 2018</div><div class="thread-post-content">Processor SAMG55
+Dev System: Atmel Studio with ASF version of FreeRTOS (version 8.0.1)
+I am using xSemaphoreTake ( semaphorescreated  using xSemaphoreCreateMutex()).  These work perfectly except&#8230;
+One particular semaphore protects  TWI communications so that, under circumstances where one process has TWI in work and an interrupt is triggerd which also uses TWI, the ISR will not clobber the TWI interface.
+However, xSemaphoreTake() says that it can&#8217;t be called from within an ISR.
+How can I protect TWI in this case?
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake within an ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 11, 2018</div><div class="thread-post-content">As a rule of thumb, no FreeRTOS API functions that don&#8217;t end if 
+&#8220;FromISR&#8221; can be called from an ISR.  In this case there is an 
+xSemaphoreTakeFromISR() function &#8211; however recent versions of FreeRTOS 
+do not allow mutex semaphores to be used from interrupts.  There are a 
+couple of reasons for that, the first is an interrupt cannot block on a 
+semaphore (or anything else for that matter) so if the mutex is not 
+available then it has to just fail gracefully.  The second is that 
+mutexes have a priority inheritance mechanism whereby the mutex is 
+associated with the priority of the task that holds it, and that breaks 
+down when it is used from an interrupt as interrupts to not have a task 
+priority.
+A complete TWI operation is going to be way too long to perform in an 
+interrupt anyway.  Normally it is preferable to just use interrupts to 
+manage TWI events.  For example, when one transaction is complete use 
+the TWI end interrupt to see if there is another transaction pending &#8211; 
+and if there is start that transaction ideally using DMA.  If there are 
+no further transactions pending then the TWI operation can just be ended 
+until such time a new transaction is ready.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake within an ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/k1mgy">k1mgy</a> on February 11, 2018</div><div class="thread-post-content">Richard, thank you.
+The interrupt being fired is from a peripheral (ADC), signaling that the data is ready to read.  Therefore I must service it or lose the data.
+Investigating this further, I discover that hacking within an ISR may be unnecessary as there&#8217;s a FreeRTOS TWI driver. 
+So I added the driver (through Atmel ASF) and it wouldn&#8217;t compile.  Offered two complaints on freertos<em>twi</em>master.h, both referring me back to the Freertos Version 8 compatibility chart.  I never expected this in a file that&#8217;s part of the version 8 code.  So I replaced portTickType and xSemaphoreHandle with their Version 8 equivalents, and it compiles.  FreeRTOS please note.
+Onward now to replace my atmel asf TWI driver with the FreeRTOS driver.  Hopefully this will fix it?
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake within an ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 12, 2018</div><div class="thread-post-content"><blockquote>
+  The interrupt being fired is from a peripheral (ADC), signaling that the 
+  data is ready to read. Therefore I must service it or lose the data.
+</blockquote>
+That doesn&#8217;t mean you have to read all the data in the interrupt though. 
+  Either just start the read operation in the interrupt and let 
+interrupts or DMA complete the read &#8211; or somehow signal a task (direct 
+to task notifications are the best method, but not available in the 
+older versions you are using) to unblock the task so the task performs 
+the read.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake within an ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/k1mgy">k1mgy</a> on February 12, 2018</div><div class="thread-post-content">Richard, I can get to your idea, but for the moment have another issue.
+After initializing:
+<blockquote>
+  bool InitTWI(void)
+  {
+      freertos<em>peripheral</em>options<em>t driver</em>options =
+      {
+          NULL,
+          0,
+          0x0e,
+          TWI<em>I2C</em>MASTER,
+          (WAIT<em>TX</em>COMPLETE  | WAIT<em>RX</em>COMPLETE)
+      };
+<pre><code>flexcom_enable(BOARD_FLEXCOM_TWI);
+flexcom_set_opmode(BOARD_FLEXCOM_TWI, FLEXCOM_TWI);
+freertos_twi=freertos_twi_master_init(BOARD_BASE_TWI, &amp;driver_options);
+if (freertos_twi == NULL)
+{
+    puts("-E-tTWI master initialization failed.r");
+    return(false);
+}
+twi_set_speed(freertos_twi,TWI_SPEED,F_CPU);
+return(true);
+</code></pre>
+  }
+</blockquote>
+I then make a write call:
+<blockquote>
+  nSuccessCode=freertos<em>twi</em>write<em>packet(BOARD</em>BASE<em>TWI, &amp;packet</em>tx,TWI<em>WRITE</em>PACKET_WAIT);
+</blockquote>
+And here I get an exception fault.  
+Within freertos<em>twi</em>write_packet(): the exception is triggered at:
+<blockquote>
+  freertos<em>optionally</em>wait<em>transfer</em>completion(&#8230;
+</blockquote>
+And that&#8217;s within freertos<em>twi</em>master.c in the freertos<em>twi</em>write<em>packet</em>async() function.  I didn&#8217;t call async.. so not sure how we got there&#8230;
+Any ideas?
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake within an ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/k1mgy">k1mgy</a> on February 12, 2018</div><div class="thread-post-content"><strong>#define freertos<em>twi</em>write<em>packet(p</em>twi, p<em>packet, block</em>time<em>ticks) freertos</em>twi<em>write</em>packet<em>async((p</em>twi), (p<em>packet), (block</em>time_ticks), (NULL))</strong>
+is defined in freertos<em>twi</em>master.h!
+So, if we&#8217;re not supposed to use async, why the dickens is it defined in?
+This is nuts 🙂
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake within an ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 12, 2018</div><div class="thread-post-content"><blockquote>
+  So, if we&#8217;re not supposed to use async, why the dickens is it defined in?
+</blockquote>
+Not sure I understand the statement about not supposed to use async.
+(should also point out that you are looking at very old code from the 
+ASF rather than latest code from the FreeRTOS download)
+</div></div><div class="thread-post"><h3 class="thread-post-title">xSemaphoreTake within an ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/k1mgy">k1mgy</a> on February 12, 2018</div><div class="thread-post-content"><blockquote>
+  you are looking at very old code from the 
+  ASF rather than latest code from the FreeRTOS download
+</blockquote>
+I&#8217;m using what has been published by Atmel/Microchip/whoever.  Hmmm&#8230; well that&#8217;s likely the issue.  If they have not updated it, and it&#8217;s broken (apparently so) then I&#8217;ll get on their ass and see what gives.
+Thanks for your help!
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

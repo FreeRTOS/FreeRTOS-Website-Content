@@ -1,0 +1,239 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>taskYIELD in interrupt - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2005/freertos_taskYIELD_in_interrupt_1299296.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="taskYIELD in interrupt - FreeRTOS" />
+<meta property="og:description" content="taskYIELD in interruptPosted by nobody on June 10, 2005Hi, I need help in understanding how FreeRTOS handles interrupts. I got a ISR wich sends in a queue with cQueueSendFromISR. As I need very fast reaction I put a taskYield at the end of the interrupt &#040;if cQueueSendFromISR returns true&#041;. The software is unstable and I &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2005/freertos_taskYIELD_in_interrupt_1299296.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="taskYIELD in interruptPosted by nobody on June 10, 2005Hi, I need help in understanding how FreeRTOS handles interrupts. I got a ISR wich sends in a queue with cQueueSendFromISR. As I need very fast reaction I put a taskYield at the end of the interrupt &#040;if cQueueSendFromISR returns true&#041;. The software is unstable and I [&hellip;]" />
+<meta name="twitter:title" content="taskYIELD in interrupt - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201274' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201274' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201274' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201274' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141877' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2005%2Ffreertos_taskYIELD_in_interrupt_1299296.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2005%2Ffreertos_taskYIELD_in_interrupt_1299296.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141877">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2005_freertos_support_forum_archive_index.html/">June 2005 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">taskYIELD in interrupt</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on June 10, 2005</div><div class="thread-post-content">Hi,
+I need help in understanding how FreeRTOS handles interrupts.
+I got a ISR wich sends in a queue with cQueueSendFromISR.
+As I need very fast reaction I put a taskYield at the end of the interrupt &#40;if cQueueSendFromISR returns true&#41;. 
+The software is unstable and I suspect the ISR for the hangups. 
+The compiler puts some push at the beginning of the ISR and some pop at the end of it.
+Calling taskyield prevents the pops to be executed, right?
+taskYield is doing some push and pops itself but the pops of the ISR remain on the stack?
+Ok, I think i missed something&#8230;.
+I still use 2.60, will try 3.0 asap.
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on June 10, 2005</div><div class="thread-post-content">The serial port driver of each demo application provides an example of how this can be done.&nbsp; Generally the switch has to be right at the end of the ISR.
+How this mechanism works is very dependent on the processor, and to a lesser extend the compiler.&nbsp; Which are you using?
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on June 10, 2005</div><div class="thread-post-content">Yes, I do it like in the serial demo.
+taskYIELD &#40;switch?&#41; is at the end of the ISR.
+In the assembler listing I can see after a call to vPortYield only the pops of the ISR.
+I use gcc 3.4.3 &#40;latest WinAVR&#41; with Atmel ATMega128.
+The tick is every 10 ms.
+I&#8217;m sorry, but regarding earlyer posts here I thought that PortYield activates the woken task directly? Or what happens after the RET command you put at the end of PortYield?
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hermarcel">hermarcel</a> on June 10, 2005</div><div class="thread-post-content">What I noticed when writing the wizC port for the PIC18 was:
+When you declare the ISR to use local variables, space is reserved by
+compiler-generated-code on the stack upon ISR-entry. Then the context is
+saved &#40; portSave&#95;Context &#41;. At the end the context is restored &#40;
+portResore&#95;Context &#41; which results in a change of the programcounter. The
+compiler-generated-code to restore the space used by the local variables is
+never executed. This rapidly leads to stackoverflows.
+What I did to prevent this is to forbid &#40;in text&#41; the use of local variables
+in the ISR. The alternatives I came up with are:
+&#45; Call a function from the ISR &#40;after the contextsave&#41; and declare the
+locals there.
+&#45; Declare the needed variables as global &#40; iow declare them outside of the
+ISR, or as static within the IST&#41;
+&#45; Find some &#40;currently&#41; unused globals or registers you can use. These are
+the ones that got saved at a contextsave, but are not used by your ISR. This
+only works if you always do a contextrestore upon isr-exit.
+And as Richard said: All CPU&#8217;s/compilers are different here. But the above
+might help you.
+Marcel
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on June 10, 2005</div><div class="thread-post-content">In the GCC AVR port the Yield macro just calls a naked function.&nbsp; The function saves the context, switches the active task to the one with the highest priority, then restores the context of the &#40;possible&#41; new task.&nbsp; The ISR then completes in the normal way.&nbsp; Because the context has been switched, when the ISR completes it pops registers from the newly activated task and returns to the newly activated task.
+This will only work if the yield is the last part of the ISR routine, so the stack is not used between the yield and the ISR completing.
+Provided the example of the serial port ISR routine is followed and the Yield only comes at the end of the ISR, then your code should work.&nbsp; The most likely cause of any problem would be stack overrun.&nbsp; Switching context from within the ISR will use more stack than the ISR would otherwise.&nbsp; Can you check the amount of stack available?&nbsp; Try increasing the stack of the relevant tasks &#8211; this might fix the problem.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on June 10, 2005</div><div class="thread-post-content">Hi Marcel,
+The GCC AVR port allows you to use local variables in the ISR because the &#95;&#95;attribute&#95;&#95;&#40;&#40;naked&#41;&#41; attribute is not used on the ISR.&nbsp; This means the function prologue and epilogue code will get executed.
+If a task is interrupted by and ISR, the prologue code moves the stack pointer to make room for the local variables.&nbsp; The task can then be switched out with the stack in tact.&nbsp; When it &#40;sometime later&#41; gets switched back it continues from the same point &#8211; so the function epilogue code executes setting the stack back to the correct value before returning to the task code.
+This is all interesting stuff and where each system differs.&nbsp; I use so many different CPU&#8217;s that I always have to remind myself how each works before answering questions like these.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on June 13, 2005</div><div class="thread-post-content">Hello,
+I &#40;again&#41; found out that the error was on my side ;-&#41;
+There was some buffer pointer problem in my ISR.
+Debugging such a deeply embedded software is not easy, even more when you add an alien RTOS wich you dont&#8217;t understand in every way.
+So I learned something &#40;I hope&#41;:
+&#45; the naked attribute leaves out the RET instruction, so
+taskYIELD returns to the ISR
+&#45; the FreeRTOS task switch is done with the pxCurrentTCB pointer and the following register restore with the &#8216;new&#8217; stack pointer
+But Richard said:
+&#8216; Because the context has been switched, when the ISR completes it pops registers from the newly activated task and returns to the newly activated task.&#8217;
+What does the ISR pop? It pushed the registers on the old stack an pops them from the new stack? 
+So its a kind of don&#8217;t care?
+What&#8217;s with the new stack pointer when changing it with
+unexpected pops?
+Joerg
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on June 13, 2005</div><div class="thread-post-content">The stack contains the return address.&nbsp; So changing the stack allows the pops to return to a different return address within a different task.
+Have you seen this part? /wp-content/uploads/2019/07/index.html
+it is explained.
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on June 14, 2005</div><div class="thread-post-content">Hi,
+&gt; Have you seen this part? 
+&gt; /wp-content/uploads/2019/07/index.html
+&gt; it is explained.
+yes I&#8217;ve seen it. But the the case of calling taskYIELD out of my own ISR is not exlpained there?
+I think I was wrong in my last post. taskYIELD does not return to my ISR, because of the new program counter put on the stack by RestoreContext. Right?
+But taskYIELD uses a RET instruction not the RETI
+needed here?
+So the pops of the compiler ISR code doesn&#8217;t get executed.
+And when the first task comes to execution again it crashes because the the expected program counter is not there but the pushes of the interrupt code?
+Maybe Richard can clear this point?
+I think this is the right place to ask?
+Regards, Joerg
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on June 14, 2005</div><div class="thread-post-content">There are two key points here:
+1&#41; The Yield appears only at the end of the interrupt service routine &#8211; when the interrupt has been serviced but the ISR has not completed.
+2&#41; Each task maintains its own interrupt status.
+This is the sequence:
+1&#41; Task A is running when an interrupt occurs.&nbsp; The interrupt&nbsp; causes some CPU registers to be saved including the interrupt flags.&nbsp; Registers are saved so as to be restored by a RETI instruction.&nbsp; For the interrupt to have occurred the interrupt flags must have been set with interrupts enabled &#8211; but within the ISR they are disabled.
+2&#41; The ISR code executes.&nbsp; During the execution it is discovered that a yield is required.&nbsp; The yield does not occur however &#8211; just&nbsp; a flag is set to say one is necessary.
+3&#41; At the end of the interrupt the flag is checked which says a yield is required, and yield is called.
+4&#41; Yield saves the context of the task A &#8211; which has been interrupted.&nbsp; The registers are saved to the stack on top of the registers that were already pushed onto the stack when the ISR was entered.&nbsp; The program counter that is saved points to the end of the ISR function.
+5&#41; Yield then switches the stack pointer to point to the saved context of task B &#8211; and proceeds to pop the registers from task B context.&nbsp; When all the general purpose registers have been popped the task B interrupt flags and return address are left on the stack.&nbsp; The flags are popped first.&nbsp; This will return the interrupt enable status to whatever it was when task B last ran &#40;could be enabled or disabled&#41;.&nbsp; Finally RET is executed which causes the return address to be popped and the program counter set to the correct place to run task B.
+6&#41; At some point task B blocks.&nbsp; In our example assume this makes task A the candidate to run again.&nbsp; Having saved the task B context the context switch this time sets the stack pointer back to the saved context of task A &#8211; the task that was interrupted. 
+7&#41; The general purpose registers for task A are restored.&nbsp; Next the interrupt flags are restored.&nbsp; The interrupt flags were stored with interrupts disabled as they were saved from within the ISR.&nbsp; Finally the RET instruction is executed which sets the program counter back to the place where task A was last executing.&nbsp; In this case task A was last executing in the ISR.&nbsp; The next items on the stack are the registers pushed onto the stack by the processor when the interrupt occurred. &#91;NB there may actually be some registers on the stack from the function prologue generated by the compiler, which will be popped by the epilogue generated by the compiler&#93;.
+8&#41; Task A returns to within the ISR.&nbsp; The ISR processing has already been performed but the ISR itself has not finished.&nbsp; The next instruction that task A executes is from the function epilogue &#8211; in a RETI.&nbsp; This pops the interrupt flags and return address from the stack &#8211; these are those placed there when the ISR was entered.&nbsp; The interrupt flags re-enables interrupts &#40;remember they must have been enabled for the interrupt to get called at all&#41; and returns task A to the place it was prior to it getting interrupt in the first place.
+Hope this helps&#33;
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on June 14, 2005</div><div class="thread-post-content">Yes, thank very you much, it helps.
+I couldn&#8217;t imagine that task A returns back into the end of the ISR.
+I got a bad headache but I think I understand it now.
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on June 20, 2005</div><div class="thread-post-content">Hmm, was it planned this way? :-&#41;
+Isn&#8217;t it easier and clearer to let XFromISR take care for
+pending task switches?
+Maybe they could set the interrupt flag for the tick function so it executes immediately afterwards?
+It shouldn&#8217;t increase the tick count then of course.
+What is the advantage of the current solution?
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on June 20, 2005</div><div class="thread-post-content">I&#8217;m not sure which answer this is refering to.&nbsp; Can you either quote the text, or reply to the message to which your are referring, rather than at the top level.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on June 20, 2005</div><div class="thread-post-content">&#8230;,or reply to the message to which your are referring, rather than at the top level.
+Aha, this is possible?
+Sorry, I was referring to the longer explanation,
+where it says that the interrupt is completed
+not until switching back to task A.
+I wonder if the XFromInterrupt functions could initiate &#40;not execute&#41; a task switch by themselves rather than let the programmer coding it manually at the end of the ISR.
+Regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">taskYIELD in interrupt</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on June 20, 2005</div><div class="thread-post-content">&gt; Hmm, was it planned this way? :-&#41; 
+The mechanism for achieving this functionality is very architecture dependent.&nbsp; The AVR port does not utilise a software interrupts to perform context switches so this is the best way of achieving the context switch from within an ISR &#40;IMHO&#41;.&nbsp; So yes&nbsp; it was done this way by design but only for the AVR and similar architectures.
+&gt;Isn&#8217;t it easier and clearer to let XFromISR take care for 
+&gt;pending task switches? 
+These functions and most probably do occur within an ISR&nbsp; not just at the end&nbsp; so they cannot perform the switch themselves.&nbsp; Doing so would mean that the stacks would get messed up and the interrupt might not be cleared prior to the switch occurring.&nbsp; They do take care of the switch in as much as they set a flag to say whether a switch is required or not.
+&gt; Maybe they could set the interrupt flag for the tick function so it executes immediately afterwards?
+Allowing the end of interrupt instruction to execute would take you back to the &#40;wrong&#41; task code&nbsp; and a switch would not occur to the correct task until the next RTOS tick.&nbsp; Setting an interrupt flag to force an RTOS switch immediately following the return from interrupt would mean the real time &#40;tick count&#41; would no longer be real time.&nbsp; As you say the count could be prevented from incrementing but this would then include a coding overhead.&nbsp; The call to yield at the end of the ISR is effectively doing exactly as you suggest&nbsp; but the application writer has to add it manually if they want the switch to occur immediately.
+&gt; What is the advantage of the current solution? 
+As above.&nbsp; I dont know of a viable alternative.&nbsp; Other architectures that use an interrupt to force a task switch allow the interrupt to complete.&nbsp; The return from interrupt instruction inserted by the compiler causes an automatic return to the new task.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

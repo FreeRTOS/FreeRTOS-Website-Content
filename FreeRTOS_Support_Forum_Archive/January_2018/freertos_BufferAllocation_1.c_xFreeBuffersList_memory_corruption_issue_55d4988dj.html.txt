@@ -1,0 +1,270 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BufferAllocation_1.c xFreeBuffersList memory corruption issue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2018/freertos_BufferAllocation_1.c_xFreeBuffersList_memory_corruption_issue_55d4988dj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="BufferAllocation_1.c xFreeBuffersList memory corruption issue - FreeRTOS" />
+<meta property="og:description" content="BufferAllocation_1.c xFreeBuffersList memory corruption issuePosted by tc-cadscan on January 26, 2018I&#8217;ve written a zero-copy network driver for FreeRTOS+TCP on STM32F4. For the most part it works well, but every once in a while I get an issue with pxGetNetworkBufferDescriptor returning NULL. I&#8217;m calling it with xBlockTimeTicks set to portMAX_DELAY, so in theory this should never &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2018/freertos_BufferAllocation_1.c_xFreeBuffersList_memory_corruption_issue_55d4988dj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="BufferAllocation_1.c xFreeBuffersList memory corruption issuePosted by tc-cadscan on January 26, 2018I&#8217;ve written a zero-copy network driver for FreeRTOS+TCP on STM32F4. For the most part it works well, but every once in a while I get an issue with pxGetNetworkBufferDescriptor returning NULL. I&#8217;m calling it with xBlockTimeTicks set to portMAX_DELAY, so in theory this should never [&hellip;]" />
+<meta name="twitter:title" content="BufferAllocation_1.c xFreeBuffersList memory corruption issue - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202895' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202895' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202895' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202895' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146903' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2018%2Ffreertos_BufferAllocation_1.c_xFreeBuffersList_memory_corruption_issue_55d4988dj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2018%2Ffreertos_BufferAllocation_1.c_xFreeBuffersList_memory_corruption_issue_55d4988dj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146903">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2018_freertos_support_forum_archive_index.html/">January 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">BufferAllocation_1.c xFreeBuffersList memory corruption issue</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tc-cadscan">tc-cadscan</a> on January 26, 2018</div><div class="thread-post-content">I&#8217;ve written a zero-copy network driver for FreeRTOS+TCP on STM32F4. For the most part it works well, but every once in a while I get an issue with pxGetNetworkBufferDescriptor returning NULL. I&#8217;m calling it with xBlockTimeTicks set to portMAX_DELAY, so in theory this should never happen. Looking through the source code, the buffer descriptors are kept in a list called xFreeBuffersList, and are fetched by this line:
+~~~
+pxReturn = ( NetworkBufferDescriptor<em>t * ) listGET</em>OWNER<em>OF</em>HEAD_ENTRY( &amp;xFreeBuffersList );
+~~~
+Following this, some validation is performed on pxReturn to make sure it is a valid descriptor, and if not, return NULL. This seems to be where it&#8217;s failing:
+~~~
+if( ( bIsValidNetworkDescriptor( pxReturn ) != pdFALSE<em>UNSIGNED ) &amp;&amp;
+                    listIS</em>CONTAINED_WITHIN( &amp;xFreeBuffersList, &amp;( pxReturn->xBufferListItem ) ) )
+~~~
+So it&#8217;s basically looking up the ListItem<em>t associated with the network descriptor, and verifying that it is part of xFreeBuffersList. listIS</em>CONTAINED<em>WITHIN just compares the pvContainer field of the ListItem</em>t to the list pointer (xFreeBuffersList in this case). The problem seems to be that pvContainer is set to NULL. As this should get set when the descriptor is inserted into the list (i.e. when it was last released), and the descriptor is definitely getting inserted into the list correctly (it must be, given that we just got it from the list), this makes me think the list structure is getting corrupted in memory somehow.
+A couple of times I&#8217;ve also seen a different issue, where listGET<em>OWNER</em>OF<em>HEAD</em>ENTRY returns some random value which isn&#8217;t a buffer descriptor. Whenever this happened, I tracked it down to fields in the list structure being invalid (sometimes NULL or sometimes random values), which also suggests memory corruption to me.
+There are only 5 places in my code where I call into BufferAllocation_1.c:
+<ul>
+<li>During xNetworkInterfaceInitialise, I call pxGetNetworkBufferDescriptor multiple times to allocate buffers to the receive DMA descriptors.</li>
+<li>During xNetworkInterfaceOutput, I assign the buffer passed in by the TCP/IP stack to a transmit DMA descriptor. If this fails (due to a DMA descriptor not being available within a given timeout), I call vReleaseNetworkBufferAndDescriptor to discard the buffer.</li>
+<li>During the receive deferred interrupt processing task, I attempt to send the received buffer to the TCP/IP stack. If this fails, I call vReleaseNetworkBufferAndDescriptor to discard the buffer.</li>
+<li>Also in the deferred processing task, I call pxGetNetworkBufferWithDescriptor to replace the receive buffer that was just used.</li>
+<li>In the transmit complete interrupt handler. I call vNetworkBufferReleaseFromISR to release the transmit buffer.</li>
+</ul>
+In all of these cases, I&#8217;m calling the buffer allocation functions exactly as described in the documentation, so I don&#8217;t think this is the issue. Whenever I have to deal with a buffer in an ISR, I make sure to only call the interrupt-safe functions. Checking in BufferAllocation<em>1.c, all of the functions that interact with the descriptor list use ipconfigBUFFER</em>ALLOC<em>LOCK and ipconfigBUFFER</em>ALLOC_UNLOCK (or the interrupt-safe equivalents), so I&#8217;m not sure where the problem is happening.
+I&#8217;ve written a simple test application to reproduce the issue &#8211; it basically just listens for UDP packets on port 10000 and echoes them back to the sender. I&#8217;m setting the FREERTOS<em>ZERO</em>COPY flag to reduce unnecessary buffer allocation/deallocation, to rule that out. This is the only task on the system which uses the TCP stack:
+~~~
+static void echoThread(void *pvParameters)
+{
+    const uint16_t port = 10000;
+<pre><code>Socket_t sock = FreeRTOS_socket(FREERTOS_AF_INET, FREERTOS_SOCK_DGRAM, FREERTOS_IPPROTO_UDP);
+CAD_ASSERT(sock != FREERTOS_INVALID_SOCKET);
+struct freertos_sockaddr hostAddr;
+hostAddr.sin_port = FreeRTOS_htons(port);
+FreeRTOS_bind(sock, &amp;hostAddr, sizeof(hostAddr));
+struct freertos_sockaddr clientAddr;
+uint32_t clientAddrLength = sizeof(clientAddr);
+uint8_t *buffer;
+int32_t length;
+while (1)
+{
+    length = FreeRTOS_recvfrom(sock, &amp;buffer, 0, FREERTOS_ZERO_COPY, &amp;clientAddr, &amp;clientAddrLength);
+    if (length &gt; 0)
+    {
+        length = FreeRTOS_sendto(sock, buffer, length, FREERTOS_ZERO_COPY, &amp;clientAddr, clientAddrLength);
+    }
+    if (length &lt;= 0)
+    {
+        FreeRTOS_ReleaseUDPPayloadBuffer(buffer);
+    }
+}
+</code></pre>
+}
+~~~
+The issue only shows up very rarely &#8211; probably once in every 100,000 to a million packets. The only reliable way I&#8217;ve found to reproduce it is to flood the network interface with traffic, at a rate of several thousand packets/second. Even then it&#8217;s difficult to reproduce, sometimes taking several minutes. If it helps at all, I&#8217;ve found that it tends to show up most often just after starting to send packets &#8211; stopping and then restarting the packet generator is more likely to trigger it than just leaving it running.
+I did find one other post on here (https://freertos.org/FreeRTOS<em>Support</em>Forum<em>Archive/August</em>2016/freertos<em>TCP</em>BufferAllocation<em>1</em>xFreeBuffersList<em>corruption</em>bab400aej.html) with a similar issue. In that case it was tracked down to stack overflow (identified by the 0xA5A5A5A5 sequence), but in my case I don&#8217;t see that sequence anywhere so I doubt it&#8217;s stack overflow. Also if it was stack overflow I&#8217;d expect it to happen a lot more frequently and less randomly than it is doing.
+At this point I&#8217;m not sure how I can debug the issue any further, as the problem seems to be happening within the TCP stack itself. Any ideas?
+Thanks,
+Tom
+</div></div><div class="thread-post"><h3 class="thread-post-title">BufferAllocation_1.c xFreeBuffersList memory corruption issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 29, 2018</div><div class="thread-post-content">Hmm, tricky to see in this as you seem to have done a good level of debugging already.
+Is the driver code all yours?  Or are you also relying on some STM32 library/cube functions?  If you are using STM32 library functions, do any of them mess with the basepri register?  That could potentially effect critical sections.
+Also, how are you passing received buffers into the TCP/IP stack?  Is it from an interrupt?  If so, are you then trying to allocated a new buffer from the interrupt too?
+Are you using a recent version of FreeRTOS with configASSERT() defined?  FreeRTOS V10.0.1 would be recommended as that has asserts for just about all the interrupt priority configuration errors people make.
+</div></div><div class="thread-post"><h3 class="thread-post-title">BufferAllocation_1.c xFreeBuffersList memory corruption issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tc-cadscan">tc-cadscan</a> on January 29, 2018</div><div class="thread-post-content">We&#8217;re not using any of the STM32 library code, all the driver code has been written from scratch. Nothing in my code touches BASEPRI.
+We&#8217;re using FreeRTOS v9 as we started work on the project just before v10 was released and haven&#8217;t got round to upgrading yet, but the TCP/IP stack code was taken from the v10 release. configASSERT is defined but isn&#8217;t failing anywhere.
+Receive buffers get passed back to the stack from a deferred processing task, not from the interrupt. The only buffer management that happens in an ISR is releasing the transmit buffers after the transmit complete interrupt. One thing I&#8217;ve just noticed &#8211; vNetworkBufferReleaseFromISR calls vListInsertEnd to put the buffer back into the free buffers list. Is this safe to call from an ISR? (It&#8217;s wrapped inside portSET<em>INTERRUPT</em>MASK<em>FROM</em>ISR/portCLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR, but I&#8217;m not sure if this is adequate to make a non-interrupt safe function interrupt safe).
+I&#8217;ll try releasing the transmit buffers from the deferred processing task instead of directly from the interrupt, and see if that makes any difference.
+</div></div><div class="thread-post"><h3 class="thread-post-title">BufferAllocation_1.c xFreeBuffersList memory corruption issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 29, 2018</div><div class="thread-post-content"><blockquote>
+  One thing I&#8217;ve just noticed &#8211; vNetworkBufferReleaseFromISR 
+  calls vListInsertEnd to put the buffer back into the free buffers list. 
+  Is this safe to call from an ISR? (It&#8217;s wrapped inside 
+  portSET<em>INTERRUPT</em>MASK<em>FROM</em>ISR/portCLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR, but 
+  I&#8217;m not sure if this is adequate to make a non-interrupt safe function 
+  interrupt safe).
+</blockquote>
+That should be ok.
+<blockquote>
+  I&#8217;ll try releasing the transmit buffers from the deferred processing 
+  task instead of directly from the interrupt, and see if that makes any 
+  difference.
+</blockquote>
+Let us know if that solves the problem.
+</div></div><div class="thread-post"><h3 class="thread-post-title">BufferAllocation_1.c xFreeBuffersList memory corruption issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on January 29, 2018</div><div class="thread-post-content">Hi Tom,
+<blockquote>
+  I&#8217;ve written a zero-copy network driver for FreeRTOS+TCP on STM32F4
+</blockquote>
+That is very brave of you, but there was a zero-copy driver already.  It is not in the official distribution yet, but it was published in this list.  I will post it as an attachment here below (<code>STM32Fxx.zip</code>).
+<blockquote>
+  but every once in a while I get an issue with pxGetNetworkBufferDescriptor returning NULL.
+</blockquote>
+I solved this problem by dropping a packet.  When a packet has been received, then you need to provide a new empty network buffer.  If that is impossible, I would drop the received packet, and leave the buffer in place so it will be used to receive a next package.
+<blockquote>
+  I&#8217;m calling it with xBlockTimeTicks set to portMAX_DELAY
+</blockquote>
+Are you sure it is wise such a long time?  Does this happen from <code>prvEMACHandlerTask()</code> ?
+When the function is called from the IP-task ( e.g. from <code>xNetworkInterfaceOutput()</code> ), you should use a time-out of zero. If not, the IP-task will probably be waiting for the IP-task to release some network buffer.
+<blockquote>
+     During xNetworkInterfaceInitialise, I call pxGetNetworkBufferDescriptor multiple
+       times to allocate buffers to the receive DMA descriptors.
+</blockquote>
+Comment : during initialisation, there must be enough network buffers.  You can use <code>configASSERT()</code> for this.  If it is triggered, the is a configuration error.
+<blockquote>
+     During xNetworkInterfaceOutput, I assign the buffer passed in by the TCP/IP stack
+       to a transmit DMA descriptor. If this fails (due to a DMA descriptor not being
+       available within a given timeout), I call vReleaseNetworkBufferAndDescriptor to
+       discard the buffer.
+</blockquote>
+This function has lead to some confusion in the past.
+To summarise:
+If <code>ipconfigZERO_COPY_TX_DRIVER = 1</code>, the parameter <code>bReleaseAfterSend</code> is always true
+If <code>bReleaseAfterSend</code> is true, it means that the driver will own the <code>pxDescriptor</code>.
+So yes, if sending fails, you must release the network buffer.
+If sending succeeds, the releasing of the buffer is suspended.
+In my zero-copy driver, the releasing is indeed done within <code>prvEMACHandlerTask()</code>.
+I stop commenting here.
+Please have a look at the attached driver.  It has been tested on both STM32F4 and STM32F7.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">BufferAllocation_1.c xFreeBuffersList memory corruption issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tc-cadscan">tc-cadscan</a> on January 30, 2018</div><div class="thread-post-content"><blockquote>
+  That is very brave of you, but there was a zero-copy driver already. It is not in the official distribution yet, but it was published in this list. I will post it as an attachment here below (STM32Fxx.zip).
+</blockquote>
+Thanks Hein, I&#8217;ll take a look at that and see how it differs from my code. From a quick glance, it seems like the buffer management is mostly the same, but I&#8217;m doing some initial filtering in the ISR to reduce context switches from dropped packets.
+<blockquote>
+  I solved this problem by dropping a packet. When a packet has been received, then you need to provide a new empty network buffer. If that is impossible, I would drop the received packet, and leave the buffer in place so it will be used to receive a next package.
+</blockquote>
+I don&#8217;t think this will solve my issue, which I think is down to the buffer list becoming corrupted, rather than a timeout (as noted, I&#8217;m calling pxGetNetworkBufferAndDescriptor with portMAX_DELAY). Once it gets in this state, every call to pxGetNetworkBufferAndDescriptor returns NULL immediately (i.e. not due to timeout), so without fixing the underlying issue this would just cause the receive process to drop packets forever.
+<blockquote>
+  Are you sure it is wise such a long time? Does this happen from prvEMACHandlerTask() ?
+  When the function is called from the IP-task ( e.g. from xNetworkInterfaceOutput() ), you should use a time-out of zero. If not, the IP-task will probably be waiting for the IP-task to release some network buffer.
+</blockquote>
+Yes, this is only done from the receive task, never from anything called by the IP task. I don&#8217;t ever allocate buffers in xNetworkInterfaceOutput, I only use the buffer that&#8217;s passed in as a parameter.
+My reason for using an infinite block time is that, once the receive buffer has been given back to the IP task, the new buffer <em>must</em> be allocated to the receive DMA, regardless of how long it takes. Otherwise the receive DMA will be gradually depleted of buffers. However I agree with you that it&#8217;s better to try to get the replacement buffer first, and if that fails then drop the packet and reuse the existing buffer &#8211; I&#8217;ll change my code to do that.
+</div></div><div class="thread-post"><h3 class="thread-post-title">BufferAllocation_1.c xFreeBuffersList memory corruption issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on January 30, 2018</div><div class="thread-post-content">Hi Tom,
+<blockquote>
+  but I&#8217;m doing some initial filtering in the ISR to reduce context switches from dropped packets.
+</blockquote>
+Maybe you want to share some code?
+<blockquote>
+  I don&#8217;t think this will solve my issue, which I think is down to the buffer list becoming corrupted
+</blockquote>
+I don&#8217;t know where the corruption comes from, but I doubt that there is a problem with <code>BufferAllocation_1.c</code>.
+<blockquote>
+  My reason for using an infinite block time is that, once the receive buffer has been
+  given back to the IP task, the new buffer must be allocated to the receive DMA,
+  regardless of how long it takes.
+</blockquote>
+Here I do not agree.  My choice was to drop the packet received ( do not forward it to the IP-task ), and leave the buffer in places.
+<blockquote>
+  Otherwise the receive DMA will be gradually depleted of buffers.
+</blockquote>
+True, that is why I would not swap the buffer.
+<blockquote>
+  I&#8217;ll change my code to do that.
+</blockquote>
+Yes good.  But please check if it really happens and how often.
+Regards, Hein
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

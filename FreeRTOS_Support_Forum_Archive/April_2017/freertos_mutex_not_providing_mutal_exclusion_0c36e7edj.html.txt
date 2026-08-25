@@ -1,0 +1,611 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mutex not providing mutal exclusion - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2017/freertos_mutex_not_providing_mutal_exclusion_0c36e7edj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="mutex not providing mutal exclusion - FreeRTOS" />
+<meta property="og:description" content="mutex not providing mutal exclusionPosted by bamos-cic on April 27, 2017Hi, I&#8217;ve recently noticed some issues in my projects where mutex&#8217;s no longer seemed to provide mutual exclusion? I created a small test application with two tasks that exemplifies the issue i&#8217;m seeing. This is running with freeRTOS 9.0.0 ~~~ include &lt;FreeRTOS.h&gt; include &lt;platform.h&gt; include &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2017/freertos_mutex_not_providing_mutal_exclusion_0c36e7edj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="mutex not providing mutal exclusionPosted by bamos-cic on April 27, 2017Hi, I&#8217;ve recently noticed some issues in my projects where mutex&#8217;s no longer seemed to provide mutual exclusion? I created a small test application with two tasks that exemplifies the issue i&#8217;m seeing. This is running with freeRTOS 9.0.0 ~~~ include &lt;FreeRTOS.h&gt; include &lt;platform.h&gt; include [&hellip;]" />
+<meta name="twitter:title" content="mutex not providing mutal exclusion - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202805' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202805' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202805' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202805' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146471' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2017%2Ffreertos_mutex_not_providing_mutal_exclusion_0c36e7edj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2017%2Ffreertos_mutex_not_providing_mutal_exclusion_0c36e7edj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146471">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2017_freertos_support_forum_archive_index.html/">April 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">mutex not providing mutal exclusion</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bamos-cic">bamos-cic</a> on April 27, 2017</div><div class="thread-post-content">Hi, 
+I&#8217;ve recently noticed some issues in my projects where mutex&#8217;s no longer seemed to provide mutual exclusion?
+I created a small test application with two tasks that exemplifies the issue i&#8217;m seeing.  This is running with freeRTOS 9.0.0
+~~~
+<h1>include &lt;FreeRTOS.h></h1>
+<h1>include &lt;platform.h></h1>
+<h1>include &lt;VirtualSerialPort.h></h1>
+<h1>include &lt;SEGGER_SYSVIEW.h></h1>
+VirtualSerialPort serial(0);
+static void HighPriorityTask( void* Params);
+static void LowPriorityTask( void* Params);
+xSemaphoreHandle mutexPtr = NULL;
+int main(void)
+{
+  SystemClock_Config();
+    serial.Init();
+<pre><code>mutexPtr = xSemaphoreCreateMutex();
+if(mutexPtr == NULL)
+{
+    while(1);
+}
+SEGGER_SYSVIEW_Conf();
+if (xTaskCreate( HighPriorityTask, ( const char * ) "HPT", 256, NULL, tskIDLE_PRIORITY + 2, NULL ) == pdTRUE)   
+{
+    if(xTaskCreate( LowPriorityTask, ( const char * ) "LPT", 256, NULL, tskIDLE_PRIORITY + 1, NULL ) == pdTRUE) 
+        vTaskStartScheduler();
+}
+</code></pre>
+  while (1);//shouldn&#8217;t get here
+}
+static void HighPriorityTask( void* Params)
+{
+    volatile uint32_t temp = 0;
+<pre><code>while(1)
+{
+    printf("HPTt mutex addr 0x%pn", mutexPtr);
+    for(int numItr = 0; numItr &lt; 10; numItr++)
+    {
+        uint32_t sleepTime = rand() %500;
+        printf("HPTt sleeping for %i msn", sleepTime);
+        vTaskDelay(sleepTime);
+        printf("HPTt take mutex, wait indefinitelyn");
+        if(xSemaphoreTake(mutexPtr,portMAX_DELAY) == pdTRUE)
+        {
+            printf("HPTt mutex takenn");
+            uint32_t sleepTime = rand() %500;
+            printf("HPTt sleeping for %i msn", sleepTime);
+            vTaskDelay(sleepTime);
+            for(int i = 0; i &lt; 20000; i++)
+            {
+                temp += i;
+            }
+            if(xSemaphoreGive(mutexPtr) == pdTRUE)
+            {
+                printf("HPTt mutex givenn");
+            }
+            else
+            {
+                printf("HPTt mutex give failedn");
+            }
+        }
+        else
+        {
+            printf("HPTt mutex take failed!n");
+        }
+    }
+    printf("HPT DONE, sleep for 2 secn");
+    vTaskDelay(100);
+}
+</code></pre>
+}
+static void LowPriorityTask( void* Params)
+{
+    volatile uint32<em>t temp = 0;
+    uint32</em>t num;
+<pre><code>while(1)
+{
+    printf("tttttLPTtmutex addr 0x%pn", mutexPtr);
+    vTaskDelay(rand() %500);
+    for(int numItr = 0; numItr &lt; 10; numItr++)
+    {
+        printf("tttttLPTt take mutex, wait indefinitelyn");
+        if(xSemaphoreTake(mutexPtr,portMAX_DELAY) == pdTRUE)
+        {
+            printf("tttttLPTt mutex takenn");
+            uint32_t sleepTime = rand() %500;
+            printf("tttttLPTt sleeping for %i msn", sleepTime);
+            vTaskDelay(sleepTime);
+            if(xSemaphoreGive(mutexPtr) == pdTRUE)
+            {
+                printf("tttttLPTt mutex givenn");
+            }
+            else
+            {
+                printf("tttttLPTt mutex give failedn");
+            }
+        }
+        else
+        {
+            printf("tttttLPTt mutex take failed!n");
+        }
+    }
+    printf("tttttLPT DONE, sleep for 2 secn");
+    vTaskDelay(2000);
+}
+</code></pre>
+}
+~~~
+Here&#8217;s an example of some output, with the problematic section in bold.  
+<blockquote>
+  HPT      mutex addr 0x20021e50
+  HPT      sleeping for 432 ms
+  HPT      take mutex, wait indefinitely
+  HPT      mutex taken
+  HPT      sleeping for 5 ms
+  HPT      mutex given
+  HPT      sleeping for 490 ms
+  HPT      take mutex, wait indefinitely
+  HPT      mutex taken
+  HPT      sleeping for 29 ms
+  HPT      mutex given
+  HPT      sleeping for 104 ms
+  HPT      take mutex, wait indefinitely
+  HPT      mutex taken
+  HPT      sleeping for 492 ms
+  HPT      mutex given
+  HPT      sleeping for 497 ms
+                                          LPT     mutex addr 0x20021e50
+  HPT      take mutex, wait indefinitely
+  HPT      mutex taken
+  HPT      sleeping for 172 ms
+                                          LPT      take mutex, wait indefinitely
+  HPT      mutex given
+  HPT      sleeping for 235 ms
+                                          <strong>LPT      mutex taken
+                                          LPT      sleeping for 268 ms
+  HPT      take mutex, wait indefinitely
+  HPT      mutex taken</strong>
+  HPT      sleeping for 341 ms
+                                          LPT      mutex given
+                                          LPT      take mutex, wait indefinitely
+  HPT      mutex given
+  HPT DONE, sleep for 2 sec
+                                          LPT      mutex taken
+                                          LPT      sleeping for 476 ms
+  HPT      mutex addr 0x20021e50
+  HPT      sleeping for 258 ms
+  HPT      take mutex, wait indefinitely
+  HPT      mutex taken
+  HPT      sleeping for 489 ms
+                                          LPT      mutex given
+                                          LPT      take mutex, wait indefinitely
+  HPT      mutex given
+  HPT      sleeping for 451 ms
+</blockquote>
+Am I making an incorrected assumption or setting/using something incorrectly?  I&#8217;m guessing there&#8217;s a stupid mistake in there somewhere that I&#8217;m not seeing.
+This is on a Cortex M7 port compiled with Keil (RVDS).
+Any suggestions are greately appriciated.
+thanks!
+</div></div><div class="thread-post"><h3 class="thread-post-title">mutex not providing mutal exclusion</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 27, 2017</div><div class="thread-post-content">How is your printf() writing its output?  Is it possible some print() 
+statements are missing (and do you need mutual exclusion on the printf() 
+too?)?
+Which port are you using?  If your Cortex-M7 has an r0p1 core then you 
+need to use the port layer in the 
+FreeRTOS/source/portable/RVDS/ARM<em>CM7/r0p1 directory to work around a 
+silicon errata, otherwise you need to use the code in the 
+FreeRTOS/source/portable/RVDS/ARM</em>CM4F directory.
+</div></div><div class="thread-post"><h3 class="thread-post-title">mutex not providing mutal exclusion</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bamos-cic">bamos-cic</a> on April 27, 2017</div><div class="thread-post-content">I&#8217;ve tried both the r0p1 port and ARM_CM4F port with identical results
+printf does single byte transfers through fputc, which gets forwarded to a ring buffer (which is thread-safe) and eventually out to a USB stack.  It&#8217;s possible for two different strings characters to be interleaved with one another, but there won&#8217;t be any dropped data.  I&#8217;ll hook up two different LED&#8217;s to eliminate printf as a possible culprit.
+</div></div><div class="thread-post"><h3 class="thread-post-title">mutex not providing mutal exclusion</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bamos-cic">bamos-cic</a> on April 27, 2017</div><div class="thread-post-content">Here&#8217;s updated code with LED calls inside the area expected to be protected by the mutex.  I would expect only one LED to be on at a time, but occassionally both LED&#8217;s are on at the same time.
+~~~
+<h1>include &lt;FreeRTOS.h></h1>
+<h1>include &lt;platform.h></h1>
+<h1>include &lt;VirtualSerialPort.h></h1>
+<h1>include &lt;SEGGER_SYSVIEW.h></h1>
+<h1>include &lt;stm32f7xxGpio.h></h1>
+VirtualSerialPort serial(0);
+static void HighPriorityTask( void* Params);
+static void LowPriorityTask( void* Params);
+gpio led1(GPIOJ, gpio::PIN0, true);
+gpio led2(GPIOJ, gpio::PIN1, true);
+xSemaphoreHandle mutexPtr = NULL;
+int main(void)
+{
+    InitMCU(false);
+  SystemClock_Config();
+    serial.Init();
+<pre><code>mutexPtr = xSemaphoreCreateMutex();
+if(mutexPtr == NULL)
+{
+    while(1);
+}
+SEGGER_SYSVIEW_Conf();
+if (xTaskCreate( HighPriorityTask, ( const char * ) "HPT", 256, NULL, tskIDLE_PRIORITY + 2, NULL ) == pdTRUE)   
+{
+    if(xTaskCreate( LowPriorityTask, ( const char * ) "LPT", 256, NULL, tskIDLE_PRIORITY + 1, NULL ) == pdTRUE) 
+        vTaskStartScheduler();
+}
+</code></pre>
+  while (1);//shouldn&#8217;t get here
+}
+void HighPriorityTask( void* Params)
+{
+    volatile uint32_t temp = 0;
+<pre><code>led1.Clear();
+while(1)
+{
+    printf("HPTt mutex addr 0x%pn", mutexPtr);
+    for(int numItr = 0; numItr &lt; 10; numItr++)
+    {
+        uint32_t sleepTime = rand() %500;
+        printf("HPTt sleeping for %i msn", sleepTime);
+        vTaskDelay(sleepTime);
+        printf("HPTt take mutex, wait indefinitelyn");
+        if(xSemaphoreTake(mutexPtr,portMAX_DELAY) == pdTRUE)
+        {
+            led1.Set();
+            printf("HPTt mutex takenn");
+            uint32_t sleepTime = rand() %500;
+            printf("HPTt working for %in", sleepTime);
+            for(int w = 0; w &lt; sleepTime*100000; w++)
+            {
+                temp += w;
+            }
+            led1.Clear();
+</code></pre>
+//              printf(&#8220;HPTt sleeping for %i msn&#8221;, sleepTime);
+//              vTaskDelay(sleepTime);
+                if(xSemaphoreGive(mutexPtr) == pdTRUE)
+                {
+                    printf(&#8220;HPTt mutex givenn&#8221;);
+                }
+                else
+                {
+                    printf(&#8220;HPTt mutex give failedn&#8221;);
+                }
+            }
+            else
+            {
+                printf(&#8220;HPTt mutex take failed!n&#8221;);
+            }
+        }
+        printf(&#8220;HPT DONE, sleep for 2 secn&#8221;);
+        vTaskDelay(100);
+    }
+}
+void LowPriorityTask( void* Params)
+{
+    volatile uint32<em>t temp = 0;
+    uint32</em>t num;
+<pre><code>led2.Clear();
+while(1)
+{
+    printf("tttttLPTtmutex addr 0x%pn", mutexPtr);
+    vTaskDelay(rand() %500);
+    for(int numItr = 0; numItr &lt; 10; numItr++)
+    {
+        printf("tttttLPTt take mutex, wait indefinitelyn");
+        if(xSemaphoreTake(mutexPtr,portMAX_DELAY) == pdTRUE)
+        {
+            led2.Set();
+            printf("tttttLPTt mutex takenn");
+            uint32_t sleepTime = rand() %500;
+            printf("tttttLPTt working for %in", sleepTime);
+            for(int w = 0; w &lt; sleepTime*100000; w++)
+            {
+                temp += w;
+            }
+</code></pre>
+//              printf(&#8220;tttttLPTt sleeping for %i msn&#8221;, sleepTime);
+//              vTaskDelay(sleepTime);
+<pre><code>            led2.Clear();
+            if(xSemaphoreGive(mutexPtr) == pdTRUE)
+            {
+                printf("tttttLPTt mutex givenn");
+            }
+            else
+            {
+                printf("tttttLPTt mutex give failedn");
+            }
+        }
+        else
+        {
+            printf("tttttLPTt mutex take failed!n");
+        }
+    }
+    printf("tttttLPT DONE, sleep for 2 secn");
+    vTaskDelay(2000);
+}
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">mutex not providing mutal exclusion</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bamos-cic">bamos-cic</a> on April 27, 2017</div><div class="thread-post-content">It was all instrumentation issues &#8211; in the code above, the &#8220;mutex given&#8221; text was written after the mutex had been given (which suggests overlap when viewed on the screen).  To add insult to injury, the polarity of the LED&#8217;s was active low, so they were being turned &#8220;off&#8221; when each was inside the critical section and on when outside the critical section.
+After moving the print outputs to be inside the mutex and correcting for active low LED outputs, everything is showing up as expected for the critical sections.
+Here are the code changes for the slim chance that anyone is interested: 
+~~~
+<h1>include &lt;FreeRTOS.h></h1>
+<h1>include &lt;platform.h></h1>
+<h1>include &lt;VirtualSerialPort.h></h1>
+<h1>include &lt;SEGGER_SYSVIEW.h></h1>
+<h1>include &lt;stm32f7xxGpio.h></h1>
+VirtualSerialPort serial(0);
+static void HighPriorityTask( void* Params);
+static void LowPriorityTask( void* Params);
+gpio led1(GPIOJ, gpio::PIN0, true);
+gpio led2(GPIOJ, gpio::PIN1, true);
+xSemaphoreHandle mutexPtr = NULL;
+StaticSemaphore_t xMutexBuffer;
+int main(void)
+{
+    InitMCU(false);
+  SystemClock_Config();
+    serial.Init();
+<pre><code>mutexPtr = xSemaphoreCreateMutexStatic(&amp;xMutexBuffer);
+if(mutexPtr == NULL)
+{
+    while(1);
+}
+led1.Set();
+led2.Set();
+SEGGER_SYSVIEW_Conf();
+uint8_t cBuff[2];
+serial.CheckLastByte(cBuff, -1);
+if (xTaskCreate( HighPriorityTask, ( const char * ) "HPT", 256, NULL, tskIDLE_PRIORITY + 2, NULL ) == pdTRUE)   
+{
+    if(xTaskCreate( LowPriorityTask, ( const char * ) "LPT", 256, NULL, tskIDLE_PRIORITY + 1, NULL ) == pdTRUE) 
+        vTaskStartScheduler();
+}
+</code></pre>
+  while (1);//shouldn&#8217;t get here
+}
+void HighPriorityTask( void* Params)
+{
+    volatile uint32_t temp = 0;
+<pre><code>while(1)
+{
+    printf("HPTt mutex addr 0x%pn", mutexPtr);
+    for(int numItr = 0; numItr &lt; 10; numItr++)
+    {
+        printf("HPT itr %in", numItr);
+        uint32_t sleepTime = rand() %500 + 500;
+        printf("HPTt sleeping for %i msn", sleepTime);
+        vTaskDelay(sleepTime);
+        uint8_t hptWait[] = "HPTt take mutex, wait indefinitelyn";
+        serial.Output(hptWait, sizeof(hptWait), true);
+        if(xSemaphoreTake(mutexPtr,portMAX_DELAY) == pdTRUE)
+        {
+            led1.Clear();
+            printf("HPTt mutex takenn");
+            uint32_t sleepTime = rand() %500 + 500;
+            printf("HPTt working for %in", sleepTime);
+            for(int w = 0; w &lt; sleepTime*100000; w++)
+            {
+                temp += w;
+            }
+            led1.Set();
+            uint8_t given[] = "HPTt mutex givenn";
+            serial.Output(given, sizeof(given), true);
+            if(xSemaphoreGive(mutexPtr) == pdTRUE)
+            {
+                    uint8_t giveDone[] = "HPTt give donen";
+                    serial.Output(giveDone, sizeof(giveDone), true);
+            }
+            else
+            {
+                printf("HPTt mutex give failedn");
+            }
+        }
+        else
+        {
+            printf("HPTt mutex take failed!n");
+        }
+    }
+    printf("HPT DONE, sleep for 2 secn");
+    vTaskDelay(100);
+}
+</code></pre>
+}
+void LowPriorityTask( void* Params)
+{
+    volatile uint32<em>t temp = 0;
+    uint32</em>t num;
+<pre><code>while(1)
+{
+    printf("tttttLPTtmutex addr 0x%pn", mutexPtr);
+    vTaskDelay(rand() %500 + 500);
+    for(int numItr = 0; numItr &lt; 10; numItr++)
+    {
+        printf("tttttLPT itr %in", numItr);
+        uint8_t msg[] = "tttttLPTt take mutex, wait indefinitelyn";
+        serial.Output(msg, sizeof(msg), true);
+        if(xSemaphoreTake(mutexPtr,portMAX_DELAY) == pdTRUE)
+        {
+            led2.Clear();
+            printf("tttttLPTt mutex takenn");
+            uint32_t sleepTime = rand() %500 + 500;
+            printf("tttttLPTt working for %in", sleepTime);
+            for(int w = 0; w &lt; sleepTime*100000; w++)
+            {
+                temp += w;
+            }
+            uint8_t giveMsg[] = "tttttLPTt give mutexn";
+            serial.Output(giveMsg, sizeof(giveMsg), true);
+            led2.Set();
+            if(xSemaphoreGive(mutexPtr) == pdTRUE)
+            {
+                uint8_t giveDone[] = "tttttLPTt give donen";
+                serial.Output(giveDone, sizeof(giveDone), true);
+            }
+            else
+            {
+                printf("tttttLPTt mutex give failedn");
+            }
+        }
+        else
+        {
+            printf("tttttLPTt mutex take failed!n");
+        }
+    }
+    printf("tttttLPT DONE, sleep for 2 secn");
+    vTaskDelay(2000);
+}
+</code></pre>
+}
+~~~
+Some example output looks like this:
+<blockquote>
+  HPT      mutex addr 0x20020ac0
+  HPT itr 0
+  HPT      sleeping for 768 ms
+                                          LPT     mutex addr 0x20020ac0
+                                          LPT itr 0
+                                          LPT      take mutex, wait indefinitely
+                                          LPT      mutex taken
+                                          LPT      working for 909
+  HPT      take mutex, wait indefinitely
+                                          LPT      give mutex
+  HPT      mutex taken
+  HPT      working for 660
+  HPT      mutex given
+                                          LPT      give done
+  HPT      give done
+  HPT itr 1
+  HPT      sleeping for 583 ms
+                                          LPT itr 1
+                                          LPT      take mutex, wait indefinitely
+                                          LPT      mutex taken
+                                          LPT      working for 741
+  HPT      take mutex, wait indefinitely
+                                          LPT      give mutex
+  HPT      mutex taken
+  HPT      working for 760
+  HPT      mutex given
+                                          LPT      give done
+  HPT      give done
+  HPT itr 2
+  HPT      sleeping for 967 ms
+                                          LPT itr 2
+                                          LPT      take mutex, wait indefinitely
+                                          LPT      mutex taken
+                                          LPT      working for 807
+  HPT      take mutex, wait indefinitely
+                                          LPT      give mutex
+  HPT      mutex taken
+  HPT      working for 764
+  HPT      mutex given
+                                          LPT      give done
+  HPT      give done
+  HPT itr 3
+  HPT      sleeping for 648 ms
+                                          LPT itr 3
+                                          LPT      take mutex, wait indefinitely
+                                          LPT      mutex taken
+                                          LPT      working for 747
+  HPT      take mutex, wait indefinitely
+                                          LPT      give mutex
+  HPT      mutex taken
+  HPT      working for 574
+  HPT      mutex given
+                                          LPT      give done
+  HPT      give done
+  HPT itr 4
+  HPT      sleeping for 973 ms
+                                          LPT itr 4
+                                          LPT      take mutex, wait indefinitely
+                                          LPT      mutex taken
+                                          LPT      working for 957
+</blockquote>
+At first glance, it looks like &#8220;LPT give done&#8221; should not show up  HPT is running, but this is because calls to serial.Output(x,x,true) are blocking calls that block/sleep the calling thread until that output is fully flushed.
+Thanks for the help Real Time Engineers ltd &#8211; getting another set of eyes was helpful.
+</div></div><div class="thread-post"><h3 class="thread-post-title">mutex not providing mutal exclusion</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 27, 2017</div><div class="thread-post-content">Great &#8211; thanks for taking the time to report back.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

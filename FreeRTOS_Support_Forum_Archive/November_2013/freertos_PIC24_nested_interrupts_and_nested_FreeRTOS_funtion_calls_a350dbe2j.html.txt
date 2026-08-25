@@ -1,0 +1,231 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIC24 nested interrupts and nested FreeRTOS funtion calls - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2013/freertos_PIC24_nested_interrupts_and_nested_FreeRTOS_funtion_calls_a350dbe2j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="PIC24 nested interrupts and nested FreeRTOS funtion calls - FreeRTOS" />
+<meta property="og:description" content="PIC24 nested interrupts and nested FreeRTOS funtion callsPosted by dragonflight1 on November 7, 2013This is a followup on the post https://sourceforge.net/p/freertos/discussion/382005/thread/f2c275d1/ in the middle of which Richard Damon posted There are two separate issues with using multiple interrupt levels and allowing interrupt that access FreeRTOS to nest. First is the need to be able to &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2013/freertos_PIC24_nested_interrupts_and_nested_FreeRTOS_funtion_calls_a350dbe2j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="PIC24 nested interrupts and nested FreeRTOS funtion callsPosted by dragonflight1 on November 7, 2013This is a followup on the post https://sourceforge.net/p/freertos/discussion/382005/thread/f2c275d1/ in the middle of which Richard Damon posted There are two separate issues with using multiple interrupt levels and allowing interrupt that access FreeRTOS to nest. First is the need to be able to [&hellip;]" />
+<meta name="twitter:title" content="PIC24 nested interrupts and nested FreeRTOS funtion calls - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202314' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202314' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202314' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202314' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144671' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2013%2Ffreertos_PIC24_nested_interrupts_and_nested_FreeRTOS_funtion_calls_a350dbe2j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2013%2Ffreertos_PIC24_nested_interrupts_and_nested_FreeRTOS_funtion_calls_a350dbe2j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144671">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2013_freertos_support_forum_archive_index.html/">November 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on November 7, 2013</div><div class="thread-post-content">This is a followup on the post https://sourceforge.net/p/freertos/discussion/382005/thread/f2c275d1/
+in the middle of which Richard Damon posted 
+<blockquote>
+  There are two separate issues with using multiple interrupt levels and allowing interrupt that access FreeRTOS to nest. First is the need to be able to have a critical section inside the interrupts. The PIC24 port could define this operation, but doesn&#8217;t due to the second issue.
+  The second issue is task switching forced by an ISR. The method that the PIC24/dsPIC ports use, is not compatible with nesting interrupts.
+</blockquote>
+I would like to fix this for the PIC24&#8217;s. I had assumed that it worked because the port instructions included instructions to change configKERNEL<em>INTERRUPT</em>PRIORITY.
+I hope to suggest some solutions and hope that others will comment and/or suggest others.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on November 7, 2013</div><div class="thread-post-content">First Problem:
+I had done a quick sanity check on xQueueGenericSendFromISR() and saw that it bracketed its code by
+<pre><code>uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+    ...
+portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedInterruptStatus );
+</code></pre>
+and that it did not seem to call portENTER<em>CRITICAL() or portEXIT</em>CRITICAL().
+Of course I didn&#8217;t check on the definitions (they are null) so there is no critical section mgmt.
+So question 1 is &#8211; are all of the &#8220;from<em>ISR&#8221; functions equally bracketed and do they not call portENTER</em>CRITICAL() or portEXIT_CRITICAL().
+Assuming the afferative to this, defining portSET<em>INTERRUPT</em>MASK<em>FROM</em>ISR() and portCLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR(x) appropriately should fix Richard&#8217;s first point.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 7, 2013</div><div class="thread-post-content">Yes, all &#8220;FromISR&#8221; functions use interrupt safe critical nesting, none use portENTER<em>CRITICAL()/portEXIT</em>CRITICAL(), but the interrupt safe versions are only defined for ports that support a full interrupt nesting model (like the PIC32).
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on November 7, 2013</div><div class="thread-post-content">His second is somewhat more difficult.
+The issue is with calling portYield() from a nested interrupt. The new task will run instead of the interrupt that was interrupted.
+I believe that as a workaround if the timer is defined to be priority 1 and portYield() is only called from other priority 1 interrupt routines all will be fine (assuming always his first point is fixed).
+Of course this defeats the advantage of quick preemption this feature added.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on November 7, 2013</div><div class="thread-post-content">Richard you are too quick!
+Correct me if I am wrong, I only need to define the two macros to make the calls interrupt safe &#8211; ignoring for the moment the issue of portYield()?
+mike
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on November 8, 2013</div><div class="thread-post-content">I have three possible solutions to the second problem (nesting interrupts)
+<ol>
+<li>as per my comment above, if portYield() is only called from interrupt routines with priority 1 all will be ok so
+<ul>
+<li>use a &#8220;spare&#8221; interrupt &#8211; by default perhaps the timer 5, with priority 1.</li>
+<li>&#35;define portYieldFromISR(x)      if( x ) _T5IF = 1</li>
+<li>and in the interrupt routine call portYield()</li>
+</ul></li>
+<li>use the compiler option to insert code before the prologue of an interrupt routine.
+<ul>
+<li>insert asm( &#8220;mov w15,stacksave_T1&#8221; ) &#8211; need unique identifier for each interrupt</li>
+<li>in portYieldFromISR check statsave[-1]&amp;0xE00 to decide if it is in a nested interrupt</li>
+<li>as long as all interrupts that call portYield add the asm code the system will operate correctly</li>
+<li>to work properly (optimized)
+<ul>
+<li>all interrupt routines must call portYieldFromISR</li>
+<li>a single external should be used for all interrupt calls such as xQueueReceiveFromISR(x,y,CommonYIELD)</li>
+<li>calling sequence would be
+~~~~~
+if( CommonYIELD ) {
+    CommonYIELD = 0;
+    portYIELDFromISR();
+}
+~~~~~</li>
+<li>things could be made &#8220;nicer&#8221; with macros</li>
+</ul></li>
+</ul></li>
+<li>Create a wrapper (similar to PIC32) to use a single common stack for interrupts. I was looking into this regardless &#8211; pretty obvious when you start having nested interrupts
+    * in this case only interrupts that needed to call portYieldFromISR would need the wrapper
+    * using the preprologue option makes the overhead quite reasonable</li>
+</ol>
+I would greatly appreciate comments, corrections, suggestions, further options.
+I will try to implement options 1 and 3. 1 is practically free, and I was interested in 3 anyway. My biggest problem will be how to test it as my current stuff &#8220;works&#8221; though definitely wrong!
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on November 11, 2013</div><div class="thread-post-content">I have &#8220;successfully&#8221; implemented solution 1. I was able to avoid using an additional interrupt and just used the timer1 interrupt. It took me 10 times as long to figure out to test it than do it!!
+I have 6 levels of nested interrupts with random interrupt times of 0-2msecs.
+It definitely failed without my changes, so I feel reasonably confidently about it. If anyone is interested in playing/testing it, I would happily supply the changes.
+mike
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 11, 2013</div><div class="thread-post-content">Do you do something to keep the timekeeping of Timer 1 still intact? It could be tricky to tell in the timer 1 interrupt if the tick counter needs to be bumped or not. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on November 11, 2013</div><div class="thread-post-content">It is tricky and I think I can do better, but here is what I did
+#
+<h1>define portYIELDfromISR() {                                            </h1>
+<pre><code>extern portBASE_TYPE tmrSave, yieldPending;                         
+__builtin_disi(10);                                                 
+if( !yieldPending ) {                                               
+    yieldPending = 1;                                               
+    tmrSave = TMR1;                                                 
+    if( _T1IF )                                                     
+        tmrSave = 0xFFFF;                                               
+    _T1IF = 1;          /* trigger the timer interrupt */           
+}                                                                   
+</code></pre>
+}
+(sorry I couldn&#8217;t figure out how to get the text right!)
+then check if the TMR1 &lt; tmrSave to see if it is a real tick.
+mike
+EDIT: I tried to improve it on the fly and screwed up!
+EDIT2: fixed tmrSave = 0xFFFF;
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 11, 2013</div><div class="thread-post-content">I think you need to put that inside an interrupt critical section, as if you get an higher priority interrupt between testing yieldPending and setting it, you may mis-detect the presence of a counter rollover, as it will set _T1IF, and you will then think that that meant counter rollover.
+EDIT: your disi call should fix that.
+Also, in the case of _T1IF being set, don&#8217;t you want to set tmrSave to -1 or 0xFFFF so that TMR1 &lt; tmrSave is true?
+This does presume that the counter can&#8217;t roll around enough to case the compare to fail, but if you are stuck in interrupts that long, you are sort of bound to miss some.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on November 11, 2013</div><div class="thread-post-content">You are right about setting it to 0xFFFF.
+I spent a while thinking about the &#8220;rollover problem&#8221; and decided
+a) if _T1IF is not set you have 1ms to get to the interrupt routine before the comparison is wrong
+b) if _T1IF is set you have 1ms &#8211; TMR1 counts to get to the interrupt routine (which is 1ms since the last interrupt)
+So in either case you have the same time (1ms) to service the interrupt before you lose one (in case a) you actually have more). I was sure it couldn&#8217;t be so, but I&#8217;ve convinced myself!
+Anyway, I&#8217;m just setting up a test with a second timer counting ticks to see if there is any discrepancy, but I&#8217;m struggling (some times I can&#8217;t program my way out of a wet paper bag!)
+mike
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 12, 2013</div><div class="thread-post-content">One comment, your &#8220;1 ms&#8221; assumes a 1 KHz tick rate, which in my opinion is generally fast for your system tick. I generally find that I can live with a 10-100ms tick period just fine.
+As far as roll-over, as long as the maximum period it takes to service all nesting interrupts + the maximum Critical Section is less than your tick period you should be ok, Remember that in your case b) implies that you have been within the ISRs or Critical Section since the timer last rolled over, 
+One more case that I would need to think about is if the timer interrupt is servicing a tick interrupt, and gets interrupted. You probably need some sort of disi period to clear the _T1IF flag and decide if you need to increment the system tick where you can&#8217;t get interrupted.
+For using disi(), one trick is that you need to know how many cycles to disable for, which is often hard to know in C, but you can do a disi() with a large count, and then a disi(0) when you are done.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on November 12, 2013</div><div class="thread-post-content">Yes, I have been playing with the interrupt. You need 1 critical section to set yieldPending, after that you just have to be careful. I struggled for quite some time before I realized that I was losing interrupts because my interrupts were taking too long, so I may have to reconsider my previous reasoning.
+ When I shortened it a little I had 3 1ms timer interrupts (system and 2 checking), 3 interrupts randomly approx 1/ms each sending to a queue and a 50us delay loop and calling portYIELDFromISR while running at 16 mips, I ran for 1/2 hour with no dropped/added ticks. When I made the delay loop 100us I lost about 1 tick/20 secs.
+I need to figure a way of measuring what is going on, I&#8217;m suspicious
+I think I&#8217;m going to replace the disi&#8217;s with setting the SR so that I don&#8217;t disable all the interrupts.
+It was a lot easier with a separate interrupt &#8211; but not as much fun!
+As for the tick rate, 1ms is what the demo had and if it works for 1ms, it will certainly work at 10. With the yield from ISR strategy, it is less useful to have a fast tick timer
+mike
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC24 nested interrupts and nested FreeRTOS funtion calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dragonflight1">dragonflight1</a> on November 12, 2013</div><div class="thread-post-content">Well I found a bug &#8211; a missing else &#8211; after I reorganized the code to make it more &#8220;readable&#8221;!! oh well. In any case each interrupt is now delay 300us and after 15 min no dropped ticks. I will let it run overnight and see.
+mike
+UPDATE:
+It ran all night and the results are perfect. I have three counters, one in the system timer, one in an additional timer running at priority 1 (same as the system timer) and one in a timer running at priority 6.
+After 9 hours, the priority 6 interrupt and the system timer agree, whereas the second timer running at priority 1 has lost 1 tick 
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

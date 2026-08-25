@@ -1,0 +1,331 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semaphores, event flags, and ports - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2006/freertos_Semaphores_event_flags_and_ports_1592605.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Semaphores, event flags, and ports - FreeRTOS" />
+<meta property="og:description" content="Semaphores, event flags, and portsPosted by neilbradley on October 15, 2006Misc topics, here: 1&#041; As far as I can tell, the semaphores really just wind up creating queues &#8211; is that correct? If so, if I have a semaphore of 10,000 units, that runs me out of memory quite quickly. Is there any way around &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2006/freertos_Semaphores_event_flags_and_ports_1592605.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Semaphores, event flags, and portsPosted by neilbradley on October 15, 2006Misc topics, here: 1&#041; As far as I can tell, the semaphores really just wind up creating queues &#8211; is that correct? If so, if I have a semaphore of 10,000 units, that runs me out of memory quite quickly. Is there any way around [&hellip;]" />
+<meta name="twitter:title" content="Semaphores, event flags, and ports - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201397' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201397' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201397' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201397' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138465' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2006%2Ffreertos_Semaphores_event_flags_and_ports_1592605.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2006%2Ffreertos_Semaphores_event_flags_and_ports_1592605.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138465">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2006_freertos_support_forum_archive_index.html/">October 2006 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Semaphores, event flags, and ports</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/neilbradley">neilbradley</a> on October 15, 2006</div><div class="thread-post-content">Misc topics, here:
+1&#41; As far as I can tell, the semaphores really just wind up creating queues &#8211; is that correct? If so, if I have a semaphore of 10,000 units, that runs me out of memory quite quickly. Is there any way around this?
+2&#41; I&#8217;ve worked with ThreadX in the past and they had a great concept of &quot;event flags&quot;. That is, it&#8217;s a UINT32 that you can block on, with other trigger points &#8211; inside or outside an ISR, and it can unblock multiple waiting threads. There doesn&#8217;t appear to be any way to do this in FreeRTOS. Anyone interested in getting them added?
+3&#41; There are currently APIs that are to be used outside and inside an ISR. Isn&#8217;t it possible to make the core routine &#40;e.g. QueueSend/QueueReceive&#41; just know when it&#8217;s in an interrupt, especially on an ARM platform? I have a procedure that&#8217;s sometimes called from an ISR and sometimes from foreground code, and I need to manaually manage which context I&#8217;m in. It would be nice if FreeRTOS did that automatically.
+4&#41; I&#8217;ve done a port to the Atmel SAM7S256 using the ARM SDT 2.51 &#8211; more specifically, an Olimex SAM7P256 board. Is anyone interested in the source code?
+Thanks&#33;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 15, 2006</div><div class="thread-post-content">&gt; Misc topics, here:
+&gt; 
+&gt; 1&#41; As far as I can tell, the semaphores really just wind up creating queues
+&gt; &#8211; is that correct? If so, if I have a semaphore of 10,000 units, that runs me
+&gt; out of memory quite quickly. Is there any way around this?
+The semaphore implementation is a set of macros that demonstrate how a binary semaphore can be implemented using the existing queue implementation.&nbsp; A queue is created that has one space, of zero length.&nbsp; The length is zero as you never actually post or receive anything from the queue/semaphore, all you are interested in is whether space would be available or not.
+Using macros to implement binary semaphores over an existing feature in this manner, rather than having a separate semaphore module, maintains the low ROM footprint and minimises source code to facilitate testing.&nbsp; The binary semaphore implementation is however limited.&nbsp; If you were wanting to implement a counting semaphore you could write a simple function API that uses the macros.&nbsp; The function would keep track of the count value, causing calling tasks to block only when the count reached zero.&nbsp; I think this implementation would then only take a couple more bytes of RAM over that used by the binary semaphore &#8211; the extra bytes being used to maintain the count value.
+&gt; 2&#41; I&#8217;ve worked with ThreadX in the past and they had a great concept of &quot;event
+&gt; flags&quot;. That is, it&#8217;s a UINT32 that you can block on, with other trigger points
+&gt; &#8211; inside or outside an ISR, and it can unblock multiple waiting threads. There
+&gt; doesn&#8217;t appear to be any way to do this in FreeRTOS. Anyone interested in getting
+&gt; them added?
+This is a topic that came up a while back.&nbsp; Somebody was implementing event flags, but this was some time ago and I have not heard anything since.&nbsp; Can you explain a little more of their functionality, how you want them to work.&nbsp; It&#8217;s about time we added some more functionality.&nbsp; Unblocking multiple tasks on an event should not be too much of a problem, but having a single task block on multiple events could be.
+&gt; 3&#41; There are currently APIs that are to be used outside and inside an ISR. Isn&#8217;t
+&gt; it possible to make the core routine &#40;e.g. QueueSend/QueueReceive&#41; just know
+&gt; when it&#8217;s in an interrupt, especially on an ARM platform? I have a procedure
+&gt; that&#8217;s sometimes called from an ISR and sometimes from foreground code, and
+&gt; I need to manually manage which context I&#8217;m in. It would be nice if FreeRTOS
+&gt; did that automatically.
+To do this you would require one of four things &#40;correct me if I&#8217;m wrong&#41;.
+1&#41;&nbsp; A portable way of detecting when you are in an ISR &#40;something that could be implemented outside of the portable layer&#41;.
+2&#41; A &#40;non portable&#41; way of detecting when you are inside an ISR for every architecture that FreeRTOS.org executes on, i.e. a call to the port layer would be made by the API functions to determine if you were inside an ISR or not.
+3&#41; A function that the user would have to call on entry and exit of every ISR to let the kernel know when it was in an ISR.
+4&#41; A much more heavy weight interrupt management scheme for the kernel &#8211; this might be nice but would be a problem for maintaining so many different architectures.
+The abcFromISR&#40;&#41; versions of the API functions basically do not cause a context switch automatically, but instead return a value to the caller to indicate whether a context switch should be performed or not.&nbsp; This allows the caller to control when the context switch occurs, and thus ensure the interrupt is cleared prior to the context switch occurring right at the end of the ISR.&nbsp; Again, each architecture handles this in a different way.
+My design goal is to make writing ISR&#8217;s as easy and light weight as possible, and where possible allow them to be completely written in C.&nbsp; This is more successful using some tools than others.&nbsp; It is a compromise of coarse.
+Also, to choose whether the context should be saved on entry to every ISR, whether or not a switch actually takes place, or whether to just save the context should a switch be required.
+&gt; 4&#41; I&#8217;ve done a port to the Atmel SAM7S256 using the ARM SDT 2.51 &#8211; more specifically,
+&gt; an Olimex SAM7P256 board. Is anyone interested in the source code?
+Is this the Keil IDE with the ARM compiler?&nbsp; I am having a problem with these tools when using the demo version.&nbsp; The demo is limited to 16K, but it seems to take the RAM image into account when calculating the size &#8211; which is a problem when using the heap&#95;1 or heap&#95;2 implementations.&nbsp; Just setting the configTOTAL&#95;HEAP&#95;SIZE up can cause the &#8216;object code too large for demo version&#8217; error, whereas it should not alter the object code size at all.
+It&#8217;s very late and my head is fuzzy &#8211; so I hope this makes sense.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/neilbradley">neilbradley</a> on October 17, 2006</div><div class="thread-post-content">Hey Richard&#33; Thanks for the response. My responses to your responses:
+1&#41; Thanks much for the pointer &#8211; Sounds like all of the tools are there to create a typical semaphore, it just would be nice if they were there out of the box. All of the other OSes have them, so I thought I was quite the idiot for not noticing it.
+2&#41; Event flags basically work as an OS service that are simply a bitfield, and each thread can block on a bitfield mask. For example, let&#8217;s say we&#8217;ve created an event flag &#40;which is by this definition 32 bits&#41;.
+For the sake of argument, let&#8217;s say we have an event flag with 3 bits. Each of those 3 bits in the event flag indicate that a single thread needs to do something &#40;doesn&#8217;t matter what&#41;.
+The worker thread does a EventFlagsWait&#40;&#41; with a mask of the events that will wake it up. When some other thread &#40;or an ISR&#41; sets one of the bits that the worker thread is waiting on, three things happen:
+1&#41; The &quot;current flags&quot; for the triggered bits get cleared out of the event group
+2&#41; The &quot;triggered flags&quot; that got set get passed off to the result of the EventFlagsWait&#40;&#41; call
+3&#41; Any thread waiting on those flags are set to &quot;ready to run&quot;
+The question probably is, could all of this be done as a semaphore? Sure. However, there are several instances where you want to purposely wake up a thread and you don&#8217;t care how many sources may tell it to wake up, and depending upon the speed of those postings, it may overflow the queue &#40;and cause it to be missed&#41;.
+Am I describing this very well?
+3&#41; Whoops&#8230; I&#8217;ve got to get my head out of &quot;ARM Centric&quot; mode. I&#8217;ve been staring at ARM assembly too long and lost a little perspective&#8230;
+4&#41; The ARM compiler that I&#8217;m referring to is ARM Incorporated&#8217;s ARM SDT 2.51. It&#8217;s as old as the hills. Sorry it&#8217;s not the Keil one you&#8217;re mentioning &#8211; it seems to be a hairy problem. ;-/ I had some serious problems getting the SAM7S256 working because there was a &quot;thumb&quot; bit set down inside one of the routines &#8211; all better now&#33;
+Anyway, my changes are available. Just curious if you wanted them&#33;
+BTW Richard, I wanted to let you know that I&#8217;m sending up FreeRTOS in a high altitude balloon. It&#8217;s going to receive GPS, radio telemetry over 2 meter radio, activate a cut-down device, siren, log temperature data, and take photographs. No worries &#8211; this is a hobbyist project. It&#8217;s very similar to this guy&#8217;s page:
+http://vpizza.org/~jmeehan/balloon/
+I didn&#8217;t want to use Linux &#40;his description of how difficult it was to get everything working was my primary concern&#41; and what better way to get acquainted with FreeRTOS than with a cool project like this?
+Thanks again&#33;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on November 9, 2006</div><div class="thread-post-content">Hello,
+&nbsp;&nbsp;&nbsp; I was really interested to use such an API you&#8217;ve described &#40;planned some implementation of drivers .. so I&#8217;ve implemented the functionality you&#8217;re writing about.
+Some features with explanation:
+&#45; events are grouped by event signallers. Maximum number of events handled through one signaller is dependand on the width of portBASE&#95;TYPE and portTickType &#40;smaller of the two&#41; &#8211; the implementation could and even should be changed &#40;uses EventList item value stored in TCB, in paraller with queues, so some corrections to queues implementation had to be introduced to coexist with my binary events implementation&#41;.
+&#45; signaller must be initialized before first usage &#40;it uses two lists intern&#41;, but it can be static struct. RAM footprint for the struct is 2 &#42; xList + 2 &#42; portBASE&#95;TYPE. To store info about awaited events of tasks the implementation uses EventListItems in TCB.
+&#45; events signallers holds all the information about the occurance of events, events are distinguished only in the space of event signaller. It is possible to have more than one signaller initialized and used in various tasks of FreeRTOS, single task can write to any numer of signallers but can only await events from one signaller.
+&#45; the task can wait on signal of event or group of events &#40;in this case any signalled event from group interrupts wait, the information about received signals is returned in Wait&#40;&#41; func&#41;.
+&#45; events can be signalled from inside of the interrupt &#8211; in this case the funcs XXXXFromISR must be used.
+&#45; when event is signalled all the tasks awaiting it will be waked and receive the information about signalled events they waited for.
+&#45; events implementation is based on the queue implementation and similar mechanisms are used to introduce wait and protection of internal structures. Unfortunately all is in its place: the queue implementation introduces horrible possible interrupt latency and event implementation repeats the behaviour. 
+BTW I am quite sure that the queue implementation and now event implementation is not feasible to be used in the systems where exists at least one interrupt source requiring short latency handling &#8211; in AT91SAM7S it is possible to use FastForcing feature &#40;and with GCC used as compiler one needs additionally assembler crafted interrupt routines&#41; together with changes in FreeRTOS&#8217; critical section handling, but what about other systems? I have to write something more about it in the next post. The design of queues should be changed &#8211; using global interrupt disable flag &#40;through CRITICAL&#95;SECTION&#41; in random code sections without easily predictable amount of time spent with interrupts disabled is not The Solution &#40;TM&#41;.
+Anyone interested in viewing my implementation of binary event handling please send me email to trevor|really common at|pp.org.pl. I can contribute it to FreeRTOS as well.
+Kind regards,
+Tadeusz
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on November 9, 2006</div><div class="thread-post-content">&gt;I was really interested to use such an API you&#8217;ve described 
+&gt;&#40;planned some implementation of drivers .. so I&#8217;ve implemented 
+&gt;the functionality you&#8217;re writing about. 
+Cool &#8211; I need to read your post a few time to get my understanding better.
+&gt;BTW I am quite sure that the queue implementation and now event 
+&gt;implementation is not feasible to be used in the systems where 
+&gt;exists at least one interrupt source requiring short latency 
+&gt;handling &#8211; in AT91SAM7S it is possible to use FastForcing 
+&gt;feature &#40;and with GCC used as compiler one needs additionally 
+&gt;assembler crafted interrupt routines&#41; together with changes in 
+&gt;FreeRTOS&#8217; critical section handling, but what about other systems? 
+On sam7 and other arm7 you can have critical section just disable irq, then use fiq for low latency interrupts.&nbsp; You have to ensure fiq does not access protected areas.
+&gt;I have to write something more about it in the next post. The 
+&gt;design of queues should be changed &#8211; using global interrupt disable 
+&gt;flag &#40;through CRITICAL&#95;SECTION&#41; in random code sections without 
+&gt;easily predictable amount of time spent with interrupts disabled 
+&gt;is not The Solution &#40;TM&#41;. 
+Is this not normal? How else you prevent an interrupt accessing same queue variables members as a task?
+I am interested.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on November 9, 2006</div><div class="thread-post-content">&gt;&gt;I have to write something more about it in the next post. The&nbsp; 
+&gt;&gt;design of queues should be changed &#8211; using global interrupt disable&nbsp; 
+&gt;&gt;flag &#40;through CRITICAL&#95;SECTION&#41; in random code sections without&nbsp; 
+&gt;&gt;easily predictable amount of time spent with interrupts disabled&nbsp; 
+&gt;&gt;is not The Solution &#40;TM&#41;.&nbsp; 
+&gt;Is this not normal? How else you prevent an interrupt accessing same queue variables members as a task? 
+This is done somewhat already.&nbsp; The interrupt is only disabled while the queue is being locked and unlocked.&nbsp; When locked it is protected from corruption by multiple access.
+Any more improvements are good.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on November 9, 2006</div><div class="thread-post-content">&gt; Cool &#8211; I need to read your post a few time to get my understanding better. 
+Cool &#8211; maybe I will need to write it once again to get &#95;my&#95; understanding better ;-&#41;.
+&gt; On sam7 and other arm7 you can have critical section just disable irq, then use fiq for low latency interrupts. You &gt; have to ensure fiq does not access protected areas. 
+Exactly and I&#8217;ve written about it. But there are also systems which don&#8217;t have extra FIQ flags and are also ARMs which don&#8217;t have such an interrupt controller which can re-route interrupts to behave as FIQ. The section most critical &#40;at least which seem to take most of time&#41; 
+&gt; Is this not normal? How else you prevent an interrupt accessing same queue variables members as a task? 
+&gt; I am interested. 
+I am not talking about different way of prevention against accessing the same variables &#40;although in ARM it is easily implementable without disabling interrupts at all&#41; but about shortening the blocks of instructions which must be atomically executed with interrupts disabled not to mess the internal structures of FreeRTOS &#8211; I think it is possible.
+I have just compared the newest implementation of queues in FreeRTOS in version 4.1.2 with that in 4.0.1 and there is improvement in the area &#40;I am using for my project 4.0.1&#41; but there is still place for improvement.
+Tadeusz
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dutchuncle">dutchuncle</a> on January 12, 2007</div><div class="thread-post-content">I would also like to see VRTX / ThreadX &#8211; style counting semaphores and flags.&nbsp; I may try coding them based on the queue code.&nbsp; One way to avoid excessive code space is to put the routines in more little files and make it a libarary so only the called functions get included.
+&gt;&gt;The question probably is, could all of this be done as a semaphore? Sure. However, there are several instances where you want to purposely wake up a thread and you don&#8217;t care how many sources may tell it to wake up&#8230;
+Sorry, a bitmask flag is not a semaphore.&nbsp; The original semaphore concept was binary &#8211; locked or unlocked.&nbsp; Counting semaphores extend that inone dimension &#8211; there are multiple resources available.&nbsp; Flags extend it in a DIFFERENT dimension in two different uses, as either &#40;a&#41; a way to wait for any of multiple things rather than just one, or &#40;b&#41; an attempt to prevent deadlocks by getting multiple semaphores in the same atomic operation.&nbsp; 
+Using VRTX on an old project, we had processes pending on different flags for various different event masks, but &#42;all&#42; flags included &#40;as the same bits&#41; a &quot;channel stop&quot; and &quot;channel clear&quot; flag so that &#42;all&#42; processes could be signalled at the same time.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wz2b">wz2b</a> on May 31, 2007</div><div class="thread-post-content">richardbarry wrote:
+&gt;This is a topic that came up a while back. Somebody was
+&gt;implementing event flags, but this was some time ago and
+&gt;I have not heard anything since.
+I tried to write Trevor today and my email bounced.&nbsp; If he is still out there, perhaps he will chime in.
+&gt;Can you explain a little more of their functionality, how you want them to work.
+&gt;It&#8217;s about time we added some more functionality. Unblocking
+&gt;multiple tasks on an event should not be too much of a problem,
+&gt;but having a single task block on multiple events could be. 
+Here is what I envision:
+1&#41; First, extend the task control block:
+typedef struct tskTaskControlBlock &#123;
+&nbsp;&nbsp;&nbsp; &#8230;
+&nbsp;&nbsp;&nbsp; portBASE&#95;TYPE ev&#95;events; /&#42; initialized to 0 on task creation &#42;/
+&nbsp;&nbsp;&nbsp; portBASE&#95;TYPE ev&#95;mask; /&#42; only matters if task is delayed on events &#42;/
+&nbsp;&nbsp;&nbsp; &#8230;
+&#125;
+2&#41; Either add a new DelayedTaskList for waiting on events, or allow a different type of event in the existing queues.&nbsp; Events are broadcast to ALL tasks that are waiting for a particular event, meaning when an event is posted you would have to loop through all delayed tasks and see which ones should be woken.&nbsp; There are efficiency concerns here because events are broadcast and must be communicated to all tasks.
+3&#41; I think it&#8217;s OK that suspended tasks miss signals.&nbsp; Tasks that are running or delayed should not miss them.
+4&#41; API modifications.&nbsp; Since these events are application-wide there is no &#8216;create&#8217; mechanism required.&nbsp; That leaves us with:
+xEventPost&#40;portBASE&#95;TYPE newEvent&#41; &#123;
+&nbsp;&nbsp;&nbsp; /&#42; notify all live tasks &#42;/
+&nbsp;&nbsp;&nbsp; foreach&#40; tcb in all non-suspended tcbs in system &#41; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tcb-&gt;ev&#95;events |= newEvent;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40; task is delayed on events &amp;&amp; &#40; newEvent &amp; tcb-&gt;ev&#95;mask &#33;= 0&#41; &#41; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wake up this task;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+xEventPostFromISR&#40;&#41;&nbsp; &#123;
+&nbsp;&nbsp; &#8230;
+&#125;
+portBASE&#95;TYPE
+xEventWait&#40;portBASE&#95;TYPE mask, int timeout&#95;ticks&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; portBASE&#95;TYPE ret;
+&nbsp;&nbsp;&nbsp; /&#42; not sure if it is really necessary to loop here,
+&nbsp;&nbsp;&nbsp;&nbsp; &#42; but it probably isn&#8217;t any more expensive
+&nbsp;&nbsp;&nbsp;&nbsp; &#42; than a simple conditional, and it might
+&nbsp;&nbsp;&nbsp;&nbsp; &#42; give us options in the future, like the
+&nbsp;&nbsp;&nbsp;&nbsp; &#42; ability to &#8216;clear&#8217; events externally.
+&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; while&#40;myTCB-&gt;ev&#95;mask &amp; mask &#33;= 0 &amp;&amp; timeout&#95;not&#95;expired&#41; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; block here waiting for events;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; /&#42; clear appropriate event&#40;s&#41; for this task &#42;/
+&nbsp;&nbsp;&nbsp; ret = myTCB-&gt;ev&#95;events &amp; mask;
+&nbsp;&nbsp;&nbsp; myTCB-&gt;ev&#95;events &amp;= ~mask;
+&nbsp;&nbsp;&nbsp; /&#42; notify the user the event bit&#40;s&#41; that caused us to wake up &#42;/
+&nbsp;&nbsp;&nbsp; return ret;
+&#125;
+/&#42;&#42;&#42;/
+This allows for a task to wait on multiple events.&nbsp; For example:
+&#35;define EVENT&#95;ENGINE&#95;FAILURE 0x00000001
+&#35;define EVENT&#95;TRANSMISSION&#95;FAILURE 0x00000002
+&#35;define EVENT&#95;AIRBAG&#95;FAILURE 0x00000004
+task&#40;&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; &#8230;
+&nbsp;&nbsp;&nbsp; xWaitEvent&#40;EVENT&#95;ENGINE&#95;FAILURE | EVENT&#95;AIRBAG&#95;FAILURE&#41;;
+&nbsp;&nbsp;&nbsp; &#8230;
+&#125;
+Note that I do not understand FreeRTOS well enough to know how to handle the blocking/unblocking, or the timeout.&nbsp; This is just notional.&nbsp; I am not really up-to-speed enough on FreeRTOS to write this myself, but I would be happy to help, do code reviews, and test.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wz2b">wz2b</a> on May 31, 2007</div><div class="thread-post-content">I thought of something else perhaps worth considering, though it would complicate things a bit.&nbsp; We could make broadcasting of signals more efficient with the concept of &quot;process groups&quot;, and not bother updating tcb-&gt;ev&#95;events on processes not in the same process group.&nbsp; If this involved another thread of linked lists it probably wouldn&#8217;t be worthwhile &#8212; just a thought.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cherepanov">cherepanov</a> on June 3, 2007</div><div class="thread-post-content">I am writing this message, because I want people pay attention to the implemetation of semaphores.
+The today implementation is not so good because it use a lot of RAM as it used the queue
+implementation. Look at queue structure&#33;&#33;&#33; And if you looked at the semaphore macros you see that we have
+one element with the size of zero.
+typedef struct QueueDefinition
+&#123;
+&nbsp;&nbsp;&nbsp; signed portCHAR &#42;pcHead; we do not need because the size is zero&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; signed portCHAR &#42;pcTail; we do not need because the size is zero&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; signed portCHAR &#42;pcWriteTo;&nbsp;&nbsp;&nbsp; we do not need because the size is zero&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; signed portCHAR &#42;pcReadFrom;&nbsp;&nbsp;&nbsp; we do not need because the size is zero&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; xList xTasksWaitingToSend;&nbsp;&nbsp;&nbsp; we do not need because the do not blocking then giving gave&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; xList xTasksWaitingToReceive;&nbsp;&nbsp;&nbsp; we use this if we take semaphore it is used for store the list of waiting tasks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; unsigned portBASE&#95;TYPE uxMessagesWaiting; is 0 or 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; unsigned portBASE&#95;TYPE uxLength; is&nbsp; always 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; unsigned portBASE&#95;TYPE uxItemSize; is always 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; signed portBASE&#95;TYPE xRxLock;&nbsp;&nbsp;&nbsp; i do not know exactly i suppose the do not use this&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#125; xQUEUE;
+I think that all we need is 1. One xLiskWaitingToTake List of tasks
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2. If it is a counting semaphore we need the variable &#8211; a counter
+But&#33;&#33;&#33; The xList has a field xMiniListItem wich is a structure and it plays a role as a the end Item if all List.
+And all ListItems has xItemValue field which is used for sorting. There it is used to sort in priority order or time order.
+In xMiniListItem it is always equal to MaxPortTickType.
+Then the counting semaphore value is not equal to zero the list is empty the can use this variable to count.
+Then the counting semaphore is equal to zero the must block the taking task.
+We can made a hook. Internaly in semaphore the can count not from zero till the n. But the can count from -1 till n-1.
+&nbsp; 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cherepanov">cherepanov</a> on June 3, 2007</div><div class="thread-post-content">I have wrote some implementation of semaphores as I wrote above, but I have not test it yet. And I do not have time to do this now, and I don&#8217;t know there to send this sources. Maybe someone help me and watch or test them.
+This implementation is based on vTaskPlaceOnEventList.I think it is very useful function.
+I appeal to Richard Barry. I hope he wrote some documentation about this function on his official site FreeRTOS.org 
+May be it will help people to write their own extensions to the FreeRTOS as a event flags fifo and etc.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on June 3, 2007</div><div class="thread-post-content">Hi &#8211; I would be very interested to take a look at your implementation.&nbsp; Can you send me the source to r dot barry at freertos.org?
+The semaphore implementation is written to make use of the existing queue functionality.&nbsp; It should be noted that the existing semaphore implementation has absolutely zero impact on the executable code size &#8211; as macros on top of queues they add no new code at all.&nbsp; Also the semaphore structures include all the event management details.&nbsp; Some RTOS&#8217;s implement an event management system as a separate module, so creating a semaphore requires both the semaphore and an event control block to be allocated.&nbsp; In FreeRTOS.org only the semaphore need be allocated.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cherepanov">cherepanov</a> on June 3, 2007</div><div class="thread-post-content">I understand that if we are using such macros implementation we does not write any code and it dose not use Flash ROM of microcontrollers but look at my Atmega128 it has 128k FLASH ROM and only 4k RAM. 
+And also I want to say that the new code for semaphores is stored only once for all semaphores, but the wasting of RAM is more because the can have many Semaphore structures in RAM. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphores, event flags, and ports</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/wz2b">wz2b</a> on June 3, 2007</div><div class="thread-post-content">I think this was meant for me &#40;?&#41;
+&gt;I would be very interested to take a look at your implementation.
+I don&#8217;t have one yet &#8230; it was more of an idea.&nbsp; But I would be willing to work on it to contribute, just might take a while :&#41;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

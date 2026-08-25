@@ -1,0 +1,406 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIC32 interrupt issue xQueueSendToBackFromISR - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2013/freertos_PIC32_interrupt_issue_xQueueSendToBackFromISR_6583602.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="PIC32 interrupt issue xQueueSendToBackFromISR - FreeRTOS" />
+<meta property="og:description" content="PIC32 interrupt issue xQueueSendToBackFromISRPosted by levvek on January 10, 2013Hello. I have a huge problem with my touch screen driver which is interrupt driven under FreeRtos. I hope someone can help me. Here is my code &#040;sorry for a mess&#041; void vCNInterruptHandler( void ); extern void __attribute__( (interrupt(ipl3), vector(_CHANGE_NOTICE_VECTOR))) vCNInterruptWrapper( void ); extern xQueueHandle hTouchMsgQueue; &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2013/freertos_PIC32_interrupt_issue_xQueueSendToBackFromISR_6583602.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="PIC32 interrupt issue xQueueSendToBackFromISRPosted by levvek on January 10, 2013Hello. I have a huge problem with my touch screen driver which is interrupt driven under FreeRtos. I hope someone can help me. Here is my code &#040;sorry for a mess&#041; void vCNInterruptHandler( void ); extern void __attribute__( (interrupt(ipl3), vector(_CHANGE_NOTICE_VECTOR))) vCNInterruptWrapper( void ); extern xQueueHandle hTouchMsgQueue; [&hellip;]" />
+<meta name="twitter:title" content="PIC32 interrupt issue xQueueSendToBackFromISR - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202220' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202220' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202220' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202220' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144235' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2013%2Ffreertos_PIC32_interrupt_issue_xQueueSendToBackFromISR_6583602.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2013%2Ffreertos_PIC32_interrupt_issue_xQueueSendToBackFromISR_6583602.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144235">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2013_freertos_support_forum_archive_index.html/">January 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/levvek">levvek</a> on January 10, 2013</div><div class="thread-post-content">Hello.  
+I have a huge problem with my touch screen driver which is interrupt driven under FreeRtos. I hope someone can help me.<br />
+Here is my code &#40;sorry for a mess&#41;  
+<pre><code>void vCNInterruptHandler( void );
+extern void __attribute__( (interrupt(ipl3), vector(_CHANGE_NOTICE_VECTOR))) vCNInterruptWrapper( void );
+extern xQueueHandle hTouchMsgQueue;
+void TouchStandby( void )
+{
+    IEC1bits.CNIE = 0;
+    // Set Yadc and Xadc pins as digital inputs
+    AD1PCFG |= 0xC000;
+    // Set X axis tied to GND: 
+    // X- as HiZ with PD (hardwired)
+    TRIS_XNEG = 1;      // HiZ  
+    // X+ as Gnd without PU
+    LAT_XPOS(0);
+  TRIS_XPOS(0);         // Gnd
+  // Set Y axis tied to VCC ( close to Vcc because of hardwired PD on RB15. It couses current flow! )
+    // Y+ as HiZ with PU enabled     
+  TRIS_YPOS(1);     // HiZ  
+    // Y- as HiZ with CN interrupt enabled. PD is present (hardwired)
+    TRIS_YNEG = 1;      // INT
+    RtosDelayMs(1);
+    CNEN = 0x1000;
+    // Clear mismatch condition
+    BYTE dummyRead = PORTB;
+    // Clear CN interrutp flag
+    IFS1bits.CNIF = 0;
+    // Enable interrupt
+    IEC1bits.CNIE = 1;
+}   
+void TouchWakeup( void )
+{
+    // Set Yadc and Xadc pins as analog inputs
+    AD1PCFG &amp;= 0x3FFF;
+}   
+volatile BYTE smTouchDetection = touchStandby;
+void TouchInterruptInit( void )
+{
+    WORD dummyRead;
+    // Enable CN12 interrupt
+    CNEN = 0x1000;
+    // Enable CN module and set halt in idle mode
+    CNCON = 0xA000; 
+    // Interrupt priority 2, subpriority 1
+    IPC6 = 0x000900000;
+    // Clear mismatch condition
+    dummyRead = PORTB;
+    // Clear CN interrutp flag
+    IFS1bits.CNIF = 0;
+    // Enable CN interrupt
+    //IEC1bits.CNIE = 1;
+}   
+  enum{
+        touchUnpressed = 0,
+        touchPressed = 1
+    };
+volatile BYTE touchMsgCnt = 0;
+// CN12 = RB15
+void vCNInterruptHandler( void )
+{  
+  static isrTest = 0;
+  signed portBASE_TYPE xHigherPriorityTaskWoken;     
+    xHigherPriorityTaskWoken = pdFALSE;
+    isrTest++;
+    if( isrTest &gt; 1 ){
+        Nop();
+    }   
+    WORD dummyRead;
+    // Clear mismatch
+    dummyRead = PORTB;
+  // Clear CN interrutp flag
+    IFS1bits.CNIF = 0;
+    if( !_RB15 ) {
+        // Disable CN interrupt until int source is handled
+        IEC1bits.CNIE = 0;
+     // CNEN = 0x0000;
+        // Inform touchTask about touch screen being pressed
+        BYTE touchMsg;
+        touchMsg = touchPressed;
+    if( xQueueSendToBackFromISR( hTouchMsgQueue, &amp;touchMsg, &amp;xHigherPriorityTaskWoken ) )
+    {
+        touchMsgCnt++;
+      }       
+  }
+    if( isrTest &gt; 1 ){
+        Nop();
+    }   
+    isrTest = 0;
+    portEND_SWITCHING_ISR( xHigherPriorityTaskWoken ); // If necessary change context to task with higher priority
+}
+volatile BYTE touchDebug = 0; 
+void TouchTask(void *pVoid) {
+    volatile int touchPressed = 0;
+    BYTE touchMessage;
+    //TouchStandby();
+    RtosDelayMs(100);
+    TouchInterruptInit();
+    while (TRUE) {
+        touchDebug = 0;
+        switch( smTouchDetection ) {
+            case touchStandby:
+                touchDebug = 1;
+                LockSD();
+                touchDebug = 2;
+                TouchStandby();
+                touchDebug = 3;
+                UnlockSD();
+                touchDebug = 4;
+                // Block until touch screen is pressed. Detection done in CN interrupt handler
+                if( !xQueueReceive( hTouchMsgQueue, &amp;touchMessage, 100000 ) )
+                {
+                    //Timeout
+                    if( touchMsgCnt &gt; 0 ){
+                        Nop();
+                    }
+                    else
+                        break;
+                }               
+                touchMsgCnt--;
+                touchDebug = 5;
+                TouchWakeup();
+                touchDebug = 8;
+                smTouchDetection = touchDetect;
+                touchDebug = 9;
+                //RtosDelayMs(25);
+            //break;
+            case touchDetect:
+                touchDebug = 10;
+                LockSD();
+                touchDebug = 11;
+                touchPressed = TouchDetectPosition();
+                touchDebug = 12;                
+                UnlockSD();
+                touchDebug = 13;
+                if( touchPressed ) {
+                    touchDebug = 14;
+                    RtosDelayMs(25);
+                    touchDebug = 15;
+                }   
+                else{
+                    touchDebug = 16;
+                    // Touch is depressed. Return to standby state
+                    smTouchDetection = touchStandby;
+                    touchDebug = 17;
+                }       
+            break;  
+        }       
+#ifdef WIN32
+        Sleep(1);
+#endif
+    touchDebug = 18;
+    taskYIELD();
+    //tuchDebug = 19;
+    }
+} //void TouchTask(void *pVoid) {
+ISR.S:
+#include &lt;p32xxxx.h&gt;
+#include &lt;sys/asm.h&gt;
+#include "libs/FreeRTOS/ISR_Support.h"
+    .set    nomips16
+    .set    noreorder
+    .extern vCNInterruptHandler
+    .extern xISRStackTop
+    .global vCNInterruptWrapper
+    .set        noreorder
+    .set        noat
+    .ent        vCNInterruptWrapper
+vCNInterruptWrapper:
+    portSAVE_CONTEXT
+    jal vCNInterruptHandler
+    nop
+    portRESTORE_CONTEXT
+    .end        vCNInterruptWrapper
+</code></pre>
+Some stuff from FreeRtosConfig.h:<br />
+&#35;define INCLUDE&#95;vTaskPrioritySet 1<br />
+&#35;define INCLUDE&#95;uxTaskPriorityGet 1<br />
+&#35;define INCLUDE&#95;vTaskDelete 1<br />
+&#35;define INCLUDE&#95;vTaskCleanUpResources 0<br />
+&#35;define INCLUDE&#95;vTaskSuspend 1<br />
+&#35;define INCLUDE&#95;vTaskDelayUntil 1<br />
+&#35;define INCLUDE&#95;vTaskDelay 1<br />
+&#35;define INCLUDE&#95;uxTaskGetStackHighWaterMark 0<br />
+&#35;define INCLUDE&#95;xTaskResumeFromISR 1<br />
+&#35;define configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY 0x03<br />
+&#35;define configKERNEL&#95;INTERRUPT&#95;PRIORITY 0x01  
+And last but not least problem description:<br />
+TouchTask block&#40;should do this indefinitely but I used 10s for debuf purpose&#41; until touch is detected by change notice interrupt. Interrupt sends message &#8220;touchPressed&#8221; if CN12 is pushed. Message from queue is received by touchTask and detection is procced. Everything works great until I start pushing touch screen rapidly. Then touch task hangs.<br />
+I was able to determine that:<br />
+1.CN interrupt detects push and sends message into hTouchMsgQueue. It returns with xHigherPriorityTaskWoken = pdTrue.<br />
+2&#46; The touch task never unblocks even with xTicksToWait definied &#40;as it is in code above&#41; and message being queued.<br />
+I read about interrupt priority issues but I made everything &#40;or rather I hope&#41; according to FreeRtos manuall scheme. I tried to comment out portEND&#95;SWITCHING&#95;ISR but problem still exists.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 10, 2013</div><div class="thread-post-content">From reading the code, it looks like the interrupt has a priority of 2, and the max syscall priority is 3, so on a PIC32 device that is ok.  
+Are you able to determine what the TouchTask is doing?&nbsp; What is it executing.&nbsp; This sort of thing can sometimes happen when the peripheral drivers &#40;in this case I presume this is the TouchDetectPosition&#40;&#41;, and the lock/unlock SD functions, etc.&#41; contain polling loops in them, and the loop exit condition never occurs leaving the task just spinning on the same code continuously.&nbsp; &#40;I had the same thing recently myself with a USB CDC driver &#8211; when I hammered it by automatically sending it lots of characters in quick succession it ended up getting stuck in a loop that was polling for a bit change that never changed&#41;.  
+Which IDE are you using?&nbsp; If MPLAB 8 then Microchip provide a FreeRTOS plug-in that will at least tell you the state of the task &#40;running/blocked/etc.&#41;.&nbsp; If using MPLAB X then there is also a plug-in but I&#8217;m not sure of its status at the moment &#40;a recent support request was having a problem using it&#41;.&nbsp; If you don&#8217;t have the plug-in then I can tell you how to determine the state using the debugger &#8211; but that involves following a pointer chain so is not very user friendly.  
+The trace tool offers another option to see what is actually running if you have the possibility to add in the trace recorder code and obtain the tool.  
+Does xQueueSendToBackFromISR&#40;&#41; ever return pdFALSE?&nbsp;<br />
+How big is the queue?<br />
+Is it correct that the break statement is commented out in the switch statement of your task?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/levvek">levvek</a> on January 10, 2013</div><div class="thread-post-content">Thanks for quick respond.<br />
+The last line executed by TouchTask is xQueueReceive&#40; hTouchMsgQueue, &amp;touchMessage, 100000 &#41; . The touchDebug variable has value of 4 and touchMsgCnt = 1. The LockSD and UnlockSD are just mutexes that secure the&nbsp; SPI4 peripherial. The commented break is just to speed up touch detection a little.&nbsp; For xQueueSendToBackFromISR&#40;&#41;&nbsp; I decided to disable CN interrupt each time touch screen is pressed, procced with touch detection and then reenable interrupt. I think it is more safe right now but I have also tried approch without disabling it. I was able to spot that CN ISR was preempting it self&#33; &#40;is it normal?&#41; Preemption occurs during xQueueSendToBackFromISR&#40;&#41; &#40; line 919 of queue.c &#41;. That time is return with pdFalse. This is wired because it happensa also when the CN12 interrupt is masked &#40;CNEN = 0&#33; &#41;&nbsp;<br />
+But for now lest return to problem with touch task queue.<br />
+I am using MPLAB8 and all task in RtosViewer are suspended. I tried to see if other task that are working in time dependant manner &#40;like networkTask, lcdTask etc &#41;. are working correctly. It turned out that only one task is running and there is no task switch. The vPortIncrementTick is executed so tick interrupt is working fine. I really don&#8217;t have any idea what to check next:/ 
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/levvek">levvek</a> on January 10, 2013</div><div class="thread-post-content">I&#8217;ve forgot to add my hTouchQueueMsg initialization: hTouchMsgQueue = xQueueCreate&#40; 1, 1 &#41;;
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on January 10, 2013</div><div class="thread-post-content">Because of the way FreeRTOS handles indefinite waits a task that makes a blocking call with a block time of portMAX&#95;DELAY will show as being Suspended when it is actually Blocked. I don&#8217;t see TouchTask&#40;&#41; ever using portMAX&#95;DELAY or actually being suspended, but you say the viewer shows it as Suspended?
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/levvek">levvek</a> on January 10, 2013</div><div class="thread-post-content">No it is my mistake. I checked RtosViewer once again and IDLE is in ready state TmrSvc Unkcnown 6 more tasks are Suspended &#40;blocked indefinite, waiting for message in queue/ semaphore &#41; but there are many tasks missing in the list. However before this error shows &#40;before touch screen stops responding and task switch stop working&#41; all of them are present. Is it possible to determine what exactly touchTask is doing? I know that last command is xQueueReceive&#40;&#41;;
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 10, 2013</div><div class="thread-post-content">So it looks likely there is some corruption of the kernel data somewhere.  
+Before I walk through manually tracking the stat of the task, a couple of quick questions:  
+1&#41; Do you have stack overflow checking switched on?<br />
+2&#41; What is the priority of the touch task?<br />
+3&#41; When the error occurs, what is the value of the uxTopReadyPriority variable in tasks.c?<br />
+4&#41; If you are using FreeRTOS V7.3.0, what is configUSE&#95;PORT&#95;OPTIMISED&#95;TASK&#95;SELECTION set to &#40;if it is not defined then I will look up the default&#41;.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/levvek">levvek</a> on January 10, 2013</div><div class="thread-post-content">Here it goes:<br />
+1&#41;&nbsp; I have<br />
+&#35;define configCHECK&#95;FOR&#95;STACK&#95;OVERFLOW 1<br />
+&#35;define INCLUDE&#95;uxTaskGetStackHighWaterMark 1  
+But neither my constructor task that monitors every tasks thru uxTaskGetStackHighWaterMark nor vApplicationStackOverflowHook&#40;&#41; indicates any stack problems.<br />
+2&#41; touch task has priority 2 &#40;as most tasks in project&#41;<br />
+3&#41; uxTopReadyPriority = 2 &#40;when screen freezes &#41;<br />
+4&#41; I have FreeRTOS V7.3.0 with onfigUSE&#95;PORT&#95;OPTIMISED&#95;TASK&#95;SELECTION set to default &#40;not definied at all&#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/levvek">levvek</a> on January 10, 2013</div><div class="thread-post-content">Small update but maybe helpful.<br />
+If I change lines:  
+<pre><code>                if( !xQueueReceive( hTouchMsgQueue, &amp;touchMessage, 100000 ) )
+                {
+                    //Timeout
+                    if( touchMsgCnt &gt; 0 ){
+                        Nop();
+                    }
+                    else
+                        break;
+                }       
+</code></pre>
+to only:  
+<pre><code>xQueueReceive( hTouchMsgQueue, &amp;touchMessage, portMAX_DELAY );
+</code></pre>
+Symptoms are the same for touchTask but other tasks are switching normally. What is more every task is present in RtosViewer list &#40;including those in block state as well&#41; expect touchTask.<br />
+Let me know if I can be of any more help   
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/levvek">levvek</a> on January 10, 2013</div><div class="thread-post-content">One last update for today. I&#8217;ve modified taskTocuh. It is a little less efective &#40;checking Queue every 50ms&#41; but right now it seems to work without a problem. Here it is:  
+<pre><code>void TouchTask(void *pVoid) {
+    volatile int touchPressed = 0;
+    BYTE touchMessage;
+    RtosDelayMs(100);
+    TouchInterruptInit();
+    while (TRUE) {
+        switch( smTouchDetection ) {
+            case touchStandby:
+                LockSD();
+                TouchStandby();
+                UnlockSD();
+                smTouchDetection = touchCheck;
+                break;
+                case touchCheck:
+                // Block until touch screen is pressed. Detection done in CN interrupt handler
+                RtosDelayMs(50);
+                if( !xQueueReceive( hTouchMsgQueue, &amp;touchMessage, 0 ) )
+                {
+                    break;
+                }                   
+                touchMsgCnt--;
+                TouchWakeup();
+                smTouchDetection = touchDetect;
+            case touchDetect:
+                LockSD();
+                touchPressed = TouchDetectPosition();               
+                UnlockSD();
+                if( touchPressed ) {
+                    RtosDelayMs(25);
+                }   
+                else{
+                    // Touch is depressed. Return to standby state
+                    smTouchDetection = touchStandby;
+                }       
+            break;  
+        }       
+#ifdef WIN32
+        Sleep(1);
+#endif
+    taskYIELD();
+    }
+} //void TouchTask(void *pVoid) {
+</code></pre>
+I&#8217;ve noticed that when the xTickToWait time in xQueueReceive call is small &#40;I&#8217;ve tried up to 100ticks=10ms &#41; every think works correctly. This could point to a reson why longer blocking/suspending of touchTask currupts some data &#40;etc.:xEventList? xSuspendedTaskList?&#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 interrupt issue xQueueSendToBackFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/levvek">levvek</a> on May 7, 2013</div><div class="thread-post-content">Lately I was able to finally solve the problem from my first post. I had Read-Modify-Write hazard when clearing/setting interrupt flag for CN peripherial. I used IEC1bits.CNIE and IFS1bits.CNIE commands which are not atomic operations. After changing these to atomic opeartions &#40;IEC1SET IEC1CLR IFS1SET IFS1CLR &#41; everything works flawless. I hope someone will find it usefull in the future. 
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

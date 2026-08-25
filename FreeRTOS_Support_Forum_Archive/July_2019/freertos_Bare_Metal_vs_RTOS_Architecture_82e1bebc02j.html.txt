@@ -1,0 +1,183 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bare Metal vs RTOS Architecture - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2019/freertos_Bare_Metal_vs_RTOS_Architecture_82e1bebc02j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Bare Metal vs RTOS Architecture - FreeRTOS" />
+<meta property="og:description" content="Bare Metal vs RTOS ArchitecturePosted by hirohiro on July 20, 2019I&#8217;m fairly new to FreeRTOS and I&#8217;m hoping some more experienced users can offer some advice on how it is best to architect my application Summary of application: &#8211; monitor accelerometer (I2C) at 1.5kHz and run a basic algorithm to detect if a threshold is &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2019/freertos_Bare_Metal_vs_RTOS_Architecture_82e1bebc02j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Bare Metal vs RTOS ArchitecturePosted by hirohiro on July 20, 2019I&#8217;m fairly new to FreeRTOS and I&#8217;m hoping some more experienced users can offer some advice on how it is best to architect my application Summary of application: &#8211; monitor accelerometer (I2C) at 1.5kHz and run a basic algorithm to detect if a threshold is [&hellip;]" />
+<meta name="twitter:title" content="Bare Metal vs RTOS Architecture - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203149' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203149' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203149' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203149' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138153' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2019%2Ffreertos_Bare_Metal_vs_RTOS_Architecture_82e1bebc02j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2019%2Ffreertos_Bare_Metal_vs_RTOS_Architecture_82e1bebc02j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138153">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2019_freertos_support_forum_archive_index.html/">July 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Bare Metal vs RTOS Architecture</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hirohiro">hirohiro</a> on July 20, 2019</div><div class="thread-post-content">I&#8217;m fairly new to FreeRTOS and I&#8217;m hoping some more experienced users can offer some advice on how it is best to architect my application
+Summary of application:
+&#8211; monitor accelerometer (I2C) at 1.5kHz and run a basic algorithm to detect if a threshold is crossed for a certain window
+&#8211; monitor user input via push buttons
+&#8211; keep LCD display updated with feedback
+&#8211; log accelerometer data over serial to PC
+What I would do in a non-RTOS environment is use a HW timer that will fire an interrupt at 1.5kHz for the accel, and maybe another at 10Hz to refresh the display. Both of these timers would set a flag indicating read<em>accel and update</em>display while the buttons&#8217;s GPIO IRQ would set a button flag. Finally a main loop would trigger non-blocking I2C reads to the accel and non-blocking reads from the display on these flags, and the serial would just run during any free cycles.
+I&#8217;d like to implement this in FreeRTOS since down the line we will likely be adding a BLE radio to the mix which will should run in it&#8217;s own task and not break the rest of the code. Can someone suggest a task structure that would make sense for this application?
+I don&#8217;t want my current path to influence the suggestions but if that question is too broad then here&#8217;s what I&#8217;m struggling with more specifically:
+<ol>
+<li>Should I use one task to handle high frequency I2C read, and one task with software timers for low frequency UI interactions?</li>
+<li>Where do I handle pushing data out that fast over UART?</li>
+<li>Can I get away with a blocking I2C driver with the RTOS?</li>
+<li>For the UI task should I create 2 software timers for updating display and polling buttons or just use one and use it to increment a counter which would trigger the two? How would I wait on either timer if I&#8217;m using two?</li>
+</ol>
+Any suggestions would be much appreciated. Maybe I&#8217;m over thinking things but I would like to design it right from the start 🙂
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bare Metal vs RTOS Architecture</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aggarg-aws">aggarg-aws</a> on July 20, 2019</div><div class="thread-post-content">One way of designing this application can be: 
+<ul>
+<li>One task for monitoring accelerometer – You can configure this task to wake up at periodic intervals (using vTaskDelay) according to how frequently you want to monitor accelerometer.</li>
+<li>One task for monitoring input via push buttons – Configure this task to wait for a task notification which is delivered from GPIO IRQ (using xTaskNotifyWait and xTaskNotifyFromISR). </li>
+<li>One task for updating LCD display – This task is unblocked whenever the display needs to be updated. You can use task notification or semaphore for signaling this task from some other task (depending on when the display needs to be updated).</li>
+<li>One logging task – Have a queue to which accelerometer task writes the data and this task reads the data from that queue (xQueueSend and xQueueReceive) and sends over serial. </li>
+</ul>
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bare Metal vs RTOS Architecture</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 20, 2019</div><div class="thread-post-content">I will kick things off by suggestion that, because of its speed, I would
+stick with using a hardware timer to trigger the 1.5 KHz read of the
+accelerometer &#8211; that will ensure the accuracy of the read period.  If
+possible do the whole I2C transaction in interrupts (hopefully offloaded
+to some kind of DMA control where the source of the data is the I2C
+peripheral if your hardware supports it &#8211; Atmel used to do a really nice
+job of that kind of DMA).  Once the I2C transaction is complete you can
+just trigger a task (similar to your flag) to process the results
+however you want &#8211; you can see some code snippets here for how that can
+be done:
+https://www.freertos.org/RTOS<em>Task</em>Notification<em>As</em>Counting_Semaphore.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bare Metal vs RTOS Architecture</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hirohiro">hirohiro</a> on July 20, 2019</div><div class="thread-post-content">Thanks for the suggestion. It seems like the number of tasks will balloon quickly if I separate things like monitoring button presses into their own task. Is there a reason to not combine that with LCD? I think the overhead of tasks can get expensive 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bare Metal vs RTOS Architecture</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hirohiro">hirohiro</a> on July 21, 2019</div><div class="thread-post-content">Hmm that&#8217;s interesting. I didn&#8217;t know about these task notifications yet, thanks!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bare Metal vs RTOS Architecture</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 21, 2019</div><div class="thread-post-content"><blockquote>
+  Is there a reason to not combine that with LCD? I think
+  the overhead of tasks can get expensive
+</blockquote>
+Very dependent on your application &#8211; if the button an LCD are always
+coupled and nothing else uses the LED, etc. then it can make sense to
+have them in the same task for sure.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bare Metal vs RTOS Architecture</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hirohiro">hirohiro</a> on July 21, 2019</div><div class="thread-post-content">This is where I get a little lost. In reality I have 3 LEDs, an LCD, and 2 buttons. The buttons can be used primarily to interact with the display menu&#8217;s but also can be used to trigger things like switching modes (via holds) completely outside of the LCD menu. The LEDs are used to communicate various states depending on the operating mode.
+I was thinking to group these all under a non-critical task since some latency is acceptable. However, the button and LCD are not always coupled since a long press for example would just push an event upstream to a different module and not affect the display. Does it still make sense then?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bare Metal vs RTOS Architecture</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on July 21, 2019</div><div class="thread-post-content">My general guideline is that I make one task for each external event/device that send request/information to the processor &#8216;unbidden&#8217;. This means that if there is a device that I send a message to and it then returns a reply, I don&#8217;t need a new task for that. I would likely make the log output a seperate task so it sending data doesn&#8217;t interfere with the collection of data from the accelerometer.
+Your 1.5kHz accelerometer reading is perhaps one of the tougher tasks. That is fast enough I would prefer NOT to make that based on the tick timer. One thing to look at is if you can setup the accelerameter to automatically sample at that rate and give you an interrupt to read the data. Also at that rate the communication to the accelerometer is likely going to use up a lot of your I2C band width, as 1.5 kHz is only 666us per sample, and even at 400kHz I2C rate that is only 266 BITS of information (29 bytes) (and the I2C Start/Stop signal take time, as well as sendingthe needed address info).
+For the UI, I would use a single task to poll the buttons and periodically update the display.assuming you can set them to be on an integer ratio. If there are multiple source that can kick off a display update (not just on a time basis) then you might want a seperate task for display update.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bare Metal vs RTOS Architecture</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hirohiro">hirohiro</a> on July 21, 2019</div><div class="thread-post-content">That makes sense, thanks! I will definitely try to do some optimization of the accel by making use of the on board fifo, but I was also mostly curious how that sort of task would be handled. In the case that it did need to be polled at such a high rate, how would that be handled? Would the task need to tight poll a status flag that is set by a hardware timer?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bare Metal vs RTOS Architecture</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on July 21, 2019</div><div class="thread-post-content">Tasks should never be polling a signal, except maybe at a very low rate like your UI checking the state of the buttons (with a block on a timer in between). You want an interrupt to trigger things off. That interupt can be the timer tick for lower rate periodic things, or a special hardware timer for some faster things, or a device interrupt signal. Inside that ISR, you might be able to directly kick off the action, or it might send a notification or data to a task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bare Metal vs RTOS Architecture</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joconnor37">joconnor37</a> on July 21, 2019</div><div class="thread-post-content">A thought: If the 1.5kHz sampling rate of the accelerometer is chosen paying homage to the Nyquist Sampling Theorem, then I would use hardware timing to give a &#8220;most&#8221; accurate 1.5kHz sampling frequency&#8230;&#8230;&#8230;.
+<hr />
+From: hirohiro <a href="/FreeRTOS_Support_Forum_Archive/July_2019/m&#97;&#105;&#108;&#116;&#111;&#x3a;&#x68;&#x69;&#x72;&#x6f;&#x68;i&#114;&#111;&#64;&#117;&#115;&#101;&#x72;&#x73;&#x2e;&#x73;&#x6f;&#x75;r&#99;&#101;&#102;&#111;&#114;&#x67;&#x65;&#x2e;&#x6e;&#x65;&#x74;">&#x68;&#x69;&#x72;&#x6f;&#x68;i&#114;&#111;&#64;&#117;&#115;&#101;&#x72;&#x73;&#x2e;&#x73;&#x6f;&#x75;r&#99;&#101;&#102;&#111;&#114;&#x67;&#x65;&#x2e;&#x6e;&#x65;&#x74;</a>
+Sent: Sunday, July 21, 2019 01:59
+To: [freertos:discussion] <a href="/FreeRTOS_Support_Forum_Archive/July_2019/&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#51;&#56;&#x32;&#x30;&#48;&#53;&#64;&#x64;&#x69;&#115;&#99;u&#x73;&#x73;&#105;&#111;&#x6e;&#x2e;&#102;&#114;&#101;&#x65;&#x72;&#116;&#111;s&#x2e;&#x70;&#46;&#114;e&#x2e;&#x73;&#111;&#117;&#x72;&#x63;&#101;&#102;&#111;&#x72;&#x67;&#101;&#46;n&#x65;&#x74;">&#51;&#56;&#x32;&#x30;&#48;&#53;&#64;&#x64;&#x69;&#115;&#99;u&#x73;&#x73;&#105;&#111;&#x6e;&#x2e;&#102;&#114;&#101;&#x65;&#x72;&#116;&#111;s&#x2e;&#x70;&#46;&#114;e&#x2e;&#x73;&#111;&#117;&#x72;&#x63;&#101;&#102;&#111;&#x72;&#x67;&#101;&#46;n&#x65;&#x74;</a>
+Subject: [freertos:discussion] Re: Bare Metal vs RTOS Architecture
+That makes sense, thanks! I will definitely try to do some optimization of the accel by making use of the on board fifo, but I was also mostly curious how that sort of task would be handled. In the case that it did need to be polled at such a high rate, how would that be handled? Would the task need to tight poll a status flag that is set by a hardware timer?
+<hr />
+Bare Metal vs RTOS Architecture<a href="https://sourceforge.net/p/freertos/discussion/382005/thread/82e1bebc02/?limit=25#bea4/3565">https://sourceforge.net/p/freertos/discussion/382005/thread/82e1bebc02/?limit=25#bea4/3565</a>
+<hr />
+Sent from sourceforge.net because you indicated interest in https://sourceforge.net/p/freertos/discussion/382005/
+To unsubscribe from further messages, please visit https://sourceforge.net/auth/subscriptions/
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

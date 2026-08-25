@@ -1,0 +1,132 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIC18F4550, taskYIELD() and queueing broken - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2009/freertos_PIC18F4550_taskYIELD_and_queueing_broken_3131186.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="PIC18F4550, taskYIELD() and queueing broken - FreeRTOS" />
+<meta property="og:description" content="PIC18F4550, taskYIELD() and queueing brokenPosted by ggeorgak on March 23, 2009I&#8217;m using the FreeRTOS v5.0.0 with a PIC18 mcu and the MPLAB building toolchain. I have two tasks, with the same priority &#040;tskIDLE&#095;PRIORITY + 1&#041;. Task T1 sends a message every two seconds &#040;using vTaskDelayUntil&#041; to a Queue and Task T2 receives this message from &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2009/freertos_PIC18F4550_taskYIELD_and_queueing_broken_3131186.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="PIC18F4550, taskYIELD() and queueing brokenPosted by ggeorgak on March 23, 2009I&#8217;m using the FreeRTOS v5.0.0 with a PIC18 mcu and the MPLAB building toolchain. I have two tasks, with the same priority &#040;tskIDLE&#095;PRIORITY + 1&#041;. Task T1 sends a message every two seconds &#040;using vTaskDelayUntil&#041; to a Queue and Task T2 receives this message from [&hellip;]" />
+<meta name="twitter:title" content="PIC18F4550, taskYIELD() and queueing broken - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201725' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201725' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201725' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201725' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138536' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2009%2Ffreertos_PIC18F4550_taskYIELD_and_queueing_broken_3131186.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2009%2Ffreertos_PIC18F4550_taskYIELD_and_queueing_broken_3131186.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138536">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2009_freertos_support_forum_archive_index.html/">March 2009 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">PIC18F4550, taskYIELD() and queueing broken</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ggeorgak">ggeorgak</a> on March 23, 2009</div><div class="thread-post-content">I&#8217;m using the FreeRTOS v5.0.0 with a PIC18 mcu and the MPLAB building toolchain. 
+I have two tasks, with the same priority &#40;tskIDLE&#95;PRIORITY + 1&#41;. Task T1 sends a message every two seconds &#40;using vTaskDelayUntil&#41; to a Queue and Task T2 receives this message from the Queue using a blocking xQueueReceive &#40;meaning porTMAX&#95;DELAY is used as blocking time and vTaskSuspend support is enabled&#41; and sends it over the serial. 
+System hangs for some reason Monitoring what happens the execution sequence until system stops is:
+1&#41; T2 starts execution and blocks waiting for a message to arrive at the Queue
+2&#41; T1 starts execution, successfully waits for two seconds and then calls XQueueSend
+System is hanged&#33;
+I&#8217;ve pinpointed the problem on using taskYIELD&#40;&#41; inside the critical section of xQueueGenericSend&#40;&#41;. When T2 is removed from the event list, xTaskRemoveFromEventList&#40;&#41; returns pdTRUE because both tasks have the same priority &#40;it&#8217;s supposed to return true if the unblocked task has higher priority but it works the same way for equal priorities too&#41;. The taskYIELD&#40;&#41; following for some reasons fails. Any ideas? I&#8217;m still looking out why this is happening. If I comment out taskYIELD&#40;&#41; everything works fine.
+ggeorgak
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC18F4550, taskYIELD() and queueing broken</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on March 23, 2009</div><div class="thread-post-content">Just to answer the part on trying to switch to the receiving task when it has the same priority as the sending task: I wouldn&#8217;t want to second-guess Richard&#8217;s intent here, but this is probably just an optimization &#40;which is also done in the Erlang language runtime when one Erlang process sends a message to another one if I remember correctly&#41;. If two tasks do have the same priority, the scheduler is free to choose which one to execute. If one of them is trying to get a message from a queue, it is often more efficient to schedule it so that one place in the queue can be freed. 
+This optimization reduces the chance of later having a higher priority task block because it wants to write into the queue, thus causing a priority inversion. It&#8217;s generally best to have empty queues than full ones.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC18F4550, taskYIELD() and queueing broken</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 23, 2009</div><div class="thread-post-content">Could it simply be a stack overflow?
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

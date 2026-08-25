@@ -1,0 +1,247 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Implementation of Polling UART - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2017/freertos_Implementation_of_Polling_UART_83e46f8ej.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Implementation of Polling UART - FreeRTOS" />
+<meta property="og:description" content="Implementation of Polling UARTPosted by groger57 on June 22, 2017I currently have a function that can be called from 3 tasks. The function includes some string formatting for a screen. Inside this function is a semaphore that encapsulates all the formatting. From within that, I use sendQueue to send messages to a UART. I have &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2017/freertos_Implementation_of_Polling_UART_83e46f8ej.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Implementation of Polling UARTPosted by groger57 on June 22, 2017I currently have a function that can be called from 3 tasks. The function includes some string formatting for a screen. Inside this function is a semaphore that encapsulates all the formatting. From within that, I use sendQueue to send messages to a UART. I have [&hellip;]" />
+<meta name="twitter:title" content="Implementation of Polling UART - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202827' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202827' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202827' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202827' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146552' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2017%2Ffreertos_Implementation_of_Polling_UART_83e46f8ej.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2017%2Ffreertos_Implementation_of_Polling_UART_83e46f8ej.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146552">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2017_freertos_support_forum_archive_index.html/">June 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Implementation of Polling UART</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groger57">groger57</a> on June 22, 2017</div><div class="thread-post-content">I currently have a function that can be called from 3 tasks. The function includes some string formatting for a screen. Inside this function is a semaphore that encapsulates all the formatting. From within that, I use sendQueue to send messages to a UART. I have a dedicated structure for the send and receive queues. It contains a string buffer of 50, and a single uint8. However &#8211; it is failing to take the semaphore quite often, even with a 1000ms wait. 
+aFunction( &#8230; )
+{
+if( xSemaphoreTake( xMutexUARTaccess, 1000 ) == pdPASS )<br />
+{
+    //&#8230;some stuff
+   xQueueSend( mssgQueue, (void*)&amp;queMssg, 500); 
+}
+else
+{
+    //&#8230;semaphore was not obtained&#8230;
+    printf(&#8220;Semaphore not taken.n&#8221;);
+}
+}
+The receiveQueue task uses a send and poll, like this:
+<pre><code>xStatus = xQueueReceive( xQueue, &amp;queMssg, 1000 );   
+    if( xStatus == pdPASS )
+    {
+        volatile uint16_t rxCode = 0x0;
+        char *s = &amp;queMssg.message[0];
+        while(*s)
+        {
+            while( USART_GetFlagStatus(USART2, USART_FLAG_TXE ) == RESET); 
+            USART_SendData(USART2, *s++);
+        }    
+        while(1) // poll response
+        {
+            while( USART_GetFlagStatus( USART2, USART_FLAG_RXNE) == RESET ); 
+            rxCode = USART_ReceiveData( USART2 ); 
+            if( rxCode == RCVD_PROMPT )
+            {
+                //one more for 0xD (end of message)
+                while( USART_GetFlagStatus( USART2, USART_FLAG_RXNE) == RESET ); 
+                rxCode = USART_ReceiveData( USART2 );                         
+                break;
+            } 
+        }
+    }
+</code></pre>
+Using this method, what could be the reason for the semaphore not to be taken so often, given the long number of ticks to wait? 
+Further, is there a better way to implement the UART send and receive? Should they use a send and receive queue on their own, rather than encapsulating them as above? 
+Thank you for any advice or help.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementation of Polling UART</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 22, 2017</div><div class="thread-post-content">Hi Roger,
+you take <code>xMutexUARTaccess</code>, but in the code shown, you never release it?
+Beside that, queues do not need to be protected by a mutex. All queue access functions are &#8220;thread safe&#8221;, they will temporarily suspend the scheduler, or enter a critical section when necessary.
+~~~
+aFunction( &#8230; )
+{
+        //&#8230;some stuff
+        /* xQueueSend will either send the message,
+        or it will time-out after 500 clock-ticks. <em>/
+        xQueueSend( mssgQueue, (void</em>)&amp;queMssg, 500);
+}
+~~~
+Your server will only become available in case it receives a character <code>RCVD_PROMPT</code>. Are you sure that it will always be received? Doesn&#8217;t that loop need a time-out protection?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementation of Polling UART</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groger57">groger57</a> on June 23, 2017</div><div class="thread-post-content">Hi, thank you for the response.
+I removed the mutex and now the function only uses xQueueSend. To be clear, I have 9 tasks running, and 2 of them will call the function that formats the message strings and the sends them using xQueueSend. Each message requires formatting before it&#8217;s ready to xQueueSend, and that&#8217;s why I can&#8217;t use xQueueSend directly from the task. Is calling the function that formats and then xQueueSend safe to do from the 2 running tasks? 
+There&#8217;s still a problem somewhere&#8230;I have a message that is on the else side of this: 
+xStatus = xQueueReceive( xQueue, &amp;queMssg, 500 ); 
+uint8_t qsr = uxQueueSpacesAvailable( xQueue );
+if( qsr == 1) printf(&#8220;Only 1 Queue Space Left!n&#8221; );        
+if( (xStatus == pdPASS)  )
+{
+  sendToUART( &amp;queMssg.mssg[0] ) ;<br />
+}
+else
+{
+        printf(&#8220;Didn&#8217;t get a Queuen&#8221;);
+}
+The if( qsr == 1 )never prints so available queue space doesn&#8217;t appear to be the problem. From the time it starts running, I start getting the message in the else braces. Also, at the start of each task, I have a printf statement there. Initially, all of them print, but within a few seconds all but one is remaining. It&#8217;s like the other tasks stop running. In the one task that stays running, I have this :
+printf(&#8220;Number of tasks = %in&#8221;, uxTaskGetNumberOfTasks());
+Which starts at 9 and doesn&#8217;t change. The xPortGetFreeHeapSize() shows 10600 at the start of the scheduler. I have lots of stack and heap allocated, and lots of words/bytes on each running task.
+What would cause this strange behaviour? 
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementation of Polling UART</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 23, 2017</div><div class="thread-post-content"><blockquote>
+  There&#8217;s still a problem somewhere&#8230;I have a message that is on the else side of this:
+  xStatus = xQueueReceive( xQueue, &amp;queMssg, 500 );
+  uint8_t qsr = uxQueueSpacesAvailable( xQueue );
+  if( qsr == 1) printf(&#8220;Only 1 Queue Space Left!n&#8221; );
+  if( (xStatus == pdPASS) )
+  {
+    sendToUART( &amp;queMssg.mssg[0] ) ;
+  }
+  else
+  {
+    printf(&#8220;Didn&#8217;t get a Queuen&#8221;);
+  }
+</blockquote>
+Aren&#8217;t you mistaken here?
+The task is receiving from a queue, with a time-out of 500 clock ticks. When the time-out is reached, the function <code>xQueueReceive()</code> returns <code>pdFAIL</code> and your message will be printed.
+<blockquote>
+  Is calling the function that formats and then xQueueSend
+  safe to do from the 2 running tasks? 
+</blockquote>
+The function <code>xQueueSend()</code> is well protected and can be called simultaneously.
+I can not see your message formatting, so I don&#8217;t know if that is <em>re-entrant</em> safe code
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementation of Polling UART</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groger57">groger57</a> on June 23, 2017</div><div class="thread-post-content">Hein,
+Thank you for taking the time to reply. Instead of continuing down this path, let me ask this a different way. I now understand the problem space so I need now to understand implementation.
+Let&#8217;s say I have 3 concurrent tasks (TaskA, TaskB, TaskC). I have 15 different structure (SCROBJ) instances that are malloc&#8217;d at initialization. Each one has different information about it&#8217;s &#8220;object&#8221; (obj1, obj2&#8230;obj14). Each task can (and will) access and modify and particular object, at any time in concurrency. &#8220;Access&#8221; means to send information to a function that will then send that object&#8217;s data through the UART. In truth, a single call to the function requires several UART sends to complete the &#8220;transaction&#8221;. Additionally, the UART response is polled (I have done that part and works OK) 
+As you expect, it&#8217;s not possible to have a single function to service these Task calls without something getting corrupted. For example, if TaskA has called the function for sending Obj5, and TaskB begins formatting the string for Obj5 at the same time, trouble is imminent. 
+Clearly the way to fix this is using a FreeRTOS message queue. But this raises questions. I could create a message structure that is of type SCROBJ that the RTOS function QueueSend will use (stack allocated). But at some point, I need to modify (change) the members of that structure to match the object that I am sending through the UART. I understand that QueueReceive makes a copy of the incoming structure. Can I use a pointer of the obj in QueueSend ? Will QueueReceive make a copy of the sending structure&#8217;s members? Should the QueueSend and QueueReceive structure be created and heap allocated, same as the &#8220;obj1&#8230;etc, structures, instead of stck allocation?
+If receive does make a copy, this would be safe as QueueReceive would protect the structure until it&#8217;s completed and shouldn&#8217;t get corrupted by another task. From within the QueueReceive function, on pdPass, I would begin sending the various structure elements into the UART. 
+I appreciate your feedback to figure this out. 
+Thanks,
+Roger
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementation of Polling UART</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groger57">groger57</a> on June 23, 2017</div><div class="thread-post-content">Hi,
+I was able to figure it out, and get it working. I created an instance of the structure I was using for the various screen I/O devices. Whenever I call QueueSend, I cast in the specific instance of the object to be formatted and sent (void * ) and then the same on the xQueueReceive side. Just a bit of clean up in the code and all is well. I was able to get all the updates into a single task, so that itself removed conflicting access.
+Thanks again!
+Gary
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementation of Polling UART</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 24, 2017</div><div class="thread-post-content"><blockquote>
+  if TaskA has called the function for sending Obj5, and TaskB begins formatting
+  the string for Obj5 at the same time, trouble is imminent.
+</blockquote>
+You can create an array of these objects, and send these objects to a <code>QueueFree</code>. When you need such an object, take from <code>QueueFree</code> and pass it the the UART task. After handling the message, the object will be returned to <code>QueueFree</code>.
+<blockquote>
+  I understand that QueueReceive makes a copy of the incoming structure.
+  Can I use a pointer of the obj in QueueSend ?
+</blockquote>
+Yes, do not store the entire object ( of N bytes ) in a queue, but store a pointer. And the 4 bytes of a pointer will get copied.
+<blockquote>
+  Should the QueueSend and QueueReceive structure be created and heap allocated
+</blockquote>
+I would think of <code>QueueFree</code> and <code>QueueUart</code>. Initially ( a pointer to ) each object is linked to <code>QueueFree</code>. grab one from there, change the contents and pass it to <code>QueueUart</code>. The Uart task will handle the message and return the object to <code>QueueFree</code>?
+<blockquote>
+  Just a bit of clean up in the code and all is well
+</blockquote>
+Good to hear. You&#8217;re welcome, Hein
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

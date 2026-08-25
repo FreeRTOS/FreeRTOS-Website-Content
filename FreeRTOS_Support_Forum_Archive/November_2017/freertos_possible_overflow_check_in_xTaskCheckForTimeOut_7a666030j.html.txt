@@ -1,0 +1,254 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>possible overflow check in xTaskCheckForTimeOut - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2017/freertos_possible_overflow_check_in_xTaskCheckForTimeOut_7a666030j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="possible overflow check in xTaskCheckForTimeOut - FreeRTOS" />
+<meta property="og:description" content="possible overflow check in xTaskCheckForTimeOutPosted by chuan-jiang on November 20, 2017Hi, I&#8217;ve noticed a possible overflow issue in xTaskCheckForTimeOut function. Could you please help to confirm it? In the latest RTOSv9.0.1, task.c, line3154, const TickType_t xElapsedTime = xConstTickCount &#8211; pxTimeOut-&gt;xTimeOnEntering; Noticed that TickType_t might be defined as unsigned type, if xConstTickCount is less than pxTimeOut-&gt;xTimeOnEntering, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2017/freertos_possible_overflow_check_in_xTaskCheckForTimeOut_7a666030j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="possible overflow check in xTaskCheckForTimeOutPosted by chuan-jiang on November 20, 2017Hi, I&#8217;ve noticed a possible overflow issue in xTaskCheckForTimeOut function. Could you please help to confirm it? In the latest RTOSv9.0.1, task.c, line3154, const TickType_t xElapsedTime = xConstTickCount &#8211; pxTimeOut-&gt;xTimeOnEntering; Noticed that TickType_t might be defined as unsigned type, if xConstTickCount is less than pxTimeOut-&gt;xTimeOnEntering, [&hellip;]" />
+<meta name="twitter:title" content="possible overflow check in xTaskCheckForTimeOut - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202873' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202873' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202873' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202873' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146771' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2017%2Ffreertos_possible_overflow_check_in_xTaskCheckForTimeOut_7a666030j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2017%2Ffreertos_possible_overflow_check_in_xTaskCheckForTimeOut_7a666030j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146771">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2017_freertos_support_forum_archive_index.html/">November 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">possible overflow check in xTaskCheckForTimeOut</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chuan-jiang">chuan-jiang</a> on November 20, 2017</div><div class="thread-post-content">Hi,
+I&#8217;ve noticed a possible overflow issue in xTaskCheckForTimeOut function. Could you please help to confirm it?
+In the latest <em>RTOSv9.0.1, task.c, line3154</em>,
+<strong>const TickType_t xElapsedTime = xConstTickCount &#8211; pxTimeOut->xTimeOnEntering;</strong>
+Noticed that TickType_t might be defined as unsigned type, if xConstTickCount is less than pxTimeOut->xTimeOnEntering, the substraction will lead to an overflow.
+and then in <em>line3187</em>, 
+<strong>else if( xElapsedTime &lt; *pxTicksToWait )</strong>
+I think this check condition should also take xNumOfOverflows into account.
+(1) if xNumOfOverflows equals pxTimeOut->xOverflowCount+1, timeout might not be reached.
+(2) but if xNumOfOverflows is larger than pxTimeOut->xOverflowCount+1, it might be the wrapped around, and the timeout has been passed away when this function is invoked. Then the return value should not be FALSE!
+Also, xNumOfOverflows might also be wrapped around when come to xTaskCheckForTimeOut again.
+Looking forwarding to your help and reply.
+Thanks a lot
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible overflow check in xTaskCheckForTimeOut</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 20, 2017</div><div class="thread-post-content">Not looked at this in detail as just on my mobile. Will look tomorrow. In the mean time if you can provide some values for the various variables that you think highlight an issue that would help greatly.
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible overflow check in xTaskCheckForTimeOut</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chuan-jiang">chuan-jiang</a> on November 20, 2017</div><div class="thread-post-content">Hi,
+Thanks a lot for your reply. I&#8217;d like to paste the relevent code pieces below for your convenience.
+BaseType<em>t xTaskCheckForTimeOut( TimeOut</em>t * const pxTimeOut, TickType<em>t * const pxTicksToWait )
+{
+        BaseType</em>t xReturn;
+&#8230;
+        const TickType<em>t xConstTickCount = xTickCount;
+        const TickType</em>t xElapsedTime = xConstTickCount &#8211; pxTimeOut->xTimeOnEntering;
+&#8230;
+        if( ( xNumOfOverflows != pxTimeOut->xOverflowCount ) &amp;&amp; ( xConstTickCount >= pxTimeOut->xTimeOnEntering ) )
+        {
+/* branch 1 <em>/
+            xReturn = pdTRUE;
+        }
+        else if( xElapsedTime &lt; *pxTicksToWait )
+        {
+/</em> branch 2 <em>/
+            /</em> Not a genuine timeout. Adjust parameters for time remaining. <em>/
+            *pxTicksToWait -= xElapsedTime;
+            vTaskInternalSetTimeOutState( pxTimeOut );
+            xReturn = pdFALSE;
+        }
+        else
+        {
+/</em> branch 3 */
+            xReturn = pdTRUE;
+        }
+&#8230;
+    return xReturn;
+}
+port macro setting:
+TickType_t set to uint32
+suppose xTicksToWait interval is 5, i.e. *pxTicksToWait = 5
+situation a:
+time1: pxTimeOut->xOverflowCount=1, xNumOfOverflows=1, pxTimeOut->xTimeOnEntering=0xFFFFFFFFUL, xTickCount=0xFFFFFFFFUL
+2 ticks elapsed, and xTaskCheckForTimeOut invoked
+time2: pxTimeOut->xOverflowCount=1, xNumOfOverflows=2,  pxTimeOut->xTimeOnEntering=0xFFFFFFFFUL, xTickCount=1
+then, it&#8217;ll run into branch2, the return is FALSE. the actual elapsed ticks is 2, larger than 5.
+Correct!
+situation b:
+time1: pxTimeOut->xOverflowCount=1, xNumOfOverflows=1, pxTimeOut->xTimeOnEntering=0xFFFFFFFFUL, xTickCount=0xFFFFFFFFUL
+0xFFFFFFFFUL + 2 ticks elapsed, and xTaskCheckForTimeOut invoked
+time2: pxTimeOut->xOverflowCount=1, xNumOfOverflows=3, pxTimeOut->xTimeOnEntering=0xFFFFFFFFUL, xTickCount=1
+then, it&#8217;ll still run into branch2, the return is FALSE. However, the actual elapsed ticks is 0xFFFFFFFF+2=4294967297, definitly larger than 5.
+Wrong!
+The thing will come even worse when xNumOfOverflows overflows either. However, it might be reached rather seldomly.
+Thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible overflow check in xTaskCheckForTimeOut</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 20, 2017</div><div class="thread-post-content">I want to test your scenario b, but I don&#8217;t think it is a valid case 
+that I can generate.  Below is the test code I was setting up.  Note at 
+the bottom, where your scenario describes xNumOfOverflows to be 3, it is 
+actually 2, as adding two to the tick count only increments it once.  Or 
+am I misunderstanding something:
+<pre>
+void Testing( void )
+{
+TimeOut_t xTimeout;
+   /* Set up initial condition as per situation b. */
+   xTickCount = 0xffffffffUL;
+   xNumOfOverflows = 1;
+   /* Call vTaskSetTimeOutState() to latch the initial condition into the
+   TimeOut_t structure. */
+   vTaskSetTimeOutState( &xTimeout );
+   /* Check the vTaskSetTimeOutState() set its internal members to the
+   situation b starting condition. */
+   configASSERT( xTimeout.xOverflowCount == 1 );
+   configASSERT( xTimeout.xTimeOnEntering == 0xffffffffUL );
+   /* Now increment the tick by two. */
+   xTickCount += 2UL;
+   /* That has caused an overflow, so, if the scheduler had been running,
+   xNumOfOverflows will also have been incremented. */
+   xNumOfOverflows++;
+   /* NB - at this point scenario b says xNumOfOverflows would be 3, but
+   it would actually be 2, so I'm not sure how to test from here. */
+}
+</pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible overflow check in xTaskCheckForTimeOut</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chuan-jiang">chuan-jiang</a> on November 21, 2017</div><div class="thread-post-content">Hi,
+Thanks a lot for your reply.
+Actually in scenario b, I meant overflow occurs twice. As I wrote above, &#8220;0xFFFFFFFFUL + 2 ticks elapsed, and xTaskCheckForTimeOut invoked&#8221;, an extra 0xFFFFFFFFUL is for the overflow one more time. So in your test code, it might be like:
+~~~
+   xTickCount += 2UL;
+   xNumOfOverflows += 2UL;
+~~~
+It&#8217;ll simulate the scenario b.
+After reviewing the whole RTOS files, I think although this API is unsafe, such scenario might not occur in the code.
+The reason is now this API is only used for QUEUE send &amp; received which are an endless loop, between the vTaskInternalSetTimeOutState and xTaskCheckForTimeOut which updates the xTickCount and xNumOfOverflows, the ticks elipsed will not be so long as 0xFFFFFFFFUL.
+The code pieces from <strong>Queue.c</strong> is:
+~~~
+                    vTaskInternalSetTimeOutState( &amp;xTimeOut );
+                    xEntryTimeSet = pdTRUE;
+                }
+                else
+                {
+                    /* Entry time was already set. */
+                    mtCOVERAGE_TEST_MARKER();
+                }
+            }
+        }
+        taskEXIT_CRITICAL();
+<pre><code>    /* Interrupts and other tasks can send to and receive from the queue
+    now the critical section has been exited. */
+    vTaskSuspendAll();
+    prvLockQueue( pxQueue );
+    /* Update the timeout state to see if it has expired yet. */
+    if( xTaskCheckForTimeOut( &amp;xTimeOut, &amp;xTicksToWait ) == pdFALSE )
+    {
+</code></pre>
+~~~
+That might be the point. Could you please help to check if I&#8217;m right?
+Thanks a lot.
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible overflow check in xTaskCheckForTimeOut</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 21, 2017</div><div class="thread-post-content">A task can either block forever, in which case the code in your email 
+doesn&#8217;t apply because it actually ends up on the suspended task list 
+(even though it is in the blocked state), or it can block for a finite 
+time, in which case the longest time it can block is the maximum block 
+time that can be specified given the TickType_t data type.  That means, 
+it can never block for more than one overflow because that is longer 
+than the longest time it can possible ask for &#8211; so I don&#8217;t think it is 
+actually possible for the scenario you describe to actually occur.
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible overflow check in xTaskCheckForTimeOut</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chuan-jiang">chuan-jiang</a> on November 21, 2017</div><div class="thread-post-content">Hi,
+Got it.
+Thanks a lot for your reply.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

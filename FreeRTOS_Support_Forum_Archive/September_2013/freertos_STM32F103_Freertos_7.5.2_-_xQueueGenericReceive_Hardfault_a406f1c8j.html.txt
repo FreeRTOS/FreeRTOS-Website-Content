@@ -1,0 +1,257 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STM32F103 Freertos 7.5.2 - xQueueGenericReceive Hardfault - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2013/freertos_STM32F103_Freertos_7.5.2_-_xQueueGenericReceive_Hardfault_a406f1c8j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="STM32F103 Freertos 7.5.2 - xQueueGenericReceive Hardfault - FreeRTOS" />
+<meta property="og:description" content="STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive HardfaultPosted by tabulous2011 on September 17, 2013Updated OS from 7.1.1 where everything was working fine, now i&#8217;m getting hardfault in xQueueGenericReceive. I&#8217;ve traced this down to uart rx interrupt, where the driver calls xQueueSendFromISR to put teh recieved data into queue. The uart interrupt is configured as:- NVICInitStructure.NVICIRQChannel = USART2IRQn; &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2013/freertos_STM32F103_Freertos_7.5.2_-_xQueueGenericReceive_Hardfault_a406f1c8j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive HardfaultPosted by tabulous2011 on September 17, 2013Updated OS from 7.1.1 where everything was working fine, now i&#8217;m getting hardfault in xQueueGenericReceive. I&#8217;ve traced this down to uart rx interrupt, where the driver calls xQueueSendFromISR to put teh recieved data into queue. The uart interrupt is configured as:- NVICInitStructure.NVICIRQChannel = USART2IRQn; [&hellip;]" />
+<meta name="twitter:title" content="STM32F103 Freertos 7.5.2 - xQueueGenericReceive Hardfault - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202293' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202293' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202293' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202293' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144647' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2013%2Ffreertos_STM32F103_Freertos_7.5.2_-_xQueueGenericReceive_Hardfault_a406f1c8j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2013%2Ffreertos_STM32F103_Freertos_7.5.2_-_xQueueGenericReceive_Hardfault_a406f1c8j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144647">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2013_freertos_support_forum_archive_index.html/">September 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tabulous2011">tabulous2011</a> on September 17, 2013</div><div class="thread-post-content">Updated OS from 7.1.1 where everything was working fine, now i&#8217;m getting hardfault in xQueueGenericReceive. I&#8217;ve traced this down to uart rx interrupt, where the driver calls xQueueSendFromISR to put teh recieved data into queue.
+The uart interrupt is configured as:-
+NVIC<em>InitStructure.NVIC</em>IRQChannel = USART2<em>IRQn;
+NVIC</em>InitStructure.NVIC<em>IRQChannelPreemptionPriority = configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY + 3;
+NVIC</em>InitStructure.NVIC<em>IRQChannelSubPriority = 0;
+NVIC</em>InitStructure.NVIC<em>IRQChannelCmd = ENABLE;
+NVIC</em>Init( &amp;NVIC_InitStructure );
+The freertos cfg is as follows:- 
+<h1>define configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY     15</h1>
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY    5</h1>
+/* The lowest priority. */
+<h1>define configKERNEL<em>INTERRUPT</em>PRIORITY                 ( configLIBRARY<em>LOWEST</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+/* Priority 5, or 95 as only the top four bits are implemented. */
+<h1>define configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY            ( configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+The receiving task for the data in the queue is this, this task is running @ priority tskIDLE_PRIORITY + 3
+<pre><code>while( 1 )
+{
+    if( xQueueRx != NULL )
+    {
+        /* block until something arrives in the queue */
+        xStatus = xQueueReceive( xQueueRx, &amp;cChar, portMAX_DELAY );
+        if( xStatus == pdTRUE )
+        {
+            switch( pd-&gt;service )
+            {
+                case DAT_MODE:
+                    data_mode_handler( pd, cChar );
+                    break;
+                case CMD_MODE:
+                    command_mode_handler( pd, cChar );
+                    break;
+            }
+        }
+    }
+    else
+    {
+        TSL_DEBUGF( ATH_DEBUG | DBG_TRACE | 1, ( "AtHandler:Queue Error! rn" ));
+    }
+}
+</code></pre>
+The task stack is currently largely over what is needed, set to 512 at the moment with 476 free
+Why should updating to 7.5.2 break my system ? any suggestions welcome 
+Why should upgrading break this ? what as changed in freertos that would do this ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 17, 2013</div><div class="thread-post-content">[This new forum is going to take a bit of getting used to!  The formatting of your post came out a little strangely and I didn&#8217;t get an email notification of your post.  Plus I don&#8217;t seem to be able to resize the window I am now typing into.  Anyway, to your question&#8230;]
+There are some new assertions put into FreeRTOS V7.5.2 especially to catch misconfigurations.  Although there is nothing obviously wrong with the configuration as you have shown it above it will be worth defining configASSERT() if you have not already.  See http://www.freertos.org/a00110.html#configASSERT
+Also, have you called NVIC<em>PriorityGroupConfig( NVIC</em>PriorityGroup_4 ); anywhere in your code.  That is only necessary if you are using the STM32 peripheral library as the library will silently fail if you don&#8217;t do this.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tabulous2011">tabulous2011</a> on September 20, 2013</div><div class="thread-post-content">NVIC is  NVIC<em>PriorityGroupConfig(NVIC</em>PriorityGroup_4);
+This is called prior to vTaskStartScheduler();
+ConfigASSERT is
+<h1>define configASSERT( x ) if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); for( ;; ); }</h1>
+Richard one thing i think you are missing and this is my whole point, the application ran fine using 7.1.1, all i&#8217;ve done is swap out the freertos code to 7.5.2 and it is now broken. If i swap back to 7.1.1 all is good again. 
+Something as changed significantly in 7.5.2 and that is causing the issues
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 20, 2013</div><div class="thread-post-content"><blockquote>
+  Something as changed significantly in 7.5.2 and that is causing the issues
+</blockquote>
+V7.1.1 to V7.5.2 is in fact a jump of 6 releases, so it is not necessarily something in V7.5.2 &#8211; <em>but</em> in any case all the changes should be backward compatible so a version change should not cause any issues unless stated in the history file.  I think the last time that was the case was from moving from V4.x.x to V5.x.x (http://www.FreeRTOS.org/History.txt)
+I note your task stack has ample size.  Could it be possible that the stack used by the interrupts is not large enough.  Unfortunately there is no portable way of automatically detecting interrupt stack overflows.  The stack used by the interrupts is the same stack used by main(), so will be defined in your project file or linker script.
+Which compiler are you using?
+Are you able to step through the xQueueSendFromISR() function to see where the fault occurs.
+You can also write a fault handler that will provide the address of the faulting instruction as well as the register values at that time. http://www.freertos.org/Debugging-Hard-Faults-On-Cortex-M-Microcontrollers.html
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tabulous2011">tabulous2011</a> on September 20, 2013</div><div class="thread-post-content">Hi Richard the current stack for interrupts is 0x400 this is the default value from the atollic project. Compiler is GCC.
+Note 7.1.1 does not have any issues, and is the save project, same linker file etc only difference is freertos code base. If it was the interrupt stack surely this would present teh same issue on 7.1.1 ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 20, 2013</div><div class="thread-post-content">It is possible as the code contains more configASSERT() statements so could potentially use more stack, but it is unlikely.  0x400 should be ok, provided the linker script is correct, and if you are using the Atollic tools you would hope the script was correct (assuming the script came from the tools in the first place).  
+You could even try with configASSERT() undefined to see if that actually helps (ironically).
+Otherwise you will have to try and debug the abort using the code in the link above.  That should tell us the code that actually aborts, and the parameters being used at the time.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tabulous2011">tabulous2011</a> on September 20, 2013</div><div class="thread-post-content">Hi Richard,
+i believe the issue lies around this&#8230;..
+I create one task (called &#8220;vInitTask&#8221;), then call vTaskStartScheduler();
+The job of vInitTask is to initialize the system, which in turn creates other tasks etc, i did it like this because i wanted OS functions available to help with the init process i.e there are certain tasks that rely on others to be ready etc&#8230;&#8230;
+Now when vInitTask is finished, in 7.1.1 i would call vTaskDelete at the end of the function (im using heap1.c and know this does not reclaim the used memory) but, in the 7.1.1 documentation examples vTaskDelete was used in this way. 
+Right so moving on to 7.5.2, you added new asserts which failed on vTaskDelete as the memory model did not allow freeing of static memory etc&#8230;. so i tried vTaskSuspend hoping this would suspend the vInitTask, and then the tasks it created started running, but seem not. Calling vTaskSuspend just delays the hardfault. If a comment out vTaskSuspend the hardfault is straight away.
+int main(void)
+{
+    xTaskCreate( vInitTask, ( signed char * ) &#8220;Init&#8221;,
+                 configMINIMAL<em>STACK</em>SIZE*2, NULL,
+                 mainINIT_TASK_PRIORITY, &amp;h_InitTask );
+<pre><code>vTaskStartScheduler();              
+while( ETERNITY ){};                
+</code></pre>
+}
+portTASK_FUNCTION( vInitTask, pvParameters )
+{
+    // does some init 
+    // create other system tasks etc
+    // flashes some status leds
+<pre><code>// now at the end what do i do ??
+    vTaskSuspend( h_InitTask );
+</code></pre>
+//  vTaskDelete( h_InitTask );
+}
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 20, 2013</div><div class="thread-post-content">Please try getting the address of the instruction that causes the hard fault, using the code already posted.
+Actually &#8211; forget that &#8211; if you are using a recent version of the Atollic then you will find a menu item that will do that for you.  I can&#8217;t remember what it is called, but it tells you the PC and register values as they were when the fault happened.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tabulous2011">tabulous2011</a> on September 20, 2013</div><div class="thread-post-content">08002cf0:   ldr r3, [r7, #12]
+08002cf2:   str r3, [r7, #12]
+104           psr = psr;
+08002cf4:   ldr r3, [r7, #8]
+08002cf6:   str r3, [r7, #8]
+107           for( ;; );
+08002cf8:   b.n 0x8002cf8 &lt;prvGetRegistersFromStack+88>
+111       {
+          HardFault_Handler:
+08002cfc:   push {r7}
+08002cfe:   add r7, sp, #0
+112           __asm volatile
+08002d00:   tst.w lr, #4
+08002d04:   ite eq
+PC is 08002cf8
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tabulous2011">tabulous2011</a> on September 20, 2013</div><div class="thread-post-content">
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 20, 2013</div><div class="thread-post-content">Did this come from the Atollic IDE?  If so, then you have to get the dump on entry to the fault handler &#8211; otherwise the dump will show you the function call point, rather than the fault handler entry point.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tabulous2011">tabulous2011</a> on September 20, 2013</div><div class="thread-post-content">its not possible to stop before hardfault happens
+The issue is down to vInitTask and how do i end/terminate this task after it has finished its work ?
+at the moment the task runs a then falls of the end of the function, and then thus it hardfaults.
+portTASK_FUNCTION( vInitTask, pvParameters )
+{
+}
+In 7.1.1 i used vTaskDelete and this worked ok no hardfaults
+portTASK_FUNCTION( vInitTask, pvParameters )
+{
+<pre><code>vTaskDelete();
+</code></pre>
+}
+What does one do in 7.5.2 ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 20, 2013</div><div class="thread-post-content"><blockquote>
+  its not possible to stop before hardfault happens
+</blockquote>
+Can you not put a break point on entry to the hard fault handler, or insert a break point opcode as the first opcode in the hard fault handler, then use the Atollic tool to show you the offending program counter value?
+There is nothing wrong with either option to stop the init task.  Deleting the task will leak memory, as you point out, if you are using heap_1.c, but that is not going to cause a fault.  Suspending the task is less likely to cause a fault.
+You could zip up your project, including everything I need to build it, and send it to me using the address on http://www.FreeRTOS.org/contact and I will look at it, but I might not be able to run it.  I&#8217;m afraid that unless it builds exactly as you send it I won&#8217;t be ablt to do anything with it, so make sure the project you send does not use any absolute paths, etc.
+Regards. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tabulous2011">tabulous2011</a> on September 23, 2013</div><div class="thread-post-content">Hi Richard, i&#8217;ve just created a minimal program and this does not show the issue, but then again theres not much going on. Going to try and debug abit further and see if i can find out more detail.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tabulous2011">tabulous2011</a> on September 26, 2013</div><div class="thread-post-content">Hi Richard, i finally got to the bottom of the issue, and freertos 7.5.2 was not the cause, was some slack programming on my behalf, but one thing does stand right, the hard fault never happened in 7.1.1, moving to 7.5.2 highlighted the issue. Strange but all is good now&#8230;&#8230;.:-)
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32F103 Freertos 7.5.2 &#8211; xQueueGenericReceive Hardfault</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gregorydavies">gregorydavies</a> on April 24, 2014</div><div class="thread-post-content">Hi Lee, what was the actual fix? I&#8217;m having the exact same issue, and I probably made the exact same mistake.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

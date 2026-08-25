@@ -1,0 +1,192 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mutex problem - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2012/freertos_Mutex_problem_5515940.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Mutex problem - FreeRTOS" />
+<meta property="og:description" content="Mutex problemPosted by alan_rouse on August 11, 2012I have an application that uses numerous I/O devices: 3 USARTs, I2C, USB and SPI.&nbsp; I have developed a common channel through which all I/O is directed: Call Open&#040;Stream&#041; if writing, call putch&#040;Char&#041; as many times as required If reading, call getch&#040;&#041; as many times as required Call &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2012/freertos_Mutex_problem_5515940.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Mutex problemPosted by alan_rouse on August 11, 2012I have an application that uses numerous I/O devices: 3 USARTs, I2C, USB and SPI.&nbsp; I have developed a common channel through which all I/O is directed: Call Open&#040;Stream&#041; if writing, call putch&#040;Char&#041; as many times as required If reading, call getch&#040;&#041; as many times as required Call [&hellip;]" />
+<meta name="twitter:title" content="Mutex problem - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202159' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202159' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202159' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202159' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144318' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2012%2Ffreertos_Mutex_problem_5515940.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2012%2Ffreertos_Mutex_problem_5515940.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144318">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2012_freertos_support_forum_archive_index.html/">August 2012 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Mutex problem</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alan_rouse">alan_rouse</a> on August 11, 2012</div><div class="thread-post-content">I have an application that uses numerous I/O devices: 3 USARTs, I2C, USB and SPI.&nbsp; I have developed a common channel through which all I/O is directed:<br />
+Call Open&#40;Stream&#41;<br />
+if writing, call putch&#40;Char&#41; as many times as required<br />
+If reading, call getch&#40;&#41; as many times as required<br />
+Call Close&#40;&#41;.  
+Open&#40;&#41; sets a variable that is used by putch&#40;&#41; and getch&#40;&#41; to define the port to be used.&nbsp; This generally sends data to or from a buffer.  
+If reading,Close&#40;&#41; simply releases the port.<br />
+If writing, Close&#40;&#41; initialises the relevant driver then enables an interrupt so the data in the buffer is sent on the relevant port. It then waits until the data has been sent before releasing the port.&nbsp; To detect when the data has been sent, Close&#40;&#41; uses xSemaphoreTake&#40;&#41; and the interrupt routines use xSemaphoreGiveFromISR&#40;&#41; to synchronise.  
+So far so good.&nbsp; However, I also need mutual exclusion to ensure two tasks cannot simultaneously access the resource.&nbsp; This is complicated by a number of considerations:  
+1&#41; At any given time only one task can be writing.<br />
+2&#41; At any given time only one task can be reading.<br />
+3&#41; It is permissible for a task to simultaneously read from one port and write to another, or for one task to be reading while another is writing.<br />
+4&#41; It is not possible to simultaneously read from and write the I2C, SPI or USB ports.  
+To address this I have implemented a Session mutex for each port, a Write mutex and a Read Mutex.&nbsp; Open&#40;&#41; will therefore take two mutexes, a Session mutex and either the Write mutex or the Read mutex.  
+However, I find that very occasionally &#40;maybe after several hours of running&#41; the system hangs at the dreaded FreRTOS routine:  
+<pre><code>        /* *** NOTE ***********************************************************
+        If you find your application is crashing here then likely causes are:
+            1) Stack overflow -
+               see http://www.freertos.org/Stacks-and-stack-overflow-checking.html
+            2) Incorrect interrupt priority assignment, especially on Cortex-M3
+               parts where numerically high priority values denote low actual
+               interrupt priories, which can seem counter intuitive.  See
+               configMAX_SYSCALL_INTERRUPT_PRIORITY on http://www.freertos.org/a00110.html
+            3) Calling an API function from within a critical section or when
+               the scheduler is suspended.
+            4) Using a queue or semaphore before it has been initialised or
+               before the scheduler has been started (are interrupts firing
+               before vTaskStartScheduler() has been called?).
+        See http://www.freertos.org/FAQHelp.html for more tips.
+        **********************************************************************/
+        for( pxIterator = ( xListItem * ) &amp;( pxList-&gt;xListEnd ); pxIterator-&gt;pxNext-&gt;xItemValue &lt;= xValueOfInsertion; pxIterator = pxIterator-&gt;pxNext )
+        {
+            /* There is nothing to do here, we are just iterating to the
+            wanted insertion position. */
+        }
+</code></pre>
+This always happens while the Close&#40;&#41; routine is waiting for the interrupt semaphore to indicate that a message has been sent.&nbsp; It appears that interrupts are disabled, since the system hangs midway through the send process, but I can&#8217;t see anywhere in my code that would do this.  
+I have just seen that the API function manual description of vSemaphoreCreateBinary&#40;&#41; states:  
+<blockquote>
+  A fast and simple priority inheritance mechanism is implemented that assumes a task will only ever hold a single mutex at any one time.
+</blockquote>
+Could the problem be caused by the fact that in my application a task hold two mutexes, a Session mutex and a Put/Get mutex?  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on August 11, 2012</div><div class="thread-post-content">It is possible, but unlikely.&nbsp; The priority inheritance mechanism does not stack inherited priorities.&nbsp; For example, if your priority 1 task takes mutex A, then takes mutex B, then because it is holding mutex A it gets promoted to priority 2, then because it is holding mutex B it gets promoted to priority B, when it gives back mutex A it will get demoted back to priority 1 even though it still holds mutex B.&nbsp; That might result in priority inversion in your case, but it would not result in a crash &#40;deadlock maybe, but that is not what you are seeing I don&#8217;t think&#41;.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alan_rouse">alan_rouse</a> on August 11, 2012</div><div class="thread-post-content">Richard  
+Thanks for your prompt reply.&nbsp; I am a bit confused about the terminology Priority 1, Priority 2 and Priority B. In my application a task will take a Session mutex, then the Put/Get mutex. It will then release the Put/Get mutex, then release the Session mutex.&nbsp; Please confirm that this is the right interpretation:  
+1&#41; Task1 takes a Session mutex, then takes, say, the Put mutex and runs at Task1 Priority.<br />
+2&#41; Task2 attempts to take the same Session mutex, so is blocked.&nbsp; Task1 is promoted to &#40;Task2 Priority + 1&#41;<br />
+3&#41; Task3 takes a different Session mutex then attempts to take the Put mutex, so is blocked.&nbsp; Task1 is promoted to &#40;Task3 Priority + 1&#41;.<br />
+4&#41; Task1 releases the Put mutex, so its original priority is restored. Does it become Task1 priority or &#40;Task2 Priority + 1&#41;?<br />
+5&#41; Task3 is unblocked so it takes the Put mutex and runs at Task3 Priority.<br />
+6&#41; Task1 releases the Session mutex, so its priority is restored to Task1 Priority.<br />
+7&#41; Task2 is unblocked so it takes the Session mutex.&nbsp; It then attempts to take the Put mutex so is blocked by Task3. Task3 is promoted to &#40;Task2 Priority + 1&#41;<br />
+8&#41; Task3 releases the Put mutex, so its priority is restored to Task3 Priority.<br />
+9&#41; Task2 is unblocked so it takes the Put mutex and runs at Task2 Priority.<br />
+10&#41; Task2 releases the Put mutex, then releases the Session mutex.  
+The area of uncertainty is in &#40;4&#41;.&nbsp; Is there any possibility that this could induce a system crash?  
+Thanks<br />
+Alan
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 11, 2012</div><div class="thread-post-content">A few comments.<br />
+In 2, Task 1 takes is promoted to Task2Priority, not Task2Priority+1, Task2Priority+1 may not be a valid priority, and Task2Priority is good enough since Task2 will be put into a blocked state, Task1 will now run &#40;as much as Task2 would have been able&#41; to finish its use of the mutex. Same holds for 3  
+In 4, Task1 will be dropped to its original priority as FreeRTOS does not have a stack for priority inheritance. This can have some problems with priority inversion as a Task 4 with a priority between Task1 and Task2 can delay Task2, even though it has a lower priority.  
+None of these actions should cause a program crash/hang. The sort of hang you seem to describe is normally due to something corrupting the FreeRTOS data structures.  
+I am also not sure what the purpose of your &#8220;session&#8221; mutexes is for. A task needs to claim exclusive use to the read or write channel of a serial port, or the whole of another type of port, but that should be enough, as you specifically allow one task to read and a different task to write to a serial port.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alan_rouse">alan_rouse</a> on August 11, 2012</div><div class="thread-post-content">I understand your explanation.&nbsp; It sounds as though the problem lies elsewhere, but it is going to be difficult to trace, particularly since the problem occurs so infrequently.  
+By the way, the reason for session mutexes was explained in my original post.&nbsp; Although one task can be reading while another is writing, this is not allowed for the USB, SPI or I2C ports, so I use session mutexes on these.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 11, 2012</div><div class="thread-post-content">So you need a &#8220;session&#8221; mutex &#40;guarding both read and write for a device&#41; OR a &#8220;read&#8221; mutex or a &#8220;write&#8221; mutex. Each &#8220;Channel&#8221; has just one mutex, Serial ports support 2 channels, one read, one write, other devices just have a single &#8220;Channel&#8221; used for both types. No need to have two mutexes.  
+Unless a &#8220;Session&#8221; is some other scarce resource, not yet described, that needs to be shared to access the devices, I don&#8217;t see the need for a second mutex.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Mutex problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alan_rouse">alan_rouse</a> on August 13, 2012</div><div class="thread-post-content">Thanks for the help.&nbsp; There are other considerations that mean two mutexes have to be taken when accessing certain I/O streams, particularly SPI.&nbsp; However, I reviewed my logic and realised I could make some simplifications. Unfortunately the problem persisted.  
+I eventually traced it to an interrupt priority issue.&nbsp; One of my I/O routines was running at a priority higher than configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY.&nbsp; I was therefore wrong in suspecting that the problem was due to mutexes.  
+The exercise has at least furthered my understanding of how FreeRTOS works, even though it has been frustrating&#33;&nbsp;   
+Thanks again for your help.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call xQueueReceiveFromISR() in task, LPC1114 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2013/freertos_Call_xQueueReceiveFromISR_in_task_LPC1114_6573653.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Call xQueueReceiveFromISR() in task, LPC1114 - FreeRTOS" />
+<meta property="og:description" content="Call xQueueReceiveFromISR() in task, LPC1114Posted by helarsen on January 9, 2013I am writing a serial.c for the LPC1114 port under LPCXpresso. LPC11xx has the feature that the interrupt from UART TX empty transmit register &#040;THRE=1&#041; is only edge sensitive and not level sensitive. This means that if interrupt from THRE is masked off AND THRE=1, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2013/freertos_Call_xQueueReceiveFromISR_in_task_LPC1114_6573653.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Call xQueueReceiveFromISR() in task, LPC1114Posted by helarsen on January 9, 2013I am writing a serial.c for the LPC1114 port under LPCXpresso. LPC11xx has the feature that the interrupt from UART TX empty transmit register &#040;THRE=1&#041; is only edge sensitive and not level sensitive. This means that if interrupt from THRE is masked off AND THRE=1, [&hellip;]" />
+<meta name="twitter:title" content="Call xQueueReceiveFromISR() in task, LPC1114 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202218' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202218' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202218' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202218' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144195' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2013%2Ffreertos_Call_xQueueReceiveFromISR_in_task_LPC1114_6573653.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2013%2Ffreertos_Call_xQueueReceiveFromISR_in_task_LPC1114_6573653.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144195">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2013_freertos_support_forum_archive_index.html/">January 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Call xQueueReceiveFromISR() in task, LPC1114</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helarsen">helarsen</a> on January 9, 2013</div><div class="thread-post-content">I am writing a serial.c for the LPC1114 port under LPCXpresso.  
+LPC11xx has the feature that the interrupt from UART TX empty transmit register &#40;THRE=1&#41; is only edge sensitive and not level sensitive. This means that if interrupt from THRE is masked off AND THRE=1, then no interrupt will be generated as a result of enabling the THRE interrupt. This would correspond to irq handler seeing a level of THRE=1 and not a change of THRE from 0 to 1 &#40;an edge&#41;. The latter &#95;would&#95; generate an interrupt not the former.  
+The often&nbsp; used method in may ports of serial.c is to have the TX interrupt disabled by the TX interrupt itself, when interrupt handler finds that no more data is in the TX queue and TX interrupt is re-enabled by the task which is feeding data into the TX queue. The enabled interrupt will trigger the interrupt handler which in turn sees the data in the queue and puts them in the transmit holding register. If interrupt handler does&#8217;nt find more data, it disables its own interrupt again. And so forth.  
+This does not work with LPC11xx due to the lack of level senisitivity of the THRE flag.  
+I have made a solution where the interrupt handler and the task shares a flag &#40;global variable&#41;: THR&#95;IsEmpty. This principle is taken from the Uart.c in the LPC11xx&#95;DriverLib.<br />
+I use a FreeRTOS queue and in the application task is used the following code to access the queue and the flag: Note that I use the xQueueReceiveFromISR&#40;&#41; although it is inside the application task, but IRQ&#8217;s are disabled so I should&#8217;nt call xQueueReceive&#40;&#41; &#8211; anyway thats my hyposis. The code in the task reads:  
+<pre><code>            portDISABLE_INTERRUPTS(); // Here we are sure to have the queue for ourselves, IRQ handler is off
+            if(THR_IsEmpty=TRUE)
+            {//Ok tx irq is stuck. Need a kick-off by a write of the queue front byte to THR transmit register. I must NOT enable IRQ yet!
+                if( xQueueReceiveFromISR( xCharsForTx, &amp;uChar, &amp;xHigherPriorityTaskWoken_BUT_NOT_USED_HERE_AS_I_AM_ONLY_USER ) == pdTRUE )
+                {
+                    /* A character was retrieved from the queue so it can be send to the THR now.... */
+                    LPC_USART-&gt;THR = uChar; //Send it
+                    THR_IsEmpty=FALSE; //More data
+                }
+                else
+                {
+                    THR_IsEmpty=TRUE; //No more data - its empty
+                }
+            }
+            portENABLE_INTERRUPTS();
+</code></pre>
+It appears to work but I am a bit skeptic as to the robustness due to the following:  
+portDISABLE&#95;INTERRUPTS expands to &#95;&#95;asm volatile &#40; &#8221; cpsid i &#8221; &#41;&nbsp; /&#42; =Interrupt disable &#42;/<br />
+but when I see the code for xQueueReceiveFromISR&#40;&#41; it holds the lines  
+uxSavedInterruptStatus = portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;;<br />
+which expands to<br />
+uxSavedInterruptStatus = 0;&#95;&#95;asm volatile &#40; &#8221; cpsid i &#8221; &#41;<br />
+&#40;note the current state of Interrupt is ignored&#33; &#40;is&#8217;nt that a port issue?&#41; and the call is matched with the reenable..<br />
+portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40; uxSavedInterruptStatus &#41;;<br />
+which expands to<br />
+portCLEAR&#95;INTERRUPT&#95;MASK&#40;&#41;;&#40;void&#41;x<br />
+or simply<br />
+&nbsp;&nbsp; &#95;&#95;asm volatile &#40; &#8221; cpsie i &#8221; &#41;&nbsp; /&#42; =Interrupt enable &#8211; unconditionally&#42;/  
+In other words at the exit of the xQueueReceiveFromISR&#40;&#41; interrupt is enabled &#8211; this will break the logic in the above task code.  
+A&#41; Is it ok to call xQueueReceiveFromISR&#40;&#41; from a task provided interrupts are disabled?<br />
+B&#41; Should&#8217;nt the portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;/portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; pair in the LPC1114 port recall the<br />
+interrupt state such that it does not enable the interrupt if it was originally disabled when portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;<br />
+was called?. I.e. properly restore the state as it was on entry.<br />
+C&#41; Better ways?  
+Thanks for any advice you may have.<br />
+henning  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Call xQueueReceiveFromISR() in task, LPC1114</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 9, 2013</div><div class="thread-post-content">I would be interested in replies to this myself as I have struggled with the same issue.&nbsp; You can look at the serial driver in the LPC2106 demo to see a convoluted solution that probably works.&nbsp; Note that generally using queues to send data into and out of interrupts is done in demos to demonstrate queues being used from interrupts &#8211; it is not an efficient solution.  
+You might also want to look at the UART driver in the FreeRTOS+IO port for the LPC1768, I can&#8217;t remember how I did it there.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Call xQueueReceiveFromISR() in task, LPC1114</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helarsen">helarsen</a> on January 9, 2013</div><div class="thread-post-content">The code snippet in my post was garbled up. I try again.<br />
+By the way, this web interface at sourceforge.net is lame&#33; There is no preview facility &#8211; or am I blind?  
+<pre><code>portDISABLE_INTERRUPTS(); // Here we are sure to have the queue for ourselves, IRQ handler is off
+if(THR_IsEmpty=TRUE)
+{  //Ok tx irq is stuck. Need a kick-off by a write of the queue front byte to THR transmit register. Do NOT enable IRQ yet!
+   if( xQueueReceiveFromISR( xCharsForTx, &amp;uChar, &amp;xHigherPriorityTaskWoken_XX ) == pdTRUE )
+   {
+      /* A character was retrieved from the queue so it can be send to the THR now.... */
+      LPC_USART-&gt;THR = uChar; //Send it
+      THR_IsEmpty=FALSE; //More data
+   } 
+   else
+   {
+      THR_IsEmpty=TRUE; //No more data - its empty
+   }
+}
+portENABLE_INTERRUPTS();
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Call xQueueReceiveFromISR() in task, LPC1114</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helarsen">helarsen</a> on January 9, 2013</div><div class="thread-post-content">Thanks for the tip to look at LPC2106 and LPC1768. The latter code for serial.c I could not find however.<br />
+Can you give a path?  
+Anyway I reviewed the code for xSerialPutChar&#40;&#41; for LPC2106 and LPC2129 and<br />
+they are both made along the same lines as I described in the initial post.<br />
+There is however a subtle flaw in the way the transmitter is kicked back on again:<br />
+xQueueReceive&#40;&#41; is called to get the dangling byte at head of the queue, but this may fail because the queue and transmitter holding register THR could be empty right after the xQueueSend&#40;&#41;. Never the less, the byte read from<br />
+the queue is sent to the transmitter holding register THR irrespective of the call&#8217;s return value This will give spurious<br />
+added bytes in the stream.  
+The original code is this &#8211; with my added explanations.  
+<pre><code>signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, 
+        signed char cOutChar, portTickType xBlockTime )
+{
+signed portBASE_TYPE xReturn;
+    /* The port handle is not required as this driver only supports UART0. */
+    ( void ) pxPort;
+    portENTER_CRITICAL();
+    {
+        /* Is there space to write directly to the UART? */
+        if( lTHREEmpty == ( long ) pdTRUE )
+        {
+            /* We wrote the character directly to the UART, so was
+            successful. */
+            lTHREEmpty = pdFALSE;
+            U0THR = cOutChar;
+            xReturn = pdPASS;
+        }
+        else //HL lTHREEmpty may become pdTRUE anytime from here
+        {
+            /* We cannot write directly to the UART, so queue the character.
+            Block for a maximum of xBlockTime if there is no space in the
+            queue.  It is ok to block within a critical section as each
+            task has it's own critical section management. */
+            xReturn = xQueueSend( xCharsForTx, &amp;cOutChar, xBlockTime );
+            //HL A
+            /* Depending on queue sizing and task prioritisation:  While we
+            were blocked waiting to post interrupts were not disabled.  It is
+            possible that the serial ISR has emptied the Tx queue, in which
+            case we need to start the Tx off again. */
+            if( lTHREEmpty == ( long ) pdTRUE )
+            {
+                xQueueReceive( xCharsForTx, &amp;cOutChar, serNO_BLOCK );
+                //HL Here is a flaw..
+                //HL What if the queue and THR became empty right after 
+                //HL xQueueSend (line A above). Then this code will run, 
+                //HL but xQueueReceive will fail as the queue holds
+                //HL no data. It is already sent by handler! 
+                //HL Never the less, a byte is written - a false extra byte.
+                lTHREEmpty = pdFALSE;
+                U0THR = cOutChar;
+            }
+        }
+    }
+    portEXIT_CRITICAL();
+    return xReturn;
+}
+</code></pre>
+This is what I think it should look like:  
+<pre><code>signed portBASE_TYPE xSerialPutCharCorrected( xComPortHandle pxPort, 
+    signed char cOutChar, portTickType xBlockTime )
+{
+signed portBASE_TYPE xReturn;
+    /* The port handle is not required as this driver only supports UART0. */
+    ( void ) pxPort;
+    portENTER_CRITICAL();
+    {
+        /* Is there space to write directly to the UART? */
+        if( lTHREEmpty == ( long ) pdTRUE )
+        {
+            /* We wrote the character directly to the UART, so was
+            successful. */
+            lTHREEmpty = pdFALSE;
+            U0THR = cOutChar;
+            xReturn = pdPASS;
+        }
+        else //HL ...Any time from here, lTHREEmpty may become pdTRUE;
+        {   
+            /* We cannot write directly to the UART, so queue the character.
+            Block for a maximum of xBlockTime if there is no space in the
+            queue.  It is ok to block within a critical section as each
+            task has it's own critical section management. */
+            xReturn = xQueueSend( xCharsForTx, &amp;cOutChar, xBlockTime );
+            /* Depending on queue sizing and task prioritisation:  While we
+            were blocked waiting to post interrupts were not disabled.  It is
+            possible that the serial ISR has emptied the Tx queue, in which
+            case we need to start the Tx off again. */
+            if ( ( lTHREEmpty == ( long ) pdTRUE ) &amp;&amp; (xReturn==pdPASS) )
+            {   //HL ..need xReturn check as also LPC2106 shows
+                if( xQueueReceive( xCharsForTx, &amp;cOutChar, serNO_BLOCK )==pdPASS) 
+                {  //HL .. must check for valid result!
+                    lTHREEmpty = pdFALSE;
+                    U0THR = cOutChar;
+                }
+            }
+        }
+    }
+    portEXIT_CRITICAL();
+    return xReturn;
+}
+</code></pre>
+I am in the process of testing this on LPC11U35.<br />
+best regards<br />
+Henning  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Call xQueueReceiveFromISR() in task, LPC1114</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 10, 2013</div><div class="thread-post-content">I will have to check into this, it was many, many years ago that I wrote that code.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Call xQueueReceiveFromISR() in task, LPC1114</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/helarsen">helarsen</a> on January 11, 2013</div><div class="thread-post-content">I have been testing the ideas brought forward previously about the code from the<br />
+serial.c -&gt; xSerialPutChar&#40;&#41; from LPC2106 &#40;in copy below&#41;.<br />
+This revealed another problem in the code apart from the alleged race condition<br />
+between the ISR and the task&#8217;s access to the lTHREEmpty flag:  
+The line<br />
+xReturn = xQueueSend&#40; xCharsForTx, &amp;cOutChar, xBlockTime &#41;;<br />
+which sends data to the queue is called from within a critical section, which means<br />
+&#45; in the LPC1114 port that interrupts are effectively disabled using  
+<pre><code>    __asm volatile  ( " cpsid i " )
+</code></pre>
+If xQueueSend&#40;&#41; is called at a moment where the queue is full, the task is suspended,<br />
+but this is &#8220;illegal&#8221; with interrupts disabled. Also confirmed by the API reference<br />
+&#45; &#8220;do not call from an ISR&#8221;. In the LPC114 port enterCRITICAL&#95;SECTION&#40;&#41; disables<br />
+interrupts which effectivly make the code section look like an ISR.  
+Because &#8211; the xQueueSend will, when queue is full, at a certain time during the<br />
+course to suspension hit the vTaskPlaceOnEventList&#40;&#41; which, according to the note<br />
+in the code says:  
+/&#42; THIS FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED OR THE<br />
+SCHEDULER SUSPENDED. &#42;/  
+This is clearly violated. As result, the xQueueSend&#40;&#41; is never resumed despite the<br />
+blocking time being finite and the serial transmission is stalled.<br />
+This is confirmed in tests.  
+Replacing the xQueueSend&#40;&#41; with xQueueSendFromISR&#40;&#41; makes the code work without hangup,<br />
+but the time-out has to be dealt with separately, as the xQueueSendFromISR&#40;&#41;<br />
+can not block.  
+To summarize: Isn&#8217;t it true that when inside a critical section guarded by<br />
+disabled interrupts, it is illegal to call API&#8217;s which may block?<br />
+Maybe this is only true for the LPC1114 kind of ports which has a brute-force<br />
+way of creating CRITICAL&#95;SECTION&#8217;s using a simple disable of all interrupts.  
+In any case the comments about the race between the ISR and the task,<br />
+outlined in the code below &#8211; which started all this &#8211; is of course moot in this case,<br />
+as the ISR &#95;cannot&#95; run inside a critical section when interrupts are disabled.<br />
+So race is not an issue in this case. Maybe in other implementations of critical sections.  
+Any comments are appreciated.<br />
+Henning  
+<pre><code>signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, 
+signed char cOutChar, portTickType xBlockTime )
+{
+signed portBASE_TYPE xReturn;
+* The port handle is not required as this driver only supports UART0. */
+ ( void ) pxPort;
+ portENTER_CRITICAL();
+{
+  /* Is there space to write directly to the UART? */
+  if( lTHREEmpty == ( long ) pdTRUE )
+  {
+   /* We wrote the character directly to the UART, so was
+   successful. */
+   lTHREEmpty = pdFALSE;
+   U0THR = cOutChar;
+   xReturn = pdPASS;
+   }
+    else
+   {
+   /* We cannot write directly to the UART, so queue the character.
+   Block for a maximum of xBlockTime if there is no space in the
+   queue.  It is ok to block within a critical section as each
+   task has it's own critical section management. */
+   xReturn = xQueueSend( xCharsForTx, &amp;cOutChar, xBlockTime );
+   //HL A
+   /* Depending on queue sizing and task prioritisation:  While we
+   were blocked waiting to post interrupts were not disabled.  It is
+   possible that the serial ISR has emptied the Tx queue, in which
+   case we need to start the Tx off again. */
+   if( lTHREEmpty == ( long ) pdTRUE )
+   {
+   xQueueReceive( xCharsForTx, &amp;cOutChar, serNO_BLOCK );
+    //HL Here is a flaw..
+    //HL What if the queue and THR became empty right after 
+    //HL xQueueSend (line A above). Then this code will run, 
+    //HL but xQueueReceive will fail as the queue holds
+    //HL no data. It is already sent by handler! 
+    //HL Never the less, a byte is written - a false extra byte.
+    lTHREEmpty = pdFALSE;
+    U0THR = cOutChar;
+   }
+  }
+ }
+ portEXIT_CRITICAL();
+ return xReturn;
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Call xQueueReceiveFromISR() in task, LPC1114</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 12, 2013</div><div class="thread-post-content">There are big differences in the way the LPC2106 &#40;ARM7&#41; and the LPC1000 handle context switching.  
+On the ARM7 calling a yield function is synchronous &#8211; it will cause a context switch even if you are in a critical section.&nbsp; You can switch to a task that is not in a critical section and interrupts will be correctly enabled, then switch back to the original task that was in a critical section and interrupts will be correctly disabled again when the task start running.&nbsp; I&#8217;m not sure if this makes the case you are highlighting ok or not without more investigation.  
+On Cortex-M parts context switching is normally done using a PendSV interrupt &#40;M3/4 anyway&#41; which is not synchronous in that you can &#40;as the name suggests&#41; pend the interrupt but it does not execute until interrupts are enabled.&nbsp; In this case it is definitely not ok to call the blocking queue function a critical section &#8211; so it is not ok for you.  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hard real time critacal task synchronization - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_Hard_real_time_critacal_task_synchronization_7bb43066j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Hard real time critacal task synchronization - FreeRTOS" />
+<meta property="og:description" content="Hard real time critacal task synchronizationPosted by sushant2212 on September 25, 2015Before getting into the problem I would like to give summary of our project: For our system we&#8217;re using a 32bit ARM microcontroller running at clock speed of 48MhZ and need to fetch data through different tasks at different hard real timestamps, like: T1 &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_Hard_real_time_critacal_task_synchronization_7bb43066j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Hard real time critacal task synchronizationPosted by sushant2212 on September 25, 2015Before getting into the problem I would like to give summary of our project: For our system we&#8217;re using a 32bit ARM microcontroller running at clock speed of 48MhZ and need to fetch data through different tasks at different hard real timestamps, like: T1 [&hellip;]" />
+<meta name="twitter:title" content="Hard real time critacal task synchronization - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202563' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202563' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202563' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202563' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145371' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_Hard_real_time_critacal_task_synchronization_7bb43066j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_Hard_real_time_critacal_task_synchronization_7bb43066j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145371">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2015_freertos_support_forum_archive_index.html/">September 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Hard real time critacal task synchronization</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sushant2212">sushant2212</a> on September 25, 2015</div><div class="thread-post-content">Before getting into the problem I would like to give summary of our project:
+For our system we&#8217;re using a 32bit ARM microcontroller running at clock speed of 48MhZ and need to fetch data through different tasks at different hard real timestamps, like:
+T1 to fetch data at 10ms
+T2,T3 to fetch data at 30ms
+T4,T5,T6 to fetch data at 200ms.
+We&#8217;ve used round-robin and priority based scheduling for these tasks and the result which we see is not as expected.
+If all tasks run at different priority based on frequency at which they need to fetch data , then we&#8217;re missing packets for 3-4 timestamps after every 5-7 packets
+If all tasks are given same priority e.g tskIDLE_PRIORITY+1, then we do miss packets but also the timestamp is not accurate, like for T1, we sometime get data at 11ms sometime at 9ms.
+If we run only one task and get the data then it is always accurate but as we start enabling these tasks one after other then data accuracy is lost. We&#8217;re kind of OK if we enable 2 tasks to get data. But if we&#8217;ve more than 2 tasks then we&#8217;ve never received proper data.
+Is there something which we need to take care of for configuring FreeRTOS. Or is there a limitation from FreeRTOS to provide hard real time synchronization for 6 tasks running simulatneously and looking for data at above mentioned frequency?
+Thanks in advance,
+Sushant
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on September 25, 2015</div><div class="thread-post-content">Hi Sushant,
+Could you first tell what it means to &#8220;fetch data&#8221;? Is that a measurement from A/D, an I2C or CAN device? Any other peripheral?
+Do you know how long the actual fetching of data lasts, expressed in usec ?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sushant2212">sushant2212</a> on September 25, 2015</div><div class="thread-post-content">Hi Hein,
+It is about fetching sensor data.
+If seen through FreeRTOS trace I could see that &#8220;CPU Usage %&#8221;  is well under 0.10 % for most of the tasks.
+Please let me know if it would be helpful to share statistic report of the trace.
+Regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 25, 2015</div><div class="thread-post-content">But how are you fetching the data?  Take collecting data from an ADC every 100ms as an example, one thing you might be doing is configuring a timer to generate an interrupt every 100ms, then startging the ADC conversion from the ISR, then using the ADCs conversion end interrupt to unblock a task &#8211; and process the ADC data from within the task &#8211; this should be very accurate.  Another thing you might be doing is using vTaskDelay() to unblock the task every 100ms, starting the conversion in the task, then polling the ADC registers to see when the conversion ends, after which you process the data in the task &#8211; this would not be accurate as it would prevent lower prioirity tasks from running for the entire duration of the ADC conversion.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sushant2212">sushant2212</a> on September 25, 2015</div><div class="thread-post-content">Hi Hein, 
+4 sensors are fetching data through SPI and 2 sensors fetching data over I2C.
+For task synchronization, I&#8217;ll explain it below.
+There is a timer callback which is registered with timer-frequency of 10ms.
+Once this callback is triggered, it does the modulus operation and wakes up different sensor&#8217;s task based on their timestamp, e.g 
+T1 is woken up everytime timer callback is registered, 
+T2 and T3 we check if (timer-counter % 30 == 0) { Wake-up } 
+T4,T5,T6 if(timer-counter %200 == 0) {Wake-up}.
+NOTE: All these tasks are triggered through queues
+These sensors read the data either using SPI or I2C and then post the content buffer (ideally 20 bytes of data) to a transaction manager task to structure it and pass to the output module.
+vTaskDelay is not used in any of the tasks and its always triggered through timer callback.
+Regards,
+Sushant
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 25, 2015</div><div class="thread-post-content">&#8230;but how is the I2C and SPI comms performed.  I2C and SPI are serial 
+buses, so take time.  Are you using interrupts, dma, etc., or just 
+polling the interfaces from the tasks?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on September 25, 2015</div><div class="thread-post-content">To expand on Richard&#8217;s question, first, you do realize that there will be time slots (every 600 ms) where all 6 tasks need to happen, and that you easily could have I/O time requirements that total up to over a millisecond. (At base speed, I2C transfers 10 bytes per ms, and reading a byte from a sensor can often task 4 bytes of transfer).
+Many manufactur provided drivers will be polling based, and thus you won&#8217;t get any overlap between I2C and SPI requests. 
+Another big question is if the driver is reentrent, i.e. able to be called my multiple threads, or do you need to use an external mutex to protect it. Trying to do 2 requests at once via the same interface is likely to cause significant issues.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sushant2212">sushant2212</a> on September 25, 2015</div><div class="thread-post-content">Hi,
+We&#8217;re not using any interrupts or dma, just polling interfaces from the task.
+Also, we&#8217;re not blocking drivers using external mutexes and that makes sense that if we&#8217;ve different priority of these tasks then we don&#8221;t see mismatch in timestamp as all tasks would be pooling interfaces with different priority and there won&#8217;t be any timeSLICING done by scheduler (if all tasks have same priority).
+Still, we would like to know if is there a limitation from FreeRTOS to provide hard real time synchronization for these tasks running simulatneously at different priority and polling interfaces for getting data.
+Regards,
+Sushant
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 25, 2015</div><div class="thread-post-content"><blockquote>
+  Still, we would like to know if is there a limitation from FreeRTOS 
+  to provide hard real time synchronization for these tasks running 
+  simulatneously at different priority and polling interfaces for getting 
+  data.
+</blockquote>
+I&#8217;m afraid I don&#8217;t understand the question.
+If you have a high priority task that is polling an interface (that is, 
+never entering the Blocked state) while a serial transaction is in 
+progress (I2C, UART, SPI, etc.) then no lower priority tasks will be 
+able to run for the entire transaction time.  That is not a limitation 
+of the RTOS, but a design choice on your part.
+If you want other tasks to run while the serial transaction is in 
+progress, and therefore increase the throughput of the entire system as 
+no CPU cycles will be used up polling for something that has not 
+happened yet, then it would be better to make your system event driven.
+Say you have an SPI transaction that is performed from a high priority 
+task, and an I2C transaction that is performed from a lower priority 
+task&#8230;.then have the high priority task start the SPI transaction then 
+enter the Blocked state to wait for the transaction to complete 
+(implying the transaction is performed by interrupts and/or DMA and the 
+task is unblocked by the interrupt when the transaction is complete). 
+When the high priority task enters the Blocked state the low priority 
+task will run and can start its I2C transaction before it too enters the 
+Blocked state to wait for the transaction to complete.  Then you have 
+both the I2C and SPI running in parallel and the tasks not using any 
+processing time until either the SPI or the I2C transaction is finished.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on September 26, 2015</div><div class="thread-post-content">When using polling interfaces, you totally block lower priority tasks while your task is in the polling loop. This is not condusive to meeting real time requirements. as you lose all the processing time while you are spinning waiting for the I/O to complete. This makes it much harder to meet &#8216;hard real time&#8217; requirements. The ONLY way to work with real hard time requirements is to analyze your system and design. Draw a time line, mark you 10 ms tick point, draw the tasks taking whatever time it will take to do the I/O (look at what they need to send/receive and the speed of the bus), make an estimate of the processing time to work with the data. Since you are polling, there is ZERO overlap of I/O with processing or I/O with I/O. See if you can meet your timing requirements.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sushant2212">sushant2212</a> on September 29, 2015</div><div class="thread-post-content">Hi,
+Thanks for your response, we&#8217;d been trying some options to meet timing requirements.
+Also, we wanted to know how much CPU time each of these sensor tasks actually take.
+We tried FreeRTOS + Trace utility to find out but unfortunately we&#8217;re seeing only one instance of any of the tasks created (which basically is the first instance of creating and setting up these sensors), even though we see these tasks running continuously. 
+We calculate the timestamp at which these tasks actually got CPU slot and communicate to device using SPI/I2C interface, but when we open the trace we don&#8217;t see any detail of these tasks at given timestamp.
+Could you please help in letting me know if we&#8217;re missing out on something to debig these tasks&#8217; execution timestamp using FreeRTOS trace utility.
+Regards,
+Sushant
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ammaree">ammaree</a> on September 29, 2015</div><div class="thread-post-content">POssibly an easier, lightweight and more accurate mechanism to measure the execution time of a section of code can be done using the FreeRTOS Tick and possibly SysTick mechanisms.
+The choice between the mechanisms should be made bnased on the resolution required. I have done some very simple and efficient routines for the CC3200 that handles both uS and mS intervals.
+If interested go to https://github.com/ksstech/support<em>common/blob/master/x</em>ticktimer.c
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sushant2212">sushant2212</a> on October 5, 2015</div><div class="thread-post-content">Hi Andre/Richard,
+Thanks for your input.
+We&#8217;d tried the software to measure the execution time of each task and it worked. We also got FreeRTOS Trace working properly and we could see other important attributes for each of the active tasks. 
+We have some update on the task synchronization.
+Just to over-rule the possibility of blocking SPI interface might be killing time for each tasks, we&#8217;ve commented out the communication and having dummy data. We still see that in output file there is loss of data (by observing the sequence number added as an attribute to data packet) .
+When we try to retrieve data at a lower frequency and for 3 sensors (e.g 70ms, 170ms,230ms) which are not divisible by any other then we don&#8217;t observe any data loss. However if we have similar test done but at higher frequency(20ms, 70ms, 110 ms)  then there is frequent packet loss from all sensors.
+As we&#8217;ve no serial communication in any of the tasks so tasks execution time is minimized.
+Could you please suggest some options which we can try to resolve this issue?
+Regards,
+Sushant
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 5, 2015</div><div class="thread-post-content">While you say you have execution time minimized, it really sounds like you are running out of CPU cycles at the higher speed. (Note also, even though you have made the periods non-multiples, you still have an occational, every 1540ms, point where all request happen at the same time).
+When I run into these sorts of issues, the best solution I have found is to instrument the code to see why I am missing data requests, normally by having each operation log somewhere each time it starts and finishes a data cycle. This could be using the built in Trace facility, or adding your own code to do so. If you can detect that you have hit the data loss case (perhaps by checking how long since you last ran a given task) it is even better. 
+You need to know time marks when each task starts and finishs its cycle.
+When that happens just stop the whole system and look at the results and see WHY you missed your deadline. Plot the task timeline (which task was running at what time) for what has just happened. The proximate cause should be fairly clear, some task didn&#8217;t run when it should because some other task was blocking it. Finding the root cause may take a bit longer, but this data should point you to it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Hard real time critacal task synchronization</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sushant2212">sushant2212</a> on October 5, 2015</div><div class="thread-post-content">Thanks Richard for your input.
+I will work on it and keep you posted.
+Sushant
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

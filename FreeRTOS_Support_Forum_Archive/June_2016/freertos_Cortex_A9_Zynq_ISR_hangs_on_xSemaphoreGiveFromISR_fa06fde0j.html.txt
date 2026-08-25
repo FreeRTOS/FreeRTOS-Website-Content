@@ -1,0 +1,248 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISR - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2016/freertos_Cortex_A9_Zynq_ISR_hangs_on_xSemaphoreGiveFromISR_fa06fde0j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISR - FreeRTOS" />
+<meta property="og:description" content="Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISRPosted by raymadigan on June 1, 2016I have been trying to solve this problem for too long now. There is clearly something I don&#8217;t quite get yet. Any pointers would be helpful. I have a DMA program that runs on the Zynq without FreeRTOS, and it runs on FreeRTOS if &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2016/freertos_Cortex_A9_Zynq_ISR_hangs_on_xSemaphoreGiveFromISR_fa06fde0j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISRPosted by raymadigan on June 1, 2016I have been trying to solve this problem for too long now. There is clearly something I don&#8217;t quite get yet. Any pointers would be helpful. I have a DMA program that runs on the Zynq without FreeRTOS, and it runs on FreeRTOS if [&hellip;]" />
+<meta name="twitter:title" content="Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISR - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202652' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202652' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202652' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202652' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145880' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2016%2Ffreertos_Cortex_A9_Zynq_ISR_hangs_on_xSemaphoreGiveFromISR_fa06fde0j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2016%2Ffreertos_Cortex_A9_Zynq_ISR_hangs_on_xSemaphoreGiveFromISR_fa06fde0j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145880">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2016_freertos_support_forum_archive_index.html/">June 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISR</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/raymadigan">raymadigan</a> on June 1, 2016</div><div class="thread-post-content">I have been trying to solve this problem for too long now.  There is clearly something I don&#8217;t quite get yet.  Any pointers would be helpful.
+I have a DMA program that runs on the Zynq without FreeRTOS, and it runs on FreeRTOS if I use a callback function from the ISR.  The problem is, it can&#8217;t be a FreeRTOS task.  So I followed the example in Mastering the FreeRTOS Kernel in the interrupt section and I can&#8217;t understand why the application hangs in the call to xSemaphoreGiveFromISR.  
+There are three tasks running and the isr handler task has the highest priority
+~~~
+<h1>define mainHANDLE<em>TASK</em>PRIORITY            ( tskIDLE_PRIORITY + 3 )</h1>
+<h1>define mainQUEUE<em>RECEIVE</em>TASK<em>PRIORITY     ( tskIDLE</em>PRIORITY + 2 )</h1>
+<h1>define mainQUEUE<em>SEND</em>TASK<em>PRIORITY        ( tskIDLE</em>PRIORITY + 1 )</h1>
+~~~
+The semaphore is defined as
+~~~
+static SemaphoreHandle_t xBinarySemaphore = NULL;
+~~~
+main is very simple
+~~~
+int main( void )
+{
+    prvSetupHardware();
+    prvSetupDMA();
+<pre><code>xBinarySemaphore = xSemaphoreCreateBinary();
+if (xBinarySemaphore != NULL )
+{
+    xTaskCreate (vHandleTask, "Handler", 
+                            configMINIMAL_STACK_SIZE, NULL, mainHANDLE_TASK_PRIORITY, NULL);
+}
+/* Create the queue. */
+xQueue = xQueueCreate( mainQUEUE_LENGTH, sizeof( uint32_t ) );
+if( xQueue != NULL )
+{
+    xTaskCreate( prvQueueReceiveTask,
+                "Rx",
+                configMINIMAL_STACK_SIZE,
+                NULL, 
+                mainQUEUE_RECEIVE_TASK_PRIORITY,
+                NULL );                         
+    xTaskCreate( prvQueueSendTask, "TX",
+                           configMINIMAL_STACK_SIZE, NULL, mainQUEUE_SEND_TASK_PRIORITY, NULL );
+}
+if ( (xQueue != NULL) &amp;&amp; (xBinarySemaphore != NULL))
+    vTaskStartScheduler();
+}
+</code></pre>
+}
+~~~
+The handler task, just to get it will do processing later
+~~~
+static void vHandleTask (void *pvParameters)
+{
+    for ( ;; )
+    {
+        printf(&#8220;Before Take Interrupt Handler rn&#8221;);
+        xSemaphoreTake (xBinarySemaphore, portMAX_DELAY);
+        printf(&#8220;Interrupt Handler rn&#8221;);
+    }
+}
+~~~
+The interrupt service routine
+~~~
+static void RxIntrHandler(void *Callback)
+{
+    XAxiDma_BdRing *RxRingPtr = (XAxiDma_BdRing *) Callback;
+    u32 IrqStatus;
+    int TimeOut;
+<pre><code>BaseType_t xHigherPriorityTaskWoken;
+IrqStatus = XAxiDma_BdRingGetIrq(RxRingPtr);
+XAxiDma_BdRingAckIrq(RxRingPtr, IrqStatus);
+if (!(IrqStatus &amp; XAXIDMA_IRQ_ALL_MASK)) {
+    return;
+}
+if ((IrqStatus &amp; XAXIDMA_IRQ_ERROR_MASK)) {
+    XAxiDma_BdRingDumpRegs(RxRingPtr);
+    XAxiDma_Reset(&amp;AxiDma);
+    TimeOut = RESET_TIMEOUT_COUNTER;
+    while (TimeOut) {
+        if(XAxiDma_ResetIsDone(&amp;AxiDma)) {
+            break;
+        }
+        TimeOut -= 1;
+    }
+    return;
+}
+// The following to wake up the FreeRTOS handler task
+xHigherPriorityTaskWoken = pdFALSE;
+/// This print statment always happens
+printf("Interrupt 1: rn");
+xSemaphoreGiveFromISR(xBinarySemaphore, &amp;xHigherPriorityTaskWoken);
+/// This print statement never happens
+printf("Interrupt 2: rn");
+portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+// If completion interrupt is asserted, call RX call back function
+// to handle the processed BDs and then raise the according flag.
+//if ((IrqStatus &amp; (XAXIDMA_IRQ_DELAY_MASK | XAXIDMA_IRQ_IOC_MASK))) {
+//  RxCallBack(RxRingPtr);
+//}
+printf("Interrupt Out: rn");
+</code></pre>
+}
+~~~
+the output looks like
+~~~
+Before Take Interrupt Handler
+Interrupt 1:
+~~~
+The isr handle task is waiting for the semaphore and the isr hangs attempting to deliver it.  
+Any help would be appreciated.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 2, 2016</div><div class="thread-post-content">Hi Sting,
+I don&#8217;t know how your printf() is implemented, but the standard implementation is normally not interrupt-proof. I would try to debug it by setting some volatile variables and log those from a normal task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/raymadigan">raymadigan</a> on June 2, 2016</div><div class="thread-post-content">It hangs when I comment out the printf statements.  It doesn&#8217;t hang with the printf statements when I use the callback.  The only time it hangs is when I use the BinarySemaphore to wake up the handler.
+This interrupt is an AXI interrupt generated by the logic in the fpga.  Maybe the handling has to be different.  The handling of memory has to be different for the buffer descriptors because the interconnects in the fpga address memory fro 0x100000 to 0x1FFFFF.  
+Since the callback mechanism seems to work I will temporarily move the wakeup of the handler to the callback routine so I can handle the data management in a task until I figure out how to debug this.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 2, 2016</div><div class="thread-post-content">I would agree with Hein, calling printf() from an interrupt is going to cause more problems that it solves.  I would suggest placing a breakpoint on the xSemaphoreGiveFromISR() call and stepping through the code to see what it does, how far it gets, etc.
+The Cortex-A port has specific requirements for how interrupts are installed.  Are you using the FreeRTOS interrupt handler, and installing the interrupts as described on the following page: http://www.freertos.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/raymadigan">raymadigan</a> on June 2, 2016</div><div class="thread-post-content">I got the board late last night and found the problem.  I do wonder why it works bare metal, but I did have a defect.
+~~~
+//defined in FreeRTOSConfig.h
+<h1>define configMAX<em>API</em>CALL<em>INTERRUPT</em>PRIORITY   18</h1>
+// Setting the interrupt priority
+XScuGic<em>SetPriorityTriggerType(&amp;xInterruptController, XFER</em>INTR<em>ID, 0x10, 0x3);
+// Should have been
+XScuGic</em>SetPriorityTriggerType(&amp;xInterruptController, XFER<em>INTR</em>ID, 0xA0, 0x3);
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Cortex A9/Zynq ISR hangs on xSemaphoreGiveFromISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/raymadigan">raymadigan</a> on June 2, 2016</div><div class="thread-post-content">I just reread the post and:
+<strong>Are you using the FreeRTOS interrupt handler?</strong>
+I have to answer this question with a NO!  Not that I wouldn&#8217;t, I just can&#8217;t find the reference to a call that would, and I looked at 
+~~~
+void vApplicationIRQHandler( uint32<em>t ulICCIAR );
+~~~
+in FreeRTOS</em>tick_config and it looks to call the functions from the XScuGic interrupt table so I figured that just registering them was all I needed to do.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

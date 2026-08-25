@@ -1,0 +1,217 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compiler Seems to Generate Incorrect Interrupt Handler Code - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2014/freertos_Compiler_Seems_to_Generate_Incorrect_Interrupt_Handler_Code_70cef22ej.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Compiler Seems to Generate Incorrect Interrupt Handler Code - FreeRTOS" />
+<meta property="og:description" content="Compiler Seems to Generate Incorrect Interrupt Handler CodePosted by bmenkveld on June 4, 2014I finally got to the bottom of a very nasty issue that was causing random crashes of my software. With this post I&#8217;m hoping to maybe save somebody else a lot of time and aggravation, but I would also appreciate any insights &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2014/freertos_Compiler_Seems_to_Generate_Incorrect_Interrupt_Handler_Code_70cef22ej.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Compiler Seems to Generate Incorrect Interrupt Handler CodePosted by bmenkveld on June 4, 2014I finally got to the bottom of a very nasty issue that was causing random crashes of my software. With this post I&#8217;m hoping to maybe save somebody else a lot of time and aggravation, but I would also appreciate any insights [&hellip;]" />
+<meta name="twitter:title" content="Compiler Seems to Generate Incorrect Interrupt Handler Code - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202397' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202397' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202397' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202397' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143772' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2014%2Ffreertos_Compiler_Seems_to_Generate_Incorrect_Interrupt_Handler_Code_70cef22ej.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2014%2Ffreertos_Compiler_Seems_to_Generate_Incorrect_Interrupt_Handler_Code_70cef22ej.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143772">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2014_freertos_support_forum_archive_index.html/">June 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Compiler Seems to Generate Incorrect Interrupt Handler Code</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bmenkveld">bmenkveld</a> on June 4, 2014</div><div class="thread-post-content">I finally got to the bottom of a very nasty issue that was causing random crashes of my software. With this post I&#8217;m hoping to maybe save somebody else a lot of time and aggravation, but I would also appreciate any insights from those with more knowledge of the compiler, FreeRTOS, and just what they are supposed to do with interrupt handlers.
+The program I&#8217;m working on is a new application for an AT32UC3C1512 CPU, using FreeRTOS V7.0.0.  I&#8217;m using Atmel Studio V6.2.
+The problem code looked like this:
+<h1>if <strong>GNUC</strong></h1>
+<strong>attribute</strong>((<strong>naked</strong>))
+<h1>elif <strong>ICCAVR32</strong></h1>
+<h1>pragma shadow_registers = full // Naked.</h1>
+<h1>endif</h1>
+static void can0<em>int</em>tx<em>handler(void)
+{
+/* This ISR can cause a context switch, so the first statement must be a
+call to the portENTER</em>SWITCHING<em>ISR() macro. This must be BEFORE any
+variable declarations. */
+portENTER</em>SWITCHING_ISR();
+U8 handle;
+handle = CANIF<em>mob</em>get<em>mob</em>txok(0);
+&#8230;
+/* Exit the ISR. Supposed to pass indication of task switch, but no in the FreeRTOS example code. */
+portEXIT_SWITCHING_ISR();
+}
+Here&#8217;s the listing file showing what the compiler produced for this code segment:
+8000ffcc <can0_int_tx_handler>:
+static void can0<em>int</em>tx<em>handler(void)
+{
+/* This ISR can cause a context switch, so the first statement must be a
+call to the portENTER</em>SWITCHING<em>ISR() macro. This must be BEFORE any
+variable declarations. */
+portENTER</em>SWITCHING_ISR();
+8000ffcc: eb cd 00 ff pushm r0-r7
+8000ffd0: e0 68 00 08 mov r8,8
+8000ffd4: ea 18 00 00 orh r8,0x0
+8000ffd8: 70 00 ld.w r0,r8[0x0]
+8000ffda: 1a d0 st.w &#8211;sp,r0
+8000ffdc: 7a 90 ld.w r0,sp[0x24]
+8000ffde: e1 d0 c2 c3 bfextu r0,r0,0x16,0x3
+8000ffe2: 58 10 cp.w r0,1
+8000ffe4: e0 8b 00 08 brhi 8000fff4 <label_isr_skip_save_context_102>
+8000ffe8: e0 68 12 c0 mov r8,4800
+8000ffec: ea 18 00 00 orh r8,0x0
+8000fff0: 70 00 ld.w r0,r8[0x0]
+8000fff2: 81 0d st.w r0[0x0],sp
+8000fff4 <label_isr_skip_save_context_102>:
+U8 handle;
+handle = CANIF<em>mob</em>get<em>mob</em>txok(0);
+8000fff4: fc 78 1c 00 mov r8,-189440
+8000fff8: 70 c8 ld.w r8,r8[0x30]
+8000fffa: e6 18 00 3f andh r8,0x3f,COH
+8000fffe: b1 88 lsr r8,0x10
+80010000: ef 68 ff ff st.b r7[-1],r8
+Note that the very last line of assembler here uses register R7, but R7 has not been initialized. So this code ends up over-writing one byte on some task&#8217;s stack, which eventually leads to bad things happening.
+I fixed the problem by declaring &#8220;handle&#8221; as &#8220;static&#8221;.
+But why did the compiler generate what appears to be wrong code? And is there a different way to declare an interrupt handler so the compiler will generate correct code even for automatic variables?
+Any insights would be appreciated.
+And in a related matter, the portEXIT<em>SWITCHING</em>ISR() macro generates code that seems to use R12 to decide whether or not to invoke a context switch.  But how is the C code supposed to get the correct value into R12?
+&#8212; 
+Bert Menkveld
+bert@greentronics.com
+</div></div><div class="thread-post"><h3 class="thread-post-title">Compiler Seems to Generate Incorrect Interrupt Handler Code</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 4, 2014</div><div class="thread-post-content">Hi Bert,
+&#8230; must have been hard to find out where the problem comes from
+This is what I usually do and which is safe:
+~~~~~~
+long irqHandler<em>PA16</em>23 ()
+{
+    /* This is a normal function which saves and restores
+     * registers used */
+    long needSwitch = 0;
+<pre><code>/* Do your work here, be careful not to use too much stack
+ * but local variables are OK to use */
+xSemaphoreGiveFromISR( xGpioSemaphore, &amp;needSwitch);
+/* The return value will set r12 */
+return needSwitch;
+</code></pre>
+}
+<strong>attribute</strong>((naked)) void irq<em>PA16</em>23 ()
+{
+    portENTER<em>SWITCHING</em>ISR ();
+    {
+        /* This function has the attribute naked, meaning
+         * that registers are not saved or restored.
+         * Just call your handler which returns a flag for
+         * task-switching in r12
+         */
+        irqHandler_PA16_23 ();
+    }
+    portEXIT_SWITCHING_ISR ();
+}
+~~~~~~
+PS: if you put literal code in a SF post, it gets a nice syntax formatting if you put it between two lines which only contain 6 tildes each (~~~~~~), like I did here above.
+Regards,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">Compiler Seems to Generate Incorrect Interrupt Handler Code</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bmenkveld">bmenkveld</a> on June 4, 2014</div><div class="thread-post-content">Thanks for the response, Hein.
+Yes, it was very hard to find the cause of this problem &#8212; I will sleep better tonight!
+Thanks for the example of a safe solution.  I have seen and used the pair of functions as you show them.  But in this case the interrupt handler was supplied by the Atmel Software Framework, and I did not think to re-work it.  I will know better in the future.
+And thank you also for explaining just how R12 is supposed to end up with the &#8220;needSwitch&#8221; value.  That also was not at all clear to me from the FreeRTOS docs.
+And I will try your code formatting magic next time I need to post some code here &#8212; my apologies for the ugly post.
+Regards,
+Bert
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

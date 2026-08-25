@@ -1,0 +1,458 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS IP callbacks - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2019/freertos_FreeRTOS_IP_callbacks_b3ece8be94j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS IP callbacks - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS IP callbacksPosted by eduardo1966 on April 15, 2019Hi I&#8217;ve written some code (see below) that implements a connect/disconnet/receiver using IP sockets and callback functions. Somehow this ends in the Dummy_Handler()&#8230; Essentialy a socket is created, a callback function is associated with this socket to process events Connect and Disconnect. When a connect happens an &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2019/freertos_FreeRTOS_IP_callbacks_b3ece8be94j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS IP callbacksPosted by eduardo1966 on April 15, 2019Hi I&#8217;ve written some code (see below) that implements a connect/disconnet/receiver using IP sockets and callback functions. Somehow this ends in the Dummy_Handler()&#8230; Essentialy a socket is created, a callback function is associated with this socket to process events Connect and Disconnect. When a connect happens an [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS IP callbacks - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203103' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203103' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203103' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203103' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147701' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2019%2Ffreertos_FreeRTOS_IP_callbacks_b3ece8be94j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2019%2Ffreertos_FreeRTOS_IP_callbacks_b3ece8be94j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147701">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2019_freertos_support_forum_archive_index.html/">April 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS IP callbacks</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eduardo1966">eduardo1966</a> on April 15, 2019</div><div class="thread-post-content">Hi
+I&#8217;ve written some code (see below) that implements a connect/disconnet/receiver using IP sockets and callback functions.
+Somehow this ends in the Dummy_Handler()&#8230;
+Essentialy a socket is created, a callback function is associated with this socket to process events Connect and Disconnect.
+When a connect happens an accept is called and a receiving socket is created and associated with another callback function.
+When a disconnect happens the receiving socket is closed.
+When data arrives some information is printed.
+ALl the communication between the callback functions and the main task is done through a message Queue.
+Could someone validate this code? It may happen that the code is not using the FreeRTOS IP functions correctly&#8230;
+I&#8217;ve placed several breakpoints and I cannot figure out what makes the code crash.
+~~~
+static void Callback<em>OnConnectDisconnect ( Socket</em>t xSocket, BaseType<em>t ulConnected )
+{
+    Callback</em>Message<em>t Callback</em>Message;
+<pre><code>Callback_Message.type = Callback_Connect_Disconnect;
+Callback_Message.Connect_Disconnect.xSocket = xSocket;
+Callback_Message.Connect_Disconnect.ulConnected = ulConnected;
+if ( xQueueSend ( xQueue_Callback, (void*) &amp;Callback_Message, 0 ) != pdPASS )
+    /* In case there is no space in the Queue,
+     * we should print something to the service port but we are inside FreeRTOS IP so it's better just increment a counter.
+     * The printing will take place in the main loop.
+     */
+    xQueue_Callback_Errors++;
+</code></pre>
+}
+static BaseType<em>t Callback</em>OnReceive ( Socket<em>t xSocket, void * pData, size</em>t xLength )
+{
+    Callback<em>Message</em>t Callback_Message;
+<pre><code>Callback_Message.type = Callback_Receive;
+Callback_Message.Receive.xSocket = xSocket;
+Callback_Message.Receive.pData   = pData;
+Callback_Message.Receive.xLength = xLength;
+if ( xQueueSend ( xQueue_Callback, (void*) &amp;Callback_Message, 0 ) != pdPASS )
+    /* In case there is no space in the Queue,
+     * we should print something to the service port but we are inside FreeRTOS IP so it's better just increment a counter.
+     * The printing will take place in the main loop.
+     */
+    xQueue_Callback_Errors++;
+return 1;
+</code></pre>
+}
+void task<em>IPreceiver ( void *pvParameters )
+{
+    Socket</em>t IPaccept<em>Socket, IPreceiver</em>Socket;
+    struct freertos<em>sockaddr xClient, xBindAddress;
+    const TickType</em>t xTimeOut = pdMS<em>TO</em>TICKS( 2000 );
+    const TickType<em>t xZeroTimeOut = 0;
+    socklen</em>t xSize = sizeof (struct freertos<em>sockaddr);
+    F</em>TCP<em>UDP</em>Handler<em>t Handler</em>OnConnectDisconnect;
+<pre><code>SP_Printf ( "task_IPreceiver[] running..." );
+/* Create a queue capable of containing 10 callback messages. */
+xQueue_Callback = xQueueCreate ( 10, sizeof(Callback_Message_t) );
+IPaccept_Socket = FreeRTOS_socket ( FREERTOS_AF_INET, FREERTOS_SOCK_STREAM, FREERTOS_IPPROTO_TCP );
+if ( IPaccept_Socket == NULL )
+    SP_Printf_h ( "ERROR - task_IPaccept[] - FreeRTOS_socket failed" );
+xBindAddress.sin_port = FreeRTOS_htons ( VDUI_SERVER_PORT );
+FreeRTOS_bind ( IPaccept_Socket, &amp;xBindAddress, sizeof(xBindAddress) );
+FreeRTOS_listen ( IPaccept_Socket, IP_MAX_CONNECTIONS );
+/* Install a callback for connection and disconnection events. */
+Handler_OnConnectDisconnect.pxOnTCPConnected = Callback_OnConnectDisconnect;
+FreeRTOS_setsockopt ( IPaccept_Socket, 0, FREERTOS_SO_TCP_CONN_HANDLER, (void *) &amp;Handler_OnConnectDisconnect, sizeof(Handler_OnConnectDisconnect) );
+//IPconnections_Initialise();
+for (;;)
+{
+    Callback_Message_t Callback_Message;
+    if ( xQueue_Callback_Errors != xQueue_Callback_Errors_prev )
+    {
+        SP_Printf ( "WARNING - task_IPreceiver[] - xQueue_Callback_Errors %d", xQueue_Callback_Errors );
+        xQueue_Callback_Errors_prev = xQueue_Callback_Errors;
+    }
+    if ( xQueueReceive ( xQueue_Callback, &amp;Callback_Message, portMAX_DELAY ) )
+    {
+        switch ( Callback_Message.type )
+        {
+            case Callback_Connect_Disconnect:
+            {
+                F_TCP_UDP_Handler_t Handler_OnReceive;
+                if ( Callback_Message.Connect_Disconnect.ulConnected )
+                {
+                    IPreceiver_Socket = FreeRTOS_accept ( IPaccept_Socket, &amp;xClient, &amp;xSize );
+                    SP_Printf ( "Connection accepted %d", IPreceiver_Socket );
+                    /* Install a callback for receiving TCP data. */
+                    Handler_OnConnectDisconnect.pxOnTCPReceive = Callback_OnReceive;
+                    FreeRTOS_setsockopt ( IPreceiver_Socket, 0, FREERTOS_SO_TCP_RECV_HANDLER, (void *) &amp;Handler_OnReceive, sizeof(Handler_OnReceive) );
+                }
+                else
+                {
+                    FreeRTOS_shutdown ( Callback_Message.Connect_Disconnect.xSocket, FREERTOS_SHUT_RDWR );
+                    FreeRTOS_closesocket ( Callback_Message.Connect_Disconnect.xSocket );
+                    SP_Printf ( "Connection closed %d", Callback_Message.Connect_Disconnect.xSocket );
+                }
+            }break;
+            case Callback_Receive:
+            {
+                static uint8_t Data [1000];
+                int32_t receivedData;
+                receivedData = FreeRTOS_recv ( Callback_Message.Receive.xSocket, Data/*pvBuffer*/, sizeof(Data)/*xBufferLength*/, 0/*xFlags*/ );
+                SP_Printf ( "Callback_Receive Callback_Message.Receive.xSocket %d Callback_Message.Receive.xLength %d receivedData %d",
+                                    Callback_Message.Receive.xSocket, Callback_Message.Receive.xLength, receivedData );
+            }break;
+        }
+    }
+}
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 15, 2019</div><div class="thread-post-content">The code looks perfect to me. It is an original approach!
+Isn&#8217;t the <code>Dummy_Handler()</code> called as a default handler, in case no other exception handler is defined?
+The problem might be unrelated to the code that you show here. Maybe it is an interrupt from a peripheral that you forgot to implement?
+Well, one remark regarding the code:
+~~~
+    FreeRTOS<em>shutdown ( Callback</em>Message.Connect<em>Disconnect.xSocket, FREERTOS</em>SHUT<em>RDWR );
+    FreeRTOS</em>closesocket ( Callback<em>Message.Connect</em>Disconnect.xSocket );
+~~~
+Here a disconnect was detected, and therefore it makes no sense to call <code>FreeRTOS_shutdown()</code>. It is enough to close the socket. This is unrelated to the crash though.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 15, 2019</div><div class="thread-post-content">In case you&#8217;re interest in using <code>FreeRTOS_shutdown()</code>. Here is an example where it is useful, e.g. to initiate a graceful close of a TCP connection:
+<a href="https://sourceforge.net/p/freertos/discussion/382005/thread/794f3d82/?limit=25#619b">+TCP &#8211; How force a close on a TCP connection on a Remote Server</a>
+And here is a more complicated example: data is still being sent while the closure has been initiated:
+<a href="https://sourceforge.net/p/freertos/discussion/382005/thread/fe2c5dd342/?limit=250#cfad">FreeRTOS<em>recv returns pdFREERTOS</em>ERRNO_ENOTCONN but also all the data</a>
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eduardo1966">eduardo1966</a> on April 15, 2019</div><div class="thread-post-content">thanks for the answer.
+I would prefered to have used semaphores.
+As you suggested in this thread:
+https://sourceforge.net/p/freertos/discussion/382005/thread/cc5add6c85/?limit=25
+But I coudn&#8217;t figure out after Take the semaphore which functions to call to find the reason for the Give on the semaphore.
+&#8211; A connection is established ( either accept() or connect() )
+&#8211; A connection is broken ( or an error occurred )
+&#8211; Data has arrived
+I don&#8217;t think there are any other interrupts happening!
+The default handler for interrupts in the Dummy<em>Handler() as defined in startup</em>same70.c. I think I can find in some registers info about what generated the crash. I&#8217;ll investigate&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eduardo1966">eduardo1966</a> on April 15, 2019</div><div class="thread-post-content">I found where it crashes:
+FreeRTOS_Sockets.c, version FreeRTOS+TCP V2.0.7 line 3021, 
+pxSocket->u.xTCP.pxHandleReceive( (Socket<em>t *)pxSocket, ( void* )ucReadPtr, ( size</em>t ) ulCount );
+pxHandleReceive has the impossible value of 0xA5A5A5A5, which must be stack related since the stack is filled with 0xA5s&#8230;
+(See attachment, please.)
+Any ideas? Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eduardo1966">eduardo1966</a> on April 15, 2019</div><div class="thread-post-content">Ah bugs&#8230; 🙂
+     <strong>Handler_OnConnectDisconnect</strong>.pxOnTCPReceive = Callback<em>OnReceive;
+should be instead:
+    <strong>Handler_OnReceive</strong>.pxOnTCPReceive = Callback</em>OnReceive;
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 15, 2019</div><div class="thread-post-content">A copy &amp; paste error 🙂
+<blockquote>
+  I would preferred to have used semaphores.
+</blockquote>
+When using semaphores, you would have to check all sockets that are owned by the task. I would embed each socket in an object that describes exactly the current status.
+If you look at the FTP/HTTP server on <a href="https://www.freertos.org/FreeRTOS-Labs/downloads/160919_FreeRTOS_Labs.zip?dl=0">freertos/tcp</a>, it will become clear what I mean.
+The status can be:
+<ul>
+<li>Wait for connect</li>
+<li>Receiving a file</li>
+<li>Sending a file</li>
+<li>Idle state, waiting for a new command</li>
+<li>Waiting for a closure</li>
+</ul>
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eduardo1966">eduardo1966</a> on April 15, 2019</div><div class="thread-post-content">thanks for the answer
+I cannot find that example!
+The only place that I cand find using <strong>FREERTOS<em>SO</em>SET_SEMAPHORE</strong> is:
+160919<em>FreeRTOS</em>Labs/FreeRTOS-Plus/Source/FreeRTOS-Plus-TCP/protocols/NTP/NTPDemo.c
+Nevertheless, now that thye callbacks are almost working maybe I&#8217;ll stick with them 🙂
+I still have a problem which may be the result of my misunderstanding.
+This is the callback for Receiving:
+~~~
+static BaseType<em>t Callback</em>OnReceive ( Socket<em>t xSocket, void * pData, size</em>t xLength )
+{
+    Callback<em>Message</em>t Callback_Message;
+<pre><code>Callback_Message.type = Callback_Receive;
+Callback_Message.Receive.xSocket = xSocket;
+Callback_Message.Receive.pData   = pData;
+Callback_Message.Receive.xLength = xLength;
+if ( xQueueSend ( xQueue_Callback, (void*) &amp;Callback_Message, 0 ) != pdPASS )
+    /* In case there is no space in the Queue,
+     * we should print something to the service port but we are inside FreeRTOS IP so it's better just increment a counter.
+     * The printing will take place in the main loop.
+     */
+    xQueue_Callback_Errors++;
+return 1;
+</code></pre>
+}
+~~~
+I just put the pointer for the data and the size of the data into a message queue.
+On the main task then:
+~~~
+                case Callback<em>Receive:
+                {
+                    static uint8</em>t Data [1000];
+                    int32_t receivedData;
+<pre><code>                receivedData = FreeRTOS_recv ( Callback_Message.Receive.xSocket, Data/*pvBuffer*/, sizeof(Data)/*xBufferLength*/, 0/*xFlags*/ );
+                if ( receivedData == FREERTOS_ECLOSED )
+                    SP_Printf ( "Socket %d is not connected", Callback_Message.Receive.xSocket );
+                else
+                    SP_Printf ( "Callback_Receive Callback_Message.Receive.xSocket %d Callback_Message.Receive.xLength %d receivedData %d",
+                                    Callback_Message.Receive.xSocket, Callback_Message.Receive.xLength, receivedData );
+            }break;
+</code></pre>
+~~~
+I call FreeRTOS_recv to get the data out. Is this correct? I can only see receivedData with -128 (connection closed) or 0 (zero bytes).
+Should I retrieve the data inside the callback?
+That would mean allocating a buffer of the size of the message, copy the data and free it after processing&#8230; Is this the right approach?
+How does FreeRTOS IP know that the data received has been used and therefor can be discarded?
+thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 15, 2019</div><div class="thread-post-content"><blockquote>
+  I cannot find that example!
+</blockquote>
+Sorry, you&#8217;re right: the example doesn&#8217;t use a semaphore but <code>FreeRTOS_select()</code>. The implementation is the same however: every socket is embedded in a structure that stores the status of the connection. All sockets are checked in every loop.
+<blockquote>
+  160919<em>FreeRTOS</em>Labs
+</blockquote>
+Please note that the +TCP sources in that distribution are very old. It is still there because of the old demo&#8217;s that used +FAT, and the FTP/HTTP servers.
+The latest release of +FAT can be found on the <a href="https://freertos.org/FreeRTOS-Labs/downloads/FreeRTOS-Plus-FAT-160919a-MIT.zip?dl=0">/labs download page</a>. +TCP can be found on e.g. <a href="https://github.com/aws/amazon-freertos/">github/aws</a>
+<blockquote>
+  This is the callback for Receiving:
+  <code>static BaseType_t Callback_OnReceive ( Socket_t xSocket, void * pData, size_t xLength )</code>
+  <code>{</code>
+   <code>Callback_Message_t Callback_Message;</code>
+   <code>Callback_Message.type = Callback_Receive;</code>
+   <code>Callback_Message.Receive.xSocket = xSocket;</code>
+   <code>Callback_Message.Receive.pData   = pData;</code>
+   <code>Callback_Message.Receive.xLength = xLength;</code>
+</blockquote>
+Oops: the pointer <code>pData</code> will become invalid after the function returns. So you only access it from within this function.
+<blockquote>
+  I call FreeRTOS_recv to get the data out. Is this correct?
+</blockquote>
+Yes that is OK.
+<blockquote>
+  I can only see receivedData with -128 (connection closed) or 0 (zero bytes).
+</blockquote>
+The data were flushed ( not stored ) because your function <code>Callback_OnReceive()</code> returned a positive value. When it returns zero, the data will be stored in the RX stream buffer of the socket.
+<blockquote>
+  Should I retrieve the data inside the callback?
+</blockquote>
+No let the socket store it and you retrieve it later.
+<blockquote>
+  How does FreeRTOS IP know that the data received has been used and therefore can be discarded?
+</blockquote>
+So yes, it looks at the return value: 1 = data consumed, 0 = please store data
+<blockquote>
+  if ( receivedData == FREERTOS_ECLOSED )
+</blockquote>
+Note that there are two error codes that are not fatal: <code>-pdFREERTOS_ERRNO_EAGAIN</code> and <code>-pdFREERTOS_ERRNO_EINTR</code>. All other negative values must be treated in the same way as <code>-pdFREERTOS_ERRNO_ENOTCONN</code>: call <code>closesocket()</code>.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eduardo1966">eduardo1966</a> on April 15, 2019</div><div class="thread-post-content">I had some feeling about the return 1; on the callback function.
+So I followed the code after returning and in fact on the file:
+FreeRTOS<em>Sockets.c, version V2.0.7, line 3021
+~~~
+                        pxSocket->u.xTCP.pxHandleReceive( (Socket</em>t <em>)pxSocket, ( void</em> )ucReadPtr, ( size_t ) ulCount );
+~~~
+Nothing is done with the value returned!!!
+Is there any &#8216;#define&#8217; trick here?
+Could I have an outdated file?
+I have checked in FreeRTOS 10.2.0, V2.0.11 that I have downloaded and the line is the same.
+The return value is also not used.
+Could the feature:
+value  1 = data consumed, 0 = please store data
+be not yet implemented?
+thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 15, 2019</div><div class="thread-post-content">Oops, my bad: there has been an earlier version in which the return code was used. But there was a problem with that solution and then we decided to always remove the data from the RX stream buffer:
+~~~
+    pxSocket->u.xTCP.pxHandleReceive( (Socket<em>t *)pxSocket, ( void* )ucReadPtr, ( size</em>t ) ulCount );
+    uxStreamBufferGet( pxStream, 0ul, NULL, ( size_t ) ulCount, pdFALSE );
+~~~
+It was a theretical problem: suppose that the Receive handler function returns 0, 1, 0, 1, The wrong data would be kept in the RX buffer.
+You can either consume the data within the handler, or copy/store it in a separate circular buffer, and pass it to the task. I&#8217;m sorry about that.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eduardo1966">eduardo1966</a> on April 16, 2019</div><div class="thread-post-content">Got it 🙂
+Could I suggest that maybe it is better to do it the other way. Never to take the data out.
+In this way no buffer needs to be allocated by using pvPortMalloc in the callback function:
+~~~
+    pData<em>new = pvPortMalloc ( xLength );
+    memcpy ( pData</em>new, pData, xLength );
+~~~
+Instead this is done in the receiver task:
+~~~
+    pData<em>new = pvPortMalloc ( Callback</em>Message.Receive.xLength );
+    receivedData = FreeRTOS<em>recv ( Callback</em>Message.Receive.xSocket, pData<em>new/*pvBuffer*/,  Callback</em>Message.Receive.xLength, 0/<em>xFlags</em>/ );
+~~~
+This would make the time inside the callback function smaller and deterministic. The allocation method can be time underterministic (I think there are some heap management methods in FreeRTOS that are deterministic but others aren&#8217;t&#8230;).
+Instead of allocating memory one could declare a static variable of say 100 bytes, big enough to conatin any legal message. This would make the code faster and deterministic.
+Another way would be to use a setsockopt call:
+~~~
+reeRTOS<em>setsockopt ( IPreceiver</em>Socket, 0, FREERTOS<em>SO</em>TCP<em>RECV</em>HANDLER<em>CONSUME</em>DATA, 0 or 1 &#8230; );
+~~~
+Before setting the callback function change FREERTOS<em>SO</em>TCP<em>RECV</em>HANDLER<em>CONSUME</em>DATA to 0, don&#8217;t consume or 1, consume.
+If this is called after setting the callback function, it has no effect.
+Default value could be 0, don&#8217;t consume.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 16, 2019</div><div class="thread-post-content">Hi Eduardo, personally I would not make a new socket option, just introduce a new macro <code>ipconfigTCP_RECV_HANDLER_CONSUMES_DATA</code>, which is non-zero by default.
+I&#8217;m afraid that I don&#8217;t have enough time to transform this proposal into a pull-request. It needs a bit of study within the function <code>lTCPAddRxdata()</code>, and good testing.
+If I were you, I would either use select() or associate a semaphore with the sockets, and store each socket handle in a struct. The struct&#8217;s will tell in what stage the connection is.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eduardo1966">eduardo1966</a> on April 17, 2019</div><div class="thread-post-content">It seems however there is a timing problem.
+We are running FreeRTOS+IP on a Atmel Cortex M7. The other end is a Linux system with a much faster processor.
+Using the callback mechanism it seems that the first message sent just after establishing connection, is lost.
+When a connection is established the callback function is called:
+~~~
+static void Callback<em>OnConnectDisconnect ( Socket</em>t xSocket, BaseType<em>t ulConnected )
+{
+    Callback</em>Message<em>t Callback</em>Message;
+<pre><code>Callback_Message.type = Callback_Connect_Disconnect;
+Callback_Message.Connect_Disconnect.xSocket = xSocket;
+Callback_Message.Connect_Disconnect.ulConnected = ulConnected;
+if ( xQueueSend ( xQueue_Callback, (void*) &amp;Callback_Message, 0 ) != pdPASS )
+    /* In case there is no space in the Queue,
+     * we should print something to the service port but we are inside FreeRTOS IP so it's better just increment a counter.
+     * The printing will take place in the main loop.
+     */
+    xQueue_Callback_Errors++;
+</code></pre>
+}
+~~~
+Which creates a message to be processed by the IP receiver task that is waiting on a queue
+~~~
+        if ( xQueueReceive ( xQueue<em>Callback, &amp;Callback</em>Message, portMAX<em>DELAY ) )
+        {
+            switch ( Callback</em>Message.type )
+            {
+                case Callback<em>Connect</em>Disconnect:
+                {
+                    F<em>TCP</em>UDP<em>Handler</em>t Handler<em>OnReceive;
+                    if ( Callback</em>Message.Connect<em>Disconnect.ulConnected )
+                    {
+                        IPreceiver</em>Socket = FreeRTOS<em>accept ( IPaccept</em>Socket, &amp;xClient, &amp;xSize );
+<pre><code>                    /* Install a callback for receiving TCP data. */
+                    Handler_OnReceive.pxOnTCPReceive = Callback_OnReceive;
+                    FreeRTOS_setsockopt ( IPreceiver_Socket, 0, FREERTOS_SO_TCP_RECV_HANDLER, (void *) &amp;Handler_OnReceive, sizeof(Handler_OnReceive) );
+</code></pre>
+~~~
+So there is some time until FreeRTOS<em>setsockopt is called to set the callback function for FREERTOS</em>SO<em>TCP</em>RECV_HANDLER.
+If on the Linux system a put a delay of 1 second before sending the message it works fine.
+It seems that a message sent before FreeRTOS_setsockopt is called, is lost.
+Any ideas how to solve this?
+thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 17, 2019</div><div class="thread-post-content">Eduardo, I&#8217;m attaching the source code for a telnet server.
+It doesn&#8217;t use any blocking code, in stead, it blocks on a semaphore.
+Only <code>xTelnet.xParentSocket</code> is attached to the semaphore. All child sockets will inherit this setting.
+I just tested the module with real hardware, and it works well. I hope that this gives ideas for a different approach.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 17, 2019</div><div class="thread-post-content">About your last post: it is possible that the first packet comes immediately after the SYN/ACK, and that the first data packet gets lost because the recv handler isn&#8217;t set yet.
+Solution: set the socket option <code>FREERTOS_SO_TCP_RECV_HANDLER</code> on the parent socket. It will be automatically inherited by all child sockets. That should solve the &#8220;timing problem&#8221;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 17, 2019</div><div class="thread-post-content">While 2 posts are waiting for moderation&#8230;, I try it from a different IP-address.
+Please apply <code>FREERTOS_SO_TCP_RECV_HANDLER</code> to the parent socket. It will be inherited by the child sockets and you won&#8217;t loose the first packet.
+Also I attached a ZIP file as an example of using semaphores.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS IP callbacks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/eduardo1966">eduardo1966</a> on April 17, 2019</div><div class="thread-post-content">It works, thanks.
+Another bug bites the dust 🙂
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

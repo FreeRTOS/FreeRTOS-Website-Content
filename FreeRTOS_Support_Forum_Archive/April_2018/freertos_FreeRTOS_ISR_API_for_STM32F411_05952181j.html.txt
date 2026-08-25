@@ -1,0 +1,258 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS ISR API for STM32F411 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2018/freertos_FreeRTOS_ISR_API_for_STM32F411_05952181j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS ISR API for STM32F411 - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS ISR API for STM32F411Posted by abeltom87 on April 7, 2018Hello Forum, I am trying go handle a receive Interrupt on STM32F411 Eval board using the FreeRTOS API. However, xSemaphoreGiveFromISR is the API that is causing the problem. When the interrut occurs, i.e when the Rx line receives a character from user, the program freezes, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2018/freertos_FreeRTOS_ISR_API_for_STM32F411_05952181j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS ISR API for STM32F411Posted by abeltom87 on April 7, 2018Hello Forum, I am trying go handle a receive Interrupt on STM32F411 Eval board using the FreeRTOS API. However, xSemaphoreGiveFromISR is the API that is causing the problem. When the interrut occurs, i.e when the Rx line receives a character from user, the program freezes, [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS ISR API for STM32F411 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202927' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202927' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202927' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202927' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147030' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2018%2Ffreertos_FreeRTOS_ISR_API_for_STM32F411_05952181j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2018%2Ffreertos_FreeRTOS_ISR_API_for_STM32F411_05952181j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147030">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2018_freertos_support_forum_archive_index.html/">April 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS ISR API for STM32F411</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abeltom87">abeltom87</a> on April 7, 2018</div><div class="thread-post-content">Hello Forum,
+I am trying go handle a receive Interrupt on STM32F411 Eval board using the FreeRTOS API. However,
+<code>xSemaphoreGiveFromISR</code> is the API that is causing the problem. When the interrut occurs, i.e when the Rx line receives a character from user, the program freezes, remains stuck until Reset. If i do not use the FreeRTOS APIs for ISR , the Rx Interrupt works, please see code below.  So i know the Interrupt is working, when i turn <code>USE_FREERTOS_ISR_API</code> in my code off and i can see the received byte on my terminal program. Also i have referred to chapter 6 of the FreeRTOS handson guide manual regarding Interrupt management.
+void USART2<em>IRQHandler(void)
+    {
+        #ifndef USE</em>FREERTOS<em>ISR</em>API
+        if (USART<em>GetITStatus(USART2, USART</em>IT<em>RXNE))
+        {
+            Rx</em>Cplt<em>flag =1
+            Recvd</em>word = USART<em>ReceiveData(USART2);
+            USART</em>ClearITPendingBit(USART2, USART<em>IT</em>RXNE);
+<pre><code>    }
+        #else /*Freertos APIS are used*/
+    static BaseType_t xHigherPriorityTaskWoken;
+    xHigherPriorityTaskWoken = pdFALSE;
+    xSemaphoreGiveFromISR( xBinarySemaphore, &amp;xHigherPriorityTaskWoken );
+    //xSemaphoreGive(xBinarySemaphore);
+    taskENTER_CRITICAL() ;
+    if (USART_GetITStatus(USART2, USART_IT_RXNE))
+    {
+        Recvd_word = USART_ReceiveData(USART2);
+        USART_ClearITPendingBit(USART2, USART_IT_RXNE);
+    }
+    if ( xHigherPriorityTaskWoken != pdFALSE )
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    taskEXIT_CRITICAL();
+        #endif
+</code></pre>
+}
+`
+I have created two other tasks which are running fine. Here are my sample task functions,
+~~~
+int main(void)
+{
+<pre><code>SystemInit();
+init_USART2();
+init_led_gpios();
+enable_usart2_irq();
+xBinarySemaphore = xSemaphoreCreateBinary();
+// Create a task
+// Stack and TCB are placed in CCM of STM32F4
+// The CCM block is connected directly to the core, which leads to zero wait states
+if( xBinarySemaphore != NULL )
+{
+    xTaskCreateStatic(vTask1_print, "task1_print", TASK1_STACK_SIZE, NULL, 5,
+            printTask1_Stack, &amp;Task1Buff);
+    xTaskCreateStatic(vTask2_print, "task2_print", TASK2_STACK_SIZE, NULL, 1,
+            printTask2_Stack, &amp;Task2Buff);
+</code></pre>
+<h1>ifdef USE<em>FREERTOS</em>ISR_API</h1>
+<pre><code>    xTaskCreateStatic(vTask_ISR_Handler, "task3_isr", TASK3_STACK_SIZE, NULL, 2,
+                    printTask3_Stack, &amp;Task3Buff);
+</code></pre>
+<h1>endif</h1>
+<pre><code>    USART_TX_string("Starting scheduler...rn");
+    vTaskStartScheduler();  // should never return
+}
+while (1)
+{}
+</code></pre>
+}
+void vTask1_print(void* p)
+{
+    while (1)
+    {
+<pre><code>    USART_TX_string("Task1...rn");
+</code></pre>
+<h1>ifndef USE<em>FREERTOS</em>ISR_API</h1>
+<pre><code>    if (Rx_Cplt_flag == 1)
+    {
+        USART_TX_byte(Recvd_word);
+        Rx_Cplt_flag = 0;
+    }
+</code></pre>
+<h1>endif</h1>
+<pre><code>    vTaskDelay(500);
+}
+vTaskDelete(NULL);
+</code></pre>
+}
+void vTask2_print(void* p)
+{
+    while (1)
+    {
+<pre><code>    toggle_leds();
+    vTaskDelay(1000);
+}
+vTaskDelete(NULL);
+</code></pre>
+}
+void vTask<em>ISR</em>Handler(void *p)
+{
+    while(1)
+    {
+        xSemaphoreTake(xBinarySemaphore, 10000);
+        USART_TX_byte(Recvd_word);
+        vTaskDelay(5000);
+    }
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS ISR API for STM32F411</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 7, 2018</div><div class="thread-post-content">You probably need to set the priority of the interrupt to somethng allowable by FreeRTOS to use the API in the interrupt. If you stop the program with a debugger, you will probably find it has hung inside an asssert.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS ISR API for STM32F411</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abeltom87">abeltom87</a> on April 7, 2018</div><div class="thread-post-content">Thank you for your response, im not able to Debug since OpenOCD is not working correctly on my Toolchain, 
+However, i went through this https://www.freertos.org/RTOS-Cortex-M3-M4.html
+And did the following:
+~~~
+NVIC<em>USARTStruct.NVIC</em>IRQChannelPreemptionPriority = 17;
+~~~
+in my USART IRQ init routine, since <code>configMAX_SYSCALL_INTERRUPT_PRIORITY</code> is defined as 16.  It still does not work as expected
+From my FreeRTOSConfig.h file:
+~~~
+/* Cortex-M specific definitions. */
+<h1>ifdef __NVIC<em>PRIO</em>BITS</h1>
+/* __BVIC<em>PRIO</em>BITS will be specified when CMSIS is being used. */
+<h1>define configPRIO_BITS         __NVIC_PRIO_BITS</h1>
+<h1>else</h1>
+<h1>define configPRIO_BITS         4        /* 15 priority levels */</h1>
+<h1>endif</h1>
+<h1>define configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY   0xf</h1>
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY 1</h1>
+<h1>define configKERNEL<em>INTERRUPT</em>PRIORITY   ( configLIBRARY<em>LOWEST</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+<h1>define configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY  ( configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 &#8211; configPRIO</em>BITS) )</h1>
+<h1>define configASSERT( x ) if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); for( ;; ); }</h1>
+//#define configASSERT(  x  )     if( ( x ) == 0 ) vAssertCalled( <strong>FILE</strong>, <strong>LINE</strong> )
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS ISR API for STM32F411</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abeltom87">abeltom87</a> on April 9, 2018</div><div class="thread-post-content">Okay this might sound stupid and unreasonable but i left the priorities as they were (unchanged), and i removed <code>taskENTER_CRITICAL();</code> and <code>taskEXIT_CRITICAL();</code>  calls and it worked as expected. I cannot explain why.  And i still have this feeling that something is still terrribly wrong, since:
+  a)  the default NVIC priority of USART2 is set to 0 ,
+  b)  <code>configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY</code> is set to 5.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS ISR API for STM32F411</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on April 9, 2018</div><div class="thread-post-content">You should not be using taskENTER<em>CRITICAL() or taskEXIT</em>CRITICAL() in the interrupt handler anyway so it makes sense that removing those calls prevent unexpected behavior. They don&#8217;t end in FromISR, and they are the only functions that are allowed. FreeRTOS and the hardware manage the interrupt nesting for you. Which FreeRTOS version are you using? I think your IRQ priorities are screwy and using V10 with configASSERT() enabled may help find errors.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS ISR API for STM32F411</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abeltom87">abeltom87</a> on April 9, 2018</div><div class="thread-post-content">Thanks for the quick response, i am using FreeRTOSv9, and cofigASSERT is also enabled as I mentioned previously. 
+Just so that i understand correct, if there is a critical section inside a IRQ Handler, would it not make sense to use those calls, since i do not want other interrupts to occur.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS ISR API for STM32F411</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 9, 2018</div><div class="thread-post-content">Although V10 has more asserts to try and catch all interrupt priority issues, even V9 should assert if you call taskENTER<em>CRITICAL() from an interrupt.  See line 419 here https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V9.0.0/FreeRTOS/Source/portable/GCC/ARM</em>CM4F/port.c .
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS ISR API for STM32F411</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 9, 2018</div><div class="thread-post-content">V9 has a lot of asserts to try and catch interrupt configuration errs, 
+but V10 has more (I think it checks just about everything, including the 
+number of priority bits configured actually matches the hardware).
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS ISR API for STM32F411</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/abeltom87">abeltom87</a> on April 10, 2018</div><div class="thread-post-content">So a small update: Its clear to me what was wrong with the critical section calls, kernel is responsible for that purpose,  theres no need to do it explicitly in an ISR.
+However, I still fail to understand fully whats happening with configASSERT;
+When i compiled and executed in Debug mode, seemed like configASSERT was ignored, but in Release mode , it sits in this eternal for loop,<code>configASSERT( x ) if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); for( ;; ); }</code>
+once i commented this out, it works for Release as well.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

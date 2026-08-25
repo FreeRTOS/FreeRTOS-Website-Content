@@ -1,0 +1,227 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What&#039;s the right way to go into and return from stop mode? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2019/freertos_Whats_the_right_way_to_go_into_and_return_from_stop_mode_04c22d6e9aj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="What&#039;s the right way to go into and return from stop mode? - FreeRTOS" />
+<meta property="og:description" content="What&#8217;s the right way to go into and return from stop mode?Posted by panicdave on March 8, 2019I&#8217;m running FreeRTOS 10.1.1 (originally ran into this problem on 8.2.1) on a STM32F746. I have a main thread and two threads, separate read and write, to service the usb serial port. Everything works fine until I cycle &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2019/freertos_Whats_the_right_way_to_go_into_and_return_from_stop_mode_04c22d6e9aj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="What&#8217;s the right way to go into and return from stop mode?Posted by panicdave on March 8, 2019I&#8217;m running FreeRTOS 10.1.1 (originally ran into this problem on 8.2.1) on a STM32F746. I have a main thread and two threads, separate read and write, to service the usb serial port. Everything works fine until I cycle [&hellip;]" />
+<meta name="twitter:title" content="What&#039;s the right way to go into and return from stop mode? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203083' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203083' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203083' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203083' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147628' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2019%2Ffreertos_Whats_the_right_way_to_go_into_and_return_from_stop_mode_04c22d6e9aj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2019%2Ffreertos_Whats_the_right_way_to_go_into_and_return_from_stop_mode_04c22d6e9aj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147628">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2019_freertos_support_forum_archive_index.html/">March 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">What&#8217;s the right way to go into and return from stop mode?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/panicdave">panicdave</a> on March 8, 2019</div><div class="thread-post-content">I&#8217;m running FreeRTOS 10.1.1 (originally ran into this problem on 8.2.1) on a STM32F746.
+I have a main thread and two threads, separate read and write, to service the usb serial port. Everything works fine until I cycle the device into and back out of low power (&#8220;stop&#8221;) mode. At some random point after this, can be in an instant or a minute or more later, the processor hangs in xQueueSemaphoreTake(), called from the the read thread. I added some logging and see that in normal operation it looks like the CPU only passes through xQueueSemaphoreTake() once each time it&#8217;s called, but in the hang condition it&#8217;s comes back around to call vTaskPlaceOnEventList() a second time, which creates a loop in the linked list, then on the third time around it hangs in vListInsert() since the task&#8217;s pxNext points back to itself. I added a listIS<em>CONTAINED</em>WITHIN() check to vListInsert before adding the item, but it just punted the error down the road a little bit. (It would then be stuck in the xQueueSemaphoreTake() loop, as I recall..)
+I suspect the problem is how I&#8217;m putting the device to sleep and waking it up. Here&#8217;s the order I&#8217;m doing things in:
+~~~
+  USB<em>deinit(); // de-init USB device, doesn&#8217;t touch threads
+  HAL</em>SuspendTick();
+  osThreadSuspendAll();
+  enterLowPower(); // turns off peripherals, slows clock speed to minimum
+  while ( !unlock )
+  {
+    HAL<em>PWR</em>EnterSTOPMode(PWR<em>LOWPOWERREGULATOR</em>ON,PWR<em>STOPENTRY</em>WFI);
+  }
+  exitLowPower();
+  HAL<em>ResumeTick();
+  USB</em>Init();
+  osThreadResumeAll();
+~~~
+Does anything there look suspicious? I&#8217;ve tweaked the order of those steps and played around with the semaphore timeouts but it only moves the hang from one place to another. Is there any other information I can dig up to help sort this out?
+Many thanks!
+</div></div><div class="thread-post"><h3 class="thread-post-title">What&#8217;s the right way to go into and return from stop mode?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 8, 2019</div><div class="thread-post-content"><blockquote>
+  Everything works fine until I cycle the 
+  device into and back out of low power (&#8220;stop&#8221;) mode. 
+</blockquote>
+What does stop mode do?  By which I mean, what does it turn off?  (e.g., 
+does it just turn clocks off or does it also clear RAM contents)?
+Where are you entering stop mode?  In a tickless idle implementation, or 
+idle task, or somewhere else?  The code you provided does not look like 
+it is using the tickless idle mode functionality.
+<blockquote>
+  vTaskPlaceOnEventList() a second time, which creates a loop in the 
+  linked list, then on the third time around it hangs in vListInsert() 
+  since the task&#8217;s pxNext points back to itself. 
+</blockquote>
+This is often a symptom of incorrect interrupt priority configurations. 
+Do you have configASSERT() defined (when using V10.1.1)?
+<blockquote>
+  I suspect the problem is how I&#8217;m putting the device to sleep and waking 
+  it up. Here&#8217;s the order I&#8217;m doing things in:
+     USB<em>deinit(); // de-init USB device, doesn&#8217;t touch threads
+     HAL</em>SuspendTick();
+     osThreadSuspendAll();
+     enterLowPower(); // turns off peripherals, slows clock speed to minimum
+     while ( !unlock )
+     {
+       HAL<em>PWR</em>EnterSTOPMode(PWR<em>LOWPOWERREGULATOR</em>ON,PWR<em>STOPENTRY</em>WFI);
+     }
+     exitLowPower();
+     HAL<em>ResumeTick();
+     USB</em>Init();
+     osThreadResumeAll();
+  Does anything there look suspicious? 
+</blockquote>
+I don&#8217;t know the implementation of the functions here but in summary, 
+yes, there is potential for race conditions here.  What sets &#8216;unlock&#8217;?
+</div></div><div class="thread-post"><h3 class="thread-post-title">What&#8217;s the right way to go into and return from stop mode?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/panicdave">panicdave</a> on March 12, 2019</div><div class="thread-post-content">On Mar 8, 2019, at 8:57 AM, Richard Barry <a href="/FreeRTOS_Support_Forum_Archive/March_2019/&#109;&#x61;&#x69;&#108;&#116;&#x6f;:&#114;&#x74;&#x65;&#108;&#64;&#x75;s&#101;&#x72;&#x73;&#46;&#115;&#x6f;u&#114;&#x63;&#x65;&#102;&#111;&#x72;&#103;&#101;&#x2e;&#x6e;&#101;&#x74;">&#114;&#x74;&#x65;&#108;&#64;&#x75;s&#101;&#x72;&#x73;&#46;&#115;&#x6f;u&#114;&#x63;&#x65;&#102;&#111;&#x72;&#103;&#101;&#x2e;&#x6e;&#101;&#x74;</a> wrote:
+<blockquote>
+  <blockquote>
+    Everything works fine until I cycle the 
+    device into and back out of low power (&#8220;stop&#8221;) mode.
+  </blockquote>
+  What does stop mode do? By which I mean, what does it turn off? (e.g., 
+  does it just turn clocks off or does it also clear RAM contents)?
+</blockquote>
+Stop turns off clocks but retains RAM. I have the RTC waking it up every second to reset the watchdog, and button interrupts also wake it up so it can check if the unlock button has been pressed.
+<blockquote>
+  Where are you entering stop mode? In a tickless idle implementation, or 
+  idle task, or somewhere else? The code you provided does not look like 
+  it is using the tickless idle mode functionality.
+</blockquote>
+We’re not using tickless idle, no. (I hadn’t heard of it until digging in trying to sort this bug out..) Would it make a difference? We suspend threads then turn off SysTick, so xPortSysTickHandler() isn’t getting called, so I assume the idle task is irrelevant here? The pseudocode snippet below is run when the device’s lock button is pressed.
+<blockquote>
+  <blockquote>
+    vTaskPlaceOnEventList() a second time, which creates a loop in the 
+    linked list, then on the third time around it hangs in vListInsert() 
+    since the task&#8217;s pxNext points back to itself.
+  </blockquote>
+  This is often a symptom of incorrect interrupt priority configurations. 
+  Do you have configASSERT() defined (when using V10.1.1)?
+</blockquote>
+Yep, configASSERT() is defined as an infinite loop, and as far as I know I haven’t hit it. (I double-checked the disassembly to verify it picked up that definition of the function.)
+<blockquote>
+  <blockquote>
+    I suspect the problem is how I&#8217;m putting the device to sleep and waking 
+    it up. Here&#8217;s the order I&#8217;m doing things in:
+    USB<em>deinit(); // de-init USB device, doesn&#8217;t touch threads
+    HAL</em>SuspendTick();
+    osThreadSuspendAll();
+    enterLowPower(); // turns off peripherals, slows clock speed to minimum
+    while ( !unlock )
+    {
+       HAL<em>PWR</em>EnterSTOPMode(PWR<em>LOWPOWERREGULATOR</em>ON,PWR<em>STOPENTRY</em>WFI);
+    }
+    exitLowPower();
+    HAL<em>ResumeTick();
+    USB</em>Init();
+    osThreadResumeAll();
+    Does anything there look suspicious?
+  </blockquote>
+  I don&#8217;t know the implementation of the functions here but in summary, 
+  yes, there is potential for race conditions here. What sets &#8216;unlock&#8217;?
+</blockquote>
+Sorry, that “unlock” variable was an abstraction but more of a distraction. The actual code is reading the GPIO checking if the lock button has been pushed and released. It’s just doing GPIO reads there, nothing that would touch the FreeRTOS state.
+I realize now I was confused about which clock was ticking FreeRTOS. I included the HAL<em>Suspend/ResumeTick() calls up there because I thought those were turning off and on the FreeRTOS ticks, but those only touch the HAL clock, which is running off a peripheral timer. We’re ticking FreeRTOS from SysTick</em>Handler, which is being disabled when we slow down the clock in enterLowPower() and reenabled when we set it back to normal in exitLowPower().
+What I’ve found through trial and error is everything’s okay until we go into full stop or slow and restore the clock. Do either of those and we’ll later get a hang or crash in FreeRTOS. (I can trigger it by generating a lot of activity on the serial port.) It seems like FreeRTOS would be frozen while that’s happening, and the system should be back to the same state when it’s unfrozen.. But I guess not. 🙁
+I’ll keep poking at it. If you have any suggestions or things I should check please let me know!
+Thanks,
+-Dave
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

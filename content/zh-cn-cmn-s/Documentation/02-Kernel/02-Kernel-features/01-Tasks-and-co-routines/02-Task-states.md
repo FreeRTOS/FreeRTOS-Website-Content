@@ -1,0 +1,56 @@
+---
+title: "任务状态"
+created: 2018-09-20 00:00:00.0 UTC
+categories:
+  - 内核
+description: 任务状态的概念
+relatedLinks:
+  - title: API 引用——任务创建
+    link: /Documentation/02-Kernel/04-API-references/01-Task-creation/00-TaskHandle/
+  - title: API 引用——任务控制
+    link: /Documentation/02-Kernel/04-API-references/02-Task-control/00-Task-control/
+  - title: API 引用——任务实用程序
+    link: /Documentation/02-Kernel/04-API-references/03-Task-utilities/00-Task-utilities/
+---
+
+[[有关任务的更多信息……](/Documentation/02-Kernel/02-Kernel-features/01-Tasks-and-co-routines/00-Tasks-and-co-routines/)]
+
+[FreeRTOS 教程书](/Documentation/02-Kernel/07-Books-and-manual/01-RTOS_book)
+提供关于任务及其行为的其他详细信息。
+
+### 任务状态
+
+任务可以存在于以下状态中：
+
+- **运行**
+
+  当任务实际执行时，它被称为处于运行状态。任务当前正在使用处理器。
+  如果运行 RTOS 的处理器只有一个内核，
+  那么在任何给定时间内都只能有一个任务处于运行状态。
+
+- **准备就绪**
+
+  准备就绪任务指那些能够执行（它们不处于阻塞或挂起状态），
+  但目前没有执行的任务，
+  因为同等或更高优先级的不同任务已经处于运行状态。
+
+- **阻塞**
+
+  如果任务当前正在等待时间或外部事件，则该任务被认为处于阻塞状态。
+  例如，如果一个任务调用vTaskDelay()，它将被阻塞（被置于阻塞状态），
+  直到延迟结束——一个时间事件。
+  任务也可以通过阻塞来等待队列、信号量、事件组、通知或信号量
+  事件。处于阻塞状态的任务通常有一个"超时"期，
+  超时后任务将被超时，并被解除阻塞，
+  即使该任务所等待的事件没有发生。“阻塞”状态下的任务不使用任何处理时间，不能
+  被选择进入运行状态。
+
+- **挂起**
+
+  与“阻塞”状态下的任务一样， “挂起”状态下的任务不能
+  被选择进入运行状态，但处于挂起状态的任务
+  没有超时。相反，任务只有在分别通过
+  vTaskSuspend() 和 xTaskResume() API 调用明确命令时
+  才会进入或退出挂起状态。
+
+![](/media/2018/tskstate.gif)**有效任务状态转换**

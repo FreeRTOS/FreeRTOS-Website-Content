@@ -1,0 +1,145 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to avoid corruption of a external memory - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2017/freertos_How_to_avoid_corruption_of_a_external_memory_c0f97d7bj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How to avoid corruption of a external memory - FreeRTOS" />
+<meta property="og:description" content="How to avoid corruption of a external memoryPosted by didi71 on November 20, 2017Hello everybody. Onto a LPC1768 system I periodically write one external SPI FRAM to store counters. Rarely, during the writing procedure (few ten&#8217;s of microseconds), the FreeRTOS scheduler execute a preemptive task switch that seems to corrupt the data inside the FRAM. &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2017/freertos_How_to_avoid_corruption_of_a_external_memory_c0f97d7bj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="How to avoid corruption of a external memoryPosted by didi71 on November 20, 2017Hello everybody. Onto a LPC1768 system I periodically write one external SPI FRAM to store counters. Rarely, during the writing procedure (few ten&#8217;s of microseconds), the FreeRTOS scheduler execute a preemptive task switch that seems to corrupt the data inside the FRAM. [&hellip;]" />
+<meta name="twitter:title" content="How to avoid corruption of a external memory - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202873' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202873' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202873' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202873' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146764' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2017%2Ffreertos_How_to_avoid_corruption_of_a_external_memory_c0f97d7bj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2017%2Ffreertos_How_to_avoid_corruption_of_a_external_memory_c0f97d7bj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146764">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2017_freertos_support_forum_archive_index.html/">November 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">How to avoid corruption of a external memory</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/didi71">didi71</a> on November 20, 2017</div><div class="thread-post-content">Hello everybody.
+Onto a LPC1768 system I periodically write one external SPI FRAM to store counters. 
+Rarely, during the writing procedure (few ten&#8217;s of microseconds), the FreeRTOS scheduler execute a preemptive task switch that seems to corrupt the data inside the FRAM.
+Which is the best practice to preserve the correct writing procedure?
+I suppose to wrap the writing code inside a:
+1) taskENTER<em>CRITICAL() &amp; taskEXIT</em>CRITICAL() 
+2) vTaskSuspendAll &amp; xTaskResumeAll
+3) Other strategies?
+Which is the best?
+Thanks in advance.
+Diego.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to avoid corruption of a external memory</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 20, 2017</div><div class="thread-post-content">If you have something like a SPI transaction that MUST run on tight timing, personally I find the best option is to make that run on interrupts, or maybe even better use DMA.
+If for some reason you can&#8217;t do that, then I wouldn&#8217;t like making a critical section (taskENTER/EXIT_CRITICAL) that long. (if an ISR can be long enough to cause problems, then you really want to do the above, or you need the critical section). 
+One option would be to make the operation have the highest priority (so there isn&#8217;t another task that could prempt it), or use the vTaskSuspend/ResumeAll tyype of block.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to avoid corruption of a external memory</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/didi71">didi71</a> on November 21, 2017</div><div class="thread-post-content">Hi Richard.
+Thank you so much for your reply.
+Unfortunately my firmware is inherited and I cannot change the architecture.
+The only option is to wrap the FRAM write code inside a taskENTER/EXIT_CRITICAL block.
+I&#8217;ve also to check with a digital oscilloscope the required write timing.
+Diego.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to avoid corruption of a external memory</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 21, 2017</div><div class="thread-post-content">One quick comment, it is very rare to NOT be able to change the software, manyy because you don&#8217;t have it, in which case you can&#8217;t make the simple change either. It can be impractical, but it is rarely impossible. The other case is that yyou have been geven the task with instructions not to make any big changes, at which point the response sometimes is to go to those giving the instructions and present the options and show why it is needed.
+You have a program that as written has a corruption bug, and their are several ways to fix it, which also have the possibility to introduce other, maybe harder to find, problems. Using taskENTER/EXIT_CRITICAL has the issue that it will delay all interrupts for your tens of microseconds. One design issue is to see it this might cause issues with any other device. If there is a device that this might cause an issue with, it very likely will be something very intermintant and hard to figure out.
+It is also possible that the suspend/resume option (which would be less invasive) may not be good enough, if there is an interrupt that takes long enough to process that it delays this operation enough to cause the issue. It takes looking at the whole system to be sure.
+This sort of operation, the need to write a packet of data, where the data must go out as an uninterrupted whole, is one of the critical timing situations that requires careful design to avoid problems. The ideal solution is a DMA transfer, but depending on the processor and other design decisions, that might not be available (if it is, then if you can add the critical section, you probalby have enough access to implement this, it is more work, but isn&#8217;t correct operation worth it). The next best solution is making it interrupt driven with a high priority interrupt.
+Ultimately, someone NEEDS to look at the system as a whole to see what is really needed. Doing a quick solution has just too much chance of introducing another hard to find intermitant bug. If due to management issue, that is really needed, do it but make sure that the possible issue is doecumented so if(when) the intermintant shows up, it can be quicker to solve.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tick rate + serial comm. - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2007/freertos_Tick_rate_serial_comm._1879842.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tick rate + serial comm. - FreeRTOS" />
+<meta property="og:description" content="Tick rate + serial comm.Posted by pedrovt on November 27, 2007Hi, I&#8217;m using freeRTOS in a control project. I have to sample a sensor with a frequency of at least 1kHz and feed that measure into the PI-controller algorithm. The problem is that this will have to be done for two sensors and two controllers &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2007/freertos_Tick_rate_serial_comm._1879842.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Tick rate + serial comm.Posted by pedrovt on November 27, 2007Hi, I&#8217;m using freeRTOS in a control project. I have to sample a sensor with a frequency of at least 1kHz and feed that measure into the PI-controller algorithm. The problem is that this will have to be done for two sensors and two controllers [&hellip;]" />
+<meta name="twitter:title" content="Tick rate + serial comm. - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201543' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201543' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201543' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201543' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141798' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2007%2Ffreertos_Tick_rate_serial_comm._1879842.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2007%2Ffreertos_Tick_rate_serial_comm._1879842.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141798">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/a00104.html" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/FAQ.html" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2007_freertos_support_forum_archive_index.html/">November 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Tick rate + serial comm.</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pedrovt">pedrovt</a> on November 27, 2007</div><div class="thread-post-content">Hi,
+I&#8217;m using freeRTOS in a control project. I have to sample a sensor with a frequency of at least 1kHz and feed that measure into the PI-controller algorithm. The problem is that this will have to be done for two sensors and two controllers &#40;a PI and a PID&#41;. The problem is: what tick rate should I use? I&#8217;ve been using 100000, but from what I&#8217;ve read so far this seems to be at least exaggerated. What would you reccomend? The rtos is running on an ATmega32. 
+I would also like to ask for your help on the following piece of code, which is part of a task:
+&gt; xSerialPutChar&#40; xPort, light/4, 1000&#41;;
+&gt; if&#40; &#40;xSerialGetChar&#40; xPort, rc, 10&#41;==pdPASS&#41; &amp;&amp; &#40;rc&#33;=0x00&#41; &#41;;
+&gt; &#123;
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vChangeOCPWM0&#40;0xFF &#8211; light/4&#41;;
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xSerialPutChar&#40; xPort, rc, 10&#41;;
+&gt; &#125;
+When I send a byte through the serial port, the microcontroller stops responding completely. Could you please tell me what&#8217;s wrong?
+Thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick rate + serial comm.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sotd">sotd</a> on November 27, 2007</div><div class="thread-post-content">100KHz seems very fast for a tick on an AVR.&nbsp; If you need to run your algorithms at 1KHz then why not write a tick hook function and set the tick to 1KHz?&nbsp; http://www.freertos.org/a00016.html
+&gt; xSerialPutChar&#40; xPort, light/4, 1000&#41;; 
+This might be better &#8211;
+xSerialPutChar&#40;xPort, light&gt;&gt;2, 1000&#41;;
+&gt; if&#40; &#40;xSerialGetChar&#40; xPort, rc, 10&#41;==pdPASS&#41; &amp;&amp; &#40;rc&#33;=0x00&#41; &#41;;
+Are you assuming left to right evaluation here?&nbsp; So rc is set by the call to xSerialGetChar&#40;&#41;, then tested as the second &amp;&amp; operand?
+What type is rc?&nbsp; Is it a pointer?&nbsp; If not then should it be &#8211;
+&gt; if&#40; &#40;xSerialGetChar&#40; xPort, &amp;rc, 10&#41;==pdPASS&#41; &amp;&amp; &#40;rc&#33;=0x00&#41; &#41;;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick rate + serial comm.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pedrovt">pedrovt</a> on December 4, 2007</div><div class="thread-post-content">First of all, sorry for not answering faster.
+ I do not want to write a tick hook function since i have to run two controllers in parallel, both at 1kHz. I&#8217;ve changed the tick rate to 10000. 
+ Yes, I am assuming left-to-right evaluation, is it incorrect? rc is a portSHORT. I&#8217;ve tried your suggestions with the following
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40; &#40;xSerialGetChar&#40; xPort, &amp;rc, 10&#41;==pdPASS&#41; &amp;&amp; &#40;rc&#33;=0x00&#41; &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vChangeOCPWM0&#40;0xFF &#8211; light/4&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xSerialPutChar&#40; xPort, rc, 10&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xSerialPutChar&#40; xPort, light/4, 1000&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+What happens is that the program keeps sending rc and light/4 way after I send it a byte, when I just want it to send when it &#42;really&#42; receives a byte. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick rate + serial comm.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jaydmdigital">jaydmdigital</a> on December 4, 2007</div><div class="thread-post-content">You issue is you tick rate it too fast. What is the frequency of your crystal? Maybe 8MHz? At 100Khz you are telling an ISR to execute every 10us. If you only have a prescaler rate of 8us &#40;prescaler is set to Fcpu/64 in the port.c&#41; then all you can ever do is call that routine. However, that routine pushes and pops 32 registers + the PC, and the SREG &#8230; think it can do that in 2us and still send serial? Nope, as soon as it&#8217;s done, the flag is already set and it jumps back into the ISR. At 8Mhz the Fcpu tick time is 125ns &#40;at 16MHz it&#8217;s 62.5ns&#41;. Each instruction &#40;and I don&#8217;t know the actual values&#41; can translate to 2 or more clock ticks. Let&#8217;s say each push and pop takes only 2 clock ticks &#8230; 10us/250ns = 40 instructions in 10us.
+100KHz seems so out of whack with how fast serial can be sent anyway. 115200Baud = 9bits in 78.1us or 1 byte in 625us. Don&#8217;t go over 1000 for your clock tick rate and think about something even less. I use 400 and can service a PID and trig function fast enough to keep locked on target all the while generating motor speed commands based on the trig while the PID locks the speeds of two motors tot he commanded values all while sending a stream of serial &#40;115200baud&#41; at 10Hz &#40;100ms&#41;. 
+How many times per second you you really need to update your PID loop? Does the feedback signal change appreciably during that time? I&#8217;m using 50Hz on mine and it&#8217;s working fine. Does your system react faster than 50Hz &#40;20ms&#41;? 
+FWIW,
+Jay
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick rate + serial comm.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pedrovt">pedrovt</a> on December 5, 2007</div><div class="thread-post-content">I&#8217;ve followed your suggestions, but ran into another problem. One of the tasks sends the ADC&#8217;s first channel value through the serial port. What happens is that after sending around 100 values, the OS stops responding. Here is the code:
+portSHORT main&#40;&#41;
+&#123;
+&#8230;
+&nbsp;&nbsp;&nbsp; xPort=xSerialPortInitMinimal&#40;serialBAUD&#95;RATE,20&#41;;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; xSerialPutChar&#40;xPort,&#8217;M&#8217;,10&#41;;
+&nbsp;&nbsp;&nbsp; xTaskCreate&#40;vUpdateLight,&quot;Light&quot;,configMINIMAL&#95;STACK&#95;SIZE,NULL,mainUpdateLight&#95;TASK&#95;PRIORITY,NULL&#41;;
+&nbsp;&nbsp;&nbsp; xTaskCreate&#40;vUpdateOutput,&quot;Out&quot;,configMINIMAL&#95;STACK&#95;SIZE,NULL,mainUpdateOutput&#95;TASK&#95;PRIORITY,NULL&#41;;
+&nbsp;&nbsp;&nbsp; xTaskCreate&#40;vSend,&quot;Send&quot;,configMINIMAL&#95;STACK&#95;SIZE,NULL,mainSend&#95;TASK&#95;PRIORITY,NULL&#41;;
+&#8230;
+&#125;
+&#8230;
+static void vSend &#40; void &#42;pvParameters&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; &#40; void &#41; pvParameters;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; portTickType xLastWake=xTaskGetTickCount&#40;&#41;;
+&nbsp;&nbsp;&nbsp; const portTickType xSendPeriod=1000;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; for&#40;;;&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; char &#42;value;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itos&#40;light,value&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int i=0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while&#40;value&#91;i&#93; &#33;= &#8216; &#8217;&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xSerialPutChar&#40;xPort,value&#91;i&#93;,1000&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i++;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xSerialPutChar&#40;xPort,&#8217;,&#8217;,10000&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xLastWake=xTaskGetTickCount&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vTaskDelayUntil&#40;&amp;xLastWake,xSendPeriod&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+Can you please help me?
+Thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick rate + serial comm.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jaydmdigital">jaydmdigital</a> on December 5, 2007</div><div class="thread-post-content">My comments after the // on each line. Is there a quote function on this system?
+Jay
+//&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212; 
+const portTickType xSendPeriod=1000;&nbsp;&nbsp; // this is 1000 ticks of the clock not the FCPU
+// If you have clock rate at 1000, this means 1 second &#8230; this is what you want, to send something &#40;if available&#41; every second?
+for&#40;;;&#41; 
+&#123; 
+char &#42;value; // Why not put this above the loop ?
+itos&#40;light,value&#41;; // Every sub function you call requires stack space. Does this function call another function? Think about it, the task stack you configured for minimal &#40;see FreeRTOSconfig.h for the actual size specified for your port&#41; may not be enough for the task stack, and multiple sub function stacks too.
+int i=0; // Declare the var above the loop but initialize it to 0
+while&#40;value&#91;i&#93; &#33;= &#8216; &#8217;&#41; 
+&#123; 
+xSerialPutChar&#40;xPort,value&#91;i&#93;,1000&#41;; // Same here, how many subfunctions does this call?
+i++; 
+&#125; 
+xSerialPutChar&#40;xPort,&#8217;,&#8217;,10000&#41;; // You are telling it to put the char on the queue and to block for a rather long time. Better to use comNO&#95;BLOCK like comtest.c does. You didn&#8217;t include your code to initialize the serial and the serial queues so I can only assume you used the example from comtest.c???
+xLastWake=xTaskGetTickCount&#40;&#41;; 
+vTaskDelayUntil&#40;&amp;xLastWake,xSendPeriod&#41;; // wait 1 second &#40;1hz&#41; if clocktickrate = 1000
+&#125; 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick rate + serial comm.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pedrovt">pedrovt</a> on December 5, 2007</div><div class="thread-post-content">Yes, that was the problem&#8230; value &#40;char&#42;&#41; was filling the processor&#8217;s memory. I&#8217;m not using the example from comtest.c&#8230;this is what i use to initialize the serial port:
+&nbsp;&nbsp;&nbsp; xPort=xSerialPortInitMinimal&#40;serialBAUD&#95;RATE,5&#41;;
+Using NO&#95;BLOCK wouldn&#8217;t stop the task from blocking when necessary?
+Thanks for your support,
+Pedro
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick rate + serial comm.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jaydmdigital">jaydmdigital</a> on December 5, 2007</div><div class="thread-post-content">xPort=xSerialPortInitMinimal&#40;serialBAUD&#95;RATE,5&#41;; 
+So you only allow 5 bytes on your transmit buffer?
+Why would the Tx need to block? It is reading data from the TX queue &#40;of size 5&#41; and sending the chars out when the TX flag is set. No need to block unless you are overflowing your TX buffer. Of course I suppose ti doesn&#8217;t hurt to set a block timeout in this case either but I wanted to know why you would need/want that?
+//&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+signed portBASE&#95;TYPE xSerialPutChar&#40; xComPortHandle pxPort, signed portCHAR cOutChar, portTickType xBlockTime &#41;
+&#123;
+volatile avr32&#95;usart&#95;t&nbsp; &#42;usart = serialPORT&#95;USART;
+&nbsp;&nbsp;&nbsp; /&#42; Place the character in the queue of characters to be transmitted. &#42;/
+&nbsp;&nbsp;&nbsp; if&#40; xQueueSend&#40; xCharsForTx, &amp;cOutChar, xBlockTime &#41; &#33;= pdPASS &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return pdFAIL;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; /&#42; Turn on the Tx interrupt so the ISR will remove the character from the
+&nbsp;&nbsp;&nbsp; queue and send it.&nbsp;&nbsp; This does not need to be in a critical section as
+&nbsp;&nbsp;&nbsp; if the interrupt has already removed the character the next interrupt
+&nbsp;&nbsp;&nbsp; will simply turn off the Tx interrupt again. &#42;/
+&nbsp;&nbsp;&nbsp; usart-&gt;ier = &#40;1 &lt;&lt; AVR32&#95;USART&#95;IER&#95;TXRDY&#95;OFFSET&#41;;
+&nbsp;&nbsp;&nbsp; return pdPASS;
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick rate + serial comm.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pedrovt">pedrovt</a> on December 5, 2007</div><div class="thread-post-content">The 5 bytes shouldn&#8217;t be there. I was working with 20. The reason for the timeout is that the processor will send info to a datalogging system, in other words, just to prevent data from being lost. But i guess 1 second is a lot of time&#8230;now i have to deal with some problems in the PI task, i&#8217;m getting some abnormal values from the PI equation&#8230;
+ Thanks again,
+ Pedro :&#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick rate + serial comm.</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jaydmdigital">jaydmdigital</a> on December 5, 2007</div><div class="thread-post-content">/&#42;&#42;
+ &#42; queue. h
+ portBASE&#95;TYPE xQueueSend&#40;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xQueueHandle xQueue,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; const void &#42; pvItemToQueue,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portTickType xTicksToWait
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#41;;
+ &#42; @param xTicksToWait The maximum amount of time the task should block
+ &#42; waiting for space to become available on the queue, should it already
+ &#42; be full.&nbsp; The call will return immediately if this is set to 0.&nbsp; The
+ &#42; time is defined in tick periods so the constant portTICK&#95;RATE&#95;MS
+ &#42; should be used to convert to real time if this is required.
+FYI. This is good information for me too as serial input is my issue. I want 2-way comm but I&#8217;m at TX only right now until I understand all the mechanics at work.
+Jay
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/RTOS.html" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

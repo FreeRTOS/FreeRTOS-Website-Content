@@ -1,0 +1,184 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>trap instruction for taskYIELD - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2010/freertos_trap_instruction_for_taskYIELD_3740903.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="trap instruction for taskYIELD - FreeRTOS" />
+<meta property="og:description" content="trap instruction for taskYIELDPosted by rbornet on June 14, 2010Hi FreeRTOS board&#033; I&#8217;m trying to understand in details how FreeRTOS works internally to port it to a new architecture &#040;details in a previous thread: https://sourceforge.net/projects/freertos/forums/forum/382005/topic/3738228&#041;. On this architecture I have following possible exceptions/interruptions &#040;simplified subset for readability&#041;: &#045; 8 IRQs &#040;1 high-prio/non maskable and 7 &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2010/freertos_trap_instruction_for_taskYIELD_3740903.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="trap instruction for taskYIELDPosted by rbornet on June 14, 2010Hi FreeRTOS board&#033; I&#8217;m trying to understand in details how FreeRTOS works internally to port it to a new architecture &#040;details in a previous thread: https://sourceforge.net/projects/freertos/forums/forum/382005/topic/3738228&#041;. On this architecture I have following possible exceptions/interruptions &#040;simplified subset for readability&#041;: &#045; 8 IRQs &#040;1 high-prio/non maskable and 7 [&hellip;]" />
+<meta name="twitter:title" content="trap instruction for taskYIELD - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201912' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201912' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201912' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201912' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141420' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2010%2Ffreertos_trap_instruction_for_taskYIELD_3740903.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2010%2Ffreertos_trap_instruction_for_taskYIELD_3740903.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141420">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2010_freertos_support_forum_archive_index.html/">June 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">trap instruction for taskYIELD</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rbornet">rbornet</a> on June 14, 2010</div><div class="thread-post-content">Hi FreeRTOS board&#33;  
+I&#8217;m trying to understand in details how FreeRTOS works internally to port it to a new architecture &#40;details in a previous thread: <a href="https://sourceforge.net/projects/freertos/forums/forum/382005/topic/3738228%29.">https://sourceforge.net/projects/freertos/forums/forum/382005/topic/3738228&#41;.</a>  
+On this architecture I have following possible exceptions/interruptions &#40;simplified subset for readability&#41;:  
+&#45; 8 IRQs &#40;1 high-prio/non maskable and 7 prioritized&#41;<br />
+&#45; 1 software trap exception with higher priority than above mentioned IRQs<br />
+&#45; 1 software trap exception with lower priority than above mentioned IRQs  
+I intended to implement portYield as a software trap exception/interrupt and use one of the 7 level-programmable IRQs for my timer/tick interrupt.  
+In a thread dedicated to ColdFire porting &#40; <a href="https://sourceforge.net/projects/freertos/forums/forum/382005/topic/3443802">https://sourceforge.net/projects/freertos/forums/forum/382005/topic/3443802</a> &#41; I read that trap should not be used for yield since they are synchronous. I don&#8217;t really understand why this is a problem ?  
+Unfortunately I cannot manually generate &#8220;normal&#8221; interrupts &#40;as with INT&#95;FORCE on ColdFire&#41; and only basically have the above mentioned mechanisms at disposal &#40;2 traps and 8 IRQs&#41;. If I understand correctly both YIELD and interrupts must leave the stack in compatible states. I therefore do not really see how I can achieve this with my configuration mentioned above. Any hint? Does this sound similar to any other supported architecture which I could take as example ? I went through the different implementations and didn&#8217;t find any&nbsp; with a similar infrastructure, perhaps I missed one… What is the best approach to adopt in such a situation?  
+Thanks in advance for any hint/help in this matter &#33;  
+</div></div><div class="thread-post"><h3 class="thread-post-title">trap instruction for taskYIELD</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on June 14, 2010</div><div class="thread-post-content">It is difficult to offer an opinion without knowing a few more details about the architecture and your intentions.&nbsp; For a starts:  
+1&#41; Do IRQs and software traps generate identical stack frames?<br />
+2&#41; Can an interrupt and a software trap be exited from using the same instruction?<br />
+3&#41; Are you wanting to support interrupt nesting?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">trap instruction for taskYIELD</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rbornet">rbornet</a> on June 15, 2010</div><div class="thread-post-content">Hi Richard  
+Thanks for your prompt answer and assistance. I know that the information I provided is rather sparse but unfortunately I cannot give much details for moment since the chip documentation has not been publicly disclosed for now.   
+Your questions already gave me some ideas on where to look at and where are the critical points.   
+&gt; 1&#41; Do IRQs and software traps generate identical stack frames?<br />
+Yes. Software traps generate identical stack frames as IRQs &#40;similar to ColdFire&#8217;s <em>trap</em> instructions generating identical stack frames as external IRQs&#41;. What mainly differs on my architecture is that exceptions/IRQs stack frames are pushed on a separate on-chip hardware stack and not atop the software stack pointed by the SP. This mechanism is useful and very efficient for bare-metal/OS-less applications but requires some additional handling when dealing with OS implementations especially context switches.   
+&gt; 2&#41; Can an interrupt and a software trap be exited from using the same instruction?<br />
+Yes both are exited using the same &#8220;return from exception&#8221; instruction. This is one of the reasons why I intended ti implement the yield functionality with a software exception/trap. Since a task can relinquish CPU ownership cooperatively &#40;yield,delay&#41; or preemptively, both mechanisms must be compatible one with another and leave the running state with a compatible stack layout allowing a future “switch in” by any method &#40;cooperative or preemptive&#41;. Am I alright until here ?  
+&gt; 3&#41; Are you wanting to support interrupt nesting?<br />
+Interrupt nesting would be nice but I fear that this would not be &#40;easily&#41; possible with the described infrastructure. Since software exceptions/traps are unmaskable and either have a higher or lower priority than &#42;all&#42; IRQs, I&#8217;m not sure if nesting could be supported. Interrupt nesting would also imply rather complicated handling of the separate hardware &#40;interrupt&#41; stack. In a first try I will probably not support interrupt nesting.  
+For now I can imagine following implementation:<br />
+&#42; portYIELD implemented by a software exception/trap<br />
+&#42; timer interrupt with one of the 7 maskable IRQs level<br />
+&#42; separate &#40;but similar&#41; handlers for timer ints and sw traps: this is as far as I understand what is implemented in ARM7 ports with SWI &#40;GCC/ARM7&#95;xxx/portISR.c&#41; and in the deprecated GCC/MCF5235 port where portYIELD was implemented with a &#8220;trap&#8221; assembler instruction.  
+Do you see any &#8220;no-go&#8221; with this solution or any caveats I would not have taken into consideration?  
+I will start with this &#8220;roadmap&#8221; and keep you posted on my progress.  
+Thanks for your &#8220;professional-grade&#8221; open source support&#33;  
+Regards  
+&nbsp;&nbsp;&nbsp; Romain
+</div></div><div class="thread-post"><h3 class="thread-post-title">trap instruction for taskYIELD</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on June 15, 2010</div><div class="thread-post-content"><blockquote>
+  What mainly differs on my architecture is that exceptions/IRQs stack frames are pushed on a separate on-chip hardware stack
+</blockquote>
+Sounds like the PIC18. That copies the hardware stack to the software stack &#40;and back again&#41; in the context switch. Not efficient.
+</div></div><div class="thread-post"><h3 class="thread-post-title">trap instruction for taskYIELD</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rbornet">rbornet</a> on June 15, 2010</div><div class="thread-post-content">Hi davedoors  
+Thanks for the hint to PIC18. I didn&#8217;t know that this arch had such a hardware stack. I&#8217;ll take a deeper look at it.  
+<blockquote>
+  That copies the hardware stack to the software stack &#40;and back again&#41; in the context switch. Not efficient. 
+</blockquote>
+I know that this is not efficient but no ways to do this differently. This is given by the architecture and is not configurable. This is even worse than just &#8220;in the context switch&#8221;. It would be in every IRQ entry &#42;possibly&#42; causing a context switch &#40;everywhere portSAVE&#95;CONTEXT&#40;&#41; is called&#41;.  
+I will have to consider all these aspects and try to find the best suited implementation to handle all possible cases but I fear that I will have to live with &#8220;dumps/restores&#8221; of the HW stack. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">trap instruction for taskYIELD</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on June 15, 2010</div><div class="thread-post-content"><blockquote>
+  &gt; 2&#41; Can an interrupt and a software trap be exited from using the same instruction?<br />
+  Yes both are exited using the same &#8220;return from exception&#8221; instruction. This is one of the reasons why I intended ti implement the yield functionality with a software exception/trap. Since a task can relinquish CPU ownership cooperatively &#40;yield,delay&#41; or preemptively, both mechanisms must be compatible one with another and leave the running state with a compatible stack layout allowing a future “switch in” by any method &#40;cooperative or preemptive&#41;. Am I alright until here ?
+</blockquote>
+This sounds right to me, although each architecture has its own eccentricities so I can&#8217;t say for sure.  
+It sounds like using a trap is a workable solution.&nbsp; Normally traps are synchronous though, so will be actioned immediately even when inside a critical section.&nbsp; There are some places in the FreeRTOS code where this will &#40;intentionally&#41; happen, but it means you have to restore the interrupt mask state as part of the task context.&nbsp; Attempting to put that simply, a task can have interrupts disabled &#40;either to a certain level or completely&#41; when it yields and yield to a task that has interrupts enabled, when the original task executes again the interrupt mask must be exactly as it was when it yielded.  
+Yielding in a critical section is not a good idea for application code, by the way.  
+<blockquote>
+  &gt; 3&#41; Are you wanting to support interrupt nesting?<br />
+  Interrupt nesting would be nice but I fear that this would not be &#40;easily&#41; possible with the described infrastructure. Since software exceptions/traps are unmaskable and either have a higher or lower priority than &#42;all&#42; IRQs, I&#8217;m not sure if nesting could be supported. Interrupt nesting would also imply rather complicated handling of the separate hardware &#40;interrupt&#41; stack. In a first try I will probably not support interrupt nesting.
+</blockquote>
+Without knowing your architecture fully I could not comment absolutely, but what you say sounds sensible.&nbsp; I would always try to get a port running without nesting first in any case.  
+<blockquote>
+  For now I can imagine following implementation:<br />
+  &#42; portYIELD implemented by a software exception/trap<br />
+  &#42; timer interrupt with one of the 7 maskable IRQs level<br />
+  &#42; separate &#40;but similar&#41; handlers for timer ints and sw traps: this is as far as I understand what is implemented in ARM7 ports with SWI &#40;GCC/ARM7&#95;xxx/portISR.c&#41; and in the deprecated GCC/MCF5235 port where portYIELD was implemented with a &#8220;trap&#8221; assembler instruction.
+</blockquote>
+I would say that sounded like a good starting point.&nbsp; Give it a try and see how you get on.&nbsp; The ARM7 interrupt handlers save the task context as part of their prologue, and restore it as part of their epilogue.&nbsp; This means you have to defined the ISR functions as naked, and provide your own entry and exit code.&nbsp; This is not as hard as it sounds&#33;  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

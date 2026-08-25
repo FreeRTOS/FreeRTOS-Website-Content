@@ -1,0 +1,143 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tick, Pic18 and interrupt priorities - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/December_2004/freertos_Tick_Pic18_and_interrupt_priorities_1196033.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tick, Pic18 and interrupt priorities - FreeRTOS" />
+<meta property="og:description" content="Tick, Pic18 and interrupt prioritiesPosted by fabienphilippe on December 16, 2004Hello Richard, I have some comments to make about the use of interrupt priorities in the pic18 for the tick correctness. You say, in your faq, that in an interrupt occur just before the tick interrupt, there will be a glitch, but all will be &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/December_2004/freertos_Tick_Pic18_and_interrupt_priorities_1196033.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Tick, Pic18 and interrupt prioritiesPosted by fabienphilippe on December 16, 2004Hello Richard, I have some comments to make about the use of interrupt priorities in the pic18 for the tick correctness. You say, in your faq, that in an interrupt occur just before the tick interrupt, there will be a glitch, but all will be [&hellip;]" />
+<meta name="twitter:title" content="Tick, Pic18 and interrupt priorities - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201241' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201241' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201241' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201241' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141250' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2004%2Ffreertos_Tick_Pic18_and_interrupt_priorities_1196033.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2004%2Ffreertos_Tick_Pic18_and_interrupt_priorities_1196033.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141250">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/December_2004_freertos_support_forum_archive_index.html/">December 2004 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Tick, Pic18 and interrupt priorities</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fabienphilippe">fabienphilippe</a> on December 16, 2004</div><div class="thread-post-content">Hello Richard,
+I have some comments to make about the use of interrupt priorities in the pic18 for the tick correctness.
+You say, in your faq, that in an interrupt occur just before the tick interrupt, there will be a glitch, but all will be good next time because the choosen timer is continuous.
+It&#8217;s right if we don&#8217;t &quot;loose&quot; any tick. But the fact is that if first interrupt takes more time than 1/portTICK&#95;RATE&#95;HZ, a tick can be missed and all time based functions can be false.
+My questions are the following :
+ &#45; is it possible to implement the tick as a high priority interrupts, that would just call&nbsp;&nbsp;&nbsp;&nbsp; vTaskIncrementTick&#40;&#41;
+if a low priority interrupt is running ?
+ &#45; are other port implement tick the same way &#40; and same limitation &#41; ?
+Thanks in advance four your attention and work.
+fabien
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick, Pic18 and interrupt priorities</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on December 16, 2004</div><div class="thread-post-content">The PIC18 does allow two priorities of interrupt.&nbsp; The demo is set up to use compatibility mode &#8211; so this feature of the PIC is effectively disabled.
+Calling vTaskIncrementTick&#40;&#41; while a lower priority interrupt is running by itself would not be dangerous because this does not cause a context switch.&nbsp; Calling vTaskSwitchContext&#40;&#41; on the other hand could be more troublesome and requires a change to the interrupt entry/exit routines to guarantee that it would work.
+The demo applications are always intended to be as simple to understand and use as possible.&nbsp; This means that as downloaded they do not support interrupt nesting &#40;the drivers only re-enable interrupts at the end of the ISR&#41;.&nbsp; To allow nesting you have to keep a count of the number of interrupts that are currently in service &#8211; then only restore the context when the interrupt stack has unwound completely.&nbsp; This is very similar to the portENTER&#95;CRITICAL&#40;&#41; and portEXIT&#95;CRITICAL&#40;&#41; functions for the ARM port if you want to see an example &#40;these just keep a count of the nesting level, then only reenable interrupts when it has unwound&#41;.&nbsp; Basically you just have to check that no interrupts are in process before portRESTORE&#95;CONTEXT is called otherwise the interrupt stack will get messed up.
+Supporting interrupt nesting also requires that the task context is always saved in it&#8217;s entirety on entry to an ISR, and restored in it&#8217;s entirety on exit.&nbsp; This is a big overhead if it is not required &#8211; and adds complexity to the application writer.
+This obviously has stack implications on RAM limited devices such as the PIC &#40;the higher priority interrupt may even have a different stack?&nbsp; Can&#8217;t remember&#41;.
+Using an RTOS means most interrupts can be kept very short.&nbsp; Normally the interrupt service routine would do nothing but grab some input and post it on a queue &#40;see the I2C driver on the first TCP/IP demo&#41;.&nbsp; The input would then in fact be processed at task level by a task woken by the data being posted.&nbsp; Keeping interrupt short in this manner means that nesting is nearly always not required.&nbsp; However each application is different and has different processing loads so has to be assessed by itself.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tick, Pic18 and interrupt priorities</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fabienphilippe">fabienphilippe</a> on December 17, 2004</div><div class="thread-post-content">In my idea, tick loss could be correct without many modifications by doing the following :
+ &#45; run a first timer &#40;let&#8217;s call it timer3&#41; with high priority interrupt that only call vTaskIncrementTick3&#40;&#41;
+ &#45; run a 2nd timer &#40;let&#8217;s call it timer1&#41; that is low priority and witch call vTaskSwitchContext&#40;&#41;. Of course, on entering this interrupt, first task would be to update Tick with it&#8217;s tick with Tick3. 
+I think of timer1 and timer3 on pic18.
+By this, even if tick interruption are missed, the tick is not false. finally, as far as timer3 interrupt treatment is very &quot;light&quot;, there&#8217;s no problem letting it run.
+If my point of view is not correct, thank you for correct me.
+fabien
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

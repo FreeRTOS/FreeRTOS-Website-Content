@@ -1,0 +1,181 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yield in critical section? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2006/freertos_Yield_in_critical_section_1494178.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Yield in critical section? - FreeRTOS" />
+<meta property="og:description" content="Yield in critical section?Posted by nobody on May 10, 2006Hi there, I&#8217;m attempting a port of FreeRTOS to the Motorola &#040;now Freescale&#041; CPU32, derivate 68332. If I understand taskYIELD&#040;&#041; correctly, it may not return to the caller &#040;by definition almost&#041;&#8230; however, in the function xTaskResumeAll&#040;&#041;&nbsp; &#040;tasks.c&#041;, it seems possible that taskYIELD&#040;&#041; is called from code &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2006/freertos_Yield_in_critical_section_1494178.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Yield in critical section?Posted by nobody on May 10, 2006Hi there, I&#8217;m attempting a port of FreeRTOS to the Motorola &#040;now Freescale&#041; CPU32, derivate 68332. If I understand taskYIELD&#040;&#041; correctly, it may not return to the caller &#040;by definition almost&#041;&#8230; however, in the function xTaskResumeAll&#040;&#041;&nbsp; &#040;tasks.c&#041;, it seems possible that taskYIELD&#040;&#041; is called from code [&hellip;]" />
+<meta name="twitter:title" content="Yield in critical section? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201366' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201366' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201366' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201366' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138481' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2006%2Ffreertos_Yield_in_critical_section_1494178.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2006%2Ffreertos_Yield_in_critical_section_1494178.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138481">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2006_freertos_support_forum_archive_index.html/">May 2006 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Yield in critical section?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on May 10, 2006</div><div class="thread-post-content">Hi there,
+I&#8217;m attempting a port of FreeRTOS to the Motorola &#40;now Freescale&#41; CPU32, derivate 68332. If I understand taskYIELD&#40;&#41; correctly, it may not return to the caller &#40;by definition almost&#41;&#8230; however, in the function xTaskResumeAll&#40;&#41;&nbsp; &#40;tasks.c&#41;, it seems possible that taskYIELD&#40;&#41; is called from code that owns the critical section which seems like a recipe for desaster to me? Or am I missing something?&nbsp; 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 10, 2006</div><div class="thread-post-content">Each task must maintain its own interrupt status.&nbsp; Therefore if a task yields with interrupts disabled, when the task next runs it is guaranteed that interrupts will again be disabled.&nbsp; The tasks that execute between the task yielding and next running will have their own interrupt status so interrupts will not remain disabled for the duration.
+Different ports manage this in different ways.&nbsp; Some enter critical sections by pushing the interrupt status onto the stack, and in these cases normally the whole process is automatic.
+Other ports store critical section nesting depth &#40;normally stored in a variable called uxCriticalNesting&#41; as part of the task context.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on May 18, 2006</div><div class="thread-post-content">I don&#8217;t understand how a task can be allowed to yield from within a critical section.&nbsp; Isn&#8217;t the whole point behind a critical section to protect some &quot;critical&quot; piece of code?
+For example, if I have two task that both use a shared resource, I am supposed to protect the use of that shared resource by using a critical section.&nbsp; If some OS call from within my critical section decides to yield, the other task will have an opportunity to use the shared resource.&nbsp; How can this work?
+I do understand that the current architecture correctly maintains the interrupt enable status even through a yield inside a critical section, but how does this help?
+Another example, I have two tasks, T1 and T2.&nbsp; Suppose T1 has a critical section of code during which interrupts cannot be allowed to run and further suppose that T2 currently has interrupts enabled.&nbsp; A yield is allowed during the critical section of T1, switching to T2.&nbsp; Now an interrupt occurs, and is serviced.&nbsp; I have just messed with the critical section of T1&#33;
+Please help me understand how this can work?&nbsp; What am I missing?
+Thanks&#33;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/imajeff">imajeff</a> on May 18, 2006</div><div class="thread-post-content">Keep in mind that the best design is not to try to limit possibilities. If you are writing a critical task which should not call Yield, then do not call Yield. It should be easy enough to control yourself when you write it. But if there is a time when someone will need the possibility, then it should be possible.
+Remember certain protections are not meant to keep a malicious programmer safe, just to protect from unexpected conditions in the system.
+After all, who is to stop you also from writing &#96;jmp 0xfffff&#96; when there is no code there? Just don&#8217;t do what is obviously not what you want.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on May 18, 2006</div><div class="thread-post-content">Thank you for the reply, Jeff.
+I am not concerned with my code calling Yield.&nbsp; I am concerned with an OS function calling Yield.&nbsp; Am I to restrict myself from calling any OS function within my critical section?&nbsp; I suppose that would solve the problem.&nbsp; Is that the intent of the current architecture?&nbsp; Perhaps we should have some documenation on what OS functions might implictly call Yield, and therefore should not be called from a critical section &#40;unless special precautions are taken&#41;.
+Thanks again,
+David
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/imajeff">imajeff</a> on May 18, 2006</div><div class="thread-post-content">Oh, that makes a difference, sorry I missed it.
+I have been wondering about the reason people are complaining of unexpected delays &#40;even extreem interrupt latency&#41;. Maybe this is the problem.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 18, 2006</div><div class="thread-post-content">In brief:&nbsp; Normally you would not want to call yield, or call a blocking API function &#40;which would call yield to perform the block&#41; from within a critical section at the application level.&nbsp; However, there is nothing stopping you from doing so if this is your intention and your design can cope with it.&nbsp; I would say however that if your design can cope with it then it is unlikely that the critical section is being used properly.
+In general I would say don&#8217;t call yield from within a critical section.
+The kernel source itself &#40;as opposed to an application&#41; does yield from within critical sections, but only in a couple of very controlled situations.&nbsp; This is why the implementation permits it.&nbsp; The rationale is all to do with minimising the amount of time interrupts are left disabled during queue operations.
+Take the following example from within the FreeRTOS.org source:&nbsp; You want to post to a queue.&nbsp; To check the queue status you access the queue structures so need exclusive access.&nbsp; Rather than disable interrupts, you &#8216;lock&#8217; the queue to provide thread &#40;and isr&#41; safe access.&nbsp; Now say you find the queue is already full meaning you want to block.&nbsp; You cannot block with the queue locked as nothing else could use it, but when the task unblocks you need exclusive access to the queue again.&nbsp; So the procedure is:
+1&#41; Enter critical.
+2&#41; Unlock queue &#8211; now safe to yield.
+3&#41; Yield.
+&#8230;.other tasks can now execute and access the queue.&nbsp; When data is available the task is unblocked&#8230;&#8230;
+4&#41; Start executing again.&nbsp; You are now automatically in a critical region as this is where you blocked from.
+5&#41; Lock the queue again.&nbsp; Nothing could have accessed it since you unblocked as interrupts were disabled.
+6&#41; Now the queue is locked you can exit the critical section and carry on enjoying exclusive access to the queue even though interrupts are enabled.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/imajeff">imajeff</a> on May 18, 2006</div><div class="thread-post-content">I would conclude that xTaskResumeAll&#40;&#41; is one specifically not for calling from a critical section in which you do not want a task of higher priority to take over.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/adarkar9">adarkar9</a> on May 18, 2006</div><div class="thread-post-content">Thank you Richard, for your reply.
+I understand the need of the OS to Yield during a critical section.&nbsp; Again, this is during &quot;very controlled situations&quot; as you mentioned.&nbsp; Perhaps the documentation for &quot;taskENTER&#95;CRITICAL&#40;&#41;&quot; should state something like:
+&quot;You should not call a blocking API function from within a critical section.&quot;
+or
+&quot;A cooperative context switch can occur when in a critical region if a blocking API function is called.&quot;
+Of course, this would require documenting which API functions are blocking.
+Ideally, all blocking API functions would have non-blocking counterparts that could be used in critical regions.&nbsp; The non-blocking function would fail if the operation could not be completed.&nbsp; This would allow the application code to exit the critical region, Yield, and try again later.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on May 18, 2006</div><div class="thread-post-content">I don&#8217;t think this is necessary.&nbsp; It is explicit that if you call a blocking api function then a block will occur.&nbsp; If you want to do this from a critical section then you have to assume you know what you are doing.&nbsp; The code cannot prevent application design errors.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/adarkar9">adarkar9</a> on May 18, 2006</div><div class="thread-post-content">Okay.&nbsp; It is explicit that calling a blocking API function may cause a block.&nbsp; I agree.&nbsp; The API functions are not currently labeled as blocking or non-blocking, however.
+As I said earlier, one solution is to refrain from using any API functions from within a critical section.&nbsp; Another solution is to have a list of API functions that can safely be called from within any critical section.
+More food for thought:&nbsp; What if I have a low priority task that decides to enable two higher priority tasks.&nbsp; I would like to do this in a &quot;critical region&quot; because I don&#8217;t want the first task to preempt me before I enable the second one. 
+Again, I think a note about a possible context switch from within a critical section would be useful.&nbsp; I would have found it useful a couple of days ago.
+Thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">Yield in critical section?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/adarkar9">adarkar9</a> on May 18, 2006</div><div class="thread-post-content">Well, things are not as bleak as I thought.&nbsp; Sorry for not doing enough research before posting.&nbsp; It looks like to properly protect &quot;my&quot; kind of critical section is a two-step process:
+VTaskSuspendAll&#40;&#41;;
+taskENTER&#95;CRITICAL&#40;&#41;;
+&#8230;
+critical code here
+&#8230;
+taskEXIT&#95;CRITICAL&#40;&#41;;
+VTaskResumeAll&#40;&#41;;
+By doing this, it appears I can call an API function that may enable a higher priority task without switching to that task.
+Also, I further found that all blocking routines do support a non-blocking mode by specifying an xBlockTime or xTicksToWait of zero.
+Great job guys&#33;&nbsp; Sorry for the hasty conclusion.
+In light of my recent experience, perhaps a note pointing to vTaskSuspendAll&#40;&#41; in taskENTER&#95;CRITICAL might be warranted.&nbsp; Something like:
+&quot;Calls to some API functions may cause context switches within the critical region if the scheduler is not suspended through vTaskSuspendAll&#40;&#41;.&quot;
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

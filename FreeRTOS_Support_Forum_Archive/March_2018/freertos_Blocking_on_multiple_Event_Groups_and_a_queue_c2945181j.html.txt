@@ -1,0 +1,154 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blocking on multiple Event Groups and a queue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2018/freertos_Blocking_on_multiple_Event_Groups_and_a_queue_c2945181j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Blocking on multiple Event Groups and a queue - FreeRTOS" />
+<meta property="og:description" content="Blocking on multiple Event Groups and a queue Posted by guitardenver on March 8, 2018I&#8217;m designing a system, and I want to have 3 event groups that many tasks will be watching for. I want to have a task that triggers on specific events on the event groups and also triggers on a queue as &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2018/freertos_Blocking_on_multiple_Event_Groups_and_a_queue_c2945181j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Blocking on multiple Event Groups and a queue Posted by guitardenver on March 8, 2018I&#8217;m designing a system, and I want to have 3 event groups that many tasks will be watching for. I want to have a task that triggers on specific events on the event groups and also triggers on a queue as [&hellip;]" />
+<meta name="twitter:title" content="Blocking on multiple Event Groups and a queue - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202909' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202909' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202909' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202909' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146959' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2018%2Ffreertos_Blocking_on_multiple_Event_Groups_and_a_queue_c2945181j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2018%2Ffreertos_Blocking_on_multiple_Event_Groups_and_a_queue_c2945181j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146959">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2018_freertos_support_forum_archive_index.html/">March 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Blocking on multiple Event Groups and a queue </h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/guitardenver">guitardenver</a> on March 8, 2018</div><div class="thread-post-content">I&#8217;m designing a system, and I want to have 3 event groups that many tasks will be watching for.
+I want to have a task that triggers on specific events on the event groups and also triggers on a queue as well.
+I guess i&#8217;m trying to make a single task be event driven with multiple RTOS types. What is the best way to do this? Is this a common thing to do or is there a better way to do event driven tasks?
+I can only think of a few options:
+1) Use one task that blocks for a short time on each and &#8220;polls&#8221; until one triggers
+2) Create a task for each event group and queue and then have those tasks send the event or queue to a another common task through a queue. 
+3) Get rid of the event groups entirly and send the events and queue messages through a global queue that only one task writes to and all other tasks only read from. (This seems to be the best option)
+To syncronize when the event and/or global queue message is cleared, all tasks that block on an event group or global queue, will need to register with the single  event producer, and every task will send a directTask notification to the producer letting it know it completed its task for the event. Once the task notification counter is the value of tasks registered to that event, it will clear the event flag.
+<hr />
+The goal of the design:
+Say there are 4 modules that control 4 different things (say LED, solinoid, display, motor). When an event happens, each module needs to execute a task.
+One way to do this is to have one task listen to all events and then tell each module what to do for that event. Ex: Event A = Turn off LED, latch solinoid, display &#8220;Help&#8221;, turn off motor&#8221;.
+The way I was thinking about doing it is that each module is responsible for what needs to be done. 
+Ex: Event A
+&#8211; LED module will un-block and turn off the LED
+&#8211; solinoid module with un-block and latch the solinoid
+&#8211; display module will un-block and display &#8220;Help&#8221;
+-motor module will un-block and turn off the motor 
+This way the functionality of the module stay isolated to the module itself. They can be written independently and a central task does not have to call functions in each module to handle an event. This makes for far more moduler code that is very easy to integrate with the rest of the modules. I hope i&#8217;m explaining this well enough.
+<hr />
+Any ideas on how to acheive this modularity with FreeRTOS?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Blocking on multiple Event Groups and a queue </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 8, 2018</div><div class="thread-post-content">Your option 3 would seem reasonable &#8211; but also how about having each 
+task just block on its own queue and have a management task that listens 
+for events on the event group and distributes the events to the 
+individual tasks on the task&#8217;s own queue.  The message sent to the queue 
+would have to indicate what the message was in a similar way to that 
+described in the &#8216;alternative to queue sets&#8217; section on this page: 
+https://www.freertos.org/Pend-on-multiple-rtos-objects.html
+Alternatively you could have multiple event groups whereby everything 
+blocks on one event group, and the bits that get set in the event group 
+indicate to the tasks that are unblocked which event group to read from 
+next &#8211; that would be an alternative to periodic polling.  The sender 
+would then set a bit in an individual event group &#8211; before setting a bit 
+in the &#8216;global&#8217; event group.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

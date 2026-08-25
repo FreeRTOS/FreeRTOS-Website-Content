@@ -1,0 +1,187 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SysTick interrupt priority - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2016/freertos_SysTick_interrupt_priority_99f02a87j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="SysTick interrupt priority - FreeRTOS" />
+<meta property="og:description" content="SysTick interrupt priorityPosted by samfpetersen on January 6, 2016I&#8217;m using FreeRTOS V8.2.1 on STM32F4 and my question is about the SysTick interrupt priority. The FreeRTOS source says that it should be the &#8220;lowest priority interrupt&#8221;, and it explicitly sets it to the lowest priority in xPortStartScheduler(). This seems backwards to me, shouldn&#8217;t it be the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2016/freertos_SysTick_interrupt_priority_99f02a87j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="SysTick interrupt priorityPosted by samfpetersen on January 6, 2016I&#8217;m using FreeRTOS V8.2.1 on STM32F4 and my question is about the SysTick interrupt priority. The FreeRTOS source says that it should be the &#8220;lowest priority interrupt&#8221;, and it explicitly sets it to the lowest priority in xPortStartScheduler(). This seems backwards to me, shouldn&#8217;t it be the [&hellip;]" />
+<meta name="twitter:title" content="SysTick interrupt priority - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202589' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202589' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202589' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202589' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145453' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2016%2Ffreertos_SysTick_interrupt_priority_99f02a87j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2016%2Ffreertos_SysTick_interrupt_priority_99f02a87j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145453">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2016_freertos_support_forum_archive_index.html/">January 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">SysTick interrupt priority</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/samfpetersen">samfpetersen</a> on January 6, 2016</div><div class="thread-post-content">I&#8217;m using FreeRTOS V8.2.1 on STM32F4 and my question is about the SysTick interrupt priority. The FreeRTOS source says that it should be the &#8220;lowest priority interrupt&#8221;, and it explicitly sets it to the lowest priority in xPortStartScheduler(). This seems backwards to me, shouldn&#8217;t it be the highest? 
+Further complicating things is the STM32&#8217;s HAL libraries, which have their own systick implementation&#8230; It specifies that you should set the systick interrupt to the highest priority.
+By the way, I&#8217;m referring to logically highest not numerically highest, and I&#8217;m aware that they are inverted
+Thanks,
+Sam
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 6, 2016</div><div class="thread-post-content">The interrupt that absolutely must be the lowest priority is the PendSV interrupt.  The SysTick interrupt could be higher, but could interfer with application interrupts if it is.
+When the ST HAL is used with FreeRTOS, like it can be with the STM32 Cube software supplied by ST, then ST call the FreeRTOS tick handler from their HAL tick handler.  That means you must not install the FreeRTOS handler.  However, I do it the other way around &#8211; installing the FreeRTOS handler as normal, then calling the HAL tick handler from the FreeRTOS tick hook function.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 7, 2016</div><div class="thread-post-content">Actually &#8211; I would like to correct my previous post.  The SysTick handler does need to run at the lowest priority.  This is because the critical section within the handler itself assumes it is running at the lowest priority, so saves time by not saving the old priority mask and then restoring the previous priority mask.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/samfpetersen">samfpetersen</a> on January 8, 2016</div><div class="thread-post-content">The conflict I encounter is that the ST HAL SysTick must be at the highest priority, since there are HAL layer ISRs that wait on a timeout (which is bad, but it is what it is). So to fix this, I&#8217;m setting the SysTick interrupt to the highest priority, and in that ISR I&#8217;m calling the ST HAL tick function and setting another interrupt at the lowest priority. In the ISR of that interrupt, I&#8217;m calling the FreeRTOS tick function.
+Seems hacky, but I can&#8217;t think of a better way to do this at the moment. Thoughts?
+Thanks,
+Sam
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/janoshnosh">janoshnosh</a> on November 9, 2016</div><div class="thread-post-content">@Sam Petersen
+I totally agree with that strategy. I have no understanding for why the SysTick interrupt should be of lowest priority. In my opinion, FreeRTOS wouldn&#8217;t have anything to do with a real-time system anymore, if it doesn&#8217;t keep counting milliseconds.
+We have the same issue here, that the HAL-ISR-delays make all time calculations based on the FreeRTOS tick invalid. And ridiculous.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/owainkopin">owainkopin</a> on December 22, 2017</div><div class="thread-post-content">@Richard Barry
+what is logic of having systick as lowest priority isr?
+Surely systick is used for driving timers on various semaphore/mailbox operations that may time out; and also scheduler is run off the back of the systick. Is not systick kind of the God process controlling just about everything?
+I can also see the view that we may have processes run off the back of ISR&#8217;s that must be serviced in a timely fashion independent of the RTOS; they may be higher priority than systick. But ISR&#8217;s that are posting semapores etc; should they not run lower  than systick?
+I am working on a system with around 10 isr sources; these are currently all higher priority than systick and I regularly see the systick being preempted. As a general rule of thumb is it not better to let systick run; do its stuff and then process other isrs?
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 22, 2017</div><div class="thread-post-content">I think it is only the PenSV that needs to run at the lowest priority, 
+it is just recommended to run SysTick at the lowest too to leave a lot 
+of higher priority interrupts available for applications that require 
+them to be more real time (deterministic).  Some libraries (STM32Cube?) 
+poll the tick inside an ISR (not good practice in my humble opinion) in 
+which cases having the tick at the lowest priority can actually cause a 
+deadlock.  It is also generally more efficient if the tick is only 
+incremented after other interrupts have completed, rather than intermix 
+ISRs that are using the time and having the time changing.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/karltsai">karltsai</a> on April 23, 2018</div><div class="thread-post-content">I&#8217;m new to this and here is my strategy:
+<ol>
+<li>install the FreeRTOS systick handler and bump it to higher priority that HAL requires</li>
+<li>make sure the priority mask and whatever house-keeping necessary are done properly in tje systick handler</li>
+<li>rewrite/overwrite HAL<em>Delay and HAL</em>GetTick functions to use FreeRTOS version. Both of them are <strong>weak</strong> so not a problem. There is no need to keep 2 sets of system ticks </li>
+</ol>
+Can someone see any problem of this approach?
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 23, 2018</div><div class="thread-post-content">First, I&#8217;m guessing you are using STM32.  Is that correct?
+Second &#8211; what is it you are trying to do?  If you want to use both the 
+ST drivers and FreeRTOS at the same time then the ST way of doing that 
+is to call the FreeRTOS tick handler from their tick handler.  The 
+FreeRTOS way of doing it is to install its own tick handler (SysTick) 
+then call the ST handler from the FreeRTOS tick hook function.  Either 
+way, if you are using the ST driver, it is likely you are going to need 
+both to execute.
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/karltsai">karltsai</a> on April 23, 2018</div><div class="thread-post-content"><ol>
+<li>yes that is the case</li>
+<li>I understand both approaches. calling from HAL leaves FRTOS vounerable as it didn&#8217;t have enough protection running in higher priority. calling from FRTOS breaks the HAL when it is expecting tick count to increment which never does unless the FRTOS priority is bumped.</li>
+<li>I&#8217;m trying to address both problems in a seamless  way. i.e.: with minimal impact to HAL as well as FreeRTOS code base.</li>
+</ol>
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 23, 2018</div><div class="thread-post-content">Unfortunately I think it is necessary to bump the SysTick priority up 
+when using the HAL drivers as some wait for the tick count to change 
+from within HAL interrupts themselves (not something that would normally 
+be recommended).
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/karltsai">karltsai</a> on April 23, 2018</div><div class="thread-post-content">this is the rewrite to break the barrier between HAL and FRTOS
+<h1>include &lt;FreeRTOS.h></h1>
+<h1>include &lt;task.h></h1>
+// HAL<em>Delay is used mostly in device init and config
+void HAL</em>Delay(uint32_t Delay)
+{
+    vTaskDelay(Delay);
+}
+uint32<em>t HAL</em>GetTick(void)
+{
+    return xTaskGetTickCount();
+}
+</div></div><div class="thread-post"><h3 class="thread-post-title">SysTick interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/karltsai">karltsai</a> on April 23, 2018</div><div class="thread-post-content">Already addressed that in (1)
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

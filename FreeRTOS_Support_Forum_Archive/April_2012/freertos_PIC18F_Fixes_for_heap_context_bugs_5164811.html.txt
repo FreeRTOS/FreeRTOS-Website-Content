@@ -1,0 +1,143 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIC18F Fixes for heap, context bugs - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2012/freertos_PIC18F_Fixes_for_heap_context_bugs_5164811.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="PIC18F Fixes for heap, context bugs - FreeRTOS" />
+<meta property="og:description" content="PIC18F Fixes for heap, context bugsPosted by malsyned on April 3, 2012The PIC18F port in FreeRTOS has long had two bugs that make it unfit for reliable production use. One is a linker script which permits sections containing C variables to cross bank boundaries. The other is the built-in assumption that the .tmpdata and MATH&#095;DATA &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2012/freertos_PIC18F_Fixes_for_heap_context_bugs_5164811.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="PIC18F Fixes for heap, context bugsPosted by malsyned on April 3, 2012The PIC18F port in FreeRTOS has long had two bugs that make it unfit for reliable production use. One is a linker script which permits sections containing C variables to cross bank boundaries. The other is the built-in assumption that the .tmpdata and MATH&#095;DATA [&hellip;]" />
+<meta name="twitter:title" content="PIC18F Fixes for heap, context bugs - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202109' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202109' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202109' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202109' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141454' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2012%2Ffreertos_PIC18F_Fixes_for_heap_context_bugs_5164811.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2012%2Ffreertos_PIC18F_Fixes_for_heap_context_bugs_5164811.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141454">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2012_freertos_support_forum_archive_index.html/">April 2012 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">PIC18F Fixes for heap, context bugs</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/malsyned">malsyned</a> on April 3, 2012</div><div class="thread-post-content">The PIC18F port in FreeRTOS has long had two bugs that make it unfit for reliable production use. One is a linker script which permits sections containing C variables to cross bank boundaries. The other is the built-in assumption that the .tmpdata and MATH&#95;DATA sections won&#8217;t change size, which they do often both as a project evolves and between compiler versions.  
+This patch, made against FreeRTOSV7.1.0, contains both of my fixes.  
+<a href="http://malsyned.net/files/patches/freertos-v7-mplab-pic18-heap-tmpdata-fix.patch">http://malsyned.net/files/patches/freertos-v7-mplab-pic18-heap-tmpdata-fix.patch</a>  
+A complete write-up of the issues involved and how my patch fixes them can be read here:  
+<a href="http://malsyned.net/files/freertos-pic-port-notes-wrapped.txt">http://malsyned.net/files/freertos-pic-port-notes-wrapped.txt</a>  
+This patch also contains a small fix for the PIC18F demo projects because they do not compile cleanly since V7.0.0.  
+Since V7, FreeRTOS and C18 both define a header named &#8220;timers.h&#8221;. The PIC18F ports.c includes &#8220;timers.h&#8221; from the Microchip libraries for the OpenTimer1 function and associated definitions. Because of this, the FreeRTOS PIC18F demos don&#8217;t compile in FreeRTOS V7 as the Microchip &#8220;timers.h&#8221; is shadowed by the FreeRTOS header.  
+In order to make sure the demos compile, I have changed the order of the include paths in their Project Build Options to prioritize Microchip&#8217;s headers above FreeRTOS&#8217;s. This is sufficient to compile the demos, but in order to compile projects that use the FreeRTOS timers module a more complete solution will have to be devised.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC18F Fixes for heap, context bugs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 3, 2012</div><div class="thread-post-content">Thank you for your input.&nbsp; I will take a look at your files.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC18F Fixes for heap, context bugs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/malsyned">malsyned</a> on April 3, 2012</div><div class="thread-post-content">Thanks for taking a look at my code. I hope it proves useful.  
+PIC18 wasn&#8217;t the ideal platform for implementing a FreeRTOS project, and I wouldn&#8217;t have used it if we didn&#8217;t already have an existing FreeRTOS project that needed to be ported to PIC18. That being said, for our application it wound up working well and reliably once these fixes were in place.  
+I have a small patch that makes the interrupt vector easier to extend without modifying port.c. If it has a shot at inclusion I&#8217;d be happy to upload that as well.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC18F Fixes for heap, context bugs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on April 4, 2012</div><div class="thread-post-content">Yes I would be interested in that too.&nbsp; I would be grateful if you could post both pieces of code to the FreeRTOS Interactive site.&nbsp; There is a Microchip page here:<br />
+<a href="http://interactive.freertos.org/forums/104359-microchip">http://interactive.freertos.org/forums/104359-microchip</a>  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC18F Fixes for heap, context bugs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/malsyned">malsyned</a> on April 4, 2012</div><div class="thread-post-content"><a href="http://malsyned.net/files/freertos-mplab-pic18-flexible-interrupts.patch">http://malsyned.net/files/freertos-mplab-pic18-flexible-interrupts.patch</a>  
+This patch adds a configuration define, configPORT&#95;USER&#95;ISR&#95;VECTOR, that can be set to the name of a function that handles vectoring to non-OS interrupts.  
+This function &#40;interrupts.c:vUserInterruptVector in the Demo projects&#41; is limited in what instructions it can execute, since it cannot alter the values of any registers. As long as the pattern established in the Demo example is followed, this is an easy requirement to satisfy.  
+This patch is independent of my other, but doesn&#8217;t quite apply cleanly on top of it. So I&#8217;ve also made a single patch file that combines both:  
+<a href="http://malsyned.net/files/freertos-v7-mplab-pic18-heap-tmpdata-fix-flexible-interrupts.patch">http://malsyned.net/files/freertos-v7-mplab-pic18-heap-tmpdata-fix-flexible-interrupts.patch</a>  
+I&#8217;ll post the combined patch to Interactive as well.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC18F Fixes for heap, context bugs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/malsyned">malsyned</a> on April 4, 2012</div><div class="thread-post-content">Posted to FreeRTOS Interactive: <a href="http://interactive.freertos.org/entries/21224772-pic18f-heap-and-context-fixes-modular-interrupt-handling">http://interactive.freertos.org/entries/21224772-pic18f-heap-and-context-fixes-modular-interrupt-handling</a>
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

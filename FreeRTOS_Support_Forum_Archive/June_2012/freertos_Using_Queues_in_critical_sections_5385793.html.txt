@@ -1,0 +1,237 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Using Queues in critical sections - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2012/freertos_Using_Queues_in_critical_sections_5385793.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Using Queues in critical sections - FreeRTOS" />
+<meta property="og:description" content="Using Queues in critical sectionsPosted by *anonymous on June 27, 2012Hi&#033; Is it possible to use queues in critical sections? Of course it cannot block, but I would like try to read a value from the queue, or return failiure if it is empty. Like receiving with 0 timeout. Should the normal Receive&#040;&#041; function be &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2012/freertos_Using_Queues_in_critical_sections_5385793.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Using Queues in critical sectionsPosted by *anonymous on June 27, 2012Hi&#033; Is it possible to use queues in critical sections? Of course it cannot block, but I would like try to read a value from the queue, or return failiure if it is empty. Like receiving with 0 timeout. Should the normal Receive&#040;&#041; function be [&hellip;]" />
+<meta name="twitter:title" content="Using Queues in critical sections - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202141' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202141' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202141' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202141' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144841' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2012%2Ffreertos_Using_Queues_in_critical_sections_5385793.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2012%2Ffreertos_Using_Queues_in_critical_sections_5385793.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144841">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2012_freertos_support_forum_archive_index.html/">June 2012 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Using Queues in critical sections</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on June 27, 2012</div><div class="thread-post-content">Hi&#33;  
+Is it possible to use queues in critical sections? Of course it cannot block, but I would like try to read a value from the queue, or return failiure if it is empty. Like receiving with 0 timeout.<br />
+Should the normal Receive&#40;&#41; function be used with 0 timeout, or should the ISR version be used?  
+Regards,<br />
+&nbsp; Ákos Vandra
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on June 27, 2012</div><div class="thread-post-content">As a general rule &#8211; do not call API functions from critical sections.&nbsp; That said, it might be ok in some situations for some API functions, but it is too complex to analise and document, and therefore too complex for the user, hence the general rule.  
+I would say, if you want to send or receive in a critical section, then do use the FromISR version.&nbsp; That is quite ok, and as you can&#8217;t block, will be faster too.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on July 3, 2012</div><div class="thread-post-content">Hi Richard,  
+Thanks for taking interest in my problem.<br />
+I looked over the code to be executed, and it &#42;should&#42; have worked, however I suspect there is a &#8220;bug&#8221; in the Cortex-M3 port &#8211; even though it does not cause a problem if the OS is used &#8220;as it should be&#8221;. That said, it is still a bug.  
+The following defines do not behave as they should:  
+&#35;define portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41; 0;portSET&#95;INTERRUPT&#95;MASK&#40;&#41;<br />
+&#35;define portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;x&#41; portCLEAR&#95;INTERRUPT&#95;MASK&#40;&#41;;&#40;void&#41;x  
+First one always returns 0 as the interrupt mask, second one always clears all interrupts masks, and does not restore the previous state, as it would be logical in the context of xQueueGenericSendFromISR:  
+signed portBASE&#95;TYPE xQueueGenericSendFromISR&#40; xQueueHandle pxQueue, const void &#42; const pvItemToQueue, signed portBASE&#95;TYPE &#42;pxHigherPriorityTaskWoken, portBASE&#95;TYPE xCopyPosition &#41;<br />
+&#123;<br />
+signed portBASE&#95;TYPE xReturn;<br />
+unsigned portBASE&#95;TYPE uxSavedInterruptStatus;  
+/&#42; Similar to xQueueGenericSend, except we don&#8217;t block if there is no room<br />
+in the queue.&nbsp; Also we don&#8217;t directly wake a task that was blocked on a<br />
+queue read, instead we return a flag to say whether a context switch is<br />
+required or not &#40;i.e. has a task with a higher priority than us been woken<br />
+by this post&#41;. &#42;/<br />
+uxSavedInterruptStatus = portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;;<br />
+&#123;  
+&#40;………………..&#41;   
+&#125;<br />
+portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40; uxSavedInterruptStatus &#41;;  
+return xReturn;<br />
+&#125;  
+Now suppose I have a few interrupts that also need OS API, but have a low priority.<br />
+When one of my functions are meddling with the same peripheral that is used by the ISR, they set mask that interrupt by setting the BASEPRI register &#40;disabling all interrupts below a certain priority&#41;. If another interrupt happens at that point that will use queue ISR functions, after returning from the interrupt, my interrupt that should be disabled is not. BANG.  
+The fix for this problem is quite obvious, but if you like I can create a patch.  
+Regards,<br />
+&nbsp; Ákos Vandra  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 3, 2012</div><div class="thread-post-content"><blockquote>
+  First one always returns 0 as the interrupt mask, second one always clears all interrupts masks, and does not restore the previous state, as it would be logical in the context of xQueueGenericSendFromISR:
+</blockquote>
+The first macro sets the mask to configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY.&nbsp; It does not have to return anything on the Cortex-M &#40;see below&#41;, but because the macro is used in the core code and therefore its prototype cannot change, it has to conform to the standard prototype for the macro, so just hard codes 0 as the return type.&nbsp; Most compiles will just remove this because the value is not used anywhere.  
+The second macro lowers the interrupt mask again.&nbsp; It always clears the interrupt mask completely <strong>but</strong> the Cortex-M NVIC is intelligent and will not accept an interrupt that has a priority below the currently executing priority, no matter what its BASEPRI value.&nbsp; Therefore, I believe the macros do actually function as intended.  
+For example, if an interrupt at a medium priority, and that interrupt makes use of these macros, then BASEPRI will get set to zero.&nbsp; If a low priority interrupt is then set to pending, it will not be accepted by the CPU core even though BASEPRI is zero, because the currently executing interrupt has a medium priority.&nbsp; When the currently executing interrupt completes, the lower priority interrupt will then be accepted and executed.  
+Always setting the value to zero is an optimisation because it is not necessary to explicitly save and restore the priority mask as it is on most other &#40;every other&#41; processor that has an unintelligent interrupt controller.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on July 3, 2012</div><div class="thread-post-content">Hi&#33;  
+I&#8217;m not sure you understood my scenario. I&#8217;ll try to clear it out for you:  
+1&#46; &#8220;A&#8221; task is running, doing its job.<br />
+2&#46; &#8220;A&#8221; task enters some sort of ciritcal-ish section, and sets the NVIC interrupt mask to medium.<br />
+3&#46; &#8220;Low priority&#8221; interrupt occurs, ignored due to the interrupt mask<br />
+4&#46; &#8220;Medium priority&#8221; interrupt occurs, uses the mentioned functions, and thus sets the interrupt mask back to 0<br />
+5&#46; Low priority interrupt runs, even though &#8220;A&#8221; task expects it to be disabled&nbsp; &lt;- BAD<br />
+6&#46; &#8220;A&#8221; task gets back the control, and screws up, due to the handled low priority interrupt.  
+Regards,<br />
+&nbsp; Ákos Vandra
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 3, 2012</div><div class="thread-post-content">Ah &#8211; ok, now I think I understand.&nbsp; What you are pointing out is that the FromISR functions cannot be used in a task, not that the FromISR functions don&#8217;t work in an interrupt.   
+So the aforementioned macros could be modified to return BASEPRI and set the old BASEPRI, rather than returning and setting 0.&nbsp; Doing that would make the macros take longer to execute, for a scenario which is not really supposed to be done anyway.&nbsp; I&#8217;m not sure about including that in the main line code &#40;not ruled it out, just need to think about it&#41;.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/axos88">axos88</a> on July 3, 2012</div><div class="thread-post-content">Hi richard,  
+In the scenario the FromISR functions are called from within the medium interrupt routine, not the task.  
+Regards,<br />
+&nbsp; Ákos Vandra
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 3, 2012</div><div class="thread-post-content">Ok &#8211; maybe this still needs some clarification.&nbsp; I will break down your scenario:  
+<blockquote>
+  1&#46; &#8220;A&#8221; task is running, doing its job.
+</blockquote>
+A good starting point&#33;  
+<blockquote>
+  2&#46; &#8220;A&#8221; task enters some sort of ciritcal-ish section, and sets the NVIC interrupt mask to medium.
+</blockquote>
+A task entering a critical section should only do so by calling taskENTER&#95;CRITICAL&#40;&#41; / taskEXIT&#95;CRITICAL&#40;&#41;.&nbsp; This will set basepri to configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY, which prevents any interrupt that can legitimately use the FreeRTOS ISR safe API functions from executing.&nbsp; See: <a href="http://www.freertos.org/RTOS-Cortex-M3-M4.html">http://www.freertos.org/RTOS-Cortex-M3-M4.html</a>  
+<blockquote>
+  3&#46; &#8220;Low priority&#8221; interrupt occurs, ignored due to the interrupt mask
+</blockquote>
+So this interrupt has a priority that is masked by configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY.  
+<blockquote>
+  4&#46; &#8220;Medium priority&#8221; interrupt occurs, uses the mentioned functions, and thus sets the interrupt mask back to 0
+</blockquote>
+This is where it breaks down.&nbsp; An interrupt that is not masked by configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY must <strong>not</strong> use system calls &#40;FreeRTOS API functions&#41;.&nbsp; Therefore, if this scenario really happens, then the application is out of the stated user requirements.  
+So that leaves the question as to whether it is OK to call the FromISR functions from a task, and the answer is I think as per my original answer &#8211; yes it is &#8211; but with the caveat that the FromISR function is not itself called from a task level critical section.&nbsp; However, there is another rule that API functions should not be called from critical sections, so that too should never happen.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/axos88">axos88</a> on July 3, 2012</div><div class="thread-post-content">Hi richard.  
+My medium interrupt priority is lower than the MAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY, thus it should be able to call API functions.<br />
+My low interrupt priority is even lower.  
+I called it critical-ish section because it does not need to disable all interrupts that are lower than max&#95;syscall&#95;priority, it needs to disable only the lower priority interrupt, that&#8217;s why it sets the basepri register directly, and expects it not to change until it exits from that section.  
+So let&#8217;s see some numbers, maybe that clarifies.  
+We have one task, TaskA.<br />
+Two interrupts:<br />
+&nbsp;&nbsp; ItL with priority 25 &#40;higher number denotes lower priority&#41;<br />
+&nbsp;&nbsp; ItM with priority 7<br />
+Max&#95;SYSCALL is 6.  
+1&#46; &#8220;A&#8221; task is running, doing its job.<br />
+2&#46; &#8220;A&#8221; task enters a section where it needs to disable ItL, but ItM may run without bothering the job, so it&#8217;s best if we leave it on, so we may handle that one asap. We set BasePRI to 15.  
+3&#46; ItL interrupt occurs, ignored due to its priority &#40;25&#41; &gt; baspri &#40;15&#41;<br />
+4&#46; ItM interrupt occurs, calls xQueueReceiveFromISR, and thus sets the interrupt mask back to 0. It may call the function, as it&#8217;s priority is lower than SysCall&#95;priority.  
+5&#46; Low priority interrupt runs, bacause BASEPRI was reset. &#8220;A&#8221; task expects it to be still disabled&nbsp; &lt;- BAD<br />
+6&#46; &#8220;A&#8221; task gets back the control, and screws up, due to the handled low priority interrupt.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 3, 2012</div><div class="thread-post-content">I think I understand the scenario now &#8211; and my previous reply is still valid.&nbsp; Your problem is occurring because you are accessing BASEPRI directly, rather than through the kernel using taskENTER&#95;CRITICAL&#40;&#41;.&nbsp; The kernel assumes it has control of BASEPRI.  
+Have you considered just disabling the interrupt for the peripheral you are accessing in the critical-ish section, rather than masking all interrupts up to the syscall value?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on July 6, 2012</div><div class="thread-post-content">Ah, I see. It wasn&#8217;t clear for me that accessing the BASEPRI register should be done only through the kernel. Maybe this fact needs mentioning somewhere in the docs?  
+Your suggestion should work, thanks.  
+Regards,<br />
+&nbsp; Ákos Vandra
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 6, 2012</div><div class="thread-post-content"><blockquote>
+  Maybe this fact needs mentioning somewhere in the docs?
+</blockquote>
+See item number 5:<br />
+<a href="http://www.freertos.org/FAQHelp.html">http://www.freertos.org/FAQHelp.html</a>  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on July 6, 2012</div><div class="thread-post-content">Oops, my bad, sorry&#33; :-/  
+Regards,<br />
+&nbsp; Ákos Vandra
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Queues in critical sections</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pabigot">pabigot</a> on July 6, 2012</div><div class="thread-post-content">The FAQ has: 
+<blockquote>
+  Do not use any method for disabling and enabling interrupts other than calls to portENTER&#95;CRITICAL&#40;&#41; and portEXIT&#95;CRITICAL&#40;&#41;.
+</blockquote>
+I&#8217;ve always found it rather confusing that many of the portX macros have taskX equivalents which are macros that do nothing but invoke the portX one.&nbsp; What&#8217;s the recommended practice on selecting which spelling of that functionality should be used in code?&nbsp; Is there any function/macro for which there&#8217;s a taskX version that is not equivalent to a portX version &#40;if both exist&#41;?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

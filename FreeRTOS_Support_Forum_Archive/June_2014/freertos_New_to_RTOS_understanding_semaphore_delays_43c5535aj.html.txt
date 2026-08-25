@@ -1,0 +1,297 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New to RTOS, understanding semaphore delays - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2014/freertos_New_to_RTOS_understanding_semaphore_delays_43c5535aj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="New to RTOS, understanding semaphore delays - FreeRTOS" />
+<meta property="og:description" content="New to RTOS, understanding semaphore delaysPosted by marifca on June 11, 2014Hi, I am new to RTOS world. Starting with FreeRTOS. I am using Freescale Coldfire V2 microcontrollers and managed to start several tasks running on it. But I am a bit confused regarding the delay used in semaphores. I have an interrupt giving a &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2014/freertos_New_to_RTOS_understanding_semaphore_delays_43c5535aj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="New to RTOS, understanding semaphore delaysPosted by marifca on June 11, 2014Hi, I am new to RTOS world. Starting with FreeRTOS. I am using Freescale Coldfire V2 microcontrollers and managed to start several tasks running on it. But I am a bit confused regarding the delay used in semaphores. I have an interrupt giving a [&hellip;]" />
+<meta name="twitter:title" content="New to RTOS, understanding semaphore delays - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202400' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202400' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202400' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202400' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143675' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2014%2Ffreertos_New_to_RTOS_understanding_semaphore_delays_43c5535aj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2014%2Ffreertos_New_to_RTOS_understanding_semaphore_delays_43c5535aj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143675">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2014_freertos_support_forum_archive_index.html/">June 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">New to RTOS, understanding semaphore delays</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/marifca">marifca</a> on June 11, 2014</div><div class="thread-post-content">Hi,
+I am new to RTOS world. Starting with FreeRTOS. I am using Freescale Coldfire V2 microcontrollers and managed to start several tasks running on it. But I am a bit confused regarding the delay used in semaphores. I have an interrupt giving a semaphore using xSemaphoreGiveFromISR() and a task blocking this accepts it using xSemaphoreTake() as in the following example
+// A task that uses the semaphore.
+ void vAnotherTask( void * pvParameters )
+ {
+    // &#8230; Do other things.
+<pre><code>if( xSemaphore != NULL )
+{
+    // See if we can obtain the semaphore.  If the semaphore is not available
+    // wait 10 ticks to see if it becomes free. 
+    if( xSemaphoreTake( xSemaphore, ( TickType_t ) 10 ) == pdTRUE )
+    {
+        // We were able to obtain the semaphore and can now access the
+        // shared resource.
+        // ..."My Code"
+        // We have finished accessing the shared resource.  Release the 
+        // semaphore.
+        xSemaphoreGive( xSemaphore );
+    }
+    else
+    {
+        // We could not obtain the semaphore and can therefore not access
+        // the shared resource safely.
+    }
+}
+</code></pre>
+ }
+My question is what does this ( TickType_t ) 10 actually means or doing here? What happens to the &#8220;My code&#8221; block in the following three cases:
+1) xTicksToWait value is 0 .. is &#8220;My code&#8221; executed with every tick? Then what is the the significance of giving the semaphore from an interrupt and an event tracking mechanism?
+2) xTicksToWait value is 10 .. 
+3) xTicksToWait value is MaxDelay (I guess 0xffffffff) and what is the difference in action between the used value of 0 and MaxDelay?
+Also I would like to know what if I use 
+xSemaphoreTake( xSemaphore, ( TickType_t ) 10 );
+//&#8221;My Code&#8221;
+xSemaphoreGive( xSemaphore );
+instead of the if-else structure shown above. Will it exit the task without executing &#8220;My code&#8221; if the semaphore cannot be taken? I am asking this because I have seen some code examples on a FreeRTOS book for PC showing such examples without the if( == pdTRUE) else{} statements.
+Thanks in advance.
+</div></div><div class="thread-post"><h3 class="thread-post-title">New to RTOS, understanding semaphore delays</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 11, 2014</div><div class="thread-post-content">Hi Mohammad,
+The meaning of the xBlockTime parameter is well explained everywhere, on freertos.org, in the book, as well as in the header files:
+&#8230;
+sorry, text was doubled, see response below:
+</div></div><div class="thread-post"><h3 class="thread-post-title">New to RTOS, understanding semaphore delays</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 11, 2014</div><div class="thread-post-content">Hi Mohammad,
+The meaning of the xBlockTime parameter is well explained everywhere, on freertos.org, in the book, as well as in the header files:
+~~~~
+<ul>
+<li>@param xBlockTime The time in ticks to wait for the semaphore to become</li>
+<li>available.  The macro portTICK<em>PERIOD</em>MS can be used to convert this to a</li>
+<li>real time.  A block time of zero can be used to poll the semaphore.  A block</li>
+<li>time of portMAX_DELAY can be used to block indefinitely (provided</li>
+<li>INCLUDE_vTaskSuspend is set to 1 in FreeRTOSConfig.h).</li>
+</ul>
+~~~~
+So you can either poll a semaphore (using zero), wait a limited time, or wait for ever.
+You say that your interrupt gives the semaphore using xSemaphoreGiveFromISR() and from within vAnotherTask() you also xSemaphoreGive() the semaphore?
+The use of these two functions is correct, but why would you give from both locations?
+Here are two useful scenarios for a semaphore:
+1) As a mutex: to protect a resource (as you say), which is shared among two or more tasks.
+If you really need to take the resource, you might want to wait much longer than 10 ticks.
+Once you&#8217;ve claimed the resource, be quick, don&#8217;t sleep and release it. (see also &#8216;configUSE_MUTEXES&#8217;)
+2) To wake up a task immediately after an interrupt has detected some situation. In that case the interrupt is &#8220;the giver&#8221;, and the task is &#8220;the taker&#8221;, in a one-to-one relation.
+This method is very useful, because the interrupt can be kept short. It wakes up a task which can do the time-consuming things. The time between returning from the interrupt and the waking up of the task is very short, less than a µs (unless another higher-priority task is keeping the CPU busy).
+If you want to wake up the task from more than once place, you might also consider using a queue and send messages to that task, so it knows who&#8217;s &#8220;the giver&#8221;.
+~~~~
+void i2c<em>irq( )
+{
+    &#8230;.
+    xSemaphoreGiveFromISR (i2c</em>Semaphore, &amp;woken);
+    &#8230;.
+}
+void vAnotherTask( void * pvParameters )
+{
+    for( ; ; )
+    {
+        if( xSemaphoreTake( i2c<em>Semaphore,
+                      ( TickType</em>t ) 1000 ) == pdTRUE )
+        {
+            // The i2c interrupt woke up this task
+            // don&#8217;t xSemaphoreGive() it back
+        }
+    }
+}
+~~~~
+You had another question:
+~~~~
+    for( ; ; )
+    {
+        xSemaphoreTake( xSemaphore, ( TickType_t ) 10 );
+        //&#8221;My Code&#8221;
+        xSemaphoreGive( xSemaphore );
+    }
+~~~~
+This is not very meaningful: the result of xSemaphoreTake() should be tested before you may assume that you have acquired the shared resource.
+Suppose that another task has taken the resource for a time longer than 10 ticks, the above task might also start using it after a short time out.
+A last example of the use of a semaphore, with taking only:
+~~~~
+void ms<em>delay( TickType</em>t millisec )
+{
+    // Wait for a number of milliseconds
+    TickType_t ticks;
+    // Here delaySemaphore is never given, only taken
+    // until a timeout occurs
+<pre><code>ticks = millisec / portTICK_PERIOD_MS;
+// Or in case your clock is faster than 1000 Hz
+ticks = ( configTICK_RATE_HZ * milisec + 500 ) /
+    1000;
+xSemaphoreTake( delaySemaphore, ticks );
+</code></pre>
+}
+~~~~
+Did this answer all your questions?
+Regards,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">New to RTOS, understanding semaphore delays</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/marifca">marifca</a> on June 11, 2014</div><div class="thread-post-content">Thanks Hein for your replies.
+void vAnotherTask( void * pvParameters ){} was copied from the FreeRTOS example on the web and not from my code. There is no xSemaphoreGive( xSemaphore ) in the task of my own code. Sorry for making it confusing.
+So, now let me clarify my doubts regarding &#8220;So you can either poll a semaphore (using zero), wait a limited time, or wait for ever.&#8221; this line. I would like to know the underlying mechanism of this.
+In the interrupt handling situation should I wait forever or should I poll the semaphore in the interrupt handler to make the interrupt latency as little as possible considering the interrupt handler has the highest priority? If I wait forever on the semaphore, does it not make the semaphore inactive? I have seen &#8220;wait forever&#8221; works in the interrupt handling situations in my code but did not understand how.
+Or in other words, could you please give some example of when to use 0 (polling) delay on the semaphore and when to use &#8220;wait forever&#8221; and also what will be the consequence of waiting for a limited time in that example. An interrupt handler example would be appreciated.
+Regards,
+Arif
+</div></div><div class="thread-post"><h3 class="thread-post-title">New to RTOS, understanding semaphore delays</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 11, 2014</div><div class="thread-post-content">Hi Arif,
+The underlying mechanism of blocking versus polling a semaphore or queue?
+Polling (timeout == 0): the call will only try to take the semaphore and return pdTRUE (non-zero) if it was successfully taken, otherwise pdFALSE (zero).
+Blocking (timeout > 0): the call will also try to take the semaphore and if it succeeds, it will return immediately. If it can not be taken, then the timeout parameter determines the maximum number of clock ticks before waiting will be given up. While waiting, it will not consume <strong>any</strong> CPU time, whereas the polling method does take CPU time.
+portMAX_DELAY (e.g. 0xffff) is a so-called sentinel value, it doesn&#8217;t mean 65535 clock-ticks, but it is treated as &#8220;for ever&#8221;.
+<blockquote>
+  In the interrupt handling situation should I wait forever or
+  should I poll the semaphore in the interrupt handler to make
+  the interrupt latency as little as possible considering the
+  interrupt handler has the highest priority?
+</blockquote>
+The interrupt latency, i.e. the time between the interrupt (hardware) signal and the time that your IRQ handler becomes active, is not really influenced by your coding style. The latency depends on other competing interrupts, except when you use critical sections like here:
+~~~~~~
+    extern volatile uint32<em>t ulCounterIRQ;
+    {
+        taskENTER</em>CRITICAL();
+        // Execution of IRQ&#8217;s is temporarily disabled
+        // work safely with variables which can also be accessed
+        // by your IRQ handler
+        taskEXIT_CRITICAL();
+    }
+~~~~~~
+If you think well about your design, the use of critical sections can often be avoided. There are many locking mechanisms, other than disabling interrupts.
+<blockquote>
+  If I wait forever on the semaphore, does it not make the
+  semaphore inactive?
+</blockquote>
+No, why? Your call will return as soon as the semaphore can be taken by your task, even if it has to wait for a year 🙂
+Personally, I would not use the &#8220;for ever&#8221; option. I would rather use a 1 sec timeout so that I can see that a task is still alive. It is hard to distinguish a permanently blocked task from a task that has got blocked because of stack corruption.
+In a big embedded application, you might have many events from different sources. It would be expensive to create a new task with a new semaphore for every event. In stead you could make a task which receives commands, in stead of waiting for a semaphore:
+~~~~~~
+QueueHandle_t xServerQueue;
+void serverTask (void *pvParameters)
+{
+<pre><code>// Create a queue capable of containing 10 uint32_t values.
+xServerQueue = xQueueCreate( 10, sizeof( uint32_t ) );
+for ( ; ; )
+{
+    uint32_t ulCommand;
+    if( xQueueReceive( xServerQueue, &amp;ulCommand, 1000 ) )
+    {
+        switch( ulCommand )
+        {
+        case eCMD_AAA:
+        case eCMD_BBB:
+        }
+    }
+}
+</code></pre>
+}
+~~~~~~
+Now every other task and every interrupt may send messages to the above task, using either QueueSend() or xQueueSendFromISR().
+If you want to read more about FreeRTOS and the above subjects, you can find a really great manual/tutorial on http://shop.freertos.org
+Regards,
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">New to RTOS, understanding semaphore delays</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/marifca">marifca</a> on June 11, 2014</div><div class="thread-post-content">Thanks a lot Hein. Appreciate your explanation.
+Regards,
+Arif
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

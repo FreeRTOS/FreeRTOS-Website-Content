@@ -1,0 +1,178 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xQueueReceive timeout not working as expected with portTICK_RATE_MS - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/December_2013/freertos_xQueueReceive_timeout_not_working_as_expected_with_portTICK_RATE_MS_5e38cf68j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="xQueueReceive timeout not working as expected with portTICK_RATE_MS - FreeRTOS" />
+<meta property="og:description" content="xQueueReceive timeout not working as expected with portTICK_RATE_MSPosted by sreejeshkn on December 10, 2013Hi Friends, I am working on a project to develop UART-TCP bridge the interface demands a higher throughput; here length of the payload is not fixed so looking for inter-character gap to find end of the frame received from UART ISR. Problem: &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/December_2013/freertos_xQueueReceive_timeout_not_working_as_expected_with_portTICK_RATE_MS_5e38cf68j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="xQueueReceive timeout not working as expected with portTICK_RATE_MSPosted by sreejeshkn on December 10, 2013Hi Friends, I am working on a project to develop UART-TCP bridge the interface demands a higher throughput; here length of the payload is not fixed so looking for inter-character gap to find end of the frame received from UART ISR. Problem: [&hellip;]" />
+<meta name="twitter:title" content="xQueueReceive timeout not working as expected with portTICK_RATE_MS - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202328' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202328' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202328' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202328' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144416' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2013%2Ffreertos_xQueueReceive_timeout_not_working_as_expected_with_portTICK_RATE_MS_5e38cf68j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2013%2Ffreertos_xQueueReceive_timeout_not_working_as_expected_with_portTICK_RATE_MS_5e38cf68j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144416">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/December_2013_freertos_support_forum_archive_index.html/">December 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sreejeshkn">sreejeshkn</a> on December 10, 2013</div><div class="thread-post-content">Hi Friends,
+I am working on a project to develop UART-TCP bridge the interface demands a higher throughput; here length of the payload is not fixed so looking for inter-character gap to find end of the frame received from UART ISR.
+<h2>Problem:</h2>
+ser->tgap = 5; //Expecting 5ms timeout
+xQueueReceive(com->rx<em>queue, &amp;cByteRxed, (ser->tgap/ portTICK</em>RATE_MS));
+But the “xQueueReceive” returns only after 5 SysTicks that is 10*5 = 50ms not 5ms always. According to FreeRTOS documentation it is possible to get timeout in ms irrespective of SysTick by using “timeout/portTICK_RATE_MS” not sure what is going wrong any suggestions would be grateful.  Following are the configurations used.
+<h2>Configuration:</h2>
+OS version : FreeRTOS v5.03
+&#8220;#define configCPU<em>CLOCK</em>HZ  ((unsigned portLONG)96000000) &#8221;
+&#8220;#define configCPU<em>PERIPH</em>HZ (configCPU<em>CLOCK</em>HZ / configPCLK<em>DIV)&#8221;
+&#8220;#define configTICK</em>RATE_HZ ( 100)  /* SysTicks per 10ms*/  &#8211; FreeRTOSConfig.h    &#8221;
+&#8220;#define portTICK<em>RATE</em>MS   ( ( portTickType ) 100 / configTICK<em>RATE</em>HZ ) &#8211; portmacro.h&#8221;
+Thanks!
+Sreejesh
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on December 10, 2013</div><div class="thread-post-content">The resolution of block times is set by configTICK<em>RATE</em>HZ. In you post that is set to 100, so you can ask for block times in multiples of 1/100th of a second, and no faster. See this post https://sourceforge.net/p/freertos/discussion/382005/thread/8fc54ac4/#0e0a
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sreejeshkn">sreejeshkn</a> on December 10, 2013</div><div class="thread-post-content">Hi Dave, 
+I just tested the same piece of code with same FreeRTOSconfig.h on a PC simulation of FreeRTOS 7.6 and I got a timeout of 4.90ms approximately. this experiment is confusing and made me to think some thing is missing with my version of FreeRTOS v5.03.
+Thanks!.
+Srijesh
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on December 11, 2013</div><div class="thread-post-content">Since configTICK<em>RATE</em>HZ = 100, portTICK<em>RATE</em>MS SHOULD be 10, but since your listed code was 100/config<em>TICK</em>RATE<em>HZ instead of 1000/config</em>TICK<em>RATE</em>HZ so it is 1. That error will make every delay 10 times too long.
+note that if you correct this, timeout/portTICK<em>RATE</em>MS = 5/10 = 0 (by integer math), so the queue receive would not block but give you data if it is sitting in the queue already, else return an error.
+One other thing to note, is that a value of 1 means till the next tick interrupt, which could be anywhere from now, to 10ms from now, that is the fundamental sampling error of the system (unless you know that a tick needed to have recently happened because you did a delay and nothing higher priority can take a long time.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sreejeshkn">sreejeshkn</a> on December 11, 2013</div><div class="thread-post-content">Hi Richard, Thanks..
+I understand the math of portTICK<em>RATE</em>MS but not sure about the behaviour xQueueReceive API, Is it possible to get a higher resolution timeout than Systick period?
+I have Systick of 10ms is it possible to get a timeout of 5ms from xQueueReceive, or should increase the Systick frequency to 1000?.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on December 11, 2013</div><div class="thread-post-content"><blockquote>
+  Is it possible to get a higher resolution timeout than Systick period?
+</blockquote>
+No.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on December 11, 2013</div><div class="thread-post-content">All FreeRTOS delays are specified in units of Timer Ticks and with integral parameters, thus you can not specify any time values more precisely than a timer tick. And as I mentioned before, the first timer tick of the delay is what is left of the current tick, so may be short, so delays should really be thought of as having a tolerance of +0/-1, and due to higher priority tasks delaying you, you may get error in the + side too.
+If you really need to detect a 5ms gap, then you would need to raise the tick rate, I would say to at least 500 Hz (letting you test for a 4-6ms gap with a delay of 3) or 1000 Hz (letting your test for a 4-5ms gap with a delay of 5, or a 5-6ms gap with a delay of 6).
+With a 100 Hz tick, the best you could do is use a delay of 2 to test for a 10-20ms gap, which may well work for the application, it sort of depends on the real latency reqirements for the system.
+Another option, would be to add a little bit of intelegence to the unit and look for likely record gaps (like line breaks), and if you get one of those, the previous packet has been sent, maybe test for a minimal packet in length (so you don&#8217;t spam the network with lots of very short records), and no data is available in the queue (a 0 delay receive fails), then immediately send the packet. (This assumes that the TCP is really just a &#8220;stream&#8221; of bytes and the packeting isn&#8217;t important, i.e. it is a Serial over TCP protocol, not a TCP over Serial protocol (but that really should have some framing data in the serial stream that you could process). 
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sreejeshkn">sreejeshkn</a> on December 11, 2013</div><div class="thread-post-content">Hi Richard, 
+The comments making sense to me and having similar test results. I will do changes to tick on 1000Hz and a gap of 6ms, get back to you with the result.
+Yes..Your assumption is correct the software does serial data transmission over TCP protocol, but I do not have control over the serial device to apply framing on data bytes.
+Since the serial device works on a request response basis I can control the traffic from TCP client part of the system.
+Thanks alot for the detailed comments..
+Regards,
+Sreejesh
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on December 12, 2013</div><div class="thread-post-content">Serial over TCP shouldn&#8217;t have problems with arbitrary block breaks in the TCP packets, as the program shouldn&#8217;t be expecting messages to be in lock step with the packets, the gap detection being there mostly to avoid a stall at the end of a message waiting for more. This case could have improvements in operations by having the code look for signs of a record break (like seeing a Carriage Return character) and sending the record right away.
+The other case, TCP over Serial, would be where the other end of the serial wire is also converting between serial and TCP packets, with the goal of recreating the packets that it received. In this case gap detection is critical, (but also likely unacceptably slow) unless the serial data contains some meta-data in it to find the packet breaks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sreejeshkn">sreejeshkn</a> on December 12, 2013</div><div class="thread-post-content">I totally agree with your suggestion, but the system requirement demands to follow GAP detection to find the end of frame because of variable length data frame, e.g. 3,35,128.. in bytes.
+            Tested the code with tick frequency of 1000Hz and a gap of 6ms; Now there is a delay of 14/15ms over the channel when measure the delay from TCP client part (that is the time between Tx() to Rx()). I believe “xQueueReceive” is working as expected since I am running 8 Tasks with the same priority there is a delay of 8ms due to task switch on a round robin basis so the 14ms overall delay. I would try increasing the priority values of less critical tasks (Now all 8 application Tasks are in priority level 3 ).
+I understand uxPriority = 3 is higher in priority than  uxPriority = 8 !&#8230;
+Thanks!.
+Srijesh
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 12, 2013</div><div class="thread-post-content"><blockquote>
+  I understand uxPriority = 3 is higher in priority than uxPriority = 8 !&#8230;
+</blockquote>
+Not it isn&#8217;t!  0 is the lowest priority and (configMAX_PRIORITIES &#8211; 1) is the highest priority.
+The lower the number, the lower the priority &#8211; so it works in the logical and therefore expected way.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sreejeshkn">sreejeshkn</a> on December 12, 2013</div><div class="thread-post-content">Thanks for the prompt reply.., 
+In my OS configuration configMAX_PRIORITIES is 5 so 5 is the highest priority and 0 is the lowest.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 12, 2013</div><div class="thread-post-content">No, if configMAX<em>PRIORITIES is 5 then there are 5 priorities, which means 0 is the lowest and 4 is the highest.  In my post above I say (configMAX</em>PRIORITIES &#8211; 1) is the highest.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">xQueueReceive timeout not working as expected with portTICK_RATE_MS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sreejeshkn">sreejeshkn</a> on December 12, 2013</div><div class="thread-post-content">Thanks!.. I got the point.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

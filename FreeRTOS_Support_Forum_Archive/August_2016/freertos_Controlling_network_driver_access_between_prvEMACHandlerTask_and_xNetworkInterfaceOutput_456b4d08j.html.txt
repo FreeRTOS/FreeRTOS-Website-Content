@@ -1,0 +1,564 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2016/freertos_Controlling_network_driver_access_between_prvEMACHandlerTask_and_xNetworkInterfaceOutput_456b4d08j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput - FreeRTOS" />
+<meta property="og:description" content="Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutputPosted by glenenglish on August 17, 2016HI I wonder if there is a method, or preferred method for dealing with access to the network device. I am using a SPI device, and there needs to be mutex style behaviour between the HandlerTask prvEMACHandlerTask and whoever calls xNetworkInterfaceOutput. ANy &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2016/freertos_Controlling_network_driver_access_between_prvEMACHandlerTask_and_xNetworkInterfaceOutput_456b4d08j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutputPosted by glenenglish on August 17, 2016HI I wonder if there is a method, or preferred method for dealing with access to the network device. I am using a SPI device, and there needs to be mutex style behaviour between the HandlerTask prvEMACHandlerTask and whoever calls xNetworkInterfaceOutput. ANy [&hellip;]" />
+<meta name="twitter:title" content="Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202691' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202691' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202691' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202691' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146029' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2016%2Ffreertos_Controlling_network_driver_access_between_prvEMACHandlerTask_and_xNetworkInterfaceOutput_456b4d08j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2016%2Ffreertos_Controlling_network_driver_access_between_prvEMACHandlerTask_and_xNetworkInterfaceOutput_456b4d08j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146029">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2016_freertos_support_forum_archive_index.html/">August 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 17, 2016</div><div class="thread-post-content">HI
+I wonder if there is a method, or preferred method  for dealing with access to the network device.
+I am using a SPI device, and there needs to be mutex style behaviour between the HandlerTask prvEMACHandlerTask and whoever calls xNetworkInterfaceOutput.  ANy light on this would be useful. Just using a mutex around the access sections would be dangerous- priority inversion I am sure would reign.  it would get stuck.
+regards
+glen english
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 17, 2016</div><div class="thread-post-content">The best method might be to ensure only one task accesses the SPI bus, 
+so no mutual exclusion is required, effectively handling sending and 
+receiving data across the SPI bus from a single task.  Alternatively, if 
+you have only one sender and one receiver a simple mutex might be the 
+simplest way, as with only one sender and one receiver it would be easy 
+to manage (you can prioritise the sender over the receiver to prevent 
+too many packets being queued for Tx at any one time).
+Can you describe how you have allocated sending and receiving data to 
+tasks and interrupts?
+For example&#8230;.
+Sending:
+xNetworkInterfaceOutput() should only ever be called from the IP task 
+itself (correct me if I&#8217;m wrong!), and not application tasks, so you 
+don&#8217;t need to worry about that part.
+xNetworkInterfaceOutput() will initiate an SPI communication &#8211; and then 
+presumably the actual data transfer will be handled by an interrupt or DMA.
+Does anything else in your application send data to the network?  For 
+example, could an interrupt generated when one packet has been sent 
+initiate the sending of the next packet?
+Receiving:
+Presumably there is only one place in your code that is receiving 
+packets over the SPI, then sending the received packets to the IP task 
+for processing.  Where is this being done?  For example, do you create a 
+task that is triggered by an interrupt when new data arrives, and have 
+the task manage the reception of the data?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 17, 2016</div><div class="thread-post-content">When I have a controller that is used by multiple tasks, because it is used to talk to multiple &#8216;devices&#8217; (like a multi-channel SPI or I2C bus), then I find the best option is normally to just use a mutex in the code for the controller so which ever task is using it to talk to their device will have exclusive access to that device for the period of the transaction.
+Yes, you do get an inversion issue if a low priority task is doing a transaction when a high priority device wants to do an operation, but this is fundamental to your archicecture. The mutex will assure that when the transaction finishes, the highest priority operation will be the one that starts.
+A shared resource mrrding atomic operations (the controller) used by multiple users inherentlyy has the inversion problem, since, at least in general, we need to let the current operation complete before you can start the next. If this causes unacceptable delays, then you some measure to mitigate. Some options:
+1) Make the low priority operation use small operations to minimize the latency imposed on the high priority task.
+2) Implement some way to allow the high priority operation to &#8216;abort&#8217; the low priority operation (this may or may not be possible)
+3) Have the low priority operations &#8216;get permission&#8217; from the high priority operations that the &#8216;coast is clear&#8217; to access the channel, for example some sort of flag to indicate that no high priority operation is expected in the near future, allowing the low priority operation to proceed. This is inherently somewhat domain specific. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 17, 2016</div><div class="thread-post-content">Hi All
+Yeah it&#8217;s a problem (multiple access of peripherals) I am well familar with.  Just wondered what was suggested in FreeRTOS+TCP land.
+Given that prvEMACHandlerTask could be responding to interrupts (and working the SPI)  ( and remember that prvEMACHandlerTask offloads it to IPTask when it can got it) , the SPI must be guarded.
+I did try a mutex when I considered the problem right in the beginning, but it got stuck, so I will need to understand the scheduler a bit better. There are a few other syncronization primatives I can use also that work a little different. Other flavors of semaphores etc used as resource counters. But they are usually &#8216;backward to what I want&#8221; (they unblock >0). (but I could just use them backwards) 
+Yeah there will be an HTTP server for one client only (TCP) , and a bunch of fast UDP bidirectional traffic (approx 500 pps full to the brim) . Gratuitous broadcasts are really the scurge of networks..
+with thanks 
+glen
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 17, 2016</div><div class="thread-post-content">A mutex should not get &#8216;stuck&#8217; &#8211; are you sure you didn&#8217;t get stuck in a 
+configASSERT() failing?  Which would happen if, as an example, you used 
+the mutex from inside an interrupt.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 17, 2016</div><div class="thread-post-content">Hi
+Working now with original MUTEX.  was getting itself tied up in knots elsehwre and had both tasks unable to run&#8230;. 
+No, not in a ASSERT loop, somewhere in the scheduler though, can&#8217;t remember exactly where. 
+Which I had written that down&#8230;It was in xQueueGenericReceive and it was there every time I stopped the processor. There is only right now the idle, the IP task and the prvEMACHandlerTask.
+The FreeRTOS really is sensational. I am very impressed  with its engine room. Also, the +TCP is well written easy to understand , also. (unlike LwIP) .
+Well, if anyone is interested, now I have a working driver / ntegration  using the ASIX 88796C chip. ip4, ip6, 40 Mbps SPI&#8230;&#8230;quite a good chip used for a couple of years, very solid
+Gimme a month and I will do some doco and post it publicly.
+Need to spend more time reading/ studying the scheduler and interrupt priority variations.
+cheers
+PS
+ah ha
+here is where it fails
+            configASSERT( pxTCB == pxCurrentTCB );
+            line 3529 tasks.c
+<pre><code>        see below next post
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 17, 2016</div><div class="thread-post-content">here is where it fails if it is worked a bit more (not really hard, though- I will drive some pins and see how busy it is in IDLE. putLEDs on it. Nope not very busy at all. 
+this is more sinister.
+configASSERT( pxTCB == pxCurrentTCB );
+line 3529 tasks.c in &#8220;xTaskPriorityDisinherit () &#8221;
+Somethign for me to look for on the weekend when I am back.
+pxTCB  (the mutex holder)<br />
+Task : IP-task (currentTCB is EMAC) 
+MutexsHeld : 1
+priority 1
+base priority : 1
+eNotifystate : eNotWaitingNotification
+I&#8217;ll have a look at this later.  I need to make sure , double sure and triple sure that the interrupt cannot occur while it is being (deferred serviced) 
+It is <em>possible</em> that the interrupt  could occur that (would usually)  unblock the thread (prvEMACHandlerTask)  and also generates a Yield from ISR while that segment is holding onto the mutex.  
+Now, I removed YieldFrom ISR and it still happened.
+So , in prvEMACHandlerTask , I moved where the interrupts get unmasked outside  where the mutex is given up. 
+Nup stil happens.
+ahhh this time , config-assert at the same location, but
+pxTCB  (the mutex holder) == EMAC
+Task :EMAC  (currentTCB is IP-task) 
+MutexsHeld : 1
+priority 6
+base priority : 6
+eNotifystate : eNotWaitingNotification
+anyway, it&#8217;s after midnight.  more news in a couple of days
+cheers
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 17, 2016</div><div class="thread-post-content"><blockquote>
+  configASSERT( pxTCB == pxCurrentTCB );
+  line 3529 tasks.c in &#8220;xTaskPriorityDisinherit () &#8221;
+</blockquote>
+Asserts are placed to stop mutexes being used in interrupts, because, 
+due to the priority inheritance, mutexes (unlike other types of 
+semaphores) are associated with tasks.
+If this is what you are doing then there is a work around I keep meaning 
+to document&#8230;.which I could describe here.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 17, 2016</div><div class="thread-post-content">Although, the  mutex is not being used in an interrupt. Although it is ASSOCIATED&#8230;.
+Here is the code segment, (simplified) 
+void EXTI3<em>IRQHandler(void) /* handle packet or link change interrupt */
+~~~
+{
+    //LED2</em>ON;
+    EXTI->PR|=(1&lt;&lt;3);/* clear the pending interrupt <em>/
+    xSemaphoreGiveFromISR(AsixTaskSemaphore,NULL);
+    //LED2_OFF;
+    /</em> option for faster attention */ 
+    #if 1
+    portYIELD_FROM_ISR(pdTRUE);
+    #endif
+}
+~~~
+then &#8230;.~~~
+~~~
+void prvEMACHandlerTask( void <em>pvParameters ) /</em> own task <em>/
+{
+    AsixTaskSemaphore = xSemaphoreCreateBinary();
+    AsixSPIMutex = xSemaphoreCreateMutex();
+    EXTI->IMR |= 1 &lt;&lt; IOA_STIRQ_BIT;  /</em>unmask ext interrupts */
+for (;;) {
+        if (xSemaphoreTake(AsixTaskSemaphore,0)==pdPASS ) {
+<pre><code>        /* proceed through the SPI guard */
+        xSemaphoreTake(AsixSPIMutex,0);
+        ASIXWriteReg(ASIXREG_IMR, IMR_MASK_MASKED); 
+        prvNetworkInterfaceInput();/* get packets */
+        xSemaphoreGive(AsixSPIMutex);
+        ASIXWriteReg(ASIXREG_IMR, IMR_MASK_NORMAL);/* permit interrupts*/
+       }
+}
+</code></pre>
+}
+~~~
+~~~
+and also :
+~~~
+~~~
+        xNetworkInterfaceOutput( () {/* belongs to IP TASK it seems */
+            xSemaphoreTake(AsixSPIMutex,0);
+            result=SendPkt((uint8_t *) pxDescriptor->pucEthernetBuffer, ulTransmitSize);
+            xSemaphoreGive(AsixSPIMutex);
+}
+~~~
+~~~
+etc etc 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 17, 2016</div><div class="thread-post-content">It actually blows up here now, &#8211; ALWAYS !!!
+in IP-Task..NetworkInterfaceOut
+        xSemaphoreTake(AsixSPIMutex,0);
+        result=SendPkt((uint8_t *) pxDescriptor->pucEthernetBuffer, ulTransmitSize);
+        xSemaphoreGive(AsixSPIMutex);
+call Stack 
+~~~
+IPTask()
+HandleEthernetPacket
+ProcessEthernetPacket
+ReturnEthernetFrame
+NetworkInterfaceOut {
+        xSemaphoreTake(AsixSPIMutex,0);
+        result=SendPkt((uint8_t *) pxDescriptor->pucEthernetBuffer, ulTransmitSize);
+        xSemaphoreGive(AsixSPIMutex);
+which calls &#8230;..xQueueGenericSend
+prvCopyDataToQueue
+xTaskPriorityDisinherit
+in &lt;configASSERT( pxTCB == pxCurrentTCB );>** bang ***
+~~~
+<hr />
+These tests are only ICMP pings at 20ms rate. More scope probes required, more understanding required.
+It seems there are plenty of bullets left in my revolver to solve this one- I am by no means stuck. Still nice to have some people to comment. discuss with. comments are appreciated.
+What I am not familiar with (after only 2 days with freertos) is the scheduler, the internals etc which, in time I will get to know. 
+I&#8217;ll attach some LEDS to interrupt handler, and another LED around the mutex in EMAChandler and another LED around the mutex in the networkout and see what the concurrency is .
+cheers
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 18, 2016</div><div class="thread-post-content">You ca Take on the mutex with a delay of 0, so the take will always immediately return, and indicate success or failure via its return value that you are ignoring. If the take fails you do the operation anyway and then try to give the mutex (which you don&#8217;t have) back, causing the assert.
+You could make the wait be &#8216;forever&#8217; so it will always succeed, or test the return value of the take and decide what to do if the device is busy right now. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 18, 2016</div><div class="thread-post-content">Hi Glen,
+Very glad to hear that you are developing a +TCP driver for the ASIX 88796C chip.
+You mention &#8220;ip4, ip6&#8221;? Is that IPv6?
++TCP will be extended soon with IPv6. If anyone is interested in testing it, please let it know.
+Sorry to drop in so late in this discussion.
+When you write :
+<pre><code>xSemaphoreTake(AsixSPIMutex,0);
+result=SendPkt((uint8_t *) pxDescriptor-&gt;pucEthernetBuffer, ulTransmitSize);
+xSemaphoreGive(AsixSPIMutex);
+</code></pre>
+Is that symbolically? I hope you always test the outcome of xSemaphoreTake()?
+One thing is clear: <code>xNetworkInterfaceOutput()</code> will only be called from the IP-task.
+Do you want <code>xNetworkInterfaceOutput()</code> to wait for the SPI-transfer to be finished?
+Beside sending there is a second thing to do: use the same SPI-bus to receive messages. It is custom in +TCP to create an extra task called <code>prvEMACHandlerTask()</code>. It is a &#8220;Deferred Interrupt Handler&#8221;, it handles events that were detected from within some ISR. The ISR may be triggered by the EMAC, the PHY or the DMA or a SPI controller. If any of the devices need attention, it will <code>vTaskNotifyGiveFromISR()</code> the <code>prvEMACHandlerTask()</code>.
+If I were you, I would let <code>prvEMACHandlerTask()</code> send all packets to the EMAC! You stop using the couple:
+<pre><code>vTaskNotifyGiveFromISR();
+ulTaskNotifyTake( pdFALSE, ulMaxBlockTime );
+</code></pre>
+and you start using :
+<pre><code>xQueueSendFromISR ();
+xQueueReceive();
+</code></pre>
+Now <code>xNetworkInterfaceOutput()</code> will just forward the NetworkBuffer to the <code>prvEMACHandlerTask()</code> by calling <code>xQueueSend()</code>.
+Make sure <code>FreeRTOSIPConfig.h</code> contains :
+~~~~
+    #define ipconfigZERO<em>COPY</em>TX_DRIVER        1
+~~~~
+Now when the IP-task sends a packet, the parameter <code>bReleaseAfterSend</code> will always be true:
+~~~~
+BaseType<em>t xNetworkInterfaceOutput( NetworkBufferDescriptor</em>t * const pxDescriptor,
+    BaseType_t bReleaseAfterSend )
+~~~~
+<code>bReleaseAfterSend == pdTRUE</code> means that the Network Buffer <strong>must</strong> be released by you, failing to release it would cause a memory leak.
+<code>bReleaseAfterSend == pdFALSE</code> means that the Network Buffer <strong>may not</strong> be released and that the driver can only temporarily inspect it. After returning from <code>xNetworkInterfaceOutput()</code>, the contents of the Network Buffer may change.
+So when <code>ipconfigZERO_COPY_TX_DRIVER == 1</code>, your driver will <strong>own</strong> the NetworkBuffer and it can forward them to the <code>prvEMACHandlerTask()</code>, who will send them.
+Within <code>prvEMACHandlerTask()</code> you will check many things:
+● Reception of packets
+● Sending of packets (from the queue)
+● Check the Link Status of the PHY
+● Check and report any errors
+If you want to implement this suggestion, please have a look at <code>FreeRTOS_IP_Private.h</code> for the definition of <code>eIPEvent_t</code> and <code>IPStackEvent_t</code>.  You can make some equivalent <code>enum</code> and <code>struct</code> for your <code>prvEMACHandlerTask()</code>.
+Advantages: no more problems with priority inversion. You will never hold-up the IP-task while waiting for the SPI bus.
+Within <code>prvEMACHandlerTask()</code> you can easily decide which direction gets priority: TX or RX. You can let this depend on the actual working load.
+If you have more questions, don&#8217;t hesitate to shoot!
+Good luck
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 18, 2016</div><div class="thread-post-content">Hi Richard
+My code segment  was simplified &#8211; IE not showing the processing of the result = &#8230;..
+I always check the result. 
+Umm doesnt Take with 0 specified wait forever (ie no timeout) ?
+OH I just read it
+&#8221; If tick wait is zero, the semaphore will return immediately&#8221;
+ooops !   My bad.
+thanks for the pointer. 
+actually in NetworkOutput I was NOT checking the result- using timeout of ZERO I had assumed wait forever. 
+AHHHH so I am running right through that stop sign ! and probably then doing a GIVE when I never really TOOK . &#8216;
+OK I see there is <portmax_delay>
+right&#8230;. RTFM&#8230; read the f**ing manual I say to myself.
+cheers
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 18, 2016</div><div class="thread-post-content"><blockquote>
+  Hi Richard
+</blockquote>
+It was Hein pointing that out, not Richard 🙂
+I think that when using<code>portMAX_DELAY</code> you also want to define:
+~~~~
+<h1>define INCLUDE_vTaskSuspend       1</h1>
+~~~~
+Here is some more text to keep you busy:
+If you are sharing the same SPI-bus with other devices apart from the EMAC, it would be nicer to share it properly using a Mutex.
+If the SPI-bus only serves the EMAC, I would give <code>prvEMACHandlerTask()</code> exclusive access to it.
+For +TCP projects, it is beneficial to assign the following task priorities:
+~~~~
+    /* highest */
+<pre><code>prvEMACHandlerTask();
+prvIPTask();
+/* tasks that use +TCP */
+prvIdleTask();
+/* lowest */
+</code></pre>
+~~~~
+<code>prvEMACHandlerTask()</code> normally uses very little CPU-time: it starts and stops DMA or SPI transactions and it&#8217;ll poll a PHY. In order to avoid an overflow of the reception buffers, it wants a high priority.
+<code>prvIPTask()</code> typically has more work to do: it handles incoming packets and it prepares all outgoing traffic: TCP ACK&#8217;s and data packets. If your EMAC can handle all checksums, that is great. Calculating CRC&#8217;s in software, although heavily optimised, takes more CPU time.
+User tasks that use +TCP: if given a lower priority, it&#8217;ll mean that <code>sendto()</code> and <code>send()</code> will normally work immediately. There won&#8217;t be much queuing of packets, because the IP-task will have a higher priority and deliver each packet upon request.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 18, 2016</div><div class="thread-post-content">Hi Hein
+Thanks very much for the information and your time to write.
+Given that there is only one SPI device on this bus (it&#8217;s not like I am sharing the one SPI between say a temperature sensor,  and other sensors with different chip-selects)  it really makes no sense  for me to do what I am doing. (apart from that it is convenient).   IE what I am doing is dumb but it grew that way because of the &#8216;template&#8217;.
+To change what NetworkOutput (that runs in IPTask)  does I think that where I currently send a packet , I can instead, signal the EMACS thread that there is something to send , and post it the txdescriptor soemhow  . Then, it can wait. Then, when EMACS has finished with the buffer, EMACS can signal IPtask (that is blocked) that it is done with the buffer and it can continue.  Or I can free the buffer from the EMACS thread etc. a few options I will investigate.  INetworkOutput does not wait (IE it just signals EMACS with the buffer descriptor # or ptr)  then it can go about what it was doing, something else. 
+The only requirement for that to work is to have EMACS thread waiting on both the IRQnotify or the NetworkOutput notify. Like WaitForMultipleObjects in win32 land. I did read somewhere there is a facility to wait on multiple objects. 
+This way , only one thread needs to deal with the SPI. much better ! { which was of course the original suggestion :- )    }
+cheers
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 18, 2016</div><div class="thread-post-content">A short response now:
+When <code>xNetworkInterfaceOutput()</code> returns, the packet has been queued to be sent by the EMAC task. You don&#8217;t have to wait for that to happen, you can just return:
+~~~~
+BaseType<em>t xNetworkInterfaceOutput( NetworkBufferDescriptor</em>t * const pxDescriptor,
+    BaseType<em>t bReleaseAfterSend )
+{
+EMACEvent</em>t xEvent;
+<pre><code>/* if ipconfigZERO_COPY_TX_DRIVER == 1 then
+bReleaseAfterSend will be true. */
+configASSERT( bReleaseAfterSend != pdFALSE );
+configASSERT( xEMACEventQueue != NULL );
+xEvent.pxDescriptor = pxDescriptor;
+xEvent.eEventType = eEMACTxEvent;
+xQueueSendToBack( xEMACEventQueue, &amp;xEvent );
+return 0;   /* Return value is actually ignored. */
+</code></pre>
+}
+~~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 18, 2016</div><div class="thread-post-content">Hi Hein
+Yeah. I see what you mean (looking at the freertos+TCP code)  I don&#8217;t really have to wait, I can just dispatch the descriptor. Freeing the descriptor buffer  (once i have used the data) can be done in emacs.
+nice to have imbuilt queues. Something else taken care of for me. 
+Off for 1.5 days  interstate.
+cheers
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on August 18, 2016</div><div class="thread-post-content">Glen:
+May I offer my 2 cents as someone who has just gone thru the process of implementing a driver.
+Use a binary semaphore to tell who has the spi bus:  Either Xmit opperations or Rcv operations.
+Use a task to process received messages.  Make the priority of this task higher than the IP task priority.
+When you receive a RCV interrupt, use xTaskNotifyFromISR to wake up the RCV task (may not be able to actually run if the Xmit operation has the SPI semaphore.
+Make sure you set ipconfigZERO<em>COPY</em>TX_DRIVER to one in your FreeRTOSIPConfig file.  This will allow you to return from xNetworkInterfaceOutput() prior to actually completing the xmit operation.
+In xNetworkInterfaceOutput() get the SPI semaphore.  This will lock out the RCV task.  If you are using interrupts to manage you spi transfer &#8211; start the transfer and return.  This will allow the stack to continue operating &#8212; but NOT to receive any new messages.
+In the xmit complete interrupt, vNetworkBufferReleaseFromISR() to release the buffer and xSemaphoreGiveFromISR() to give back the spi semaphore.
+In your RCV task &#8230; use:
+xSemaphoreTake(SPI<em>GateSemaphore, portMAX</em>DELAY);
+ You will now wait until Xmit operations are completed.  Once you have the semaphore and are processing received messages, the IP task can not run because its of lower priority so there is no concern about xNetworkInterfaceOutput() being called.
+ When done with all the processing of received messages in the RCV task, give the semaphore back and wait for the RCV interrupt to wake you again.  The IP task will most likely start running and now has access to the SPI semaphore via xNetworkInterfaceOutput().
+ The most important thing (to me) is the use of the ipconfigZERO<em>COPY</em>TX_DRIVER set to 1.
+ This allows you to return from xNetworkInterfaceOutput() while your spi transmits in the background.
+ if  ipconfigZERO<em>COPY</em>TX_DRIVER is set to 0 AND xReleaseAfterSend is FALSE in the call to xNetworkInterfaceOutput() then you MUST NOT return until xmit is complete (unless you copy the message to another buffer and xmit out of it &#8212; but that&#8217;s just a waste of time and memory).
+ Hope that helps.
+ Joe
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 18, 2016</div><div class="thread-post-content"><blockquote>
+  In xNetworkInterfaceOutput() get the SPI semaphore. This will lock out the
+  RCV task. If you are using interrupts to manage you spi transfer &#8211; start the
+  transfer and return. This will allow the stack to continue operating &#8212; but
+  NOT to receive any new messages.
+</blockquote>
+Joe, thanks for your input.
+I wouldn&#8217;t advice to use an SPI semaphore for this reason: if the SPI bus is busy, it would hold-up the IP-task.  I would rather pass the Network Buffer to the EMAC task and let that task work on it.
+And therefore, I would replace the task-notify mechanism with the a working queue to wake up the EMAC task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on August 18, 2016</div><div class="thread-post-content">From what I understand of who has access to Glen&#8217;s spi, there are only two (2) users.  IP task for xmit and RCV task for receiving.
+if ipconfigZERO<em>COPY</em>TX<em>DRIVER == 0 and xReleaseAfterSend == FALSE, you are going to stall the IP task no matter what.  if ipconfigZERO</em>COPY<em>TX</em>DRIVER == 1, the IP task can keep running until it attempts to xmit again and then stall if the transmit operation is still active.
+I personally would keep the xmit and rcv processes seperate (not have them in the RCV task).  To me &#8212; it keeps responsibilities clear a seperate.  The SPI semaphore manages who runs based on hightest priority at the time SPI access is needed.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 18, 2016</div><div class="thread-post-content"><blockquote>
+  if ipconfigZERO<em>COPY</em>TX_DRIVER == 1, the IP task can keep running until
+  it attempts to xmit again and then stall if the transmit operation is
+  still active.
+</blockquote>
+I don;t think so. Suppose that the IP-task wants to send a new packet while the first one hasn&#8217;t been delivered yet, the new packet will stay in the EMAC working queue. This queue serves as a buffer between the two tasks.
+Performance-wise, I think it is important that the IP-task keeps on working also when the (relatively slow) SPI bus is busy. In a high-volume TCP conversation, the IP-task has a lot of work to do.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joehinkle">joehinkle</a> on August 18, 2016</div><div class="thread-post-content">I agree with you if stack processing is a major application concern.
+I don&#8217;t think there is one right answer, it comes down to what are the requirements of the application.
+Queueing keeps the IP stack processing as fast as possible &#8212; trade off is more memory usage for  queues and more code complexity.
+I was biased in my previous statement as I did NOT implement a SPI interface &#8211; I was interfacing directly with a ENET &#8212; so my time delay was very small.  SPI delay for xmit could be VERY long in comparison.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 20, 2016</div><div class="thread-post-content">thanks all for the input.
+My perspective is that IPTask should be busy preparing and processing packets.
+someone else should do the waiting. &#8211; IE in this case another thread or threads.  Given that there is only one device attachment facility, if you will , IE the SPI bus, in this application, it makes sense for the EMACS task to wait on either rx interrupt OR wait new descriptor available for sending, one or the other since it can only do one or the other.
+The only thing that should stop IPTask would be if there is no free buffers to do anything with. 
+If EMACS runs out of buffers to put stuff, it still has to read and dump the packet in the ethernet chip buffers, and then it can just dump it. And of course IPTask waiting on the SPI makes the situation WORSE because the way to free up buffers is for IPTask to process receive packets- which eventually freesup the buffer.
+If there are no buffers for assembling a new packet, that of course goes back to the caller and fails the send.
+Now, what I DO need to look through the code is to figure out what happens in the case that the interruot handler YieldFromISR() executes but the &#8216;target thread&#8217; in this case, EMACS, is NOT waiting- busy doing something else. I&#8217;ll look at the source code and trace that one through. My feeling is that if YieldFrom ISR executes and the target thread is not blocked, then Yield from ISR should do nothing..
+YieldFromISR is a very effective and handy feature in FreeRTOS. I was quite impressed when I read the feature. 
+see, I have 500 pps of 1kB size going in and out , (in addition to the dsp work) and the buffers are fairly small so there is little time to waste, IE my implementation needs to be efficient.
+The SPI DMA timing is much tighter. (the push is on for latency also so I am just using the double-buffer feature in the STM, am not chaining say 8 buffers) &#8230;I could probably get away with not using YieldFromISR on the ethernet IRQhandler, but on the SPI DMA completion handler, yield forn ISR is VERY  handing at meeting the very strict SPI buffer deadline. 
+cheers
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 20, 2016</div><div class="thread-post-content"><blockquote>
+  The only thing that should stop IPTask would be if there is no free buffers to
+  do anything with.
+</blockquote>
+In the example drivers, the number of available Network Buffers is monitored and logged when it drops.
+You could add a rule, e.g. stop using Network Buffers when the number drops below e.g. 3.
+When the IP-task finds that there are no more Network Buffers, it will give up and wait for the next thing to do.
+<blockquote>
+  My feeling is that if YieldFrom ISR executes and the target
+  thread is not blocked, then Yield from ISR should do nothing..
+</blockquote>
+~~~~
+void MY<em>ISR()
+{
+BaseType</em>t xSwitchRequired = pdFALSE;
+<pre><code>/* Check the interrupt status. clear the necessary flags. */
+xQueueSendFromISR( xQueue, &amp;( xItem ), &amp;( xSwitchRequired ) );
+portEND_SWITCHING_ISR( xSwitchRequired );   /* formerly called portYIELD_FROM_ISR() *
+</code></pre>
+}
+~~~~
+Sounds correct to me. If the ISR calls e.g. <code>xQueueSendFromISR ()</code>, this might unblock your <code>prvEMACHandlerTask()</code>. But if that task was already in a non-blocked state, it will just carry on.  The next call to <code>xQueueReceive()</code> will succeed without blocking.
+Your <code>prvEMACHandlerTask()</code> will always do very short transactions and therefore I would give it a high priority.
+The latency between calling <code>portEND_SWITCHING_ISR()</code> and the unblocking of the task is very small.
+Using two alternating SPI buffers sounds good.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 20, 2016</div><div class="thread-post-content">Hi Hein. 
+agreed on all your comments.
+I implemented a QueueSet
+Queue Length of 1 for the BinarySemaphore from the ISR
+and Queue length of nbuffer descriptors (maybe need to think about that more)   for the NetworkOutput thread.
+NetworkOutputThread posts a type containing the Descriptor and the  bReleaseAfterSend items and returns immediately to IPTask main.
+The EMACS-task waits on the QueueSet, 
+I could have implemented as a single queue, but then it is possible that the IRQ handler might be way down the queue if NetworkOutput pushed alot of sends into the queue&#8230; I want the irq handler semaphore  to be handled next iteration, so the queue set is better for that. 
+It worked first go. (took about an hour)  . seems to be solid.  I&#8217;ll have a look at the YieldFromISR rtos code.
+cheers
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 20, 2016</div><div class="thread-post-content"><blockquote>
+  I implemented a QueueSet
+</blockquote>
+I&#8217;m not sure if that is useful / necessary.
+I thought of a single working queue with each element having the size of the struct <code>EMACEvent_t</code>:
+For example:
+~~~~
+typedef enum
+{
+    eEMAC<em>SendPacket,
+    eEMAC</em>CheckPHY,
+    eEMAC<em>TXDone,
+    eEMAC</em>RXDone,
+    &#8230;
+} eEMACEvent_t;
+typedef struct
+{
+    eEMACEvent<em>t eEventType;
+    void *pxData;
+} EMACEvent</em>t;
+~~~~
+So for every event, 8 bytes will be queued. The field <code>pxData</code> may point to a Network Buffer or remain NULL if not in use.
+The boolean parameter <code>bReleaseAfterSend</code> will always be <code>pdTRUE</code> if you define :
+~~~~
+    #define ipconfigZERO<em>COPY</em>TX_DRIVER     1
+~~~~
+So <code>xNetworkInterfaceOutput()</code> can be implemented as I described here above. Just queue the Network Buffer.
+<blockquote>
+  a single queue, but then it is possible that the IRQ handler might be way
+  down the queue if NetworkOutput pushed alot of sends into the queue
+</blockquote>
+There is an alternative: you can define: 
+~~~~
+    #define ipconfigUSE<em>LINKED</em>RX_MESSAGES      1
+~~~~
+It will add a <code>pxNextBuffer</code> pointer to each Network Buffer ( see <code>include/FreeRTOS_IP.h</code> ).
+Now suppose that you receive a mix of ISR-events and packets to be sent:
+You can put the packets together (link them) by setting the <code>pxNextBuffer</code> field:
+~~~~
+switch( xMsg.eEventType )
+{
+    case eEMAC<em>SendPacket:
+    {
+        NetworkBufferDescriptor</em>t * pxNew = ( NetworkBufferDescriptor<em>t * ) xMsg.pxData;
+        pxNew->pxNextBuffer = NULL;
+        if( pxFirst == NULL )
+        {
+            pxFirst = pxNew;
+        }
+        if( pxLast != NULL )
+        {
+            pxLast->pxNextBuffer = pxNew;
+        }
+        pxLast = pxNew;
+    }
+    break;
+    case eEMAC</em>CheckPHY:
+    &#8230;
+~~~~
+In that way you can empty the working queue each time the task wakes up.
+If you want you can also write me directly ( h point tibosch at freertos point org ), then maybe we can go quicker through all this. And I&#8217;m not sure if all these implementation details are interesting for everyone 🙂
+</div></div><div class="thread-post"><h3 class="thread-post-title">Controlling network driver access between prvEMACHandlerTask and xNetworkInterfaceOutput</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on August 20, 2016</div><div class="thread-post-content">Hi Hein
+Quite happy to keep it in forum if it is beneficial for someone doing similar and doing a search.
+I&#8217;m very happy with the degree of assistnce you are providing. 
+OK on the ipconfigUSE<em>LINKED</em>RX_MESSAGES. I will read up.
+<hr />
+Something  on the queues, and similar sort of structures&#8230;.
+xQueueCreate()
+and
+xQueueCreateStatic()
+The static version would be useful for fast access say out of TCM / or NON cached memory (instead of potentially causing a cache miss)  &#8211; a nice function.
+<hr />
+cheers
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

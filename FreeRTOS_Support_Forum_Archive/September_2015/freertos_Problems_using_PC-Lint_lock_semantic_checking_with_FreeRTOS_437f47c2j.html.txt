@@ -1,0 +1,201 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Problems using PC-Lint lock semantic checking with FreeRTOS - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_Problems_using_PC-Lint_lock_semantic_checking_with_FreeRTOS_437f47c2j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Problems using PC-Lint lock semantic checking with FreeRTOS - FreeRTOS" />
+<meta property="og:description" content="Problems using PC-Lint lock semantic checking with FreeRTOSPosted by philpem on September 16, 2015Hi, I&#8217;m trying to set up PC-Lint to check for correct releasing of mutexes in FreeRTOS. This is normally done by specifying semantics for the functions which perform the locking and unlocking operations, specifically: ~~~~~~ -sem(xSemaphoreTake, threadlock, 1p) -sem(xSemaphoreGive, threadunlock, 1p) -sem(xTaskCreate, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_Problems_using_PC-Lint_lock_semantic_checking_with_FreeRTOS_437f47c2j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Problems using PC-Lint lock semantic checking with FreeRTOSPosted by philpem on September 16, 2015Hi, I&#8217;m trying to set up PC-Lint to check for correct releasing of mutexes in FreeRTOS. This is normally done by specifying semantics for the functions which perform the locking and unlocking operations, specifically: ~~~~~~ -sem(xSemaphoreTake, threadlock, 1p) -sem(xSemaphoreGive, threadunlock, 1p) -sem(xTaskCreate, [&hellip;]" />
+<meta name="twitter:title" content="Problems using PC-Lint lock semantic checking with FreeRTOS - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202561' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202561' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202561' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202561' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145204' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_Problems_using_PC-Lint_lock_semantic_checking_with_FreeRTOS_437f47c2j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_Problems_using_PC-Lint_lock_semantic_checking_with_FreeRTOS_437f47c2j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145204">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2015_freertos_support_forum_archive_index.html/">September 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Problems using PC-Lint lock semantic checking with FreeRTOS</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/philpem">philpem</a> on September 16, 2015</div><div class="thread-post-content">Hi,
+I&#8217;m trying to set up PC-Lint to check for correct releasing of mutexes in FreeRTOS. This is normally done by specifying semantics for the functions which perform the locking and unlocking operations, specifically:
+~~~~~~
+-sem(xSemaphoreTake, thread<em>lock, 1p)
+-sem(xSemaphoreGive, thread</em>unlock, 1p)
+-sem(xTaskCreate, thread_create(1), 1p)
+~~~~~~
+The problem is that xSemaphoreTake and xSemaphoreGive are implemented as macros:
+~~~~~~
+:::c
+<h1>define xSemaphoreGive( xSemaphore )        xQueueGenericSend( ( QueueHandle<em>t ) ( xSemaphore ), NULL, semGIVE</em>BLOCK<em>TIME, queueSEND</em>TO_BACK )</h1>
+~~~~~~
+This prevents PC-Lint from applying the semantics as the macro is expanded out to a call to xQueueGenericSend. There&#8217;s also a side issue relating to mutexes and semaphores being fed to the same lock and unlock functions and thus one being misinterpreted as the other, but I&#8217;ll leave that aside for the moment.
+I could reimplement xSemaphoreGive as follows (and do the same to xSemaphoreTake), which allows PC-Lint to detect the lock and unlock operations:
+~~~~~~
+:::c
+static inline BaseType<em>t xSemaphoreGive( SemaphoreHandle</em>t xSemaphore )
+{
+    return xQueueGenericSend( ( QueueHandle<em>t ) xSemaphore, NULL, semGIVE</em>BLOCK<em>TIME, queueSEND</em>TO_BACK );
+}
+~~~~~~
+This also has the benefit of improving type safety, e.g. preventing a mistyped variable name from passing the wrong thing into xSemaphoreGive. I&#8217;ll note that I&#8217;ve seen a bug like that at work &#8212; a variable protected by a mutex was accidentally passed into the Give function, which caused said function to crash quite spectacularly. The variable names in question were something like &#8220;varName&#8221; and &#8220;varNameLock&#8221;; a developer used the autocomplete function in their editor and forgot to add the &#8220;lock&#8221; suffix. In our case, even the C compiler&#8217;s own basic type checking would have likely caught that a struct was being passed in place of a semaphore (and if not, Lint&#8217;s strict type checking could have been configured to do so).
+Back to the topic at hand &#8212; the problem I have is that my suggested modification would require a lot of changes to the FreeRTOS source code.
+Is there any way I can do something like this without radically altering the FreeRTOS headers?
+Is there a reason FreeRTOS was implemented using macros instead of static inline functions?
+Thanks,
+Phil.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problems using PC-Lint lock semantic checking with FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 16, 2015</div><div class="thread-post-content">All the design choices in FreeRTOS have a reason behind them.  Some date back to the original versions of FreeRTOS, which were intended to be as small as possible.  Hence, the queue is the fundemental primitiave that has all the event management built in, and semaphores were (originally) implemented by macros without adding anything to the code size &#8211; that is not quite true now as mutexes in particular are treated differently in the code from binary semaphores.  Likewise error detection is done by assert macros that trap errors during development, but can be completely removed once code is tested, keeping size and run-time minimal.  SafeRTOS on the other hand makes lots of error checks directly in the code, returns error codes for all anomalies, and therefore requires more code to implement equivalent functionality.
+These days the original design choices still have benefits as the smaller amount of code means there is less code to test.  However, newer features, such as event groups and direct to task notifications, are not based on queue data structures or functionality.  Direct to task notifications can often be used in place of semahores (but not mutexes) and are smaller and much faster than semaphores.  
+FreeRTOS source code has always avoided using any features or syntax introduced by newer C standards, as it is compiled with more than 20 compilers, and the more obscure compilers only support the older standards.  Hence inline functions have never been used in the core of FreeRTOS.  However, inline functions are being used in the newer FreeRTOS components (TCP and FAT) as it is unlikely these newer components would not be used on really small processors anyway.
+We did once make a type safe version of FreeRTOS, but had to back the changes out, I think (if I recall correctly) because of bugs in elf parsers used by some debuggers meant the debugger veiws were corrupted.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problems using PC-Lint lock semantic checking with FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/philpem">philpem</a> on September 17, 2015</div><div class="thread-post-content">Thanks for the explaination. I sat and thought about it last night, and realised I hadn&#8217;t factored in old compilers&#8230; I guess I&#8217;ve been spoiled by IAR EWARM and GCC, both of which are C99 compliant.
+Incidentally, I&#8217;ve found a way to add type safety by wrapping the macros in functions. This involves creating a new header file which is included after the FreeRTOS headers. Said header contains a series of functions like this:
+~~~~~~
+:::c
+//lint -sem(xSemaphoreTake, thread<em>lock, 1p)
+static inline BaseType</em>t (xSemaphoreTake)(SemaphoreHandle<em>t xSemaphore, const TickType</em>t xBlockTime)
+{
+    return xSemaphoreTake(xSemaphore, xBlockTime);
+}
+<h1>undef xSemaphoreTake</h1>
+~~~~~~
+The preprocessor is prevented from substituting the macro for the function name by surrounding the function name in brackets; this has no effect on the function definition. Then we simply insert the relevant macro, and undefine the macro after exiting. A few Lint comments are added to the file to inform PC-Lint of the function semantics, e.g. locking and unlocking.
+This has the advantage that all the strong type checking can be disabled by wrapping the type-checking wrappers with an &#8220;#if TYPE_CHECKING&#8221; guard, and only define this when Lint is being run (or simply &#8220;#if defined(&#95;lint)&#8221;). As the code has no side effects, it could even be added to debug builds.
+To go further (I&#8217;m working on this!), an additional &#8220;MutexHandle&#95;t&#8221; typedef could be defined based on SemaphoreHandle&#95;t. Functions which accept mutexes could then be modified to accept this type, and PC-Lint can then be configured to enforce strong type checking upon it. That is to say, <em>any function which only accepts a mutex will only accept a mutex</em> (in Lint at least).
+And all this because of someone hamming the name of a variable&#8230;
+I&#8217;ll have a look at direct-to-task notifications, but I seem to recall there was some reason we could&#8217;t use them. One common pattern we use is that a function kicks off an interrupt-driven operation (e.g. A/D sampling), the interrupt raises a semaphore, and another function waits on the semaphore. The semaphore itself is not exposed outside of the code module in which it resides. The rationale there is that different tasks (or at least different functions running in a given task context) may make use of the A/D at different times.
+Thanks,
+Phil.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problems using PC-Lint lock semantic checking with FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/philpem">philpem</a> on September 17, 2015</div><div class="thread-post-content">As a side note, I think I&#8217;ve found a bug &#8212; no impact at runtime, but causes an Unreachable Code warning from Lint:
+Line 1687 of task.h:
+~~~~~~
+:::c
+<h1>define xTaskNotifyGive( xTaskToNotify ) xTaskNotify( ( xTaskToNotify ), 0, eIncrement );</h1>
+~~~~~~
+Should be:
+~~~~~~
+:::c
+<h1>define xTaskNotifyGive( xTaskToNotify ) xTaskNotify( ( xTaskToNotify ), 0, eIncrement )</h1>
+~~~~~~
+Note the trailing semicolon at the end of the macro.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problems using PC-Lint lock semantic checking with FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 17, 2015</div><div class="thread-post-content">Thanks for pointing this out &#8211; it looks like it has been changed already:
+http://sourceforge.net/p/freertos/code/HEAD/tree/trunk/FreeRTOS/Source/include/task.h#l1711
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problems using PC-Lint lock semantic checking with FreeRTOS</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 17, 2015</div><div class="thread-post-content"><blockquote>
+  One common pattern we use is
+  that a function kicks off an interrupt-driven operation (e.g. A/D
+  sampling), the interrupt raises a semaphore, and another function waits
+  on the semaphore. The semaphore itself is not exposed outside of the
+  code module in which it resides. The rationale there is that different
+  tasks (or at least different functions running in a given task context)
+  may make use of the A/D at different times.
+</blockquote>
+If I understand this scenario correctly, then you can use a task 
+notification by saving the handle of the task to notify in a variable, 
+then the interrupt service routine clears the variable back to NULL once 
+it has used it to notify the task.
+http://www.freertos.org/RTOS<em>Task</em>Notification<em>As</em>Binary_Semaphore.html
+Ideally the variable would be inside a structure used by the driver to 
+describe the peripheral being used.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

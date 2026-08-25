@@ -1,0 +1,140 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PendSVC fail on M0 of LPC43xx - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2014/freertos_PendSVC_fail_on_M0_of_LPC43xx_41ce958cj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="PendSVC fail on M0 of LPC43xx - FreeRTOS" />
+<meta property="og:description" content="PendSVC fail on M0 of LPC43xxPosted by omegahacker on June 16, 2014I&#8217;ve spent weeks grinding my way through getting FreeRTOS to actually run on the secondary M0 core of the LPC4350. First was getting the RGU_RESET register polarity right, then determining that NXP neglected to put a SysTick timer on the M0 *and* completely failed &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2014/freertos_PendSVC_fail_on_M0_of_LPC43xx_41ce958cj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="PendSVC fail on M0 of LPC43xxPosted by omegahacker on June 16, 2014I&#8217;ve spent weeks grinding my way through getting FreeRTOS to actually run on the secondary M0 core of the LPC4350. First was getting the RGU_RESET register polarity right, then determining that NXP neglected to put a SysTick timer on the M0 *and* completely failed [&hellip;]" />
+<meta name="twitter:title" content="PendSVC fail on M0 of LPC43xx - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202402' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202402' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202402' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202402' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143671' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2014%2Ffreertos_PendSVC_fail_on_M0_of_LPC43xx_41ce958cj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2014%2Ffreertos_PendSVC_fail_on_M0_of_LPC43xx_41ce958cj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143671">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2014_freertos_support_forum_archive_index.html/">June 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">PendSVC fail on M0 of LPC43xx</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/omegahacker">omegahacker</a> on June 16, 2014</div><div class="thread-post-content">I&#8217;ve spent weeks grinding my way through getting FreeRTOS to actually run on the secondary M0 core of the LPC4350.  First was getting the RGU_RESET register polarity right, then determining that NXP neglected to put a SysTick timer on the M0 *and* completely failed to mention this rather fundamental fact in the documentation.
+At this point I have a &#8220;port&#8221; of FreeRTOS that will compile and run directly on the main M4 via openocd and gdb.  It replaces SysTick with LPC&#8217;s RITimer, and successfully runs two tasks with vTaskDelay() that flash LEDs.  A debug LED confirms that the FreeRTOS RITimer interrupt handler is indeed running as it should.
+FWIW, I have my linker script set to keep everything in SRAM, at 0x10000000.  The MEMMAP register for the M4 is set to that (remapping 0x00000000 to 0x10000000) and runs from there.
+Now, I recompile it to target the M0, which means changing compiler parameters as well as the interrupt table (though I can actually cheat since the RITimer is in the same vector slot, and the M4&#8217;s vector table is longer so it just &#8220;wastes&#8221; the extra vectors).  The M4 loads the binary image into 0x10000000, set&#8217;s the M0APP REMAP to that address, and starts up the M0.
+At this point, I get the two tasks running and toggling their LEDs, then a set of RITimer interrupts toggling it&#8217;s debug LED.  However, as soon as the first timer expires, the M0 halts.  My first attempt at keeping RITimer running was to comment out the trigger of the PendSVC interrupt in xPortSysTickHandler (renamed to xPortRITimerHandler in my &#8220;port&#8221;), but strangely that didn&#8217;t do it.  I had to comment out the entire block that ran xTaskIncrementTick() and checked its output in order for the RITimer not to stop running.
+Any idea why moving working code from the M4 to the M0 would fail like this?  Also, any idea how I can actually get GDB working in such a way as to debug the M0?  As it stands I&#8217;ll have to move around LED debugging lines in order to try to track down what&#8217;s going on, and that gets old <em>fast</em>.
+I&#8217;ll post code snippets as requested because there&#8217;s a lot going on.
+Thanks!
+</div></div><div class="thread-post"><h3 class="thread-post-title">PendSVC fail on M0 of LPC43xx</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/omegahacker">omegahacker</a> on June 16, 2014</div><div class="thread-post-content">FWIW I&#8217;ve narrowed it down to failing somewhere during prvAddTaskToReadyList(pxTCB) inside xTaskIncrementTick(), comment /* Place the unblocked task into the appropriate ready list. */
+I am unable to get any deeper than that because I don&#8217;t have any way of single-stepping until I can figure out how to get GDB to work.
+My suspicion is that maybe somehow the memory arrangement is still out of whack.  The image loaded is a simple objcopy -O binary of the ELF, which comes to the correct size (including heap and stack, with linker in RAM-only mode) has worked otherwise.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PendSVC fail on M0 of LPC43xx</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 16, 2014</div><div class="thread-post-content">It sounds like you are trying to run the FreeRTOS Cortex-M3/4 port on a Cortex-M0 part.  Is that the case?  If so it won&#8217;t work as the CM0 does not have the basepri register.  There is a FreeRTOS Cortex-M0 port layer in FreeRTOS/source/portable/GCC/ARM_CM0, but that won&#8217;t work either for the reason you already discovered &#8211; no SysTick timer.
+However themselves do have their own adapted port for the M0 core of that chip, as well as some examples of how to use it.  Have you looked at that?  I imagine you will be able to find it somewhere on http://www.lpcware.com.
+Hope that helps.
+Regards,
+Richard Barry.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PendSVC fail on M0 of LPC43xx</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/omegahacker">omegahacker</a> on June 16, 2014</div><div class="thread-post-content">No, I am using the M0 port as the base.  Switching between the M4 build and M0[APP] build involves altering the Makefile.  As it turns out, the M0 port actually works just fine running on the M4 as long as the -mcpu flag is switched, because both SysTick and RITimer are at the same vector.
+I have the LPCOpen port, but it&#8217;s not very well laid out &#8211; they leave the M0 port.c in place with it&#8217;s SysTick references, then add a file for the RITimer.  The rtimer_setup() function is then #defined as the result of prvSetupTimerInterrupt(), except the port.c version of the actual function is still there, which I guess &#8220;works&#8221;.  Then they have *zero* linker scripts or Makefiles, so I have no idea how it&#8217;s actually supposed to be built.
+I&#8217;ll keep digging through their code, maybe see if I can figure out how on earth they&#8217;re supposed to be built and whether that tells me anything new.
+Also, I&#8217;ve confirmed the M0 core is hitting a Hard Fault.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

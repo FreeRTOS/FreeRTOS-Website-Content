@@ -1,0 +1,281 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New stack checking and tracing functionality - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2008/freertos_New_stack_checking_and_tracing_functionality_1957823.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="New stack checking and tracing functionality - FreeRTOS" />
+<meta property="og:description" content="New stack checking and tracing functionalityPosted by richardbarry on March 3, 2008Stack overflows are the most common source of problems in FreeRTOS.org application.&nbsp; I have therefore added two new features to the SVN head of tasks.c: 1&#041; New function uxTaskGetStackHighWaterMark&#040;&#041; as described below. /&#042;&#042; &#042; task.h &#042; &lt;PRE&gt;unsigned portBASE&#095;TYPE uxTaskGetStackHighWaterMark&#040; void &#041;;&lt;/PRE&gt; &#042; &#042; INCLUDE&#095;uxTaskGetStackHighWaterMark &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2008/freertos_New_stack_checking_and_tracing_functionality_1957823.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="New stack checking and tracing functionalityPosted by richardbarry on March 3, 2008Stack overflows are the most common source of problems in FreeRTOS.org application.&nbsp; I have therefore added two new features to the SVN head of tasks.c: 1&#041; New function uxTaskGetStackHighWaterMark&#040;&#041; as described below. /&#042;&#042; &#042; task.h &#042; &lt;PRE&gt;unsigned portBASE&#095;TYPE uxTaskGetStackHighWaterMark&#040; void &#041;;&lt;/PRE&gt; &#042; &#042; INCLUDE&#095;uxTaskGetStackHighWaterMark [&hellip;]" />
+<meta name="twitter:title" content="New stack checking and tracing functionality - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201579' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201579' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201579' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201579' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139806' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2008%2Ffreertos_New_stack_checking_and_tracing_functionality_1957823.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2008%2Ffreertos_New_stack_checking_and_tracing_functionality_1957823.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139806">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2008_freertos_support_forum_archive_index.html/">March 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">New stack checking and tracing functionality</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 3, 2008</div><div class="thread-post-content">Stack overflows are the most common source of problems in FreeRTOS.org application.&nbsp; I have therefore added two new features to the SVN head of tasks.c:
+1&#41; New function uxTaskGetStackHighWaterMark&#40;&#41; as described below.
+/&#42;&#42;
+ &#42; task.h
+ &#42; &lt;PRE&gt;unsigned portBASE&#95;TYPE uxTaskGetStackHighWaterMark&#40; void &#41;;&lt;/PRE&gt;
+ &#42;
+ &#42; INCLUDE&#95;uxTaskGetStackHighWaterMark must be set to 1 in FreeRTOSConfig.h for
+ &#42; this function to be available.
+ &#42;
+ &#42; Returns the high water mark for the stack of the calling task.&nbsp; That is,
+ &#42; the minimum free stack space there has been &#40;in bytes&#41; since the task
+ &#42; started.&nbsp; The small the returned number the closer the task has come
+ &#42; to overflowing its stack.
+ &#42;/
+unsigned portBASE&#95;TYPE uxTaskGetStackHighWaterMark&#40; void &#41;;
+2&#41; Stack overflow hook, as described below:
+/&#42;
+ &#42; Call the stack overflow hook function if the stack of the task being swapped
+ &#42; out is currently overflowed, or looks like it might have overflowed in the
+ &#42; past.
+ &#42;
+ &#42; Setting configCHECK&#95;FOR&#95;STACK&#95;OVERFLOW to 1 will cause the macro to check
+ &#42; the current stack state only &#8211; comparing the current top of stack value to
+ &#42; the stack limit.&nbsp; Setting configCHECK&#95;FOR&#95;STACK&#95;OVERFLOW to greater than 1
+ &#42; will also cause the last few stack bytes to be checked to ensure the value
+ &#42; to which the bytes were set when the task was created have not been 
+ &#42; overwritten.&nbsp; Note this second test does not guarantee that an overflowed
+ &#42; stack will always be recognised.
+ &#42;/
+If configCHECK&#95;FOR&#95;STACK&#95;OVERFLOW is set to greater than 0 then the application must provide a function with the prototype:
+void vApplicationStackOverflowHook&#40; xTaskHandle &#42;pxTask, signed portCHAR &#42;pcTaskName &#41;;
+In addition, the tasks.c and queue.c code have been laced with trace macros that permit user defined trace functionality to be implemented.&nbsp; More on this later.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/piero74">piero74</a> on March 4, 2008</div><div class="thread-post-content">I suppose that you will add these changes in next release 4.7.3, is it right?
+Do you add in task.c and queue.c only my proposed hooks in create functions or similar hooks in delete functions too?
+I think that uxTaskGetStackHighWaterMark&#40; void &#41; could be better if it will provide stack high water for a generic task, something like this:
+uxTaskGetStackHighWaterMark&#40; xTaskHandle taskID &#41;
+Do you think is it possible or needs very slow check? i think stack check are very important for safety reasons, but has to be very speed test&#33;
+Bye,
+Piero
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/piero74">piero74</a> on March 4, 2008</div><div class="thread-post-content">I think this is the better place for this post &#40;i did it in other thread&#41;
+Hi Richard. Hi all.
+My idea about how write custom functions for stack check, using macros in create functions, is to save pxTopOfStack of each task in global var with requested stack size, when task is created. 
+After, it could be possible check stack usage or stack free, using current pxTopOfStack&nbsp; and a simple difference and compare.
+Function usTaskCheckFreeStackSpace could be usefull, but i think it&#8217;s slow because has to search first fill byte 0xa5.
+For heap usage, my idea is to have a GV memory, which contains number of bytes allocated using pvPortMalloc, based on formulas above.
+When a task is creted or when a queue is created, this variable will increase, when task or queue are deleted it will decrease. 
+The value inside will give an idea of heap usage dinamically, but without care about fragmentation &#40;see heap2 schema&#41;.
+I think will be a usefull information in run time or during debugging, especially when using application dynamically creates and deletes tasks &#40;or queues, etc&#41;, i.e. using LWIP tcpip stack.
+I will use hooks in create e delete functions to do this, but if you think it could be usefull, this idea could be implemented in future freertos trace functions. 
+Bye,
+Piero
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/maxim79">maxim79</a> on March 4, 2008</div><div class="thread-post-content">Hi Richard. Hi all.
+The current implementation of FreeRTOS allows the current task to corrupt its own TCB in case of stack overflow. In so doing a program will detect neither the stack overflow nor the according task name. The application will end up with high probability in nirvana. I think the simplest solution for this problem is to allocate TCB and its stack in one memory block. The stack should grow away from the current TCB. This would increase the diagnostics coverage for FreeRTOS bases applications.
+Bye,
+Maxim
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 4, 2008</div><div class="thread-post-content">&gt;I suppose that you will add these changes in next release 4.7.3, is it right? 
+Yes the changes will be in the next release.
+&gt;Do you add in task.c and queue.c only my proposed hooks in create functions 
+&gt;or similar hooks in delete functions too? 
+I have added some trace events to creating/deleting tasks and queues, but I&#8217;m not sure if it covers the same information as the hooks you posted the other day or not.
+&gt;I think that uxTaskGetStackHighWaterMark&#40; void &#41; could be better if it will 
+&gt;provide stack high water for a generic task, something like this: 
+&gt; uxTaskGetStackHighWaterMark&#40; xTaskHandle taskID &#41; 
+Yes, good idea, I have made the change as follows &#40;not yet checked in&#41;:
+/&#42;&#42;
+ &#42; task.h
+ &#42; &lt;PRE&gt;unsigned portBASE&#95;TYPE uxTaskGetStackHighWaterMark&#40; xTaskHandle xTask &#41;;&lt;/PRE&gt;
+ &#42;
+ &#42; INCLUDE&#95;uxTaskGetStackHighWaterMark must be set to 1 in FreeRTOSConfig.h for
+ &#42; this function to be available.
+ &#42;
+ &#42; Returns the high water mark of the stack associated with xTask.&nbsp; That is,
+ &#42; the minimum free stack space there has been &#40;in bytes&#41; since the task
+ &#42; started.&nbsp; The smaller the returned number the closer the task has come
+ &#42; to overflowing its stack.
+ &#42;
+ &#42; @param xTask Handle of the task associated with the stack to be checked.
+ &#42; Set xTask to NULL to check the stack of the calling task.
+ &#42;
+ &#42; @return The smallest amount of free stack space there has been &#40;in bytes&#41;
+ &#42; since the task referenced by xTask was created.
+ &#42;/
+unsigned portBASE&#95;TYPE uxTaskGetStackHighWaterMark&#40; xTaskHandle xTask &#41;;
+&gt; Do you think is it possible or needs very slow check? i think stack check 
+&gt; are very important for safety reasons, but has to be very speed test&#33; 
+Checking the current stack level against the stack boundary is a quick test, but does not guarantee that you will catch a stack overflow &#40;the stack could have overflowed prior to calling the checking function&#41;.&nbsp; Even checking the 0xa5&#8217;s on the stack is not a guarantee.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 4, 2008</div><div class="thread-post-content">&gt;The current implementation of FreeRTOS allows the current task to 
+&gt; corrupt its own TCB in case of stack overflow
+Yes this is a problem which is why both the handle and the stack name are passed to the hook function &#8211; the handle will be correct even if the name has been corrupted.
+BTW &#8211; SafeRTOS uses a scheme as you suggest in your post.&nbsp; The stack grows away from the TCB, but you don&#8217;t know what it will bump into in the other direction.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/maxim79">maxim79</a> on March 4, 2008</div><div class="thread-post-content">&gt; Yes this is a problem which is why both the handle and the stack name are passed to the hook
+&gt; function &#8211; the handle will be correct even if the name has been corrupted.
+Ok, but a primitive handle is not that friendly for debugging/diagnostics.
+&gt; BTW &#8211; SafeRTOS uses a scheme as you suggest in your post.
+Do you intend to leave the TCB/stack allocation in FreeRTOS as is?
+&gt; The stack grows away from the TCB, but you don&#8217;t know what it will bump into in the other direction.
+You&#8217;re right, but nevertheless, it increases the diagnostics coverage significantly. Since I have patched task.c as described above I cannot remember that my program landed in an exception handler as a result of stack overflow. Of course, a fast stack check is necessary after each context save.
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/piero74">piero74</a> on March 4, 2008</div><div class="thread-post-content">Hi Richard.
+&gt; Checking the current stack level against the stack boundary is a quick test, 
+&gt; but does not guarantee that you will catch a stack overflow &#40;the stack could 
+&gt; have overflowed prior to calling the checking function&#41;. Even checking the 
+&gt; 0xa5&#8217;s on the stack is not a guarantee. 
+Ok, so, i can suppose that for stack check you use something like i wrote in my posts,
+here: http://sourceforge.net/forum/message.php?msg&#95;id=4815045
+and here: http://sourceforge.net/forum/message.php?msg&#95;id=4815046 &#40;it&#8217;s the same message in other thread&#41;
+WITHOUT search for 0xa5, without call to usTaskCheckFreeStackSpace&#40;&#41; function. 
+ok, in this case, we will have a quick test, it will be possible to do this test in run-time, and do something if stack level of some task is near the boundary &#40;i.e. 70%&#41;. It does not guarantee that we will catch a stack overflow, but it should be possible to build very robust and safety application, depending on developer code.
+Please, read one of my post linked above, before realease next version.
+Bye,
+Piero.
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 4, 2008</div><div class="thread-post-content">From your other post: &quot;My idea about how write custom functions for stack check, using macros in create functions, is to save pxTopOfStack of each task in global var with requested stack size, when task is created.&nbsp; 
+After, it could be possible check stack usage or stack free, using current pxTopOfStack and a simple difference and compare&quot;
+I don&#8217;t fully understand your idea of using global variables, particularly as you don&#8217;t know how many tasks are going to be created.&nbsp; One of the checks I have implemented does this:
+if&#40; pxCurrentTCB-&gt;pxTopOfStack &lt;= pxCurrentTCB-&gt;pxStack &#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&#123;
+&#95;&#95;&#95;&#95;/&#42; Overflow caught during task switch. &#42;/
+&#125;
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/piero74">piero74</a> on March 5, 2008</div><div class="thread-post-content">Hi Richard.
+&gt; I don&#8217;t fully understand your idea of using global variables, particularly as you don&#8217;t know how many tasks are going to be created.
+ok&#8230; sorry&#8230; i didn&#8217;t explain well&#8230;.
+I&#8217;m thinking about something for my application, using hooks, where i know ho many tasks will be created&#8230; For a general solution, global array is not a correct solution. I didn&#8217;t see in freertos code that pcb struct ALREADY has two fields, pxStack &#40;start of stack&#41; and pxTopOfStack &#40;current top pf the stack&#41;. So, we can avoid to use GV. I think we should modify&nbsp; pcb struct:
+&#35;if &#40; configUSE&#95;TRACE&#95;FACILITY == 1 &#41;
+&nbsp;&nbsp;&nbsp; unsigned portBASE&#95;TYPE&nbsp;&nbsp;&nbsp; uxTCBNumber;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unsigned portBASE&#95;TYPE&nbsp;&nbsp;&nbsp; uxStackSize;&nbsp;&nbsp;&nbsp;&nbsp; // stack size in bytes
+&#35;endif&nbsp;&nbsp;&nbsp; 
+and define a check similar than the following:
+portBASE&#95;TYPE xTaskCheckStack&#40; xTaskHandle &#42;pxTask , portBASE&#95;TYPE limitPercentage&#41;
+&#123;
+&nbsp; portBASE&#95;TYPE xReturn;
+&nbsp; tskTCB &#42; pxTCB;
+&nbsp; // search pxTask and update pxTCB&#33;
+&nbsp; &#8230;.
+&nbsp; xReturn = pdFALSE;
+&nbsp; if&#40; &#40;pxTCB-&gt;pxTopOfStack &#8211; pxTCB-&gt;pxStack&#41;&gt; &#40;&#40;limitPercentage &#42; pxTCB-&gt;uxStackSize&#41; /100&#41; &#41;
+&nbsp; &#123; 
+&nbsp;&nbsp; /&#42; warning. Stack over the limit &#42;/ 
+&nbsp;&nbsp; xReturn = pdTRUE;
+&nbsp; &#125;
+&nbsp; return xReturn ;
+&#125;
+What do you think?
+The second idea&nbsp; i wrote in my post, is simple a global var which contains total memory allocated in heap:
+calls to xTaskCreate and xQueueCreate increase its value,
+calls to xTaskDelete and xQueueDelete decrease its value.
+Reading this var a developer can see in run time how many bytes application has allocated. This is a simple check, which doesn&#8217;t care about heap fragmentation &#40;see heap2 schema&#41;
+What do you think?
+Bye,
+Piero
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 5, 2008</div><div class="thread-post-content">I would suggest storing this &quot;&#40;&#40;limitPercentage &#42; pxTCB-&gt;uxStackSize&#41; /100&#41;&quot; as a pre-calculated value to prevent the maths overhead.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">New stack checking and tracing functionality</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/piero74">piero74</a> on March 6, 2008</div><div class="thread-post-content">Hi Richard
+&gt; I would suggest storing this &quot;&#40;&#40;limitPercentage &#42; pxTCB-&gt;uxStackSize&#41; /100&#41;&quot; as 
+&gt; a pre-calculated value to prevent the maths overhead.
+Good idea. 
+Can i hope that something like we discuss in this thread will be in the next release, or i will have to implement the discussed idea using hooks in create e delete functions &#40;available in the next verison, as you said&#41;?
+Bye,
+Piero.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

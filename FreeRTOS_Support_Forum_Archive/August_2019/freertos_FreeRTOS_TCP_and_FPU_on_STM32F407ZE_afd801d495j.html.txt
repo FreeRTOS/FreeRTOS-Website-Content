@@ -1,0 +1,206 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS + TCP and FPU on STM32F407ZE - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2019/freertos_FreeRTOS_TCP_and_FPU_on_STM32F407ZE_afd801d495j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS + TCP and FPU on STM32F407ZE - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS + TCP and FPU on STM32F407ZEPosted by bghost4 on August 2, 2019Using FreeRTOS v10.2.1 and FreeRTOS+TCP v2.0.11 grafted onto an STM32CubeIDE Project Using STM32F407ZE OK I&#8217;m probably doing something stupid, but I had firmware that was working fine until I put some floating point math in it. quick rundown, I have this board, it &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2019/freertos_FreeRTOS_TCP_and_FPU_on_STM32F407ZE_afd801d495j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS + TCP and FPU on STM32F407ZEPosted by bghost4 on August 2, 2019Using FreeRTOS v10.2.1 and FreeRTOS+TCP v2.0.11 grafted onto an STM32CubeIDE Project Using STM32F407ZE OK I&#8217;m probably doing something stupid, but I had firmware that was working fine until I put some floating point math in it. quick rundown, I have this board, it [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS + TCP and FPU on STM32F407ZE - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203153' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203153' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203153' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203153' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138176' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2019%2Ffreertos_FreeRTOS_TCP_and_FPU_on_STM32F407ZE_afd801d495j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2019%2Ffreertos_FreeRTOS_TCP_and_FPU_on_STM32F407ZE_afd801d495j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138176">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2019_freertos_support_forum_archive_index.html/">August 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bghost4">bghost4</a> on August 2, 2019</div><div class="thread-post-content">Using FreeRTOS v10.2.1 and FreeRTOS+TCP v2.0.11
+grafted onto an STM32CubeIDE Project
+Using STM32F407ZE
+OK I&#8217;m probably doing something stupid, but I had firmware that was working fine until I put some floating point math in it.
+quick rundown, I have this board, it has an Ethernet port it and uses ADC1 to read an analog pressure sensor. I&#8217;m converting the ADC counts to a KPA value to send back to the computer. its a simple ADC<em>COUNT / COUNTS</em>PER_KPA.
+the ethernet listens on a port using FreeRTOS+TCP receives a command to do something, processes command then returns the result. one of my commands is get pressure, where I do the ADC->kPa conversion and send it back. this works fine, until the client disconnects then the firmware gets locked at:
+configASSERT( ( pxLink->xBlockSize &amp; xBlockAllocatedBit ) != 0 ); 
+in heap_4.c line 278
+stack is:
+vPortFree() at heap_4.c
+prvDeleteTCB() at tasks.c
+prvCheckTasksWaitingTermination() at tasks.c
+prvIdleTask() at tasks.c
+pxPortInitiaseStack at port.c
+&#8211;end&#8211;
+upon removing any calls to floating point math, the code runs without problems, and dumps the task accordingly. I was unable to recreate the problem on a new project with no TCP/IP so it may be related to that (FreeRTOS+TCP)? 
+Thanks for any input I get on this.
+below is crapy pseudocode that is similar to what im doing
+Pseudo code:
+~~~
+<h1>define COUNTS<em>PER</em>KPA 0.00811f</h1>
+float adcTokPa(uint16<em>t adv</em>value) {
+        return ((float)adc<em>value)/COUNTS</em>PER_KPA;
+}
+void send<em>response(Socket</em>t client,float value) {
+<pre><code>        FreeRTOS_Send(client,&amp;value,sizeof(float),0);
+</code></pre>
+}
+void connection<em>handler(void *params) {
+      Socket</em>t *client_ptr = (Socket_t * )params;
+       Socket_t client = *client_ptr;
+       uint16_t cmd;
+<pre><code>   for(;;) {
+           bytesRecv = FreeRTOS_recv(client,&amp;cmd,sizeof(uint16_t),0);
+           if(bytesRecv != sizeof(uint16_t)) {
+                  if( bytesRecv &lt; 0 ) {
+                          //Some kind of Socket Error
+                          //shutdown FreeRTOS Socket
+                              vTaskDelete(NULL); //Should delete this connection handler
+                  }
+           } else {
+             switch(cmd) {
+                     //
+                     case 42:
+                             send_response(client,adcTokPa(adv_value));
+                             break;
+                      default:
+                              break;
+             }
+           }
+   }
+</code></pre>
+}
+void listen<em>task(void * params) {
+    for(;;) {
+            Socket</em>t client = FreeRTOS<em>Accept();
+            xCreateTask(connection</em>handler,&#8221;ConHandle&#8221;,128,&amp;client,CON<em>TASK</em>PRIO,NULL);
+    }
+}
+~~~
+}
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 2, 2019</div><div class="thread-post-content">Does your part have an flu? If so you need to be using the FreeRTOS/source/portable/arm_cm4f port and tell the compiler which cpu model is available on the chip. That will enable the fpu, which must be done before use. Not sure if that helps. Do the floating point instructors work from main() before the scheduler starts?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 2, 2019</div><div class="thread-post-content">FPU, not flu! Auto correct on my cellphone.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aggarg-aws">aggarg-aws</a> on August 2, 2019</div><div class="thread-post-content">The part you mentioned (i.e. STM32F407ZE) does have an FPU (Floating Point Unit) and therefore you need to make sure that you are using CM4F port. 
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bghost4">bghost4</a> on August 3, 2019</div><div class="thread-post-content">but the fpu works fine. its when a client disconnects from the socket that it gets stuck in heap_4 everything works fine, until you try and disconnect.if i take the floating point math out. disconnects work fine. I will double check on monday that the floating point math is correct. as in the math actually works out. sorry if im not being clear on this, it doesn&#8217;t seem to be a straightforward problem. I was just really wondering if in FreeRTOS there is some connection between deleting a task and the FPU or deleting a task that has a socket that also used the FPU. it doesn&#8217;t make any sense. but if I remove all floating point math, I can delete the task successfully and it doesn&#8217;t hang.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hs2sf">hs2sf</a> on August 3, 2019</div><div class="thread-post-content">FreeRTOS must save/restore also FPU registers when switching task context if application is built with (hard) FPU support enabled. Even if no floating point math is directly used, nowadays compilers make use of FPU registers for various purposes if allowed/enabled.
+So you must use the matching CM4F Port.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bghost4">bghost4</a> on August 5, 2019</div><div class="thread-post-content">both port.c and portmacro.h come from the CM4F port, Its possible I missed something else?
+everything works fine until it goes to delete the task that uses the FPU registers. then it hangs at :
+~~~
+configASSERT( ( pxLink->xBlockSize &amp; xBlockAllocatedBit ) != 0 ); 
+in heap_4.c line 278
+~~~
+I&#8217;m working on stripping out all code, and just leaving the code that causes the issue so I can post it. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bghost4">bghost4</a> on August 5, 2019</div><div class="thread-post-content">ok, added project to github This project uses CubeIDE 1.0
+https://github.com/bghost4/FPUFAIL
+the code hits a configASSERT after a disconnect deletes the connection_handler task
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aggarg-aws">aggarg-aws</a> on August 5, 2019</div><div class="thread-post-content">When floating point math is used, we store FPU registers on the task’s stack during context switch. This means that more stack space is used as compared to the case when FPU is not used. I see that you have 128 words stack size for all the tasks which may not be enough and result in memory corruption because of stack overflow. Would you please try increasing the stack size for the tasks which use floating point math? 
+Please also set configCHECK<em>FOR</em>STACK_OVERFLOW in your FreeRTOSConfig.h to catch stack overflows: www.freertos.org/Stacks-and-stack-overflow-checking.html
+Which hardware are you using? Is it a development board or is it your custom hardware?
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bghost4">bghost4</a> on August 5, 2019</div><div class="thread-post-content">it is custom hardware. I do have a f407 discovery board with the add on header I could try and port the code to.  at first glance it seems to have worked. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bghost4">bghost4</a> on August 5, 2019</div><div class="thread-post-content">Indeed thats what it was, Thanks for the help.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS + TCP and FPU on STM32F407ZE</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aggarg-aws">aggarg-aws</a> on August 5, 2019</div><div class="thread-post-content">I am glad that it worked for you. Just FYI, you can use uxTaskGetStackHighWaterMark to find the minimum stack required for each task: http://www.freertos.org/uxTaskGetStackHighWaterMark.html
+Thanks.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

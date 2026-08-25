@@ -1,0 +1,257 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scheduler hangs after many create/delete tasks - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2019/freertos_Scheduler_hangs_after_many_create_delete_tasks_752d5d09a6j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Scheduler hangs after many create/delete tasks - FreeRTOS" />
+<meta property="og:description" content="Scheduler hangs after many create/delete tasksPosted by viatorus on April 17, 2019Hey everybody. we are currently running many stability tests and found this issue: The test below stops working after some seconds. Checking with the debugger, FreeRTOS does not schedule anymore and hangs inside the idle task. We are using an STM32F439xx with the CM3 &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2019/freertos_Scheduler_hangs_after_many_create_delete_tasks_752d5d09a6j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Scheduler hangs after many create/delete tasksPosted by viatorus on April 17, 2019Hey everybody. we are currently running many stability tests and found this issue: The test below stops working after some seconds. Checking with the debugger, FreeRTOS does not schedule anymore and hangs inside the idle task. We are using an STM32F439xx with the CM3 [&hellip;]" />
+<meta name="twitter:title" content="Scheduler hangs after many create/delete tasks - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203105' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203105' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203105' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203105' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147710' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2019%2Ffreertos_Scheduler_hangs_after_many_create_delete_tasks_752d5d09a6j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2019%2Ffreertos_Scheduler_hangs_after_many_create_delete_tasks_752d5d09a6j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147710">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2019_freertos_support_forum_archive_index.html/">April 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Scheduler hangs after many create/delete tasks</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/viatorus">viatorus</a> on April 17, 2019</div><div class="thread-post-content">Hey everybody.
+we are currently running many stability tests and found this issue:
+The test below stops working after some seconds. Checking with the debugger, FreeRTOS does not schedule anymore and hangs inside the idle task.  We are using an STM32F439xx with the CM3 port. GGC 7.2.
+What the code does:
+1. Starts a 
+We are using an STM32F439xx with the CM3 port. GGC 7.2.
+main task (prio 8).
+2. Starts a watchdog task (prio 10) to provoke task switches.
+3. In an infinity loop: Start a test take (prio 8) and delete him.
+What seems to happen before the crash (not 100% sure):
+1. The test task will be running (happens really rarly, see below).
+2. Calls Suspend.
+3. Main thread calls Suspend/Delete.
+4. Idle task runs for ever without context switches.
+vTask1 is called if the counter is:
+0x93, 0xAE and y.
+y is variable but after y +0xE, the schedular hangs.
+Our FreeRTOS config:
+~~~
+define configUSE<em>PREEMPTION         1
+define configUSE</em>PORT<em>OPTIMISED</em>TASK<em>SELECTION 1
+define configUSE</em>IDLE<em>HOOK              0
+define configUSE</em>TICK<em>HOOK              0
+configUSE</em>TIME_SLICING                  0
+~~~
+~~~
+<h1>define STACK<em>SIZE configMINIMAL</em>STACK_SIZE * 10</h1>
+/* Structure that will hold the TCB of the task being created. */
+StaticTask_t xTaskBufferMain;
+StaticTask_t xTaskWD;
+StaticTask_t xTaskBuffer1;
+StackType<em>t xStackMain[ STACK</em>SIZE ];
+StackType<em>t xStackWD[ STACK</em>SIZE ];
+StackType<em>t xStack1[ STACK</em>SIZE ];
+void vTask1(void *) {
+  vTaskSuspend(nullptr);
+}
+void vWD(void *) {
+  while (true) {
+    vTaskDelay(pdMS_TO_TICKS(1));
+  }
+}
+void vMain(void *) {
+  xTaskCreateStatic(vWD, &#8220;wd&#8221;, STACK_SIZE, NULL, 10, xStackWD, &amp;xTaskWD);
+<pre><code>unsigned int i = 0;
+</code></pre>
+  while (true) {
+      TaskHandle<em>t handle1 = xTaskCreateStatic(vTask1, &#8220;task1&#8221;, STACK</em>SIZE, NULL, 8, xStack1, &amp;xTaskBuffer1);
+<pre><code>  vTaskSuspend(handle1);
+  vTaskDelete(handle1);
+  ++i;
+</code></pre>
+  }
+}
+extern &#8220;C&#8221; int main(void) {
+    __enable_irq();
+<pre><code>// 4 bits for pre-emption priority 0 bits for subpriority.
+HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+</code></pre>
+  xTaskCreateStatic(vMain, &#8220;main&#8221;, STACK_SIZE, NULL, 8, xStackMain,
+      &amp;xTaskBufferMain);
+  vTaskStartScheduler();
+<pre><code>return 0;
+</code></pre>
+}
+~~~
+I tried to find the issue but I am out of ideas. Can someone please help?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 17, 2019</div><div class="thread-post-content">Probably not related to your issue, but I&#8217;m not sure why you are
+enabling interrupts.  Once you start calling FreeRTOS API functions
+interrupts will remain masked up to the max system call interrupt
+priority anyway.  That is to stop interrupt trying to use the kernel
+before the kernel is started.
+I will try replicating the issue using your code then report back.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 17, 2019</div><div class="thread-post-content">I&#8217;m running the code now, although using Keil rather than GCC.  No
+issues so far.  While I leave that running some other questions:
+Is the code you posted all the code there is?  Or do you have interrupts
+executing too?
+What happens if you build the code as C code rather than C++?
+Which version of FreeRTOS are you using?  Best the have the latest (or
+at least 10.1.1) with configASSERT() defined as the newer the version
+the more asserts there are to catch configuration errors.
+[the value of &#8216;i&#8217; is over 10 million in my test]
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 17, 2019</div><div class="thread-post-content">Another question &#8211; what are the compiler options you are using?
+Especially, are you using link time optimisation (where there are known
+issues)?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/viatorus">viatorus</a> on April 18, 2019</div><div class="thread-post-content">First of all thank you Richard for your fast reply.
+<ul>
+<li>FreeRTOS 10.2. </li>
+<li>No other interrupt happen.</li>
+<li>There exists other code (but only clock init).</li>
+</ul>
+GCC:
+arm-none-eabi-gcc -mthumb -ffunction-sections -fdata-sections -mcpu=cortex-m4  -g -fexceptions -Wall -Wextra
+Linker:
+arm-none-eabi-g++   -mthumb -ffunction-sections -fdata-sections -mcpu=cortex-m4  -g    -T/home/&#8230;/cmake-build-debug/gcc.ld -specs=nosys.specs -Wl,&#8211;start-group -lgcc -lc -lc -lm -Wl,&#8211;end-group -Wl,-Map=&#8230;..map -Wl,&#8211;gc-sections -Wl,-Ttext=0x08000000 -fno-lto
+I built this code in C, and without lto, same result.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/viatorus">viatorus</a> on April 18, 2019</div><div class="thread-post-content">It seems to happen only if I link freeRTOS&#8230;, if I build it inside my executable it seems to work&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/viatorus">viatorus</a> on April 18, 2019</div><div class="thread-post-content">Okay, I think I found the issue.
+In our config we have this defined:
+~~~
+<h1>define configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY    5</h1>
+<h1>define configKERNEL<em>INTERRUPT</em>PRIORITY         15</h1>
+~~~
+Which is totally wrong because it has to be shifted!
+https://www.freertos.org/RTOS-Cortex-M3-M4.html
+Damn man&#8230; this config we have is old and never touched really. This means it is inside many products&#8230;.
+Thank you for your help!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 18, 2019</div><div class="thread-post-content">Wether you need to shift the number or not depends on what function you are using to write to value into the registers. Many of the CMSIS functions do the shift for you, so you can treat the numbers as the smaller numbers. If you are writing directly into the registers, then you need to be doing the shifting.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/viatorus">viatorus</a> on April 18, 2019</div><div class="thread-post-content">Hmm&#8230; how do I know which function is used? I don&#8217;t find it.
+But it seems to be right. If I shift them (ARM_CM3) it works.
+Or could it be a false positive?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 18, 2019</div><div class="thread-post-content">Can you explain what you mean by this:
+&#8220;It seems to happen only if I link freeRTOS&#8230;, if I build it inside my
+executable it seems to work&#8230;&#8221;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 18, 2019</div><div class="thread-post-content">They do have to be right regardless, and as it seems to make a
+difference, then there is some probability that was the issue (not
+proven though).  As you are using FreeRTOS V10.2.x I hope that
+configuration error would be caught if you have configASSERT() defined &#8211;
+I would be very interested if not.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 18, 2019</div><div class="thread-post-content">Toni, xPortSchedulerStart directly writes to the registers, and use the shifted values to setup the SYSTICK and PENDSV interrrupts. For any other interrupts, YOU need to make the call to set their priority.
+Richard Barry, small point but I am a bit surprized that the Systick priority is setup in xPortSchedulerStart() instead of vPortSetupTimerInterrupt(), as if you have overridden vPortrSetupTimerInterrupt() to use a differt timer, you might want to use the SysTick for other purposes, and might want a differnt Priority for it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/viatorus">viatorus</a> on April 19, 2019</div><div class="thread-post-content">This was a false assumption. I tried it in our project structure and in a demo project. I forgot to compare the FreeRTOSConfig files.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/viatorus">viatorus</a> on April 19, 2019</div><div class="thread-post-content">There were no assert (I use 10.2.).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/viatorus">viatorus</a> on April 19, 2019</div><div class="thread-post-content">Thank you for the clarification. So they have to be shifted inside the config.
+An assert would be good if only the least significant bits were accidentally used.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on April 19, 2019</div><div class="thread-post-content">Toni, the port.c assumes that the values are in the lower bits of the value, and computes the bits to shift into the control register.
+What the assert would have caught is that you used that values someplace that needed them shifted up, it would see the priority as 0 which is too low.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 19, 2019</div><div class="thread-post-content">Both configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY and
+configKERNEL</em>INTERRUPT_PRIORITY should be raw (therefore shifted)
+values, assuming you are using an unedited version of FreeRTOS.
+The asserts will not check you got the values as you intended them, as
+it doesn&#8217;t know that, it will check that the values are consistent with
+each other and consistent with the hardware.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Scheduler hangs after many create/delete tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/viatorus">viatorus</a> on April 20, 2019</div><div class="thread-post-content">Sorry but when I read it right, Richards, you have a different opinion.
+R. Damon suggest not shifted.
+R. Barry suggest shifted.
+Checking out a <a href="https://github.com/cjlano/freertos/blob/master/FreeRTOS/Demo/CORTEX_M4F_STM32F407ZG-SK/FreeRTOSConfig.h">demo project</a> the values have to be shiftet.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

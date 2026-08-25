@@ -1,0 +1,525 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plus-TCP on SAMv71 hard fault debugging - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2017/freertos_Plus-TCP_on_SAMv71_hard_fault_debugging_146b6c6dj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Plus-TCP on SAMv71 hard fault debugging - FreeRTOS" />
+<meta property="og:description" content="Plus-TCP on SAMv71 hard fault debuggingPosted by jtbr on March 16, 2017Hello, I&#8217;m trying to get FreeRTOS-Plus-TCP working on an Atmel SAM V71 (which has a cortex M7 and a KSZ8061RNBVA ethernet PHY). I started with a working FreeRTOS 8.2.3 using heap4, added Plus-TCP (r160919) using BufferAllocation2, and based my NetworkInterface.c upon the included Cortex &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2017/freertos_Plus-TCP_on_SAMv71_hard_fault_debugging_146b6c6dj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Plus-TCP on SAMv71 hard fault debuggingPosted by jtbr on March 16, 2017Hello, I&#8217;m trying to get FreeRTOS-Plus-TCP working on an Atmel SAM V71 (which has a cortex M7 and a KSZ8061RNBVA ethernet PHY). I started with a working FreeRTOS 8.2.3 using heap4, added Plus-TCP (r160919) using BufferAllocation2, and based my NetworkInterface.c upon the included Cortex [&hellip;]" />
+<meta name="twitter:title" content="Plus-TCP on SAMv71 hard fault debugging - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202782' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202782' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202782' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202782' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146423' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2017%2Ffreertos_Plus-TCP_on_SAMv71_hard_fault_debugging_146b6c6dj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2017%2Ffreertos_Plus-TCP_on_SAMv71_hard_fault_debugging_146b6c6dj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146423">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2017_freertos_support_forum_archive_index.html/">March 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on March 16, 2017</div><div class="thread-post-content">Hello,
+I&#8217;m trying to get FreeRTOS-Plus-TCP working on an Atmel SAM V71 (which has a cortex M7 and a KSZ8061RNBVA ethernet PHY). I started with a working FreeRTOS 8.2.3 using heap4, added Plus-TCP (r160919) using BufferAllocation2, and based my NetworkInterface.c upon the included Cortex M3/M4 example, while using the latest Atmel ASF drivers for the GMAC and ethernet_phy for my device. 
+This is producing a hard fault some time after the TCP tasks begin; it occurs whether or not there is a cable connected to the ethernet port. In either case, the vApplicationIPNetworkEventHook is correctly called with the eNetworkUp/Down event. And the GMAC_Handler interrupt handler is called at least once without apparent issues, when the cable is connected.
+For debugging purposes, I have disabled all other tasks, and disabled the -Plus-Trace library and printfs via the serial UART. configASSERT, configCHECK<em>FOR</em>STACK<em>OVERFLOW (2), and configUSE</em>MALLOC<em>FAILED</em>HOOK are defined, but do not occur. configMAC<em>INTERRUPT</em>PRIORITY is configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY, which is 4. configLIBRARY<em>LOWEST</em>INTERRUPT<em>PRIORITY is 7 (configPRIO</em>BITS is 3). configUSE<em>PREEMPTION is 1, and configIDLE</em>SHOULD<em>YIELD is currently 0, as is configUSE</em>TICKLESS_IDLE  So far as I know, the only interrupt registered is for the network interface (interrupt number 39 as defined in the GMAC driver). 
+I have seen the hard fault debugging advice <a href="http://www.freertos.org/Debugging-Hard-Faults-On-Cortex-M-Microcontrollers.html">here</a>, but am having trouble making use of it. I have disabled ICache and DCache, TCM has never been enabled, and I set the DISDEFWBUF bit (SCnSCB->ACTLR |= 2;) to stop write buffering and prevent imprecise faults. I have confirmed that these are direct Hard faults, not MemManage, BusFault or UsageFaults, and are not imprecise (0xE000ED29 &amp; 0x02 == 0). 
+However when I use the code on the linked page, I don&#8217;t seem to be getting useful information and am at a bit of a loss for how to debug this. When I first arrive in the HardFault_Handler, (0xe000ed04) &amp; 0xFF , which should contain the interrupt number, is 3 (like I mentioned I thought there was only one interrupt, number 39). When I use the provided code to restore the registers, I get: r0=0, r1=0x20404e1c, r2=0x10000000, r3=0xe000ed04, r12=0x20404de4, lr=0x0040a41d, pc=0x20400004, psr=0x00000200.  pc points to the DTCM section of memory rather than flash (which starts at 0x00400000), and is apparently not executable code; certainly I&#8217;m not able to put a breakpoint there. So I can&#8217;t determine the source of the hard faults. 
+I&#8217;m happy to share my current NetworkInterface.c code if it might help.
+Many thanks for any help!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 16, 2017</div><div class="thread-post-content">Hi Justin, one of the most probably causes of a hard-fault in a +TCP driver is writing outside malloc&#8217;d area. Or writing to space that has been free&#8217;d already. Therefor it is very important to check who is the owner of all network buffers at any moment in time.
+<code>configCHECK_FOR_STACK_OVERFLOW = 2</code> does give some protection, but while developing, just make sure that there is more than enough stack space.
+If you want attach your <code>NetworkInterface.c</code> along with your <code>FreeRTOSIPConfig.h</code>, and I&#8217;ll have a look at them
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on March 16, 2017</div><div class="thread-post-content">Hein, I&#8217;m attaching NetworkInterface.c and including FreeRTOSIPConfig.h below. I tried increasing the configMINIMAL<em>STACK</em>SIZE from 130 to 1300, but I still see the same hard fault. I&#8217;ll look through the code for reads and writes going wrong.
+Much appreciated.
+~~~
+<h1>ifndef FREERTOS<em>IP</em>CONFIG_H</h1>
+<h1>define FREERTOS<em>IP</em>CONFIG_H</h1>
+<h1>define ipconfigHAS<em>DEBUG</em>PRINTF    0</h1>
+<h1>if( ipconfigHAS<em>DEBUG</em>PRINTF == 1 )</h1>
+<pre><code>#define FreeRTOS_debug_printf(X)    printf X
+</code></pre>
+<h1>endif</h1>
+<h1>define ipconfigHAS_PRINTF          0</h1>
+<h1>if( ipconfigHAS_PRINTF == 1 )</h1>
+<pre><code>#define FreeRTOS_printf(X)  extern SemaphoreHandle_t printMutex; xSemaphoreTake(printMutex, 0); portDISABLE_INTERRUPTS();  printf X ;  portENABLE_INTERRUPTS(); xSemaphoreGive(printMutex);
+</code></pre>
+<h1>endif</h1>
+<h1>define ipconfigBYTE<em>ORDER pdFREERTOS</em>LITTLE_ENDIAN</h1>
+<h1>define ipconfigDRIVER<em>INCLUDED</em>RX<em>IP</em>CHECKSUM   1</h1>
+<h1>define ipconfigSOCK<em>DEFAULT</em>RECEIVE<em>BLOCK</em>TIME ( 5000 )</h1>
+<h1>define ipconfigSOCK<em>DEFAULT</em>SEND<em>BLOCK</em>TIME    ( 5000 )</h1>
+<h1>define ipconfigIP<em>TASK</em>PRIORITY            ( configMAX_PRIORITIES &#8211; 2 )</h1>
+/* The size, in words (not bytes), of the stack allocated to the FreeRTOS+TCP task.*/
+<h1>define ipconfigIP<em>TASK</em>STACK<em>SIZE</em>WORDS    ( configMINIMAL<em>STACK</em>SIZE * 5 )</h1>
+/* ipconfigRAND32() is called by the IP stack to generate random numbers for
+things such as a DHCP transaction number or initial sequence number.  <em>/
+/</em> JB: TODO &#8211; add true random number generator ASF module and implement this (if needed) <em>/
+/</em>extern UBaseType_t uxRand( void );
+<h1>define ipconfigRAND32()    uxRand()</h1>
+*/
+<h1>define ipconfigUSE<em>NETWORK</em>EVENT_HOOK 1</h1>
+<h1>define ipconfigUDP<em>MAX</em>SEND<em>BLOCK</em>TIME<em>TICKS ( 5000 / portTICK</em>PERIOD_MS )</h1>
+<h1>define ipconfigARP<em>CACHE</em>ENTRIES       6</h1>
+<h1>define ipconfigMAX<em>ARP</em>RETRANSMISSIONS ( 5 )</h1>
+<h1>define ipconfigMAX<em>ARP</em>AGE         150</h1>
+<h1>define ipconfigINCLUDE<em>FULL</em>INET_ADDR  1</h1>
+<h1>define ipconfigNUM<em>NETWORK</em>BUFFER_DESCRIPTORS      60</h1>
+/* A FreeRTOS queue is used to send events from application tasks to the IP stack.  ipconfigEVENT<em>QUEUE</em>LENGTH sets the maximum number of events that can be queued for processing at any one time.  The event queue must be a minimum of 5 greater than the total number of network buffers. */
+<h1>define ipconfigEVENT<em>QUEUE</em>LENGTH      ( ipconfigNUM<em>NETWORK</em>BUFFER_DESCRIPTORS + 5 )</h1>
+<h1>define ipconfigALLOW<em>SOCKET</em>SEND<em>WITHOUT</em>BIND 1</h1>
+/* Defines the Time To Live (TTL) values used in outgoing UDP packets. */
+<h1>define ipconfigUDP<em>TIME</em>TO_LIVE        128</h1>
+<h1>define ipconfigTCP<em>TIME</em>TO_LIVE        128 /* also defined in FreeRTOSIPConfigDefaults.h */</h1>
+/* USE_TCP: Use TCP and all its features */
+<h1>define ipconfigUSE_TCP             ( 1 )</h1>
+/* USE_WIN: Let TCP use windowing mechanism. */
+<h1>define ipconfigUSE<em>TCP</em>WIN         ( 1 )</h1>
+/* The MTU is the maximum number of bytes the payload of a network frame can contain.  For normal Ethernet V2 frames the maximum MTU is 1500.  Setting a lower value can save RAM, depending on the buffer management scheme used.  If ipconfigCAN<em>FRAGMENT</em>OUTGOING<em>PACKETS is 1 then (ipconfigNETWORK</em>MTU &#8211; 28) must be divisible by 8. */
+<h1>define ipconfigNETWORK_MTU     1200</h1>
+/** DNS **/
+/* Set ipconfigUSE_DNS to 1 to include a basic DNS client/resolver. */
+<h1>define ipconfigUSE_DNS         0</h1>
+<h1>if ipconfigUSE_DNS</h1>
+<pre><code>/*JB: if defined, apparently necessary to define xApplicationDNSQueryHook () */
+/* Include support for LLMNR: Link-local Multicast Name Resolution
+(non-Microsoft) */
+#define ipconfigUSE_LLMNR                   ( 1 )
+/* Include support for NBNS: NetBIOS Name Service (Microsoft) */
+#define ipconfigUSE_NBNS                    ( 1 )
+/* Include support for DNS caching. */
+#define ipconfigUSE_DNS_CACHE               ( 1 )
+#define ipconfigDNS_CACHE_NAME_LENGTH       ( 16 )
+#define ipconfigDNS_CACHE_ENTRIES           ( 4 )
+#define ipconfigDNS_REQUEST_ATTEMPTS        ( 2 )
+</code></pre>
+<h1>endif /* ipconfigUSE_DNS */</h1>
+/** End DNS **/
+/** DHCP **/
+/* If ipconfigUSE<em>DHCP is 1 then FreeRTOS+TCP will attempt to retrieve an IP address, netmask, DNS server address and gateway address from a DHCP server.  If ipconfigUSE</em>DHCP is 0 then FreeRTOS+TCP will use a static IP address. */
+<h1>define ipconfigUSE_DHCP    0</h1>
+<h1>define ipconfigMAXIMUM<em>DISCOVER</em>TX<em>PERIOD      ( 120000 / portTICK</em>PERIOD_MS )</h1>
+/** End DHCP **/
+/* If ipconfigREPLY<em>TO</em>INCOMING_PINGS is set to 1 then the IP stack will
+generate replies to incoming ICMP echo (ping) requests. */
+<h1>define ipconfigREPLY<em>TO</em>INCOMING_PINGS             1</h1>
+/* If ipconfigSUPPORT<em>OUTGOING</em>PINGS is set to 1 then the
+FreeRTOS_SendPingRequest() API function is available. */
+<h1>define ipconfigSUPPORT<em>OUTGOING</em>PINGS              0</h1>
+/* If ipconfigSUPPORT<em>SELECT</em>FUNCTION is set to 1 then the FreeRTOS_select()
+(and associated) API function is available. */
+<h1>define ipconfigSUPPORT<em>SELECT</em>FUNCTION             1</h1>
+/* If ipconfigFILTER<em>OUT</em>NON<em>ETHERNET</em>II_FRAMES is set to 1 then Ethernet frames that are not in Ethernet II format will be dropped.  This option is included for potential future IP stack developments. */
+<h1>define ipconfigFILTER<em>OUT</em>NON<em>ETHERNET</em>II_FRAMES  1</h1>
+/* If ipconfigETHERNET<em>DRIVER</em>FILTERS<em>FRAME</em>TYPES is set to 1 then it is the responsibility of the Ethernet interface to filter out packets that are of no interest.  If the Ethernet interface does not implement this functionality, then set ipconfigETHERNET<em>DRIVER</em>FILTERS<em>FRAME</em>TYPES to 0 to have the IP stack perform the filtering instead (it is much less efficient for the stack to do it because the packet will already have been passed into the stack).  If the Ethernet driver does all the necessary filtering in hardware then software filtering can be removed by using a value other than 1 or 0. */
+<h1>define ipconfigETHERNET<em>DRIVER</em>FILTERS<em>FRAME</em>TYPES 1</h1>
+/* The windows simulator cannot really simulate MAC interrupts, and needs to block occasionally to allow other tasks to run. */
+<h1>define configWINDOWS<em>MAC</em>INTERRUPT<em>SIMULATOR</em>DELAY ( 20 / portTICK<em>PERIOD</em>MS )</h1>
+/* Advanced only: in order to access 32-bit fields in the IP packets with 32-bit memory instructions, all packets will be stored 32-bit-aligned, plus 16-bits. This has to do with the contents of the IP-packets: all 32-bit fields are 32-bit-aligned, plus 16-bit(!) */
+<h1>define ipconfigPACKET<em>FILLER</em>SIZE 2</h1>
+/* Define the size of the pool of TCP window descriptors.  On the average, each TCP socket will use up to 2 x 6 descriptors, meaning that it can have 2 x 6 outstanding packets (for Rx and Tx).  When using up to 10 TP sockets simultaneously, one could define TCP<em>WIN</em>SEG_COUNT as 120. */
+<h1>define ipconfigTCP<em>WIN</em>SEG_COUNT       240</h1>
+/* Each TCP socket has a circular buffers for Rx and Tx, which have a fixed maximum size.  Define the size of Rx buffer for TCP sockets. */
+<h1>define ipconfigTCP<em>RX</em>BUFFER_LENGTH            ( 1000 )</h1>
+/* Define the size of Tx buffer for TCP sockets. */
+<h1>define ipconfigTCP<em>TX</em>BUFFER_LENGTH            ( 1000 )</h1>
+/* When using call-back handlers, the driver may check if the handler points to real program memory (RAM or flash) or just has a random non-zero value. */
+<h1>define ipconfigIS<em>VALID</em>PROG_ADDRESS(x) ( (x) != NULL )</h1>
+/* Include support for TCP hang protection.  All sockets in a connecting or disconnecting stage will timeout after a period of non-activity. */
+<h1>define ipconfigTCP<em>HANG</em>PROTECTION         ( 1 )</h1>
+<h1>define ipconfigTCP<em>HANG</em>PROTECTION_TIME    ( 30 )</h1>
+/* Include support for TCP keep-alive messages. */
+<h1>define ipconfigTCP<em>KEEP</em>ALIVE              ( 1 )</h1>
+<h1>define ipconfigTCP<em>KEEP</em>ALIVE_INTERVAL     ( 20 ) /* in seconds */</h1>
+/*JB: from website (undefined in defaults)
+When ipconfigUSE_LINKED_RX_MESSAGES is set to 1 it is possible to reduce CPU  load during periods of heavy network traffic by linking multiple received packets together, then passing all the linked packets to the IP RTOS task in one go */
+<h1>define ipconfigUSE<em>LINKED</em>RX_MESSAGES      0</h1>
+/* JB: from website (undefined in defaults)
+TCP time stamp functionality is available, but its usage is quite limited. Time-stamps can only be used if the initial SYN packet contains the time-stamp option. In most cases, incoming connection won&#8217;t have the time-stamp option set. */
+<h1>define ipconfigUSE<em>TCP</em>TIMESTAMPS          0</h1>
+/* JB: extra debugging 
+A FreeRTOS queue is used to send events from application tasks to the IP stack. ipconfigEVENT<em>QUEUE</em>LENGTH sets the maximum number of events that can be queued for processing at any one time. If ipconfigCHECK<em>IP</em>QUEUE_SPACE is set to 1 then the uxGetMinimumIPQueueSpace() function can be used to query the minimum amount of free space that has existed in the queue since the system booted. */
+<h1>define ipconfigCHECK<em>IP</em>QUEUE_SPACE        1</h1>
+<h1>define portINLINE __inline</h1>
+<h1>endif /* FREERTOS<em>IP</em>CONFIG_H */</h1>
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 16, 2017</div><div class="thread-post-content">Before I look further in your networkInterface, can you check if the code gets into FreeRTOS_ARP.c.
+One user, Stefan Battmer, recently reported about an unaligned access in FreeRTOS_ARP.c.
+Maybe you can set a breakpoint both in <code>ulSenderProtocolAddress()</code> and in <code>eARPProcessPacket()</code>.
+it is the field <code>ulSenderProtocolAddress</code> that is 2-byte aligned and that <strong>might</strong> cause a crash / hardfault.
+If that is the cause, we&#8217;ll make an update available. Thanks, Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on March 16, 2017</div><div class="thread-post-content">I put a breakpoint at the top of eARPProcessPacket() and vARPGenerateRequestPacket(), which appear to be the only functions to use ulSenderProtocolAddress (I couldn&#8217;t find a function with the same name). I can confirm that I got a hard fault without either of these triggering.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on March 27, 2017</div><div class="thread-post-content">@Hein Just wondering if you&#8217;ve had a chance to look at the code. So far I&#8217;m still unsure what is causing the hard faults. Really appreciate it.
+-Justin
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 28, 2017</div><div class="thread-post-content">Hi Justin, I&#8217;m sorry, I had forgotten about your post. It is no problem to ring the bell earlier next time.
+The function <code>gmac_dev_write()</code> ends as follows:
+~~~
+uint32<em>t gmac</em>dev<em>write(gmac</em>device<em>t* p</em>gmac<em>dev, void *p</em>buffer,
+        uint32<em>t ul</em>size, gmac<em>dev</em>tx<em>cb</em>t func<em>tx</em>cb)
+{
+    &#8230;
+    /* Now start to transmit if it is still not done */
+    gmac_start_transmission(p_hw);
+<pre><code>return GMAC_OK;
+</code></pre>
+}
+~~~
+Your driver is sending out a packet, and immediately after that, it releases the network Buffer:
+~~~
+BaseType<em>t xNetworkInterfaceOutput( NetworkBufferDescriptor</em>t * const pxDescriptor, BaseType<em>t bReleaseAfterSend )
+{
+    if( ( ulPHYLinkStatus &amp; BMSR</em>LINK<em>STATUS ) != 0 )
+    {
+        /* Not interested in a call-back after TX. */
+        gmac</em>dev<em>write( &amp;gs</em>gmac<em>dev, QUEUE</em>INDEX, (void *)pxDescriptor->pucEthernetBuffer, pxDescriptor->xDataLength, NULL );
+        iptraceNETWORK_INTERFACE_TRANSMIT();
+    }
+<pre><code>if( bReleaseAfterSend != pdFALSE )
+{
+    vReleaseNetworkBufferAndDescriptor( pxDescriptor );
+}
+return pdTRUE;
+</code></pre>
+}
+/<em>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</em>/
+~~~
+When <code>vReleaseNetworkBufferAndDescriptor()</code> is called, the <code>pucEthernetBuffer</code> might still be used in a DMA buffer.
+It is not correct but it won&#8217;t lead to hard fault.
+Your port has a function <code>gmac_dev_read()</code>.
+In case there are less than 2 Network buffers available, the function will be called with a NULL pointer. We want to flush the DMA buffer without using its contents.
+Did you adapt that function already to test for NULL?
+In the port for SAM4E, I made quite a few changes to <code>gmac_dev_read()</code> :
+~~~
+uint32<em>t gmac</em>dev<em>read(gmac</em>device<em>t* p</em>gmac<em>dev, uint8</em>t* p<em>frame,
+        uint32</em>t ul<em>frame</em>size, uint32<em>t* p</em>rcv<em>size)
+{
+    int32</em>t nextIdx;    /* A copy of the Rx-index &#8216;ul<em>rx</em>idx&#8217; */
+    int32_t bytesLeft = gmac_dev_poll (p_gmac_dev);
+    gmac_rx_descriptor_t *pxHead;
+<pre><code>if (bytesLeft == 0 )
+{
+    return GMAC_RX_NULL;
+}
+/* gmac_dev_poll has confirmed that there is a complete frame at
+ * the current position 'ul_rx_idx'
+ */
+nextIdx = p_gmac_dev-&gt;ul_rx_idx;
+/* Read +2 bytes because buffers are aligned at -2 bytes */
+bytesLeft = min( bytesLeft + 2, ( int32_t )ul_frame_size );
+/* The frame will be copied in 1 or 2 memcpy's */
+if( ( p_frame != NULL ) &amp;&amp; ( bytesLeft != 0 ) )
+{
+const uint8_t *source;
+int32_t left;
+int32_t toCopy;
+    source = p_gmac_dev-&gt;p_rx_buffer + nextIdx * GMAC_RX_UNITSIZE;
+    left = bytesLeft;
+    toCopy = ( p_gmac_dev-&gt;ul_rx_list_size - nextIdx ) * GMAC_RX_UNITSIZE;
+    if(toCopy &gt; left )
+    {
+        toCopy = left;
+    }
+    memcpy (p_frame, source, toCopy);
+    left -= toCopy;
+    if( left != 0ul )
+    {
+        memcpy (p_frame + toCopy, (void*)p_gmac_dev-&gt;p_rx_buffer, left);
+    }
+}
+do
+{
+    pxHead = &amp;p_gmac_dev-&gt;p_rx_dscr[nextIdx];
+    pxHead-&gt;addr.val &amp;= ~(GMAC_RXD_OWNERSHIP);
+    circ_inc32 (&amp;nextIdx, p_gmac_dev-&gt;ul_rx_list_size);
+} while ((pxHead-&gt;status.val &amp; GMAC_RXD_EOF) == 0);
+p_gmac_dev-&gt;ul_rx_idx = nextIdx;
+*p_rcv_size = bytesLeft;
+return GMAC_OK;
+</code></pre>
+}
+~~~
+The code will test if <code>p_frame</code> equals NULL.
+I hope that it helps, please report back. Regards, Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on March 30, 2017</div><div class="thread-post-content">Thanks for that. I hadn&#8217;t noticed the functional changes that were made to the GMAC driver in the example. I&#8217;ll work to integrate them and let you know how it goes.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on March 31, 2017</div><div class="thread-post-content">I think I&#8217;ve addressed the issues you raised, but I&#8217;m still facing at least two types of Hard fault, both due to the program counter pointing to invalid instructions/non-code. I haven&#8217;t truly got to test these changes yet, though.
+I&#8217;ve been able to confirm the source of one of the hard faults, however, which remains despite the changes. The use case is simple. I don&#8217;t have a cable connected to the ethernet port. I attempt to auto-negotiate/initialize and fail. xNetworkInterfaceInitialise() returns pdFAIL. At FreeRTOS_IP.c: 1339, vTaskDelay() is called. (It would occur in another place if vTaskDelay were called prior to this point, as I tried to do while waiting for the PHY to be ready).
+By the time vTaskDelay arrives at the end of the function, the value it pops to the program counter is invalid (on the heap). After the pop, the program counter (always) it points to 0x20400044, which is in SRAM. Hence it always causes a hard fault after executing the last line below (the code shows disassembly of the end of vTaskDelay).
+<pre><code>    if( xAlreadyYielded == pdFALSE )
+</code></pre>
+0040C8A2   ldr  r3, [r7, #20]<br />
+0040C8A4   cmp  r3, #0<br />
+0040C8A6   bne  #14<br />
+            portYIELD<em>WITHIN</em>API();
+0040C8A8   ldr  r3, [pc, #52]<br />
+0040C8AA   mov.w    r2, #268435456<br />
+0040C8AE   str  r2, [r3]<br />
+0040C8B0   dsb  sy<br />
+0040C8B4   isb  sy<br />
+    }
+0040C8B8   nop<br />
+0040C8BA   adds r7, #24<br />
+0040C8BC   mov  sp, r7<br />
+0040C8BE   pop  {r7, pc}
+During the course of vTaskDelay, I noticed that xPortPendSVHandler executes twice, and it&#8217;s just after finishing the second time that the end of vTaskDelay (above) executes, leading to the error. I guess this is the context switching that is occurring, but it seems something about the saving and restoring of the state is failing.
+Any idea what might be going wrong here? Note I am using FreeRTOS 8.2.3. I have also tried tripling my stack size to 0xF000 (60kb), which had no effect.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 1, 2017</div><div class="thread-post-content">Justin,
+You&#8217;re getting closer &#8230;
+<blockquote>
+  By the time vTaskDelay arrives at the end of the function, the value
+  it pops to the program counter is invalid (on the heap).
+</blockquote>
+Not &#8216;heap&#8217; but &#8216;stack&#8217;, I assume 🙂
+<blockquote>
+  After the pop, the program counter (always) it points to 0x20400044,
+  which is in SRAM. Hence it always causes a hard fault after executing
+  the last line below (the code shows disassembly of the end of vTaskDelay).
+</blockquote>
+When vTaskDelay crashes at the end, it looks to me that the task&#8217;s stack has been corrupted / overwritten in a meanwhile.
+<blockquote>
+  Any idea what might be going wrong here? Note I am using FreeRTOS 8.2.3.
+</blockquote>
+There are no known issues of this type with 8.2.3. Also +TCP was initially developed and tested with that kernel release.
+<blockquote>
+  I have also tried tripling my stack size to 0xF000 (60kb), which had no effect.
+</blockquote>
+The size of <strong>what</strong> stack?
+There is a general program stack, that is used at boot time until the scheduler is started.
+But when the IP-task runs, it uses a stack that is determined as:
+~~~
+    #define configMINIMAL<em>STACK</em>SIZE           ( 130 )
+    #define ipconfigIP<em>TASK</em>STACK<em>SIZE</em>WORDS   ( configMINIMAL<em>STACK</em>SIZE * 5 )
+~~~
+That makes 5 x 130 = 650 words ( 2600 bytes ). Should be more than enough.
+Unless you&#8217;re using stack-expensive routines for logging?
+Isn&#8217;t there some pointer that is not properly initialised and writing in the wrong space?
+What about the other tasks you are running? Do they have enough stack? Can you log or trace what happens during the call to <code>vTaskDelay()</code> ? That is maybe the first time that some other task becomes active?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on April 3, 2017</div><div class="thread-post-content">Hein,
+Thanks again for your insight.
+<blockquote>
+  When vTaskDelay crashes at the end, it looks to me that the task&#8217;s stack has been corrupted / overwritten in a meanwhile.
+</blockquote>
+I think that&#8217;s correct.
+<blockquote>
+  <blockquote>
+    I have also tried tripling my stack size to 0xF000 (60kb), which had no effect.
+  </blockquote>
+  The size of what stack?
+  There is a general program stack, that is used at boot time until the scheduler is started.
+</blockquote>
+I momentarily forgot about the task stacks and was talking about the program stack.
+<blockquote>
+  But when the IP-task runs, it uses a stack that is determined as: &#8230;
+  That makes 5 x 130 = 650 words ( 2600 bytes ). Should be more than enough.
+  Unless you&#8217;re using stack-expensive routines for logging?
+</blockquote>
+I am using printf for logging. But I had set configMINIMAL<em>STACK</em>SIZE to 1300 for testing, which should be more than adequate so I doubt it&#8217;s that (I&#8217;ve now reset it to a more reasonable 450; no difference). 
+<blockquote>
+  Isn&#8217;t there some pointer that is not properly initialised and writing in the wrong space?
+</blockquote>
+This is possible. But so far I haven&#8217;t been able to find anything. And there&#8217;s not actually a lot of my code that&#8217;s running before this happens. I&#8217;ll keep digging into this though.
+<blockquote>
+  What about the other tasks you are running? Do they have enough stack? Can you log or trace what happens during the call to vTaskDelay() ? That is maybe the first time that some other task becomes active?
+</blockquote>
+I have removed all user tasks from this test program so the only tasks running are those used by FreeRTOS and +TCP. I&#8217;ve tried debugging through vTaskDelay() but not found anything to really be happening. After vTaskDelay invokes PendSV<em>Handler, it drops into the loop in portTASK</em>FUNCTION(). It repeatedly tests if there are any tasks to delete (which there never are) and then since I have configUSE<em>PREEMPTION == 1 and configIDLE</em>SHOULD_YIELD == 1, it checks to see if it needs to yield. I set a breakpoint on taskYIELD, but strangely this never gets hit, so I&#8217;m not sure how control leaves this function. I can only assume it itself is getting preempted somehow. This loop executes hundreds of times for even a 1ms delay (I know because I stepped through it hundreds of times) without anything else apparently happening. Eventually PendSVHandler is called again and at this point the program pointer popped from the stack is corrupted (always in the same way), causing the Usage Fault. 
+Do you perhaps you have some ideas for other places I could put breakpoints to see if anything else is occurring during vTaskDelay without my knowledge?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on April 3, 2017</div><div class="thread-post-content">I should note that I have the following in FreeRTOSConfig.h:
+~~~
+/* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS standard names. */
+<h1>define xPortPendSVHandler PendSV_Handler</h1>
+<h1>define vPortSVCHandler SVC_Handler</h1>
+<h1>define xPortSysTickHandler SysTick_Handler</h1>
+~~~
+The PendSV<em>Handler that gets called is xPortPendSVHandler() in freertos-8.2.3/Source/portable/GCC/ARM</em>CM7/r0p1/port.c
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 3, 2017</div><div class="thread-post-content">Indirect replies only &#8211;
+Make sure you have configCHECK<em>FOR</em>STACK_OVERFLOW set to 2, and the 
+overflow hook function set to something that halts the program.  That 
+will take out a lot of guess work.
+configMINIMAL<em>STACK</em>SIZE only effects the size of the idle task stack, 
+unless you are using it yourself to dimension the size of your 
+application tasks.
+Have you tried taking out all the calls to printf()?
+Do you have compiler optimisation on?  If so, that may explain why your 
+break point is not being hit.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on April 4, 2017</div><div class="thread-post-content">Thank you. I did indeed have a -Og snuck in there for the C++ compiler (optimization was disabled for the C compiler though, so it shouldn&#8217;t have affected this code). I still do not get the breakpoint on taskYIELD() to hit however.
+It appears that all tasks (again, the only tasks I have are created by FreeRTOS or +TCP) use stack size as a multiple of configMINIMAL<em>STACK</em>SIZE:
+~~~
+<h1>define configTIMER<em>TASK</em>STACK<em>DEPTH    ( configMINIMAL</em>STACK_SIZE * 2 )</h1>
+<h1>define tskIDLE<em>STACK</em>SIZE  configMINIMAL<em>STACK</em>SIZE</h1>
+<h1>define ipconfigIP<em>TASK</em>STACK<em>SIZE</em>WORDS    ( configMINIMAL<em>STACK</em>SIZE * 5 )</h1>
+// Used within the NetworkInterface:
+<h1>define configEMAC<em>TASK</em>STACK<em>SIZE ( 4 * configMINIMAL</em>STACK_SIZE )</h1>
+~~~
+NOTE: the EMAC TASK is not yet launched when this Usage Fault occurs.
+configCHECK<em>FOR</em>STACK_OVERFLOW has been set to 2 but vApplicationStackOverflowHook is seemingly never called. Previously it didn&#8217;t disable interrupts from within that function though, so I just did that to be sure. Still never see it getting called.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on April 6, 2017</div><div class="thread-post-content">Still stumped by this one. It&#8217;s difficult to debug because I don&#8217;t know when/what is causing the portTASK<em>FUNCTION to return to the original vTaskDelayFunction(). I expect it&#8217;s just the timeout expiring and causing a context switch back. But then how/why would the stack be corrupted? This is just core RTOS code. I don&#8217;t know the mechanics of the delay expiring, and as I noted, taskYIELD() is seemingly never called from portTASK</em>FUNCTION.
+I have now tried the example demo for the SAM4E on SAM4E hardware and and found that it does indeed work. In that demo, it uses heap<em>5. Is there any reason that I should use that over heap</em>4, which is what I&#8217;m currently using? But generally I&#8217;m not seeing any clear reason why it should work while the SAMV71 adaptation doesn&#8217;t.
+Could this potentially have to do with the lower number of available user interrupt priorities on the Cortex M7 vs M4E (7 vs 15)? Or perhaps the fact that there are floating point registers to save for the M7 that might not have been needed for the M4E?
+Many thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 7, 2017</div><div class="thread-post-content"><blockquote>
+  I have now tried the example demo for the SAM4E on SAM4E hardware and
+  and found that it does indeed work. In that demo, it uses heap<em>5. Is
+  there any reason that I should use that over heap</em>4, which is what I&#8217;m
+  currently using? But generally I&#8217;m not seeing any clear reason why it
+  should work while the SAMV71 adaptation doesn&#8217;t.
+</blockquote>
+Heap<em>4 and heap</em>5 use the same algorithm.  Heap_5 just has the added 
+ability to be split across multiple memory blocks.
+<blockquote>
+  Could this potentially have to do with the lower number of available
+  user interrupt priorities on the Cortex M7 vs M4E (7 vs 15)?
+</blockquote>
+Unlikely.
+<blockquote>
+  Or perhaps
+  the fact that there are floating point registers to save for the M7 that
+  might not have been needed for the M4E?
+</blockquote>
+Unlikely.
+I&#8217;ve not read back through this thread, so maybe you have said already, 
+but which version of FreeRTOS are you using?  Unless you are using 
+FreeRTOS V9 then the Cortex-M4F code is not completely compatible with 
+the Cortex-M7.  More importantly, what is the revision of the Cortex-M7 
+core you are using?  If it is R0P1 then there are silicon errata that 
+need to be worked around, and you will need to use the FreeRTOS port 
+that is specific to that revision of the core (which is in the 
+FreeRTOS/Source/Portable/GCC/ARM_CM7/r0p1 directory.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 7, 2017</div><div class="thread-post-content">Thanks Richard, for those comments.
+<blockquote>
+  the fact that there are floating point registers to save for the M7
+</blockquote>
+Richard, can there be a problem with <code>memcpy()</code> due to unsaved floating point registers like for the <a href="http://www.freertos.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html#floating-point">Cortex-A9</a>?
+The SAM4E project is indeed using <code>heap_5</code> because it has 3 different blocks of RAM memory.
+When there is a single heap block, <code>heap_5</code> can still be usefull because it allows to use linker symbols that determine the location and size of the available RAM. When using <code>heap_4</code>, you need to set <code>configTOTAL_HEAP_SIZE</code> at compile time, which is often not known exactly before you have linked the project.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 7, 2017</div><div class="thread-post-content"><blockquote>
+  Richard, can there be a problem with |memcpy()| due to unsaved floating
+  point registers like for the Cortex-A9
+  <a href="http://www.freertos.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html#floating-point">http://www.freertos.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html#floating-point</a>?
+</blockquote>
+No, the way floating point works on the M class devices is different to 
+the A class in-so-much-as the hardware detects if the FPU has been used, 
+whereas on the A the user has to say.  The context switch on the M 
+devices looks for a bit being set in hardware, and if its set, handles 
+the FPU context switch.  In other words, if a library accessed an FPU 
+register (as was happening on the A devices) the context switch code 
+would notice, and the FPU registers would from then on form part of the 
+task&#8217;s context automatically.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on April 7, 2017</div><div class="thread-post-content">I am using FreeRTOS 8.2.3. It sounds like you would recommend upgrading to 9.0? (I only need to run on SAMV71Q21, not the SAM4E)
+I did not find any documentation of which cortex revision this board uses, but when I check the CPUID register, it indicates it is revision r0p1. I am already using the FreeRTOS port code for that revision. (Prior to integrating +TCP, my basic tests showed FreeRTOS to be working in the project).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 7, 2017</div><div class="thread-post-content"><blockquote>
+  I did not find any documentation of which cortex revision this board
+  uses, but when I check the CPUID register, it indicates it is revision
+  r0p1.
+</blockquote>
+Ok &#8211; so the Cortex-M4F code is not going to work reliably on that part. 
+It is only that core revision that has the problem, any other revision 
+and using the Cortex-M4F code from FreeRTOS V9 onwards will be fine.
+<blockquote>
+  I am already using the FreeRTOS port code for that revision.
+</blockquote>
+Do you mean you have switched to the port layer found in the V9 code? 
+Previously you said you were using V8.x code, an the code with the 
+silicon bug fix is only available in V9.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on April 7, 2017</div><div class="thread-post-content">No, I only meant that I&#8217;m using the port code for 8.2.3 found under SourceportableGCCARM_CM7r0p1. So if the bug fix is not there then it sounds like it&#8217;s best that I switch to v9.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 7, 2017</div><div class="thread-post-content">Oh &#8211; maybe I am mistaken then, if that directory is in V8.2.3 then it is 
+also good to use.  I thought it didn&#8217;t get added until V9.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on April 7, 2017</div><div class="thread-post-content">Even more puzzling then. Because I&#8217;ve just updated to 9.0.0 and at first inspection, the problem appears to go away! I&#8217;ve only tested this simplest case that always caused a Hard Fault, but that&#8217;s already something!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Plus-TCP on SAMv71 hard fault debugging</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jtbr">jtbr</a> on April 11, 2017</div><div class="thread-post-content">Just wanted to confirm that using FreeRTOS 9.0.0 does indeed fix the faults. I&#8217;m now debugging functionality of the driver. Thanks for the help!
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

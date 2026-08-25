@@ -1,0 +1,274 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Problem in 4.3.1 task handling - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2007/freertos_Problem_in_4.3.1_task_handling_1787277.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Problem in 4.3.1 task handling - FreeRTOS" />
+<meta property="og:description" content="Problem in 4.3.1 task handlingPosted by dansear on July 27, 2007I recently encountered a bug in the handling of tasks. A consequence of the bug causes &#8216;pxItemToRemove-&gt;pvContainer&#8217; to be NULL in vListRemove&#040;&#041;. I can detect the problem by putting a test for &#8216;pxItemToRemove-&gt;pvContainer == NULL&#8217; in that function. The source of the bug is subtle, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2007/freertos_Problem_in_4.3.1_task_handling_1787277.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Problem in 4.3.1 task handlingPosted by dansear on July 27, 2007I recently encountered a bug in the handling of tasks. A consequence of the bug causes &#8216;pxItemToRemove-&gt;pvContainer&#8217; to be NULL in vListRemove&#040;&#041;. I can detect the problem by putting a test for &#8216;pxItemToRemove-&gt;pvContainer == NULL&#8217; in that function. The source of the bug is subtle, [&hellip;]" />
+<meta name="twitter:title" content="Problem in 4.3.1 task handling - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201503' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201503' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201503' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201503' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141693' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2007%2Ffreertos_Problem_in_4.3.1_task_handling_1787277.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2007%2Ffreertos_Problem_in_4.3.1_task_handling_1787277.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141693">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2007_freertos_support_forum_archive_index.html/">July 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Problem in 4.3.1 task handling</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dansear">dansear</a> on July 27, 2007</div><div class="thread-post-content">I recently encountered a bug in the handling of tasks.
+A consequence of the bug causes &#8216;pxItemToRemove-&gt;pvContainer&#8217;
+to be NULL in vListRemove&#40;&#41;. I can detect the problem by
+putting a test for &#8216;pxItemToRemove-&gt;pvContainer == NULL&#8217;
+in that function.
+The source of the bug is subtle, but I will try to describe
+the situation. ARM platform. Several tasks exist, including
+an idle task. The tasks that cause the problem loop around
+doing some work and then call vTaskSuspend&#40;NULL&#41;. An interrupt
+is used to get the task going again, via xTaskResumeFromISR&#40;&#41;.
+In my case, there are 2 tasks doing this, each has its own
+interrupt for resuming.
+The &#8216;work&#8217; that the tasks perform include using a semaphore
+to lock/unlock access to a resource.
+So the task may be suspended two ways 1&#41; at the vTaskSuspend&#40;NULL&#41;,
+and 2&#41; waiting for the semaphore. The first does not have an &#8216;Event&#8217;
+associated with it, but the second does &#40;involving xPendingReadyList,
+and xEventListItem&#41;.
+The problem appears to be generated if the task is suspended on
+the semaphore, with event, but the interrupt triggers a resume.
+In my case, the interrupt occurs frequently, so it may happen
+during the suspend for the semaphore lock. There is nothing in
+xTaskResumeFromISR&#40;&#41; that checks if the task is suspended waiting
+on an event.
+Since the task is suspended, waiting for an event, I believe
+the ISR resume should be ignored&#8230; the event has not occured.
+The following is my solution to accomplish that. In xTaskResumeFromISR&#40;&#41;
+change:
+if&#40; listIS&#95;CONTAINED&#95;WITHIN&#40; &amp;xPendingReadyList, &amp;&#40; pxTCB-&gt;xEventListItem &#41; &#41; &#33;= pdTRUE &#41;
+to:
+if&#40;&#40; listIS&#95;CONTAINED&#95;WITHIN&#40; &amp;xPendingReadyList, &amp;&#40; pxTCB-&gt;xEventListItem &#41; &#41; &#33;= pdTRUE &#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; &#40;pxTCB-&gt;xEventListItem.pvContainer == NULL&#41; &#41;
+This has solved my current problem with the NULL pointer getting into
+vListRemove&#40;&#41;, but I have to wonder if this is correct?
+Dan Searles
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 27, 2007</div><div class="thread-post-content">I think this is related to your previous post regarding the indefinite suspension mechanism &#40;a new thing&#41; &#8211; where the task is actually held in the suspended list rather than the event list should it be waiting indefinitely for an event.
+There is a new release to be made in the next couple of days, so I will fix.
+Thanks, and regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dspaude">dspaude</a> on July 27, 2007</div><div class="thread-post-content">I think I also have a similar problem as Dan. I have a task that is sending data to the UART and then pausing &#40;waiting on a semaphore&#41; until a character is received from the UART to resume printing. However, the when the semaphore is signaled &#40;from the UART Rx task&#41; the Tx task will not resume. I THINK I explained that correctly, but I haven&#8217;t dug into that issue yet since I&#8217;ve been resolving my printf&#40;&#41;-related aborts.
+Darrik
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dansear">dansear</a> on July 27, 2007</div><div class="thread-post-content">I think it may be different as I had that fix in while tracking down
+the NULL pointer problem. So my tasks should have been staying in
+the suspended list.
+A task suspended indefinitely and a task suspended on an event both
+have their GenericItem in the suspended list. Only the task waiting
+for the event has an EventItem in the PendingReady list. I&#8217;m not even
+sure what would happen if the GenericItem were in one of the Delayed lists.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 27, 2007</div><div class="thread-post-content">I think Dans problems relate to the &#8216;wait indefinitely&#8217; functionality, which was put in quite recently &#40;not quite correctly it seems&#41; following a request from a user.&nbsp; The problem is probably not related unless you are wanting to wait indefinitely while also using the xTaskResumeFromISR&#40;&#41; feature &#40;which incidentally is also a new function following a user request&#41;.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dansear">dansear</a> on July 27, 2007</div><div class="thread-post-content">I think I see what you mean. The new part &#40;delay indefinitely&#41; is putting the GenericItem
+on the suspended list, where as before, it would have gone on a Delayed list. If it were on
+a delayed list, xTaskResumeFromISR&#40;&#41; would not have seen it and wouldn&#8217;t resume it. So
+a proper fix may be a little tricker than what I did. A few more questions are starting
+to pop up, like should you be able to xTaskResumeFromISR&#40;&#41; a task that has a definite
+wait time?
+Dan
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 27, 2007</div><div class="thread-post-content">The intention is that ResumeFromISR&#40;&#41; is only used to unsuspend a task that was suspended using vTaskSuspend&#40;&#41;, and never a task that was blocked with a timeout on a queue/semphore.&nbsp; Tasks that are blocked on a queue or semaphore should be woken &#40;within an interrupt&#41; using QueueSendFromISR&#40;&#41; or SemaphoreGiveFromISR&#40;&#41;.
+The problem has arisen by placing a task that is blocked on a queue/semaphore into the suspended list &#40;where until recently they would never have been&#41;, without updating the ResumeFromISR&#40;&#41; function to check that the task is indeed in the Suspended state &#40;as a result of a call to TaskSuspend&#40;&#41;&#41;, and not in the Blocked state &#40;as a result of a call to a queue or semaphore function with infinite block time&#41;.
+This is definitely an error, but in most cases people have got away from it because their tasks enter either the Suspended or Blocked states, not both.&nbsp; The scenario you described in the first message of this post is not one I have personally encountered.
+I think the solution you suggested works, but I need more time to consider it, as per:
+portBASE&#95;TYPE xTaskResumeFromISR&#40; xTaskHandle pxTaskToResume &#41;
+&#123;
+portBASE&#95;TYPE xYieldRequired = pdFALSE;
+tskTCB &#42;pxTCB;
+&#95;&#95;pxTCB = &#40; tskTCB &#42; &#41; pxTaskToResume;
+&#95;&#95;/&#42; Is the task we are attempting to resume actually suspended? &#42;/
+&#95;&#95;if&#40; listIS&#95;CONTAINED&#95;WITHIN&#40; &amp;xSuspendedTaskList, &amp;&#40; pxTCB-&gt;xGenericListItem &#41; &#41; &#33;= pdFALSE &#41;
+&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;/&#42; Has the task already been resumed from within an ISR? &#42;/
+&#95;&#95;&#95;&#95;if&#40; listIS&#95;CONTAINED&#95;WITHIN&#40; &amp;xPendingReadyList, &amp;&#40; pxTCB-&gt;xEventListItem &#41; &#41; &#33;= pdTRUE &#41;
+&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;/&#42; Is the task really in the Suspended state, or blocking 
+&#95;&#95;&#95;&#95;&#95;&#95;indefinitely on an event? &#42;/
+&#95;&#95;&#95;&#95;&#95;&#95;if&#40; pxTCB-&gt;xEventListItem.pvContainer == NULL &#41;
+&#95;&#95;&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;if&#40; uxSchedulerSuspended == &#40; unsigned portBASE&#95;TYPE &#41; pdFALSE &#41;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;xYieldRequired = &#40; pxTCB-&gt;uxPriority &gt;= pxCurrentTCB-&gt;uxPriority &#41;;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;vListRemove&#40;&nbsp; &amp;&#40; pxTCB-&gt;xGenericListItem &#41; &#41;;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;prvAddTaskToReadyQueue&#40; pxTCB &#41;;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#125;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;else
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;/&#42; We cannot access the delayed or ready lists, so will hold this
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;task pending until the scheduler is resumed, at which point a 
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;yield will be preformed if necessary. &#42;/
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;vListInsertEnd&#40; &#40; xList &#42; &#41; &amp;&#40; xPendingReadyList &#41;, &amp;&#40; pxTCB-&gt;xEventListItem &#41; &#41;;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#125;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#125;
+&#95;&#95;&#95;&#95;&#125;
+&#95;&#95;&#125;
+&#95;&#95;return xYieldRequired;
+&#125;
+The same change is probably required in the TaskResume&#40;&#41; function too.
+With respect to the other issue you raised I was thinking along the lines of:
+portBASE&#95;TYPE xTaskCheckForTimeOut&#40; xTimeOutType &#42;pxTimeOut, portTickType &#42;pxTicksToWait &#41;
+&#123;
+portBASE&#95;TYPE xReturn;
+&#95;&#95;&#35;if INCLUDE&#95;vTaskSuspend == 1
+&#95;&#95;&#95;&#95;/&#42; The task is waiting indefinitely so had not timed out. &#42;/
+&#95;&#95;&#95;&#95;if&#40; &#42;pxTicksToWait == portMAX&#95;DELAY &#41;
+&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;xReturn = pdFALSE;
+&#95;&#95;&#95;&#95;&#125;
+&#95;&#95;&#95;&#95;else
+&#95;&#95;&#35;endif
+&#95;&#95;if&#40; &#40; xNumOfOverflows &#33;= pxTimeOut-&gt;xOverflowCount &#41; &amp;&amp; &#40; xTickCount &gt;= pxTimeOut-&gt;xTimeOnEntering &#41; &#41;
+&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;/&#42; The tick count is greater than the time at which vTaskSetTimeout&#40;&#41; 
+&#95;&#95;&#95;&#95;was called, but has also overflowed since vTaskSetTimeOut&#40;&#41; was called.
+&#95;&#95;&#95;&#95;It must have wrapped all the way around and gone past us again. This
+&#95;&#95;&#95;&#95;passed since vTaskSetTimeout&#40;&#41; was called. &#42;/
+&#95;&#95;&#95;&#95;xReturn = pdTRUE;
+&#95;&#95;&#125;
+&#95;&#95;else if&#40; &#40; xTickCount &#8211; pxTimeOut-&gt;xTimeOnEntering &#41; &lt; &#42;pxTicksToWait &#41;
+&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;/&#42; Not a genuine timeout. Adjust parameters for time remaining. &#42;/
+&#95;&#95;&#95;&#95;&#42;pxTicksToWait -= &#40; xTickCount &#8211; pxTimeOut-&gt;xTimeOnEntering &#41;;
+&#95;&#95;&#95;&#95;vTaskSetTimeOutState&#40; pxTimeOut &#41;;
+&#95;&#95;&#95;&#95;xReturn = pdFALSE;
+&#95;&#95;&#125;
+&#95;&#95;else
+&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;xReturn = pdTRUE;
+&#95;&#95;&#125;
+&#95;&#95;return xReturn;
+&#125;
+Although I don&#8217;t like using the preprocessor in that way.
+Thoughts?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dansear">dansear</a> on July 27, 2007</div><div class="thread-post-content">I see that my solution was wrong&#8230; It misses the ERRONEOUS&#95;UNBLOCK case.
+I currently don&#8217;t see another way that doesn&#8217;t add a couple more
+preprocessor tests, making it less clear.
+Dan
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dansear">dansear</a> on July 27, 2007</div><div class="thread-post-content">Consider moving the &quot;if&#40; xTicksToWait &gt; 0 &#41; &quot;
+test inside xTaskCheckForTimeOut&#40;&#41;.
+Currently it is outside both calls.
+Dan
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dspaude">dspaude</a> on July 27, 2007</div><div class="thread-post-content">I use portMAX&#95;DELAY when I call xSemaphoreTake&#40;&#41; from a task to wait for a character from the UART.
+I looked at my sequence and here is what happens:
+1&#41; TASK1 becomes active and sends data to UART
+2&#41; TASK1 pauses by waiting on a semaphore &#40;xSemaphoreTake&#40;&#41;&#41;
+3&#41; Rx IRQ on UART received
+4&#41; UART ISR actually sends the data to TASK1 via xQueueSendFromISR&#40;&#41;
+5&#41; TASK1 never wakes up &#40;I assume it won&#8217;t because it is waiting for the semaphore before it resumes&#41;
+So, my problem is that I am using the same task. I&#8217;ll have to see what to do about that.
+Darrik
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 28, 2007</div><div class="thread-post-content">Files under SVN have been updated, but not yet fully tested &#40;which will be done prior to release&#41;.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem in 4.3.1 task handling</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jwestmoreland">jwestmoreland</a> on July 29, 2007</div><div class="thread-post-content">Richard,
+I&#8217;ve added them in the work that I&#8217;m doing &#8211; of course I need to get the port working &#8211; but I&#8217;ll let you know if I see anything
+else otherwise.
+Regards,
+John W.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

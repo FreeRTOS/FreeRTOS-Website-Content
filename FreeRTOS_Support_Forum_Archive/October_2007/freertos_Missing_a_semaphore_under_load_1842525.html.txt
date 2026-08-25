@@ -1,0 +1,179 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Missing a semaphore under load - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2007/freertos_Missing_a_semaphore_under_load_1842525.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Missing a semaphore under load - FreeRTOS" />
+<meta property="og:description" content="Missing a semaphore under loadPosted by dspaude on October 10, 2007I have found a problem where my system is missing the execution of a task due to missing the signaling of a semaphore that would allow the task to continue. Per suggestions on this forum I am using semaphores for all of my interrupts because &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2007/freertos_Missing_a_semaphore_under_load_1842525.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Missing a semaphore under loadPosted by dspaude on October 10, 2007I have found a problem where my system is missing the execution of a task due to missing the signaling of a semaphore that would allow the task to continue. Per suggestions on this forum I am using semaphores for all of my interrupts because [&hellip;]" />
+<meta name="twitter:title" content="Missing a semaphore under load - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201530' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201530' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201530' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201530' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139260' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2007%2Ffreertos_Missing_a_semaphore_under_load_1842525.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2007%2Ffreertos_Missing_a_semaphore_under_load_1842525.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139260">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2007_freertos_support_forum_archive_index.html/">October 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Missing a semaphore under load</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dspaude">dspaude</a> on October 10, 2007</div><div class="thread-post-content">I have found a problem where my system is missing the execution of a task due to missing the signaling of a semaphore that would allow the task to continue. Per suggestions on this forum I am using semaphores for all of my interrupts because resuming/suspending isn&#8217;t the best for events that may trigger while the task is executing. So, in my interrupt service routine I call xSemaphoreGiveFromISR&#40;&#41; with the semaphore queue handle and in the task I wait for the semaphore using xSemaphoreTake&#40;&#41; with portMAX&#95;DELAY.
+Here is what I see when the system is idle or under light load where I get an interrupt every 16 ms:
+&#91;00, 00:01:41.645&#93;&nbsp; xhfc&#95;ISR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40;interrupt event&#41;
+&#91;00, 00:01:41.645&#93;&nbsp; xhfc&#95;ISR: S&#95;XHFC&nbsp;&nbsp;&nbsp; &#40;semaphore signaled from ISR&#41;
+&#91;00, 00:01:41.645&#93;&nbsp; &#42;&#42; ENTER XHFC &#42;&#42;&nbsp;&nbsp;&nbsp; &#40;task receives semaphore signal&#41;
+&#91;00, 00:01:41.645&#93;&nbsp; &#42;&#42; EXIT XHFC &#42;&#42;&nbsp;&nbsp;&nbsp;&nbsp; &#40;task waits for another semaphore&#41;
+&#91;00, 00:01:41.660&#93;&nbsp; xhfc&#95;ISR
+&#91;00, 00:01:41.660&#93;&nbsp; xhfc&#95;ISR: S&#95;XHFC
+&#91;00, 00:01:41.660&#93;&nbsp; &#42;&#42; ENTER XHFC &#42;&#42;
+&#91;00, 00:01:41.660&#93;&nbsp; &#42;&#42; EXIT XHFC &#42;&#42;
+&#91;00, 00:01:41.675&#93;&nbsp; xhfc&#95;ISR
+&#91;00, 00:01:41.675&#93;&nbsp; xhfc&#95;ISR: S&#95;XHFC
+&#91;00, 00:01:41.675&#93;&nbsp; &#42;&#42; ENTER XHFC &#42;&#42;
+&#91;00, 00:01:41.675&#93;&nbsp; &#42;&#42; EXIT XHFC &#42;&#42;
+&#91;00, 00:01:41.690&#93;&nbsp; xhfc&#95;ISR
+&#91;00, 00:01:41.690&#93;&nbsp; xhfc&#95;ISR: S&#95;XHFC
+&#91;00, 00:01:41.690&#93;&nbsp; &#42;&#42; ENTER XHFC &#42;&#42;
+&#91;00, 00:01:41.690&#93;&nbsp; &#42;&#42; EXIT XHFC &#42;&#42;
+&#8230;..
+However, under load this is what I see &#40;interrupt is still every 16 ms&#41;:
+&#91;00, 00:01:41.995&#93;&nbsp; xhfc&#95;ISR
+&#91;00, 00:01:41.995&#93;&nbsp; xhfc&#95;ISR: S&#95;XHFC
+&#91;00, 00:01:41.995&#93;&nbsp; &#42;&#42; ENTER XHFC &#42;&#42;
+&#91;00, 00:01:41.995&#93;&nbsp; &#42;&#42; EXIT XHFC &#42;&#42;
+&#91;00, 00:01:42.010&#93;&nbsp; xhfc&#95;ISR
+&#91;00, 00:01:42.010&#93;&nbsp; xhfc&#95;ISR: S&#95;XHFC
+&#91;00, 00:01:42.025&#93;&nbsp; xhfc&#95;ISR
+&#91;00, 00:01:42.025&#93;&nbsp; xhfc&#95;ISR: S&#95;XHFC
+&#91;00, 00:01:42.030&#93;&nbsp; &#42;&#42; ENTER XHFC &#42;&#42;
+&#8230;..
+The OS missed executing the task which in my case causes a receiver overrun. There is only one task that has the same priority as this task and that task is not receiving much data. However, there are many other lower-priority tasks that are very busy.
+I am using the 4.5.0 version of FreeRTOS and I am going to try 4.4.0 because I noticed there were some changes to the semaphore/queue code. Any other tips are appreciated, though.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing a semaphore under load</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on October 11, 2007</div><div class="thread-post-content">Maybe only an indirect response to the question, but how are you generating this nice trace output?&nbsp; I&#8217;m interested because first it looks very useful and second because maybe it has something to do with your problem?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing a semaphore under load</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dspaude">dspaude</a> on October 11, 2007</div><div class="thread-post-content">The trace output is part of a logging system we have that stores strings, numbers, streams of bytes, etc. to a specific RAM location for later retrieval &#40;with a timestamp added upon message storage&#41;. It isn&#8217;t very complex and it is very useful.
+The trace messages do not cause the problem because I added those messages in my tracking down of the problem. Normally there are no trace messages output unless there is an error or catastrophe.
+I did try FreeRTOS 4.4.0 yesterday and that version did NOT miss executing the task. The task WAS delayed by about 5 ms and did result in an overrun, but at least it didn&#8217;t miss executing the task. 16 ms is a lot of time between tasks and this particular task &#40;XHFC&#41; takes up to 1.5 ms to execute, so well under the limit &#40;and my timer resolution for task switching is 5 ms, but there is only one other task at the same priority &#40;none higher&#41; and that task is rarely getting traffic in this particular test&#41;.
+Anyway, might there be an issue with the semaphore system in 4.5.0?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing a semaphore under load</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 11, 2007</div><div class="thread-post-content">&gt;Anyway, might there be an issue with the semaphore system in 4.5.0? 
+I cannot say for sure &#8211; but the changes between the two versions were more additions rather than changing the way the existing implementations worked &#8211; so I doubt there would be any changes that could cause this &#40;especially if you have configUSE&#95;MUTEXES set to 0&#41;.
+Which port and tools are you using?&nbsp;&nbsp; Are you able to put together a small demo that demonstrates this behaviour?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing a semaphore under load</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/chaalar">chaalar</a> on October 11, 2007</div><div class="thread-post-content">One point caught my attention in your trace output&#8230;
+&#8230;
+&#91;00, 00:01:42.010&#93; xhfc&#95;ISR 
+&#91;00, 00:01:42.010&#93; xhfc&#95;ISR: S&#95;XHFC 
+&#91;00, 00:01:42.025&#93; xhfc&#95;ISR &#35;1
+&#91;00, 00:01:42.025&#93; xhfc&#95;ISR: S&#95;XHFC 
+&#91;00, 00:01:42.030&#93; &#42;&#42; ENTER XHFC &#42;&#42; &#35;2
+We see that a semaphore missed in &#35;1. But in &#35;2 we see 
+that it takes 5 msec for your task to receive the semaphore.
+However, in light load it case it receives the semaphore within a msec.
+Is it possible that your interrupt does not causing a context switching? One may ask why 
+it&#8217;s not happening in the first case, but I suspect that your interrupt has been 
+signalling &#40;most of the time&#41; just before your tick timer interrupt&#40;which is 5 msec&#41; 
+which gives me the idea that your ISR does not cause a context switch.
+Yusuf Caglar AKYUZ
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing a semaphore under load</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dspaude">dspaude</a> on October 11, 2007</div><div class="thread-post-content">I am using the AT91SAM7S port with GCC 4.2.1. Since this problem appears related to testing the whole system I don&#8217;t believe I can generate a simple test application for you. In reality I am using the AT91SAM7SE with external SDRAM and we use a lot of memory &#40;8 MB available and much of it used&#41; and a lot of code &#40;over 400 KB&#41;.
+With the timestamp it isn&#8217;t uncommon for the interrupt time to indicate it was 5 ms before the task executed. In reality the timestamp could have changed right before the task executed and stored the trace message &#40;meaning there could have been between a few microseconds up to almost 10 ms between the ISR and the task depending on where in the timing the trace messages were recorded&#41;.
+However, I do agree that there is some lag when the system is dealing with more data than during the idle period. 16 ms is a long time, though, and for a task of the highest priority it should have executed well before the next interrupt &#40;so in this case it was 32 ms later that the task finally executed&#41;. That is why I think the task failed to receive the semaphore &#40;should have executed within 2 ms at the most, not 32 ms&#41;. The XHFC task itself only takes about 1.5 ms at the most. There are many other tasks being handled, but at a lower priority &#40;-2 compared to the XHFC task&#41;.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

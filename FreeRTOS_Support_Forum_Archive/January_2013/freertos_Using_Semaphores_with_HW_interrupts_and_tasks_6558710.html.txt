@@ -1,0 +1,286 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Using Semaphores with HW interrupts and tasks - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2013/freertos_Using_Semaphores_with_HW_interrupts_and_tasks_6558710.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Using Semaphores with HW interrupts and tasks - FreeRTOS" />
+<meta property="og:description" content="Using Semaphores with HW interrupts and tasksPosted by groufosse on January 4, 2013Hi, After creating tasks and launching the scheduler, I am unable to get a normal &#040;regular&#041; function to execute after the timer-counter interrupt is complete. The function is to do interrupt post-processing on the data. Right now, I&#8217;m using a static global var &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2013/freertos_Using_Semaphores_with_HW_interrupts_and_tasks_6558710.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Using Semaphores with HW interrupts and tasksPosted by groufosse on January 4, 2013Hi, After creating tasks and launching the scheduler, I am unable to get a normal &#040;regular&#041; function to execute after the timer-counter interrupt is complete. The function is to do interrupt post-processing on the data. Right now, I&#8217;m using a static global var [&hellip;]" />
+<meta name="twitter:title" content="Using Semaphores with HW interrupts and tasks - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202216' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202216' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202216' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202216' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144666' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2013%2Ffreertos_Using_Semaphores_with_HW_interrupts_and_tasks_6558710.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2013%2Ffreertos_Using_Semaphores_with_HW_interrupts_and_tasks_6558710.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144666">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2013_freertos_support_forum_archive_index.html/">January 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groufosse">groufosse</a> on January 4, 2013</div><div class="thread-post-content">Hi,  
+After creating tasks and launching the scheduler, I am unable to get a normal &#40;regular&#41; function to execute after the timer-counter interrupt is complete. The function is to do interrupt post-processing on the data.<br />
+Right now, I&#8217;m using a static global var which is set on completion, and I have a task that checks every 50ms and if the flag is set, it will call&nbsp; the function. It doesn&#8217;t execute though, which seems is likely in this mode.<br />
+After reading the FreeRTOS guide, I&#8217;m thinking a semaphore is the right thing to use. However, I have been unable to find an example of using a semaphore with a HW interrupt in the task and scheduler based mode.   
+Can someone point me in the right direction?<br />
+Also, is it possible to run a regular function in the task environment as I am trying without it &#8220;timing&#8221; out in a task mode?  
+Thank you in advance.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 4, 2013</div><div class="thread-post-content"><blockquote>
+  I am unable to get a normal &#40;regular&#41; function to execute after the timer-counter interrupt is complete
+</blockquote>
+Is this a timer-counter interrupt you have configured yourself?&nbsp; Or the tick interrupt.  
+By regular function, do you mean just a C function that you want to be triggered by an interrupt?  
+<blockquote>
+  The function is to do interrupt post-processing on the data. 
+</blockquote>
+Ok, so it should execute after each interrupt.  
+<blockquote>
+  Right now, I&#8217;m using a static global var which is set on completion,
+</blockquote>
+Do you mean on completion of the interrupt?  
+<blockquote>
+  and I have a task that checks every 50ms and if the flag is set,
+</blockquote>
+So you have something like this?  
+<pre><code>for( ;; )
+{
+    if( flag is set )
+    {
+        Do something;
+        clear flag;
+    }
+    else
+    {
+        vTaskDelay( 50 / portTICK_RATE_MS )
+    }
+}
+</code></pre>
+<blockquote>
+  It doesn&#8217;t execute though, which seems is likely in this mode. 
+</blockquote>
+What doesn&#8217;t execute?&nbsp; The interrupt, or the &#8220;Do something&#8221; function in the above example?  
+Does the flag get set?&nbsp;<br />
+Does the interrupt execute?  
+<blockquote>
+  After reading the FreeRTOS guide, I&#8217;m thinking a semaphore is the right thing to use.
+</blockquote>
+Yes I would agree.&nbsp; That would be much more efficient.&nbsp; It does&#8217;t explain why the way you are doing it now is not working though.  
+Is the guide you have the FreeRTOS tutorial &#8220;Using the FreeRTOS Real Time Kernel&#8221;?&nbsp; If so, which edition do you have, I can highlight the bit that shows how to use the semaphore for this.  
+Which FreeRTOS port are you using?  
+<blockquote>
+  Also, is it possible to run a regular function in the task environment as I am trying without it &#8220;timing&#8221; out in a task mode?
+</blockquote>
+I&#8217;m not sure I understand your question there.&nbsp; Tasks are just C functions, and they call lots of other regular C functions &#40;the FreeRTOS API functions themselves are regular functions&#41;.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groufosse">groufosse</a> on January 4, 2013</div><div class="thread-post-content">My responses start with &#8220;&gt;&#8221;  
+&#8220;I am unable to get a normal &#40;regular&#41; function to execute after the timer-counter interrupt is complete&#8221;<br />
+Is this a timer-counter interrupt you have configured yourself?<br />
+&gt;Yes. I have configured timer&#95;counter 0 to do rising edge captures  
+Or the tick interrupt. By regular function, do you mean just a C function that you want to be triggered by an interrupt?<br />
+&gt;Correct. A function I need to process data immediately following the interrupt&#8217;s completion  
+So you have something like this?<br />
+&gt;Yes, the code is pretty much as you as you have pasted. Flag is static global.  
+What doesn&#8217;t execute? The interrupt, or the &#8220;Do something&#8221; function in the above example?<br />
+&gt;The function will not run. I&#8217;m not sure why it&#8217;s exiting, but it does so within a few milliseconds of entering the function. However, if I wrap the function with this:<br />
+portENTER&#95;CRITICAL&#40;&#41;;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp; myFunction&#40;&#41;;<br />
+&#125;  
+it runs to completion. This is what I meant by the statement. So I&#8217;m not 100% sure what is happening.  
+Does the flag get set? Does the interrupt execute?<br />
+&gt;Yes to both…as above   
+I am using the LPC17xx port &#40;Cortex-M3&#41; so the documents I have a for this device &#40;using an LPC1768&#41;  
+I&#8217;m not sure I understand your question there.<br />
+&gt;What I meant by timing out, is what is happening without the &#8220;portENTER&#95;CRITICAL&#8221; wrapped around it. It just appears to kind of time out and exit early. I&#8217;m not 100% sure that even though I execute my task check every 50ms, does that mean a function called within that task will execute to completion?   
+If you could point out the page from the manual on how to apply the semaphore that would be great. I see a queue would work too but not required here. I will use it on the ADC however.  
+Thanks so much for your detailed response.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 5, 2013</div><div class="thread-post-content">There are two things that need sorting out then:  
+1&#41; Working out why the &#8220;do something&#8221; does not run to its end, and<br />
+2&#41; Changing the method that triggers the &#8220;so something&#8221; function from the simple delay loop to using a semaphore from the interrupt.  
+Lets concentrate on &#40;1&#41; first because changing the way the function is triggered is not going to make any difference to the behaviour when the function is called.  
+Any function called from a task will run to completion.&nbsp; It might be that the task running the function is swapped in and out while it is running, but when a task is swapped back in it just continues running from the point at which it was swapped out so all the code&nbsp; is run sequentially.  
+Can you give more information about the function itself.  
+Does it have more than one return point?<br />
+Can you step through the function in the debugger to see what it is doing?<br />
+Does it make any use of FreeRTOS API functions?<br />
+Why would placing it in a critical section make any difference?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groufosse">groufosse</a> on January 8, 2013</div><div class="thread-post-content">Richard,<br />
+Responses to your questions here: &#8220;&gt;&#8221;  
+Does it have more than one return point?<br />
+&gt;No &#8211; just one at the end, no other exit.  
+Can you step through the function in the debugger to see what it is doing?<br />
+&gt; Yes. The debugger just seems to &#8220;stop&#8221; when it hits any code inside a loop &#40;see example below&#41;  
+Does it make any use of FreeRTOS API functions?<br />
+&gt;Not in the function that&#8217;s called. See below  
+Why would placing it in a critical section make any difference?<br />
+&gt; I am completely at a loss to explain this.  
+It&#8217;s important to note that this issue has nothing to do with using sprintf or the CMSIS &#95;DBG&#95; call. If I comment out all sprintf and DBG calls in my code it will still not run. The only thing that will make it run &#40; the real function or the &#8220;test&#8221; function below, is wrapping the call with portENTER&#95;CRITICAL&#40;&#41;  
+I have created a simple function to call from the task handler that might exemplify&nbsp; what is going on. There is a simple 2D array and function. If I run it as is, &#40;&#35;if 1&#41; it will print out this much of the string:&nbsp;   
+myArray  
+And that&#8217;s it. If I set the preprocessor directive to &#35;if 0, and un-comment the line that starts with &#8220;sprintf&#8221; above, it prints the line no problem. So it seems like it can print or process something simple, but as soon as a test condition or loop is incurred, it won&#8217;t run.  
+int myArray = &#123; &#123;12,23,33&#125;, &#123;21,44,32&#125;,&#123;18,15,76&#125;,&#123;89,65,11&#125;,&#123;41,19,98&#125;,&#123;75,47,53&#125; &#125;;  
+int dataReceiveProcess2&#40;void&#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp; char msgBuf;  
+&nbsp;&nbsp;&nbsp; //sprintf&#40;msgBuf, &#8220;myArray= %i&#8221;, 2,0, myArray&#41;; &#95;DBG&#95;&#40;msgBuf&#41;;  
+&#35;if 1<br />
+&nbsp;&nbsp;&nbsp; for&#40;int i = 0; i &lt;&nbsp; 7; i++&#41;<br />
+&nbsp;&nbsp;&nbsp; &#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sprintf&#40;msgBuf, &#8220;myArray= %i&#8221;, i,0, myArray_&#41;;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#95;DBG&#95;&#40;msgBuf&#41;;<br />
+&nbsp;&nbsp;&nbsp; &#125;<br />
+&#35;endif  
+&nbsp;&nbsp;&nbsp; return 0;<br />
+&#125;  
+Here&#8217;s the call from main:<br />
+static void prvReadCOMBufferTaskFunction&#40; void &#42;pvParameters &#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp; portTickType xLastCheckTime;<br />
+&nbsp; // Initialize xLast&#42;&#42;&#42;Times prior to the first call to vTaskDelayUntil&#40;&#41;<br />
+xLastCheckTime = xTaskGetTickCount&#40;&#41;;  
+for&#40;;;&#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vTaskDelayUntil&#40; &amp;xLastCheckTime, check&#95;COM&#95;SIGNAL&#95;RATE &#41;;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Check the flag to see if it&#8217;s set<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;TRUE == completeFlag&#41;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //a small interval for interrupt to complete<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vTaskDelay&#40; 50 / portTICK&#95;RATE&#95;MS &#41;;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //portENTER&#95;CRITICAL&#40;&#41;;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //&#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dataReceiveProcess2&#40;&#41;;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; completeFlag = FALSE;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //&#125;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;<br />
+&nbsp;&nbsp;&nbsp; &#125;<br />
+&#125;  
+_
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groufosse">groufosse</a> on January 8, 2013</div><div class="thread-post-content">Richard,  
+Sorry, the rest of the message is below &#8211; sent before completion.  
+Any help or thoughts on what might be happening would be appreciated. I&#8217;m using an LPC1768 controller, compiling on IAR EWARM 6.5, with a JTAG debugger.  
+Regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 9, 2013</div><div class="thread-post-content">That is very strange.&nbsp; I presume you have stack overflow checking on?&nbsp; Does it make a difference if you make the 150 byte buffer static, rather than having it on the stack?  
+If that does not make a different is it possible for you to send me the project?&nbsp; If so, please cut it down to its bare minimum, so it just has the code that demonstrates the problem and nothing else.&nbsp; Package it up including the IAR project files, check what you package up builds without any modification, and send it to the address from the &#8220;Contact&#8221; page on the FreeRTOS.org website.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groufosse">groufosse</a> on January 9, 2013</div><div class="thread-post-content">I will try making it static to see if that changes anything. And I will also try removing functions and code to see if I can get to a point where it will run. Barring that, I will send the project files to you.  
+Appreciate your help very much.  
+Kind regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groufosse">groufosse</a> on January 10, 2013</div><div class="thread-post-content">I thought it might be reasonable to try and discover what&#8217;s going on before using up more of your time.<br />
+After reading further in the manual regarding stack size, I kept increasing the &#8220;configMINIMAL&#95;STACK&#95;SIZE&#8221; until the function could run without the PORT&#95;CRITICAL wrapped around the call. That number ended up being 200 &#40;4 byte&#41; words.  
+Then, I applied the &#8220;uxTaskGetStackHighWaterMark&#8221; function just before the function was called. I also passed in the task handle to the called C function and ran the call there. before it&#8217;s called, the number was 168. In the function, it is 43. So instead of leaving the &#8220;configMINIMAL&#95;STACK&#95;SIZE&#8221; at 200, I switched it back to the default of 80, and instead did a local define of 200 bytes for this function that&#8217;s apparently a &#8220;stack hog. &#8221;  
+My questions are now:<br />
+For this device &#40;LPC1768&#41;, with 64K SRAM, is using this amount of stack space for a single function excessive?<br />
+What are the implications of this in terms of &#40;net&#41; available stack size to the running program?<br />
+Am I further ahead to create, then delete, a task for this function each time it&#8217;s required?<br />
+What elements in the called function causes the requirement for the stack size to increase?  
+Thanks a bunch for taking the time to answer my queries.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on January 10, 2013</div><div class="thread-post-content">Any variables you allocate inside the function will be placed on the stack, unless they are declared static. Declaring them static has the disadvantage that it makes the function non reentrant.  
+Does you function have something like a large buffer declared as an array variable in it?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Using Semaphores with HW interrupts and tasks</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/groufosse">groufosse</a> on January 11, 2013</div><div class="thread-post-content">By declaring the debug print buffer as static, outside the scope of the function, I have been able to get the stack size for the function to 160 words. This is a 20% margin better, but still double the MIN size. This function will only ever be called by one task, and as there are no static variables, it is fully re-entrant.   
+I&#8217;m still curious about this:  
+For this device &#40;LPC1768&#41;, with 64K SRAM, is using this amount of stack space for a single function excessive?<br />
+What are the implications of this in terms of &#40;net&#41; available stack size to the running program?<br />
+Am I further ahead to create, then delete, a task for this function each time it&#8217;s required?<br />
+What elements in the called function causes the requirement for the stack size to increase? &#40;in the case of the function in question, it only declares 2 variables; 1 counter of unsigned int and an array of 50 unsigned 32 bit ints, so I cannot imagine why it wants to consume more/higher stack space&#41;  
+Kind regards.  
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

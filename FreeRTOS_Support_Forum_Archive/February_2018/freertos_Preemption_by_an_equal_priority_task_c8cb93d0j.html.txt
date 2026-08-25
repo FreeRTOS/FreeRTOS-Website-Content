@@ -1,0 +1,301 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preemption by an equal priority task - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2018/freertos_Preemption_by_an_equal_priority_task_c8cb93d0j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Preemption by an equal priority task - FreeRTOS" />
+<meta property="og:description" content="Preemption by an equal priority taskPosted by marc7 on February 2, 2018Hello everyone, I&#8217;m using the following configuration: #define configUSE_PREEMPTION 1 #define configUSE_TIME_SLICING 0 With this configuration, and a system where all the tasks have the same priority, I was expecting that the scheduler would never trigger a context switch unless a task explicitely blocks &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2018/freertos_Preemption_by_an_equal_priority_task_c8cb93d0j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Preemption by an equal priority taskPosted by marc7 on February 2, 2018Hello everyone, I&#8217;m using the following configuration: #define configUSE_PREEMPTION 1 #define configUSE_TIME_SLICING 0 With this configuration, and a system where all the tasks have the same priority, I was expecting that the scheduler would never trigger a context switch unless a task explicitely blocks [&hellip;]" />
+<meta name="twitter:title" content="Preemption by an equal priority task - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202897' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202897' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202897' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202897' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146902' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2018%2Ffreertos_Preemption_by_an_equal_priority_task_c8cb93d0j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2018%2Ffreertos_Preemption_by_an_equal_priority_task_c8cb93d0j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146902">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2018_freertos_support_forum_archive_index.html/">February 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Preemption by an equal priority task</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/marc7">marc7</a> on February 2, 2018</div><div class="thread-post-content">Hello everyone,
+I&#8217;m using the following configuration:
+<pre><code>#define configUSE_PREEMPTION    1
+#define configUSE_TIME_SLICING  0
+</code></pre>
+With this configuration, and a system where all the tasks have the same priority, I was expecting that the scheduler would never trigger a context switch unless a task explicitely blocks itself. But this is not what I am observing. By digging into the code, I found that the &#8220;xTaskIncrementTick&#8221; function, which is called by the Tick interrupt handler, was triggering a context switch when a delayed task of higher or equal priority was unblocked. Below is a copy of the involved code in tasks.c:
+<pre><code>                /* A task being unblocked cannot cause an immediate
+                context switch if preemption is turned off. */
+                #if (  configUSE_PREEMPTION == 1 )
+                {
+                    /* Preemption is on, but a context switch should
+                    only be performed if the unblocked task has a
+                    priority that is equal to or higher than the
+                    currently executing task. */
+                    if( pxTCB-&gt;uxPriority &gt;= pxCurrentTCB-&gt;uxPriority )
+                    {
+                        xSwitchRequired = pdTRUE;
+                    }
+                    else
+                    {
+                        mtCOVERAGE_TEST_MARKER();
+                    }
+                }
+                #endif /* configUSE_PREEMPTION */
+</code></pre>
+Please note that giving a semaphore from an interrupt service routine might unblock a waiting task but will never preempt the current task if the unblocked task has equal priority. 
+his confuses me and I&#8217;m wondering what the really expected behavior is. Should a task be able to preempt another task of equal priority?
+Thank you in advance for your answer.
+Marc
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 2, 2018</div><div class="thread-post-content"><blockquote>
+  <h1>define configUSE_PREEMPTION    1</h1>
+</blockquote>
+With this setting you have left preemption turned on.  That means the 
+scheduler will always run the highest priority task that is able to run. 
+  So if a delayed task becomes able to run (its delay period expires), 
+and if that delayed task has a priority above the currently executing 
+task, then it will get selected to run &#8211; which is what you are observing.
+<blockquote>
+  <h1>define configUSE<em>TIME</em>SLICING  0</h1>
+</blockquote>
+With this setting you have turned time slicing off.  If time slicing 
+were on then tasks of equal priority that are ready to run will share 
+CPU time by being switched in and out on each tick interrupt &#8211; the tick 
+period being the length of the time slice.  That won&#8217;t happen if time 
+slicing is turn off &#8211; but that does not effect any other scheduling 
+decisions.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/marc7">marc7</a> on February 2, 2018</div><div class="thread-post-content">Hi Richard,
+Thank you for replying.
+Actually, my concern is that I observe that my task is preempted by another task of <strong>equal</strong> priority. I agree that it can be preempted when another task of higher priority becomes ready, but not another task of equal priority&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 2, 2018</div><div class="thread-post-content">The only thing you have turned off is time slicing.  That means tasks of 
+equal priority that are already in the ready state won&#8217;t time slice.  No 
+other scheduling decisions are effected.  In this case you have a task 
+entering the ready state, so it is not effected by the time slicing setting.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alemannia">alemannia</a> on February 5, 2018</div><div class="thread-post-content">Hi Richard,
+Let&#8217;s put time slicing apart because that&#8217;s not something we want to use. The actual question is about scheduling policy in preemptive mode. Imagine we have 2 tasks with the same priority. Task A is running a lengthy computation and task B is sleeping. When the sleep time of task B expires, it seems that it will wake up and then preempt taks A. That&#8217;s what we deduce from the equal sign in the following condition 
+if( pxTCB->uxPriority ><strong>=</strong> pxCurrentTCB->uxPriority )
+In our previous kernel (VDK) only taks with higher priority could preempt tasks with lower priority, like this:
+if( pxTCB->uxPriority > pxCurrentTCB->uxPriority )
+Tasks with equal priority did not preempt the currently running task.
+Do I understand FreeRTOS preemption policy correctly or did I miss somting?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/huska6">huska6</a> on February 5, 2018</div><div class="thread-post-content">Hi Richard,
+we have seen recently the same behavior. 
+in the history https://www.freertos.org/History.txt
+there is 
+Changes between V7.6.0 and V8.0.0 released 19th Feb 2014
+<pre><code>http://www.freertos.org/upgrading-to-FreeRTOS-V8.html
+Other updates:
++ Previously, when a task left the Blocked state, a context switch was
+  performed if the priority of the unblocked task was greater than or equal
+  to the priority of the Running task.  Now a context switch is only
+  performed if the priority of the unblocked task is greater than the
+  priority of the Running task.
+</code></pre>
+But this seems to be not true, because also the equally prioritized tasks can preempt others at timeouts. 
+Could you pelase clarify teh behavior?
+Thanks 
+Regards
+Jiri
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 5, 2018</div><div class="thread-post-content">Yes &#8211; I remember that change.  I will have to check through the source 
+and release history to see what the situation is.  It might be that 
+change effects context switches in places other than the tick interrupt 
+(for example, when a queue or semaphore causes a task to unblock) and 
+that the case in the tick interrupt was never updated.  In any case I 
+will report back.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 7, 2018</div><div class="thread-post-content">Quick update on this:
+Looking at the code for current version the tick interrupt is not the 
+only place where a context switch occurs if the priority is greater than 
+or equal to &#8211; it seems to be the norm.  Looks like the change was 
+reverted at some point and now the tests rely on it.  I&#8217;m sat on a plane 
+at the moment and can&#8217;t check the other versions from here, but will do 
+when I&#8217;m able.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alemannia">alemannia</a> on February 9, 2018</div><div class="thread-post-content">Hi Richard,
+Thanks for the information so far. It would be really interesting to know the motivation for reverting the scheduling policy back to &#8220;greater than or equal&#8221; instead of &#8220;greater than&#8221;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/huska6">huska6</a> on February 16, 2018</div><div class="thread-post-content">Hi Richard, 
+thank you fro addressing this issue.
+could you please update us on this topic?
+Thanks,
+BR, Jiri
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/marc7">marc7</a> on March 6, 2018</div><div class="thread-post-content">Hi Richard,
+Any news about this topic?
+Thanks!
+Marc
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 6, 2018</div><div class="thread-post-content">The change history says the change was made between V7.6.0 and V8.0.0, 
+so they are the two files I&#8217;m comparing, and it looks like the only 
+place the code was changes was in regards to when a context switch is 
+performed is in xTaskRemoveFromEventList() &#8211; and that change remains in 
+V10.0.1, so it wasn&#8217;t reverted.  In which case the change history is 
+misleading.
+xTaskRemoveFromEventList() is called when an event occurs on an object 
+(queue, semaphore, event group, mutex, etc.) that has a task blocked 
+waiting for the event.  In V7.6.0 a context switch will occur if the 
+task that was waiting for the event has a priority greater than or equal 
+to the task that is currently running, whereas in V8.0.0 a context 
+switch will only occur if the task that was waiting for the event has a 
+priority higher than the currently executing task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/marc7">marc7</a> on March 23, 2018</div><div class="thread-post-content">Hi Richard,
+Thank you for looking at the change history.
+So what I understand is that xTaskRemoveFromEventList() has been changed not to do a context switch when the task that was waiting for the event has the same priority as the task that is currently running. Am I right?
+In this case, why don&#8217;t we do the same change in the xTaskIncrementTick() function, which precisely sometimes do a context switch to execute a task that has the same priority as the currently running task? Wouldn&#8217;t it be more consistent?
+Thanks!
+Marc
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/huska6">huska6</a> on March 23, 2018</div><div class="thread-post-content">Hi Marc, Richard,
+I totally agree with Marc &#8211; if one principle is applied, it should be applied everywhere.
+Thanks for considering this idea.
+BR, Jiri
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 23, 2018</div><div class="thread-post-content">Changing tasks on the tick to another one of equal priority should be control by the time-slicing option, as that is specifically what time slicing is. If the tick interrupt changes to a task of the same priority when time slicing is off, that would sound like a bug. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 23, 2018</div><div class="thread-post-content"><blockquote>
+  So what I understand is that xTaskRemoveFromEventList() has been changed 
+  not to do a context switch when the task that was waiting for the event 
+  has the same priority as the task that is currently running. Am I right?
+</blockquote>
+Looking back, this was done to prevent thrashing back and forth in cases 
+where, for example, two tasks are using a mutex in a tight loop (not a 
+good thing to do in any case) &#8211; it was very wasteful of CPU time.
+<blockquote>
+  In this case, why don&#8217;t we do the same change in the 
+  xTaskIncrementTick() function, which precisely sometimes do a context 
+  switch to execute a task that has the same priority as the currently 
+  running task? Wouldn&#8217;t it be more consistent?
+</blockquote>
+[I think as already pointed out] incrementing a tick is a different 
+scenario to unblocking a task due to an event (queue write, etc.) &#8211; it 
+can only happen on a time slice boundary.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/huska6">huska6</a> on March 26, 2018</div><div class="thread-post-content">Hi All,
+<blockquote>
+   If the tick interrupt changes to a task of the same priority when time slicing is off, that would sound like a bug.
+</blockquote>
+I beleive this is the case we discuss about
+BR jiri
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 26, 2018</div><div class="thread-post-content">Inside the tick interrupt, if a task is removed from the blocked list, 
+and that task has the same priority as the currently running task, and 
+configUSE_PREEMPTION is 1, then a switch to the unblocked task will 
+occur.  This task switch is not performed because of a time slice, but 
+because of pre-emption (as per the discussion in this thread about 
+whether this was change to &#8220;greater than&#8221; or &#8220;greater than or equal to&#8221; 
+the currently executing task).  See line 2684 (at the time of writing): 
+https://sourceforge.net/p/freertos/code/HEAD/tree/trunk/FreeRTOS/Source/tasks.c
+Inside the tick interrupt, regardless of which task is executing, if 
+there is another task at the same priority as the currently executing 
+task, and configUSE<em>PREEMPTION and configUSE</em>TIME<em>SLICING are both 1, 
+then a context switch is performed &#8211; this is the switch caused by having 
+configUSE</em>TIME<em>SLICING set to 1 &#8211; if configUSE</em>TIME_SLICING is set to 0 
+then a new task will not be selected just because there are other tasks 
+at the same priority as the running task.  See line 2707 (at the time of 
+writing) on the same link.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/christophe-p">christophe-p</a> on March 6, 2019</div><div class="thread-post-content">Sorry to come back to this thread but I don&#8217;t understand the conclusion and I have the same question.
+When I read the comment and the code of the line 2684 (2755 in the last version 10.2.0), it is indicated that it could be  a switch context with an other task of the same priority although the configUSE<em>TIME</em>SLICING is not enabled. Is it right ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Preemption by an equal priority task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 13, 2019</div><div class="thread-post-content">[sorry for delayed reply &#8211; due to this going into arbitration for some
+reason &#8211; never worked out why that happens as I have that feature turned
+off]
+Not read through the whole thread again, just this post, and line
+numbers refer to V10.2.0.
+There is a difference between a context switch occurring because a task
+is unblocked (lines 2755 to 2770) and a context switch occurring simply
+because a task has come to the end of its timeslice and there are other
+tasks of equal priority (lines 2778 to 2789).  As the code is the first
+will happen regardless of whether time slicing is on or off, the second
+won&#8217;t.
+There is a question as to whether line 2761 (if( pxTCB->uxPriority >=
+pxCurrentTCB->uxPriority )) should instead use > rather than >= but it
+could be argued either way I think.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

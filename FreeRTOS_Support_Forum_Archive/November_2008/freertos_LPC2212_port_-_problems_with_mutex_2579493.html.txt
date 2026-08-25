@@ -1,0 +1,392 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LPC2212 port - problems with mutex - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2008/freertos_LPC2212_port_-_problems_with_mutex_2579493.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="LPC2212 port - problems with mutex - FreeRTOS" />
+<meta property="og:description" content="LPC2212 port &#8211; problems with mutexPosted by verretj on November 19, 2008Hello, I have ported FreeRTOS on LPC2212 and now I am currently testing the mutex functionnality of FreeRTOS. So&nbsp; I simply created two tasks and a mutex. Each Task writes either 1 or 2 in a common buffer which is the shared resource guarded &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2008/freertos_LPC2212_port_-_problems_with_mutex_2579493.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="LPC2212 port &#8211; problems with mutexPosted by verretj on November 19, 2008Hello, I have ported FreeRTOS on LPC2212 and now I am currently testing the mutex functionnality of FreeRTOS. So&nbsp; I simply created two tasks and a mutex. Each Task writes either 1 or 2 in a common buffer which is the shared resource guarded [&hellip;]" />
+<meta name="twitter:title" content="LPC2212 port - problems with mutex - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201680' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201680' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201680' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201680' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139975' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2008%2Ffreertos_LPC2212_port_-_problems_with_mutex_2579493.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2008%2Ffreertos_LPC2212_port_-_problems_with_mutex_2579493.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139975">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2008_freertos_support_forum_archive_index.html/">November 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">LPC2212 port &#8211; problems with mutex</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/verretj">verretj</a> on November 19, 2008</div><div class="thread-post-content">Hello,
+I have ported FreeRTOS on LPC2212 and now I am currently testing the mutex functionnality of FreeRTOS.
+So&nbsp; I simply created two tasks and a mutex. Each Task writes either 1 or 2 in a common buffer which is the shared resource guarded by the mutex. When I try to run it I get a data abort error, does anyone have an idea about this ?
+I have checked that the creation of both task and of the mutex goes well and that heap and stack is sufficient &#40;I do not return from vTaskStartScheduler and highwatermarks are different from zero&#41;
+I have also checked configuration 
+&#35;define configQUEUE&#95;REGISTRY&#95;SIZE&nbsp;&nbsp;&nbsp; 5
+&#35;define configUSE&#95;MUTEXES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+The problem is related to the mutex since without it I have got no problems.
+But&nbsp; I cannot see what I have done wrong.
+void Task1 &#40;void &#42; pvParameters&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; int ret;
+&nbsp;&nbsp;&nbsp; unsigned portBASE&#95;TYPE uxHighWaterMark1;
+&nbsp;&nbsp;&nbsp; /&#42; Inspect our own high water mark on entering the task. &#42;/
+&nbsp;&nbsp;&nbsp; uxHighWaterMark1 = uxTaskGetStackHighWaterMark&#40; NULL &#41;;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; for&#40; ;; &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;attendre mutex et le prendre dès qu&#8217;il est disponible&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret = xSemaphoreTake&#40; mutex, portMAX&#95;DELAY &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40;ret == pdFALSE&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;ecrire 1 dans le buffer&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;buffer non plein&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40; i &lt; SIZE&#95;BUF-1 &#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buf&#91;i&#93; = 1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i++;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buf&#91;i&#93; = 1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i++;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Inspect our own high water mark on entering the task. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uxHighWaterMark1 = uxTaskGetStackHighWaterMark&#40; NULL &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;liberer&nbsp; mutex&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret = xSemaphoreGive&#40; mutex &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40;ret == pdFALSE&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;Erreur lors de la liberation du mutex&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; 
+&#125;
+&#8230;..
+int main&#40;int argc, char &#42;argv&#91;&#93;&#41; 
+&#123;
+&nbsp;&nbsp;&nbsp; int ret = -1;
+&nbsp;&nbsp;&nbsp; unsigned int Value =0;
+&nbsp;&nbsp;&nbsp; xTaskHandle xHandle1;
+&nbsp;&nbsp;&nbsp; xTaskHandle xHandle2;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42; Configure la PLL &#42;/
+&nbsp;&nbsp;&nbsp; PLL&#95;Config&#40;&#41;;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42;initialisation buffer et mutex &#42;/
+&nbsp;&nbsp;&nbsp; i = 0;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42;Creation du semaphore&#42;/
+&nbsp;&nbsp;&nbsp; mutex = xSemaphoreCreateMutex &#40;&#41;;
+&nbsp;&nbsp;&nbsp; if&#40; mutex == NULL &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;Erreur lors de la creation du mutex&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return -1;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42;cree les taches &#42;/
+&nbsp;&nbsp;&nbsp; ret = xTaskCreate&#40; Task1, &quot;TASK1&quot;, configMINIMAL&#95;STACK&#95;SIZE, NULL, tskIDLE&#95;PRIORITY + 1, &amp;xHandle1 &#41;;
+&nbsp;&nbsp;&nbsp; if&#40;ret&#33;= pdPASS&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return -1;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; ret = -1;
+&nbsp;&nbsp;&nbsp; ret = xTaskCreate&#40; Task2, &quot;TASK2&quot;, configMINIMAL&#95;STACK&#95;SIZE, NULL, tskIDLE&#95;PRIORITY + 2, &amp;xHandle2 &#41;;
+&nbsp;&nbsp;&nbsp; if&#40;ret&#33;= pdPASS&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return -1;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42;demarre le scheduler&#42;/
+&nbsp;&nbsp;&nbsp; vTaskStartScheduler&#40;&#41;;
+&nbsp;&nbsp;&nbsp; return 0;&nbsp;&nbsp; 
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">LPC2212 port &#8211; problems with mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on November 19, 2008</div><div class="thread-post-content">I cannot see anything wrong. Did you try running the tasks defined in FreeRTOSdemocommonminimalgenqtest.c? They use a mutex.
+What changes did you have to make to port the code to the LPC2212? Where did you get the startup code from?
+</div></div><div class="thread-post"><h3 class="thread-post-title">LPC2212 port &#8211; problems with mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/verretj">verretj</a> on November 19, 2008</div><div class="thread-post-content">I use my own startup code, and made several modifications so thait I start in supervisor mode and the swi branch to vPortYieldProcessor.
+I am going to compare it to the one from LPC2209 and see if anything misses. Here is my startup code if you have the courage to go through it.
+/&#42; Standard definitions of Mode bits and Interrupt &#40;I &amp; F&#41; flags in PSRs &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; Mode&#95;USR,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x10
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; Mode&#95;FIQ,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x11
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; Mode&#95;IRQ,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x12
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; Mode&#95;SVC,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x13
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; Mode&#95;ABT,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x17
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; Mode&#95;UND,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x1B
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; Mode&#95;SYS,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x1F&nbsp;&nbsp;&nbsp; /&#42; only available on ARM Arch &gt;= v4 &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; I&#95;Bit,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x80&nbsp;&nbsp;&nbsp; /&#42; when I bit is set, IRQ is disabled &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; F&#95;Bit,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x40&nbsp;&nbsp;&nbsp; /&#42; when F bit is set, FIQ is disabled &#42;/
+/&#42; &#8212; Stack Sizes &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211; &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; Top&#95;Stack,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x40004000
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; UND&#95;Stack&#95;Size, 0x00000004
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; ABT&#95;Stack&#95;Size, 0x00000004
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; FIQ&#95;Stack&#95;Size, 0x00000004
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; IRQ&#95;Stack&#95;Size, 0x00000400
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; USR&#95;Stack&#95;Size, 0x00000004
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; SYS&#95;Stack&#95;Size, 0x00000004
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; SVC&#95;Stack&#95;Size, 0x00000400
+/&#42; &#8212; Peripheral&#8217;s registers &#8212;&#8212;&#8212;&#8212; &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; VICIntEnClr,&nbsp;&nbsp;&nbsp; 0xFFFFF014
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .equ&nbsp;&nbsp;&nbsp; VICVectAddr,&nbsp;&nbsp;&nbsp; 0xFFFFF030
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .text
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .arm
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .global &#95;start
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .global cksum&#95;size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; at 0x00000040 &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .global cksum&#95;expected&nbsp; /&#42; at 0x00000044 &#42;/
+&#95;start:
+/&#42; Exception Vectors &#40;mapped to address 0&#41; &#42;/
+Vectors:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, Reset&#95;Addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, Undef&#95;Addr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, SWI&#95;Addr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, PAbt&#95;Addr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, DAbt&#95;Addr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .word&nbsp;&nbsp; 0xB9205F80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Program signature &#40;LPC21xx&#41; &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, &#91;PC, &#35;-0x0FF0&#93;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Vector from VicVectAddr reg &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; PC, FIQ&#95;Addr
+Reset&#95;Addr:&nbsp;&nbsp;&nbsp;&nbsp; .word&nbsp;&nbsp; Reset&#95;Handler
+Undef&#95;Addr:&nbsp;&nbsp;&nbsp;&nbsp; .word&nbsp;&nbsp; Undef&#95;Handler
+SWI&#95;Addr:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .word&nbsp;&nbsp; SWI&#95;Handler
+PAbt&#95;Addr:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .word&nbsp;&nbsp; PAbt&#95;Handler
+DAbt&#95;Addr:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .word&nbsp;&nbsp; DAbt&#95;Handler
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .word&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; not used &#42;/
+IRQ&#95;Addr:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .word&nbsp;&nbsp; IRQ&#95;Handler&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; not used &#42;/
+FIQ&#95;Addr:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .word&nbsp;&nbsp; FIQ&#95;Handler
+cksum&#95;size:&nbsp;&nbsp;&nbsp;&nbsp; .word&nbsp;&nbsp; 0xDEADBEEF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; needed for S04&#95;01A&#95;cksum&#95;maker.exe &#42;/
+cksum&#95;expected: .word&nbsp;&nbsp; 0xCAFEFACE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; and S04&#95;01A firmware for test &#35;1&nbsp;&nbsp; &#42;/
+/&#42; Dummy handlers &#42;/
+Undef&#95;Handler:&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Undef&#95;Handler
+SWI&#95;Handler:&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vPortYieldProcessor
+PAbt&#95;Handler:&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PAbt&#95;Handler
+DAbt&#95;Handler:&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DAbt&#95;Handler
+IRQ&#95;Handler:&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IRQ&#95;Handler&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; not used &#42;/
+FIQ&#95;Handler:&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FIQ&#95;Handler
+Reset&#95;Handler:&nbsp; 
+/&#42; &#8212; First initialize the VIC &#40;Vectored Interrupt Controller&#41; &#8212;&#8212;&#8212;&#8211; &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R0, =VICIntEnClr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; R1, &#35;0xFFFFFFFF
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STR&nbsp;&nbsp;&nbsp;&nbsp; R1, &#91;R0&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R0, =VICVectAddr
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; R1, &#35;0xFF
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STR&nbsp;&nbsp;&nbsp;&nbsp; R1, &#91;R0&#93;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+/&#42; &#8212; Setup Stack for each mode &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211; &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R0, =Top&#95;Stack
+/&#42; Enter Undefined instruction mode and set up the UND stack pointer &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;UND | I&#95;Bit | F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;UND&#95;Stack&#95;Size
+/&#42; Enter ABT mode and set up the ABT stack pointer &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;ABT | I&#95;Bit | F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;ABT&#95;Stack&#95;Size
+/&#42; Enter FIQ mode and set up the FIQ stack pointer &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;FIQ | I&#95;Bit | F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;FIQ&#95;Stack&#95;Size
+/&#42; Enter IRQ mode and set up the IRQ stack pointer &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;IRQ | I&#95;Bit | F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;IRQ&#95;Stack&#95;Size
+/&#42; Enter SYS mode and set up the SYS stack pointer &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;SYS | I&#95;Bit | F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;SYS&#95;Stack&#95;Size
+/&#42; Enter SVC mode and set up the SVC stack pointer &#40;we stay in SVC mode with interrupts enabled&#41; &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;SVC | I&#95;Bit | F&#95;Bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;SVC&#95;Stack&#95;Size
+/&#42; Enter User mode then set up its stack &#42;/
+/&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;USR
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; SP, R0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;USR&#95;Stack&#95;Size
+&#35; Setup a default Stack Limit &#40;when compiled with &quot;-mapcs-stack-check&quot;&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; SL, SP, &#35;USR&#95;Stack&#95;Size&#42;/
+/&#42; Start in supervisor mode&#40;needed by Free RTOS&#41; &#42;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp; CPSR&#95;c, &#35;Mode&#95;SVC|I&#95;Bit|F&#95;Bit&#42;/
+&#35; &#8212; Relocate .data section &#40;copy from ROM to RAM&#41; &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R1, =&#95;etext
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R2, =&#95;data
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R3, =&#95;edata
+Loop&#95;Rel:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CMP&nbsp;&nbsp;&nbsp;&nbsp; R2, R3
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDRLO&nbsp;&nbsp; R0, &#91;R1&#93;, &#35;4
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STRLO&nbsp;&nbsp; R0, &#91;R2&#93;, &#35;4
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BLO&nbsp;&nbsp;&nbsp;&nbsp; Loop&#95;Rel
+&#35; &#8212; Clear .bss section &#40;Zero Init&#41; &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; R0, &#35;0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R1, =&#95;&#95;bss&#95;start&#95;&#95;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R2, =&#95;&#95;bss&#95;end&#95;&#95;
+Loop&#95;ZI:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CMP&nbsp;&nbsp;&nbsp;&nbsp; R1, R2
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STRLO&nbsp;&nbsp; R0, &#91;R1&#93;, &#35;4
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BLO&nbsp;&nbsp;&nbsp;&nbsp; Loop&#95;ZI
+&#35; &#8212; Enter C code &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; main
+main&#95;exited:&nbsp;&nbsp;&nbsp; B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; main&#95;exited
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .end
+</div></div><div class="thread-post"><h3 class="thread-post-title">LPC2212 port &#8211; problems with mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/verretj">verretj</a> on November 19, 2008</div><div class="thread-post-content">I mean i am going to compare with LPC2106 port &#40;LPC2209 port doesn exist &#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">LPC2212 port &#8211; problems with mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on November 19, 2008</div><div class="thread-post-content">That looks fine too. You are vectoring directly to the interrupt source, which is how the LPC2106 demo does it.
+Which debugger are you using? It would be good to step through the code to find exactly where it goes wrong.
+</div></div><div class="thread-post"><h3 class="thread-post-title">LPC2212 port &#8211; problems with mutex</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/verretj">verretj</a> on November 19, 2008</div><div class="thread-post-content">I inspired myself, from the genqtest.c and changed my code so that mutex is passed as parameter when tasks are created in main &#40;before I had set up the mutex as a global variable so i thought maybe this could cause problems&#41; . I debug with openice 
+Now, when i step trough the first task I encounter no problems mutex is transmitted, taken and released without signaling any error, and the guarded data is written correctly.
+But when i step through the second i dont get the mutex and so get blocked when trying to take it.
+It&#8217;s like the mutex had not been released still ther is no error signaled until i get into data abort handler.
+I do not understand what happens. Here is my code task 1 is same as task2 but without delay.
+void Task2&#40;void &#42; pvParameters&#41;
+&#123;
+&#8230;
+&nbsp;&nbsp;&nbsp; /&#42;recuperation du mutex&#42;/
+&nbsp;&nbsp;&nbsp; xSemaphoreHandle mutex = &#40; xSemaphoreHandle &#41; pvParameters;
+&nbsp;&nbsp;&nbsp; for&#40; ;; &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret = xSemaphoreTake&#40; mutex, portMAX&#95;DELAY &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40;ret == pdFALSE&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&#8230;&#8230;.
+&nbsp;&nbsp;&nbsp;&nbsp; /&#42;liberer&nbsp; mutex&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret = xSemaphoreGive&#40; mutex &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if &#40;ret == pdFALSE&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;Erreur lors de la liberation du mutex&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;tempo 100ms &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vTaskDelay&#40; xDelay &#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+int main&#40;int argc, char &#42;argv&#91;&#93;&#41; 
+&#123;
+&nbsp;&nbsp;&nbsp; &#8230;&#8230;
+&nbsp;&nbsp;&nbsp; mutex = NULL;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42;Creation du semaphore&#42;/
+&nbsp;&nbsp;&nbsp; mutex = xSemaphoreCreateMutex &#40;&#41;;
+&nbsp;&nbsp;&nbsp; if&#40; mutex == NULL &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;Erreur lors de la creation du mutex&#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return -1;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42;cree les taches &#42;/
+&nbsp;&nbsp;&nbsp; ret = xTaskCreate&#40; Task1, &quot;TASK1&quot;, configMINIMAL&#95;STACK&#95;SIZE, &#40;void &#42;&#41;mutex, tskIDLE&#95;PRIORITY + 1, &amp;xHandle1 &#41;;
+&nbsp;&nbsp;&nbsp; if&#40;ret&#33;= pdPASS&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return -1;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; ret = -1;
+&nbsp;&nbsp;&nbsp; ret = xTaskCreate&#40; Task2, &quot;TASK2&quot;, 2&#42;configMINIMAL&#95;STACK&#95;SIZE,&#40;void &#42;&#41; mutex, tskIDLE&#95;PRIORITY + 2, &amp;xHandle2 &#41;;
+&nbsp;&nbsp;&nbsp; if&#40;ret&#33;= pdPASS&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return -1;
+&nbsp;&nbsp;&nbsp; &#125;
+..
+&#125;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

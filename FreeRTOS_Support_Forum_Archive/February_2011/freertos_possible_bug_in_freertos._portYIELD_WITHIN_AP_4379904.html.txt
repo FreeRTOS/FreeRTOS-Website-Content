@@ -1,0 +1,309 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>possible bug in freertos. portYIELD_WITHIN_AP - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2011/freertos_possible_bug_in_freertos._portYIELD_WITHIN_AP_4379904.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="possible bug in freertos. portYIELD_WITHIN_AP - FreeRTOS" />
+<meta property="og:description" content="possible bug in freertos. portYIELD_WITHIN_APPosted by siriasis on February 22, 2011I think I have found a source of potential obscure and not frequent bugs in the task and queue API calls. In a few places of code in functions xTaskResumeAll, xQueueGenericReceive and xQueueGenericSend, portYILED&#095;WITHIN&#095;API macro is called before exitCRITICAL&#095;SECTION is called. The subsequent macro is &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2011/freertos_possible_bug_in_freertos._portYIELD_WITHIN_AP_4379904.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="possible bug in freertos. portYIELD_WITHIN_APPosted by siriasis on February 22, 2011I think I have found a source of potential obscure and not frequent bugs in the task and queue API calls. In a few places of code in functions xTaskResumeAll, xQueueGenericReceive and xQueueGenericSend, portYILED&#095;WITHIN&#095;API macro is called before exitCRITICAL&#095;SECTION is called. The subsequent macro is [&hellip;]" />
+<meta name="twitter:title" content="possible bug in freertos. portYIELD_WITHIN_AP - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201969' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201969' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201969' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201969' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140037' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2011%2Ffreertos_possible_bug_in_freertos._portYIELD_WITHIN_AP_4379904.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2011%2Ffreertos_possible_bug_in_freertos._portYIELD_WITHIN_AP_4379904.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140037">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2011_freertos_support_forum_archive_index.html/">February 2011 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/siriasis">siriasis</a> on February 22, 2011</div><div class="thread-post-content">I think I have found a source of potential obscure and not frequent bugs in the task and queue API calls.   
+In a few places of code in functions xTaskResumeAll, xQueueGenericReceive and xQueueGenericSend, portYILED&#95;WITHIN&#95;API macro is called before exitCRITICAL&#95;SECTION is called. The subsequent macro is called only after portYILED&#95;WITHIN&#95;API is executed.   
+There is an example of one possible scenario to reveal what may happen.  
+Suppose, application has created 3 independent tasks- task1, task2, and task3 and two binary semaphores m2 for IPC between task1 and task2, and m3 for IPC between task2 and task3. Lets list the priorities in the ascending order:<br />
+task1 &#8211; 1<br />
+task2 -2<br />
+task3 -3<br />
+The scheduler is started. Both semaphores are taken during initialization.<br />
+Task1 is running. Task 2 is blocked on m2 and task 3 is blocked on m3&#40;waiting when semaphore will be given&#41;.<br />
+Suddenly task1code invokes xSemaphoreGive that is covered by xQueueGenericSend. Inside xQueueGenericSend function current task1 enters critical section&#40;macro taskENTER&#95;CRITICAL&#41;. <br />
+In a vast majority of existed ports for FREERTOS increment nesting counter is provided to keep track of how many times portENTER&#95;CRITICAL was called. It increments every time program comes across with portENTER&#95;CRITICAL and decrements on every portEXIT&#95;CRITICAL. Now the nesting counter is incremented.  
+Then task copies data to the queue &#40;lines 465-468, file queue.c&#41; and finally checks whether any task is blocked waiting for a data on this queue&#40;lines 472-473 file queue.c&#41;. According to a given scenario&nbsp; precondition task2 is blocked currently on the m1. Since task1 gives mutex and task 2 is higher priority task, then task1 will call portYIELD&#95;WITHIN&#95;API macro&#40;line 480&#41;. This macro will consequently perform a context switch.  
+Now task1 is inside critical section and tick interrupts are disabled.<br />
+Lets assume that on the next step task2 does a few things like sending some information via uart for argument&#8217;s sake. And after that, within 1 ms period, it gives mutex- m3 and task3 is waiting for it.<br />
+Now task2 invokes&nbsp; xQueueGenericSend where the first thing it does – it&nbsp; enters critical section and nesting counter for a crittical section is incremented again, finally its value is 2.&nbsp; Then it checks whether any tasks are already waiting for this mutex. According to our scenario task3 is waiting.&nbsp; Now task3 is gonna be run, where tick interrupts are enabled.   
+Lets assume at some point context switch inside tick interrupt handler will point to a task1.<br />
+Now the task1 is at the point where portYIELD&#95;WITHIN&#95;API was called. The next instruction is portEXIT&#95;CRITICAL. Most realizations of this macro&#40;for a vast majority of existing ports&#41; rely on &#8220;increment nesting counter&#8221; by comparison it with 0, and if its value is 0, then tick interrupt is enabled again, otherwise only a nesting counter is decremented. In our scenario nesting counter currently holds 2. So task1 will decrement nesting counter by one and return with the state when tick interrupts are disabled. Normally it should be in the state when tick interrupts are enabled, but now it is not &#33;&#33;&#33;&#33;&#33;.   
+It is not normal?. Am I correct.   
+I suppose that portYIELD&#95;WITHIN&#95;API &#40;line 480 queue.c&#41; must be preceded with taskEXIT&#95;CRITICAL if taskENTER&#95;CRITICAL was called above. And taskEXIT&#95;CRITICAL that is called below should be excluded from the code. See example below. The same thing may be done in function xTaskResumeAll&#40;file tasks.c&#41; and function xQueueGenericReceive&#40;file queue.c&#41;.  
+If my assumptions are not correct, please provide your feedback. Thank you for you attention in this matter.
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/siriasis">siriasis</a> on February 22, 2011</div><div class="thread-post-content">Sorry guys, I have to correct following<br />
+Instead of :  
+I suppose that portYIELD&#95;WITHIN&#95;API &#40;line 480 queue.c&#41; must be preceded with taskEXIT&#95;CRITICAL if taskENTER&#95;CRITICAL was called above. And taskEXIT&#95;CRITICAL that is called below should be excluded from the code. See example below. The same thing may be done in function xTaskResumeAll&#40;file tasks.c&#41; and function xQueueGenericReceive&#40;file queue.c&#41;.   
+signed portBASE&#95;TYPE xQueueGenericSend&#40; xQueueHandle pxQueue, const void &#42; const pvItemToQueue, portTickType xTicksToWait, portBASE&#95;TYPE xCopyPosition &#41;<br />
+&#123;<br />
+signed portBASE&#95;TYPE xEntryTimeSet = pdFALSE;<br />
+xTimeOutType xTimeOut;<br />
+portBASE&#95;TYPE enterCriticalCall=0;  
+/&#42; This function relaxes the coding standard somewhat to allow return<br />
+statements within the function itself.&nbsp; This is done in the interest<br />
+of execution time efficiency. &#42;/<br />
+for&#40; ;; &#41;<br />
+&#123;<br />
+taskENTER&#95;CRITICAL&#40;&#41;;<br />
+&#123;<br />
+/&#42; Is there room on the queue now?&nbsp; To be running we must be<br />
+the highest priority task wanting to access the queue. &#42;/<br />
+if&#40; pxQueue-&gt;uxMessagesWaiting &lt; pxQueue-&gt;uxLength &#41;<br />
+&#123;<br />
+traceQUEUE&#95;SEND&#40; pxQueue &#41;;<br />
+prvCopyDataToQueue&#40; pxQueue, pvItemToQueue, xCopyPosition &#41;;  
+/&#42; If there was a task waiting for data to arrive on the<br />
+queue then unblock it now. &#42;/<br />
+if&#40; listLIST&#95;IS&#95;EMPTY&#40; &amp;&#40; pxQueue-&gt;xTasksWaitingToReceive &#41; &#41; == pdFALSE &#41;<br />
+&#123;<br />
+if&#40; xTaskRemoveFromEventList&#40; &amp;&#40; pxQueue-&gt;xTasksWaitingToReceive &#41; &#41; == pdTRUE &#41;<br />
+&#123;<br />
+/&#42; The unblocked task has a priority higher than<br />
+our own so yield immediately.&nbsp; Yes it is ok to do<br />
+this from within the critical section &#8211; the kernel<br />
+takes care of that. &#42;/<br />
+enterCriticalCall=1;<br />
+taskEXIT&#95;CRITICAL&#40;&#41;;<br />
+portYIELD&#95;WITHIN&#95;API&#40;&#41;;<br />
+&#125;<br />
+&#125;<br />
+if&#40;&#33;enterCriticalCall&#41;<br />
+&#123;<br />
+taskEXIT&#95;CRITICAL&#40;&#41;;<br />
+&#125;<br />
+/&#42; Return to the original privilege level before exiting the<br />
+function. &#42;/<br />
+return pdPASS;<br />
+&#125;<br />
+else<br />
+&#123;<br />
+if&#40; xTicksToWait == &#40; portTickType &#41; 0 &#41;<br />
+&#123;<br />
+/&#42; The queue was full and no block time is specified &#40;or<br />
+the block time has expired&#41; so leave now. &#42;/<br />
+taskEXIT&#95;CRITICAL&#40;&#41;;  
+/&#42; Return to the original privilege level before exiting<br />
+the function. &#42;/<br />
+traceQUEUE&#95;SEND&#95;FAILED&#40; pxQueue &#41;;<br />
+return errQUEUE&#95;FULL;<br />
+&#125;<br />
+else if&#40; xEntryTimeSet == pdFALSE &#41;<br />
+&#123;<br />
+/&#42; The queue was full and a block time was specified so<br />
+configure the timeout structure. &#42;/<br />
+vTaskSetTimeOutState&#40; &amp;xTimeOut &#41;;<br />
+xEntryTimeSet = pdTRUE;<br />
+&#125;<br />
+&#125;<br />
+&#125;<br />
+taskEXIT&#95;CRITICAL&#40;&#41;;  
+/&#42; Interrupts and other tasks can send to and receive from the queue<br />
+now the critical section has been exited. &#42;/  
+vTaskSuspendAll&#40;&#41;;<br />
+prvLockQueue&#40; pxQueue &#41;;  
+/&#42; Update the timeout state to see if it has expired yet. &#42;/<br />
+if&#40; xTaskCheckForTimeOut&#40; &amp;xTimeOut, &amp;xTicksToWait &#41; == pdFALSE &#41;<br />
+&#123;<br />
+if&#40; prvIsQueueFull&#40; pxQueue &#41; &#41;<br />
+&#123;<br />
+traceBLOCKING&#95;ON&#95;QUEUE&#95;SEND&#40; pxQueue &#41;;<br />
+vTaskPlaceOnEventList&#40; &amp;&#40; pxQueue-&gt;xTasksWaitingToSend &#41;, xTicksToWait &#41;;  
+/&#42; Unlocking the queue means queue events can effect the<br />
+event list.&nbsp; It is possible that interrupts occurring now<br />
+remove this task from the event list again &#8211; but as the<br />
+scheduler is suspended the task will go onto the pending<br />
+ready last instead of the actual ready list. &#42;/<br />
+prvUnlockQueue&#40; pxQueue &#41;;  
+/&#42; Resuming the scheduler will move tasks from the pending<br />
+ready list into the ready list &#8211; so it is feasible that this<br />
+task is already in a ready list before it yields &#8211; in which<br />
+case the yield will not cause a context switch unless there<br />
+is also a higher priority task in the pending ready list. &#42;/<br />
+if&#40; &#33;xTaskResumeAll&#40;&#41; &#41;<br />
+&#123;<br />
+portYIELD&#95;WITHIN&#95;API&#40;&#41;;<br />
+&#125;<br />
+&#125;<br />
+else<br />
+&#123;<br />
+/&#42; Try again. &#42;/<br />
+prvUnlockQueue&#40; pxQueue &#41;;<br />
+&#40; void &#41; xTaskResumeAll&#40;&#41;;<br />
+&#125;<br />
+&#125;<br />
+else<br />
+&#123;<br />
+/&#42; The timeout has expired. &#42;/<br />
+prvUnlockQueue&#40; pxQueue &#41;;<br />
+&#40; void &#41; xTaskResumeAll&#40;&#41;;  
+/&#42; Return to the original privilege level before exiting the<br />
+function. &#42;/<br />
+traceQUEUE&#95;SEND&#95;FAILED&#40; pxQueue &#41;;<br />
+return errQUEUE&#95;FULL;<br />
+&#125;<br />
+&#125;<br />
+&#125;  
+I propose this  
+I suppose that portYIELD&#95;WITHIN&#95;API &#40;line 480 queue.c&#41; must be preceded with taskEXIT&#95;CRITICAL if taskENTER&#95;CRITICAL was called above. And taskEXIT&#95;CRITICAL that is called below should be avoided if it was called before portYIELD&#95;WITHIN&#95;API. See example below. The same thing may be done in function xTaskResumeAll&#40;file tasks.c&#41; and function xQueueGenericReceive&#40;file queue.c&#41;. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on February 22, 2011</div><div class="thread-post-content">I believe that it is allowed for a task within a critical section to call yield, and the way it is handled is that the critical section count is actually per task, not global, and as part of the task switch it is saved and restored, and the corresponding interrupt enable start is also restored.   
+This means that a critical section doesn&#8217;t mean that no task switches can occur, but that they can only occur at explicit yields, or&nbsp; yields as part of accessing a queue etc, but will NOT happen asynchronously.
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/siriasis">siriasis</a> on February 22, 2011</div><div class="thread-post-content">Yes, I agree that critical section counter must be for every task separated. But looking at the code of most ports, the critical section counter seems to be a single for an application.&nbsp; For example at the code for LPC2000 port and coldfire&#95;v1 it is globally defined in at the beginning of port.c file as follows.   
+I think that this counter may be an attribute of the task, and it is not enough to increment one global counter on every critical section entry and decrement it on an exit.  
+/&#42; ulCriticalNesting will get set to zero when the first task starts.&nbsp; It<br />
+cannot be initialised to 0 as this will cause interrupts to be enabled<br />
+during the kernel initialisation process. &#42;/<br />
+unsigned long ulCriticalNesting = &#40; unsigned long &#41; 9999;  
+and   
+/&#42; Used to keep track of the number of nested calls to taskENTER&#95;CRITICAL&#40;&#41;.&nbsp; This<br />
+will be set to 0 prior to the first task being started. &#42;/<br />
+static unsigned long ulCriticalNesting = 0x9999UL;  
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/siriasis">siriasis</a> on February 22, 2011</div><div class="thread-post-content">In currrent implementation we cant hold a critical section counter per every task, because enter critical macro, doesn&#8217;t take any arguments.
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on February 22, 2011</div><div class="thread-post-content">The task switch routine swaps out the counter in the task context &#40;or the TCB&#41; as part of the task switch. That way, the counter for the current task is easily available, but there is still a copy kept per task. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/siriasis">siriasis</a> on February 22, 2011</div><div class="thread-post-content">Thank you for your immediate response.<br />
+Yes i agree, but this only happens when portCRITICAL&#95;NESTING&#95;IN&#95;TCB is enabled according to the source code. What if this option is not enabled.<br />
+I can see that if portCRITICAL&#95;NESTING&#95;IN&#95;TCB is not defined, then critical nesting is a global for all tasks.<br />
+How it will be handled then?.   
+And I dont like the way it is done  
+&#35;if &#40; portCRITICAL&#95;NESTING&#95;IN&#95;TCB == 1 &#41;  
+void vTaskEnterCritical&#40; void &#41;<br />
+&#123;<br />
+portDISABLE&#95;INTERRUPTS&#40;&#41;;  
+if&#40; xSchedulerRunning &#33;= pdFALSE &#41;<br />
+&#123;<br />
+&#40; pxCurrentTCB-&gt;uxCriticalNesting &#41;++;<br />
+&#125;<br />
+&#125;  
+&#35;endif  
+by disabling interrupts we will disable not only tick interrupt but all other interrupts either. That contradicts the main idea of a critical section.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on February 22, 2011</div><div class="thread-post-content">Sorry &#8211; only time for a very quick answer.  
+The kernel code is designed specifically to yield in a critical section &#8211; but application code should never do this.  
+richard&#95;damon is right that the critical section count is per task.&nbsp; The critical section variable is saved as part of the task context., either in the TCB or on the stack depending on the port.  
+A task that yields in a critical section yields with interrupts disabled, but if it yields to a task that has a critical section count of zero interrupt will be re-enabled prior to the new task running.&nbsp; When the original task starts executing again, when it is restored it is noted that the critical section count is not zero &#40;either from the stack or from the TCB&#41; and it is restarted with interrupts disabled.  
+It is actually more complex then that because behaviour depends on the port too, but in essence, that is how the code is designed to work and it is not a bug &#40;unless you can show otherwise&#41;.&nbsp; This really needs to be an FAQ because I spend a lot of my life explaining it.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/siriasis">siriasis</a> on February 22, 2011</div><div class="thread-post-content"><blockquote>
+  richard&#95;damon is right that the critical section count is per task. The critical section variable is saved as part of the task context., either in the TCB or on the stack depending on the port. 
+</blockquote>
+Please show me the code where critical counter is saved in xQueueGenericsend and xQueueGenericReceive. Because what I can see, is only one function void vTaskEnterCritical&#40; void &#41; dealing with critical counter&nbsp; whichis enabled only when portCRITICAL&#95;NESTING&#95;IN&#95;TCB == 1. By the way it never gets called in the freertos files.   
+If the counter is specific for every task, then it should be somehow monitored. But we call taskENTER&#95;CRITICAL<br />
+&#40;&#41; with no arguments and I can see, that a few ports just increment the nesting counter inside this macros and it is a global. Just have a look at ports for LPC2000 and coldfire&#95;v1.&nbsp;
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on February 22, 2011</div><div class="thread-post-content">For LPC2000, in the file FreeRTOSWorkingCopySourceportableGCCARM7&#95;LPC2000portmacro.h, in the macro portSAVE&#95;CONTEXT&#40;&#41; you will see:  
+<pre><code>    "LDR    R0, =ulCriticalNesting                              nt"   
+    "LDR    R0, [R0]                                            nt"   
+    "STMDB  LR!, {R0}                                           nt"   
+</code></pre>
+where the critical nesting count is saved to the stack.  
+Not sure about coldfire without looking it up.&nbsp; It might be that it does not need to save it &#40;some ports don&#8217;t and the core code has evolved to allow this&#41;.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">possible bug in freertos. portYIELD_WITHIN_AP</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/siriasis">siriasis</a> on February 22, 2011</div><div class="thread-post-content">Oh thanks mate. Now I see why application with my port had some issues. Every time the context switch happens one of the first things we should do is to save nesting counter and restore it again.   
+I am taking my words back about bugs. Sorry for my premature conclusions  
+Bu my question still remains. Why you do not exit from critical section before portYIELD. It is only for my curiosity.&nbsp;<br />
+I see that in some places you exit from critical before portYIELD is being called buit in some arn&#8217;t.   
+Thank you for your guidance&nbsp;&nbsp;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

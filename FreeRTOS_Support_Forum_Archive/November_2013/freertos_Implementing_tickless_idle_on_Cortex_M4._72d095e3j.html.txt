@@ -1,0 +1,456 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Implementing tickless idle on Cortex M4. - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2013/freertos_Implementing_tickless_idle_on_Cortex_M4._72d095e3j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Implementing tickless idle on Cortex M4. - FreeRTOS" />
+<meta property="og:description" content="Implementing tickless idle on Cortex M4. Posted by jabad06 on November 9, 2013I am currently using atmel&#8217;s atmsa4ls4a chip and using the AST instead of the SysTick for my rtos ticks. I was able to get this to run smoothly but am now having trouble with the vPortSuppressTicksAndSleep function. I use the freetos sample code &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2013/freertos_Implementing_tickless_idle_on_Cortex_M4._72d095e3j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Implementing tickless idle on Cortex M4. Posted by jabad06 on November 9, 2013I am currently using atmel&#8217;s atmsa4ls4a chip and using the AST instead of the SysTick for my rtos ticks. I was able to get this to run smoothly but am now having trouble with the vPortSuppressTicksAndSleep function. I use the freetos sample code [&hellip;]" />
+<meta name="twitter:title" content="Implementing tickless idle on Cortex M4. - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202316' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202316' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202316' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202316' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144481' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2013%2Ffreertos_Implementing_tickless_idle_on_Cortex_M4._72d095e3j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2013%2Ffreertos_Implementing_tickless_idle_on_Cortex_M4._72d095e3j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144481">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2013_freertos_support_forum_archive_index.html/">November 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Implementing tickless idle on Cortex M4. </h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jabad06">jabad06</a> on November 9, 2013</div><div class="thread-post-content">I am currently using atmel&#8217;s atmsa4ls4a chip and using the AST instead of the SysTick for my rtos ticks. I was able to get this to run smoothly but am now having trouble with the vPortSuppressTicksAndSleep function. I use the freetos sample code as a baseline of my implementation. 
+In my implementation I put the system into retention mode and then let the ast wake up the system. When I try to disable the ast and enable the ast in the PortSupressTicksandSleep function the system hangs for some reason. I have stopped trying that and just set the counter value while the ast is running. This causes the system to hang after working for a little bit. 
+Here is my implementation:
+/* The tick interrupt handler.  This is always the same other than the part that
+clears the interrupt, which is specific to the clock being used to generate the
+tick. <em>/
+void AST_ALARM_Handler(void)
+{
+    /</em> Protect incrementing the tick with an interrupt safe critical section. */
+    ( void ) portSET_INTERRUPT_MASK_FROM_ISR();
+    {
+        if( xTaskIncrementTick() != pdFALSE )
+        {
+            portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+        }
+<pre><code>    /* Just completely clear the interrupt mask on exit by passing 0 because
+    it is known that this interrupt will only ever execute with the lowest
+    possible interrupt priority. */
+}
+portCLEAR_INTERRUPT_MASK_FROM_ISR( 0 );
+/* The CPU woke because of a tick. */
+ulTickFlag = pdTRUE;
+/* If this is the first tick since exiting tickless mode then the AST needs
+to be reconfigured to generate interrupts at the defined tick frequency. */
+ast_write_alarm0_value( AST, ulAlarmValueForOneTick );
+/* Ensure the interrupt is clear before exiting. */
+ast_clear_interrupt_flag( AST, AST_INTERRUPT_ALARM );
+</code></pre>
+}
+/<em>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</em>/
+/* Override the default definition of vPortSetupTimerInterrupt() that is weakly
+defined in the FreeRTOS Cortex-M3 port layer with a version that configures the
+asynchronous timer (AST) to generate the tick interrupt. */
+void vPortSetupTimerInterrupt( void )
+{
+struct ast_config ast_conf;
+<pre><code>/* Ensure the AST can bring the CPU out of sleep mode. */
+sleepmgr_lock_mode( SLEEPMGR_RET );
+/* Ensure the 32KHz oscillator is enabled. */
+if( osc_is_ready( OSC_ID_OSC32 ) == pdFALSE )
+{
+    osc_enable( OSC_ID_OSC32 );
+    osc_wait_ready( OSC_ID_OSC32 );
+}
+/* Enable the AST itself. */
+ast_enable( AST );
+ast_conf.mode = AST_COUNTER_MODE;  /* Simple up counter. */
+ast_conf.osc_type = AST_OSC_32KHZ;
+ast_conf.psel = 0; /* No prescale so the actual frequency is 32KHz/2. */
+ast_conf.counter = 0;
+ast_set_config( AST, &amp;ast_conf );
+/* The AST alarm interrupt is used as the tick interrupt.  Ensure the alarm
+status starts clear. */
+ast_clear_interrupt_flag( AST, AST_INTERRUPT_ALARM );
+/* Enable wakeup from alarm 0 in the AST and power manager.  */
+ast_enable_wakeup( AST, AST_WAKEUP_ALARM );
+bpm_enable_wakeup_source( BPM, ( 1 &lt;&lt; BPM_BKUPWEN_AST ) );
+/* Tick interrupt MUST execute at the lowest interrupt priority. */
+NVIC_SetPriority( AST_ALARM_IRQn, configLIBRARY_LOWEST_INTERRUPT_PRIORITY);
+ast_enable_interrupt( AST, AST_INTERRUPT_ALARM );
+NVIC_ClearPendingIRQ( AST_ALARM_IRQn );
+NVIC_EnableIRQ( AST_ALARM_IRQn );
+/* Automatically clear the counter on interrupt. */
+ast_enable_counter_clear_on_alarm( AST, portAST_ALARM_CHANNEL );
+/* Start with the tick active and generating a tick with regular period. */
+ast_write_alarm0_value( AST, ulAlarmValueForOneTick );
+ast_write_counter_value( AST, 0 );
+/* See the comments where xMaximumPossibleSuppressedTicks is declared. */
+xMaximumPossibleSuppressedTicks = ULONG_MAX / ulAlarmValueForOneTick;
+</code></pre>
+}
+/<em>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</em>/
+/* Override the default definition of vPortSuppressTicksAndSleep() that is weakly
+defined in the FreeRTOS Cortex-M3 port layet with a version that manages the
+asynchronous timer (AST), as the tick is generated from the low power AST and
+not the SysTick as would normally be the case on a Cortex-M. */
+void vPortSuppressTicksAndSleep( portTickType xExpectedIdleTime )
+{
+uint32_t ulAlarmValue, ulCompleteTickPeriods;
+eSleepModeStatus eSleepAction;
+portTickType xModifiableIdleTime;
+enum sleepmgr_mode xSleepMode;
+<pre><code>/* THIS FUNCTION IS CALLED WITH THE SCHEDULER SUSPENDED. */
+/* Make sure the AST reload value does not overflow the counter. */
+if( xExpectedIdleTime &gt; xMaximumPossibleSuppressedTicks )
+{
+    xExpectedIdleTime = xMaximumPossibleSuppressedTicks;
+}
+/* Calculate the reload value required to wait xExpectedIdleTime tick
+periods. */
+ulAlarmValue = ulAlarmValueForOneTick * xExpectedIdleTime;
+if( ulAlarmValue &gt; ulStoppedTimerCompensation )
+{
+    /* Compensate for the fact that the AST is going to be stopped
+    momentarily. */
+    ulAlarmValue -= ulStoppedTimerCompensation;
+}
+/* Stop the AST momentarily.  The time the AST is stopped for is accounted
+for as best it can be, but using the tickless mode will inevitably result in
+some tiny drift of the time maintained by the kernel with respect to
+calendar time. */
+prvDisableAST();
+/* Enter a critical section but don't use the taskENTER_CRITICAL() method as
+that will mask interrupts that should exit sleep mode. */
+__asm volatile( "cpsid i        nt"
+                "dsb            nt" );
+/* The tick flag is set to false before sleeping.  If it is true when sleep
+mode is exited then sleep mode was probably exited because the tick was
+suppressed for the entire xExpectedIdleTime period. */
+ulTickFlag = pdFALSE;
+/* If a context switch is pending then abandon the low power entry as
+the context switch might have been pended by an external interrupt that
+requires processing. */
+eSleepAction = eTaskConfirmSleepModeStatus();
+if( eSleepAction == eAbortSleep )
+{
+    /* Restart tick. */
+    prvEnableAST();
+    /* Re-enable interrupts - see comments above the cpsid instruction()
+    above. */
+    __asm volatile( "cpsie i" );
+}
+else
+{
+    /* Adjust the alarm value to take into account that the current time
+    slice is already partially complete. */
+    ulAlarmValue -= ast_read_counter_value( AST );
+    ast_write_alarm0_value( AST, ulAlarmValue );
+    /* Restart the AST. */
+    prvEnableAST();
+    /* Allow the application to define some pre-sleep processing. */
+    xModifiableIdleTime = xExpectedIdleTime;
+    configPRE_SLEEP_PROCESSING( xModifiableIdleTime );
+    /* xExpectedIdleTime being set to 0 by configPRE_SLEEP_PROCESSING()
+    means the application defined code has already executed the WAIT
+    instruction. */
+    if( xModifiableIdleTime &gt; 0 )
+    {
+        /* Find the deepest allowable sleep mode. */
+        xSleepMode = sleepmgr_get_sleep_mode();
+        if( xSleepMode != SLEEPMGR_ACTIVE )
+        {
+            /* Sleep until something happens. */
+            bpm_sleep( BPM, xSleepMode );
+        }
+    }
+    /* Allow the application to define some post sleep processing. */
+    configPOST_SLEEP_PROCESSING( xModifiableIdleTime );
+    /* Stop AST.  Again, the time the SysTick is stopped for is accounted
+    for as best it can be, but using the tickless mode will inevitably
+    result in some tiny drift of the time maintained by the kernel with
+    respect to calendar time. */
+    prvDisableAST();
+    /* Re-enable interrupts - see comments above the cpsid instruction()
+    above. */
+    __asm volatile( "cpsie i" );
+    if( ulTickFlag != pdFALSE )
+    {
+        /* The tick interrupt has already executed, although because this
+        function is called with the scheduler suspended the actual tick
+        processing will not occur until after this function has exited.
+        Reset the alarm value with whatever remains of this tick period. */
+        ulAlarmValue = ulAlarmValueForOneTick - ast_read_counter_value( AST );
+        ast_write_alarm0_value( AST, ulAlarmValue );
+        /* The tick interrupt handler will already have pended the tick
+        processing in the kernel.  As the pending tick will be processed as
+        soon as this function exits, the tick value maintained by the tick
+        is stepped forward by one less than the time spent sleeping.  The
+        actual stepping of the tick appears later in this function. */
+        ulCompleteTickPeriods = xExpectedIdleTime - 1UL;
+    }
+    else
+    {
+        /* Something other than the tick interrupt ended the sleep.  How
+        many complete tick periods passed while the processor was
+        sleeping? */
+        ulCompleteTickPeriods = ast_read_counter_value( AST ) / ulAlarmValueForOneTick;
+        /* The alarm value is set to whatever fraction of a single tick
+        period remains. */
+        ulAlarmValue = ast_read_counter_value( AST ) - ( ulCompleteTickPeriods * ulAlarmValueForOneTick );
+        ast_write_alarm0_value( AST, ulAlarmValue );
+    }
+    /* Restart the AST so it runs up to the alarm value.  The alarm value
+    will get set to the value required to generate exactly one tick period
+    the next time the AST interrupt executes. */
+    prvEnableAST();
+    /* Wind the tick forward by the number of tick periods that the CPU
+    remained in a low power state. */
+    vTaskStepTick( ulCompleteTickPeriods );
+}
+</code></pre>
+}
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 9, 2013</div><div class="thread-post-content">FreeRTOS runs on many, many different chips, so unfortunately we cannot provide support that requires us to start downloading and reading chip specific data sheets and manuals &#8211; it falls outside FreeRTOS support and is just not practical.
+However, in this case, is there any reason you cannot use or adapt the code already provided in the FreeRTOS download for the SAM4L?  It already uses the AST.
+http://www.freertos.org/Atmel<em>SAM4L-EK</em>Low<em>Power</em>Tick-less<em>RTOS</em>Demo.html
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jabad06">jabad06</a> on November 10, 2013</div><div class="thread-post-content">I was having some issues with the provided demo. So I tried implementing my own. Maybe you can answer the problem with the issue I had with the demo.
+I had one task in this demo that would process data and then suspend itself. The task would resume after a gpio interrupt goes off and calls taskresumefromisr. It looks like the task is missing some of these interrupts and at times the system would freeze. Could you provide any insight on why this could be happening?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jabad06">jabad06</a> on November 10, 2013</div><div class="thread-post-content">I forgot to note that the gpio interrupt is an interrupt that can wake up the system from sleep. So instead of letting the system wake up with the timer and resume the rtos the gpio would go off before the timer goes off and resumes the system. I have attached the modified demo code. The main change is under vPortSetupTimerInterrupt where I declare another interrupt source besides the AST. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 10, 2013</div><div class="thread-post-content"><blockquote>
+  I had one task in this demo that would process data and then suspend itself. 
+  The task would resume after a gpio interrupt goes off and calls taskresumefromisr.
+</blockquote>
+See the documentation for the xTaskResumeFromISR(), noting in particular the paragraph that starts &#8220;xTaskResumeFromISR() should not be used to synchronise a task with an interrupt&#8221;.
+http://www.freertos.org/taskresumefromisr.html
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jabad06">jabad06</a> on November 11, 2013</div><div class="thread-post-content">Thank you for the note. After some modifications I am still having some issues where the freertos is hanging. In my example before where i have two tasks I now simplified to just one task that blinks an led after every 5 seconds by using vTaskDelay. 
+When the the freertos calls vPortSuppressTicksAndSleep the demo shows that there are two ways that the system can wake up. One is through the AST and the other is some other interrupt. If it is some other interrupt it will calculate how many ticks are left and resume the rtos from there. The freertos freezes when I allow an external interrupt to end the sleep earlier than it was suppose to (specifically the EIC wakes it up). 
+In the attached file I enable eic before going to sleep and then disable it after it wakes up. If I dont enable the eic as an option to wake up the sleep prematurely the task works fine. It is when I enable it to wake up the sleep prematurely is when the rtos freezes. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 11, 2013</div><div class="thread-post-content">Are you sure this is related to tickless operation?  What happens when you use the EIC when configUSE<em>TICKLESS</em>IDLE is set to 0?
+When you say &#8220;freezes&#8221;, what is it executing?  If you stop on the debugger, what is the CPU processing?  (for example, maybe it is in a fault handler, or maybe it is continuously entering and exiting the same interrupt, etc.)
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hilt0n">hilt0n</a> on November 11, 2013</div><div class="thread-post-content">Hi,
+I have exactly the same problem with same configuration: 
+I have a task who wake up the system every 1 seconds (all is correct with just that).
+But when I use an external interrupt my system works only if the button is pressed when the system doesn&#8217;t sleep. 
+If the system is sleeping, it falls in the assert loop after a call to prvTaskExitError.
+This is the same behavior for synchronous interrupt (without wake-up)
+Best regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hilt0n">hilt0n</a> on November 11, 2013</div><div class="thread-post-content">Visibly, the problem appears in the function vTaskStepTick, I finish always inside after an external interrupt in sleep mode :
+~~~~~~
+void vTaskStepTick( portTickType xTicksToJump )
+{
+    /* Correct the tick count value after a period during which the tick
+    was suppressed.  Note this does <em>not</em> call the tick hook function for
+    each stepped tick. */
+    //configASSERT( ( xTickCount + xTicksToJump ) &lt;= xNextTaskUnblockTime );
+    if((xTickCount + xTicksToJump) > xNextTaskUnblockTime){
+        while(1)
+        {
+            __asm volatile( &#8220;NOP&#8221; );
+        }
+    }<br />
+    xTickCount += xTicksToJump;
+    traceINCREASE_TICK_COUNT( xTicksToJump );
+}
+~~~~~~
+Visibly, the xTicksToJump value is too high, in my case, I have xTickCount = 44, xTicksToJump = 15000 and xNextTaskUnblockTime = 150..
+I try to figure out, any idea ?
+Regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 11, 2013</div><div class="thread-post-content">The first thing I notice in the code you posted is your call to eic_enable() *after* interrupts have been disabled.  I suspect this call will enable interrupts where they ought not to be.  
+Try enabling and disabling the interrupts using the Atmel library enable/disable functions Enable<em>global</em>interrupt() Disable<em>global</em>interrupt() in place of the __asm volatile( &#8220;cpsid i        nt&#8221; and __asm volatile( &#8220;cpsie i&#8221; );.  That way the interrupt enable/disable should nest.
+Does that fix the problem?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 11, 2013</div><div class="thread-post-content">Oops &#8211; looking at the drivers, don&#8217;t use the Enable<em>global</em>interrupt() Disable<em>global</em>interrupt() functions either.  Use:
+flag = cpu<em>irq</em>save();
+cpu<em>irq</em>restore( flag );
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jabad06">jabad06</a> on November 11, 2013</div><div class="thread-post-content">No it did not fix the problem. Even if eic_enable re enables the other interrupts besides the eic interrupt that would only wake the system prematurely instead of AST. Waking up the system prematurely should not freeze the freertos am I right?
+I am sure this is because of the configUse_tickless idle. When I don&#8217;t use tickless the system runs properly. I know the system is freezing since the leds do not blink. I have set several leds to blink at different parts of my code to debug. The task with the blinking led does not blink.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jabad06">jabad06</a> on November 12, 2013</div><div class="thread-post-content">I forgot to mention the problem is the same as YanickL 
+In the following piece of code 
+    void vTaskStepTick( portTickType xTicksToJump )
+    {
+        /* Correct the tick count value after a period during which the tick
+        was suppressed.  Note this does <em>not</em> call the tick hook function for
+        each stepped tick. */
+        configASSERT( ( xTickCount + xTicksToJump ) &lt;= xNextTaskUnblockTime );
+<pre><code>    xTickCount += xTicksToJump;
+    traceINCREASE_TICK_COUNT( xTicksToJump );
+}
+</code></pre>
+configASSERT goes off. 
+vTaskStepTick gets called at the end of vPortSuppressTicksAndSleep.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 12, 2013</div><div class="thread-post-content">When you enter tickless mode a timer must be set to bring the system out of sleep before the next task must execute &#8211; whenever that may be in the future.  The assert() will trap an error if, on exiting the tickles mode, time has moved past that point.  Therefore if the assert() is indicating an error then either you have spent too long inside the sleep function, or the time calculated as the time now is wrong.
+I have tried running the standard demo with the code you posted as:
+eic<em>enable(EIC);
+eic</em>line<em>enable(EIC, EXT</em>INT1);
+/* Sleep until something happens. */
+//bpm_sleep( BPM, xSleepMode );
+bpm_sleep( BPM, BPM_SM_SLEEP_0 );
+eic_line_disable(EIC, EXT_INT1);
+eic_disable(EIC);
+and don&#8217;t find any problem <b>but</b> I&#8217;m not actually generating the external interrupt.  In your system does it assert() all the time or only when the external interrupt is generated.  If the latter, how long is the interrupt handler taking to execute?  I have tried to generate external interrupts off a button push but have not been able to do so (even the EIC demo provided by Atmel is not generating interrupts) so can&#8217;t test it.
+Do you need to enable and disable the EIC on each cycle?  If you do, it would be better done from the pre and post sleep hook functions so you don&#8217;t have to edit the code.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hilt0n">hilt0n</a> on November 12, 2013</div><div class="thread-post-content">I you change the constant mainTX<em>DELAY in the file main</em>low<em>power.c of the demo from ( 500UL / portTICK</em>RATE<em>MS ) to ( 10UL / portTICK</em>RATE_MS ), the system freeze too.
+If the task cannot be executed in the right time, the system freeze. 
+I don&#8217;t know if it&#8217;s the normal comportment of FreeRtos but it seems to be strange?
+(I have done that with the clean, unmodified source of the demo)
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 12, 2013</div><div class="thread-post-content">I tried setting mainTX_DELAY to 10 and find the code runs without any problem.  With the demo in its default configuration a Tx delay of 10 is too short for the CPU to ever go into the tickless mode, and the &#8220;suppress ticks and sleep&#8221; function is never called.
+Note that when mainTX<em>DELAY is set to 10 it sends to the queue at a rate that is faster than the Rx task is receiving from the queue as the Rx task delays for mainLED</em>TOGGLE<em>DELAY ticks with the LED on each time is receives a character &#8211; and mainLED</em>TOGGLE<em>DELAY is greater than 10.  It does not prevent the code from running though, it just means the execution pattern is not as intended.  Reducing mainLED</em>TOGGLE_DELAY to 5 means it can keep up with the Tx task.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hilt0n">hilt0n</a> on November 12, 2013</div><div class="thread-post-content">Thank Richard, indeed its my mistake (wrong debugging). 
+But I have finally found the problem (I hope). 
+For this implementation, the AST timer is configured for clearing its value on ALARM compare but when the uC wake up from EIC, there is no ALARM compare interrupt and then no reset of the AST counter value. 
+In case of wake up from other sources than AST ALARM, we need to clear the current counter value when we calcul the next ALARM value:
+~~~~~~~~~
+/* Something other than the tick interrupt ended the sleep.  How
+many complete tick periods passed while the processor was
+sleeping? */
+ulCompleteTickPeriods = ast_read_counter_value( AST ) / ulAlarmValueForOneTick;
+/* The alarm value is set to whatever fraction of a single tick
+period remains. */
+ulAlarmValue = ast_read_counter_value( AST ) &#8211; ( ulCompleteTickPeriods * ulAlarmValueForOneTick );
+// Need to clear the counter
+ast<em>write</em>counter<em>value( AST, 0 );<br />
+ast</em>write<em>alarm0</em>value( AST, ulAlarmValue );
+~~~~~~~~~
+May be some others changes are necessary but all is working since I have modified this.
+Regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jabad06">jabad06</a> on November 14, 2013</div><div class="thread-post-content">Yes it is working on my end also. Clearing the counter value back to 0 after an eic wakes up the system fixes the hanging. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hilt0n">hilt0n</a> on September 15, 2014</div><div class="thread-post-content">Hi Richard,
+It seems the problem isn&#8217;t fixed. I can now tell you more about the problem. 
+Firstly, if you want to try it, you can simply use the demo in the source for SAM4L (with SAM4K-EK) and mix it with a demo project of EIC (in ATMEL studio) named &#8220;EIC (External Interrupt Controller) Example 1 &#8211; SAM4L-EK&#8221;
+To be short, we can simply add the EIC driver in ASF and replace the file main<em>low</em>power.c with mine. When you press the button PB0, the interrupt is generated then the problem appears.
+To debug the AST counter, I stop it in debug stop mode with the following code at the beginning of my program:
+uint32<em>t *periph</em>dbg = (void *)(0xE0042000UL);
+*periph_dbg |= 0x0007;
+The solution of clearing the AST counter in case of external wake up works maybe 99 times on 100 but sometime I have problem with complex program and the elapsed time is bigger than the next unblock time.
+As you proposed, I have tried to find the problem where the next counter value is defined but I don&#8217;t find any problem. 
+Have you an idea ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 15, 2014</div><div class="thread-post-content">I used the ASF wizard to add the EIC module into my SAM4L-EK project, then used your main<em>low</em>power.c file &#8211; but when I push the button marked PB0 no interrupts are generated.
+What else do I need to do?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hilt0n">hilt0n</a> on September 16, 2014</div><div class="thread-post-content">Ha yes sorry, you need to add:
+<h1>define CONF<em>BOARD</em>EIC</h1>
+in config/conf/board.h to unmask EIC gpio mux init in board init file.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 16, 2014</div><div class="thread-post-content">Please try the following, then report back:
+1) Find the function prvEnableAST() in SAM4L<em>low</em>power<em>tick</em>management().
+2) Add the following line to the top of the function: &#8220;ast<em>write</em>counter_value( AST, 0 );&#8221;
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 16, 2014</div><div class="thread-post-content">Actually &#8211; instead try the attached.  Only one line different from the current release.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hilt0n">hilt0n</a> on September 16, 2014</div><div class="thread-post-content">Ok thank you, I have found the same solution than you (reset the AST counter when the uC is awakened by external interrupt) however, I have sometimes some problems with timing and fall into the assert of the function vTaskStepTick because the actual time is bigger than the next unblock time.
+Have you an idea, a direction to find the problem ?
+Best regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jpt106">jpt106</a> on September 18, 2014</div><div class="thread-post-content">I believe I found the issue.  The AST counter was not being reset and updated correctly.  I was able to reliable reproduce the problem and the attached file fixes the issue on my system.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 19, 2014</div><div class="thread-post-content">Are you saying the fix I already posted did not fix your problem?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jpt106">jpt106</a> on September 22, 2014</div><div class="thread-post-content">Sorry I was not clear.  Yes the fix posted made the problem happen less often but I was to reproduce the issue still.  I am using tickless configuration in my system.  There is a task that runs periodically every 8 ticks (62.5 milliseconds).  There is CLI interface through a UART.  From the CLI I run different commands that cause other tasks to run processing the request for the CLI command.  For testing, I have a script that continuously runs different CLI commands. This causes the other tasks to randomly run and generate other interrupts beside the AST interrupt.
+Without your fix posted, running the test script my system fails the assert &#8220;configASSERT( ( xTickCount + xTicksToJump ) &lt;= xNextTaskUnblockTime )&#8221; within a minute.  With the posted fix, it takes about 10 minutes running the test script.
+Originally I found when the system was failing it was calculating a negative alarm value and programming that negative value into the alarm for the AST.  The code I posted tried to prevent the negative alarm value issue.  After further investigation, I found the root cause of the issue.  The AST clear counter on alarm does not clear the counter on the same AST clock cycle as when the counter equals the alarm.  The counter gets reset to one on the next clock cycle when the counter exceeds the alarm value.  This caused a race condition where during the time of single AST clock cycle (61 microseconds) the counter equals the alarm value.  I saw during debugging in the code &#8220;if( ulTickFlag != pdFALSE)&#8221;
+where ast<em>read</em>counter_value( AST ) returned the same value as the alarm value.  This caused a negative value to be calculated for ulAlarmValue.
+The newly posted code fixes the root cause directly by detected when the race condition happens and taking action.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing tickless idle on Cortex M4. </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hilt0n">hilt0n</a> on September 29, 2014</div><div class="thread-post-content">Thanks Joe for your big work, I didn&#8217;t yet tested completely your solution but that sound promising. 
+On my side, I have simply took the tickless implementation of the STM32L, it&#8217;s very similar to the SAM4L but there is 3 missing asynchronous counter clear on the SAM4L. I actually wonder why this porting difference..
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

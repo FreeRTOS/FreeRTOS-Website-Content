@@ -1,0 +1,288 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Problem with Queue Set and xQueueOverwriteFromISR() on Cortex-M4 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2018/freertos_Problem_with_Queue_Set_and_xQueueOverwriteFromISR_on_Cortex-M4_b67e56bdj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Problem with Queue Set and xQueueOverwriteFromISR() on Cortex-M4 - FreeRTOS" />
+<meta property="og:description" content="Problem with Queue Set and xQueueOverwriteFromISR() on Cortex-M4Posted by matsbygg on February 2, 2018Hi! MCU: STM32F411VET6 100 MHz FreeRTOS 9.0.0 (same thing happens in 10.0.0) I have a problem using xQueueOverwriteFromISR() with a queue set. xQueueSelectFromSet() tells that an item is available, but when trying to read out the item, xQueueReceive() returns pdFALSE. If I &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2018/freertos_Problem_with_Queue_Set_and_xQueueOverwriteFromISR_on_Cortex-M4_b67e56bdj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Problem with Queue Set and xQueueOverwriteFromISR() on Cortex-M4Posted by matsbygg on February 2, 2018Hi! MCU: STM32F411VET6 100 MHz FreeRTOS 9.0.0 (same thing happens in 10.0.0) I have a problem using xQueueOverwriteFromISR() with a queue set. xQueueSelectFromSet() tells that an item is available, but when trying to read out the item, xQueueReceive() returns pdFALSE. If I [&hellip;]" />
+<meta name="twitter:title" content="Problem with Queue Set and xQueueOverwriteFromISR() on Cortex-M4 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202897' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202897' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202897' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202897' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146901' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2018%2Ffreertos_Problem_with_Queue_Set_and_xQueueOverwriteFromISR_on_Cortex-M4_b67e56bdj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2018%2Ffreertos_Problem_with_Queue_Set_and_xQueueOverwriteFromISR_on_Cortex-M4_b67e56bdj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146901">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2018_freertos_support_forum_archive_index.html/">February 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Problem with Queue Set and xQueueOverwriteFromISR() on Cortex-M4</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/matsbygg">matsbygg</a> on February 2, 2018</div><div class="thread-post-content">Hi!
+MCU: STM32F411VET6  100 MHz
+FreeRTOS 9.0.0 (same thing happens in 10.0.0)
+I have a problem using xQueueOverwriteFromISR() with a queue set. 
+xQueueSelectFromSet() tells that an item is available, but when trying to read out the item, xQueueReceive() returns pdFALSE.
+If I instead use xQueueSendToBackFromISR(), everything (seems to) work normally. But this is not quite the functionality I want.
+Here is a longer description of the problem area in my system:
+I have a &#8220;timestamp&#8221; queue (length = 1) which I write to every ~20 ms using xQueueOverwriteFromISR() from an interrupt handler.
+I have a &#8220;command&#8221; queue (length = 10) which I occationally write commands to using xQueueSendToBack() from a &#8220;command&#8221; task (task priority 1).
+I have a &#8220;receiver&#8221; task (task priority 4) that waits on both of these queues using a queue set, and reads out data from the corresponding queue.
+After a while of successful operation, the queue set indicates that an item in the &#8220;timestamp&#8221; queue is available, but when calling xQueueReceive(), it returns failure.
+I have tried to isolate the problem in a simple standalone test application (below), but not fully succeeded.
+In the below test application, I also get wrong behaviour (I think), after about 6 seconds, but at a different location than in my real system. (See comment in code where it fails.)
+Because of the task priorities, and the wait time specified in xQueueSendToBack(), the &#8220;command&#8221; queue should not get full, but it does!
+And also in the test application, if I replace xQueueOverwriteFromISR() with xQueueSendToBackFromISR(), everything works normally.
+Anyone else have problems with Queue Sets and xQueueOverwriteFromISR() ?
+And yes, the system should be properly set-up with HAL<em>Init() that calls HAL</em>NVIC<em>SetPriorityGrouping(NVIC</em>PRIORITYGROUP_4).
+~~~
+<h1>include &#8220;ClockTick.h&#8221;</h1>
+<h1>include &#8220;HWTimer.h&#8221;</h1>
+<h1>include &#8220;SystemCore.h&#8221;</h1>
+<h1>include &#8220;FreeRTOS.h&#8221;</h1>
+<h1>include &#8220;task.h&#8221;</h1>
+<h1>include &#8220;timers.h&#8221;</h1>
+<h1>include &#8220;semphr.h&#8221;</h1>
+QueueHandle<em>t command</em>queue;
+QueueHandle<em>t timestamp</em>queue;
+QueueSetHandle<em>t queue</em>set;
+TaskHandle<em>t command</em>task<em>handle;
+TaskHandle</em>t receiver<em>task</em>handle;
+void hw<em>timer</em>callback(unsigned ch, void * user)  // IRQ priority 6
+{
+   BaseType<em>t higher</em>pri<em>task</em>woken = pdFALSE;
+   int value = 0;
+   // If I instead use xQueueSendToBackFromISR() here, everything works normally
+   (void) xQueueOverwriteFromISR(timestamp<em>queue, &amp;value, &amp;higher</em>pri<em>task</em>woken);
+   portYIELD<em>FROM</em>ISR(higher<em>pri</em>task_woken);
+}
+void command<em>task(void * param)  // task priority 1
+{
+   BaseType</em>t ret;
+   int value = 0;
+   for (;;)
+   {
+      vTaskDelay(20);
+<pre><code>  ret = xQueueSendToBack(command_queue, &amp;value, 5);
+  // **** This assert fails after a while in this test application *****
+  configASSERT(ret == pdTRUE);
+</code></pre>
+   }
+}
+void receiver<em>task(void * param)   // task priority 4
+{
+   BaseType</em>t ret;
+   int value;
+   // Start recurring HW-timer (330 us timeout)
+   StartRecurringHWTimer(0, ClockTicksFrom<em>us(330), hw</em>timer_callback, NULL);
+   for (;;)
+   {
+      // Wait for command or timestamp
+      QueueSetMemberHandle<em>t handle = xQueueSelectFromSet(queue</em>set, 200);
+<pre><code>  if (handle == (QueueSetMemberHandle_t) timestamp_queue)
+  {
+     ret = xQueueReceive(timestamp_queue, &amp;value, 0);
+     // **** This assert fails after a while in my real system *****
+     configASSERT(ret == pdTRUE);
+  }
+  else if (handle == (QueueSetMemberHandle_t) command_queue)
+  {
+     ret = xQueueReceive(command_queue, &amp;value, 0);
+     configASSERT(ret == pdTRUE);
+  }
+  else
+  {
+     configASSERT(handle == NULL);
+  }
+</code></pre>
+   }
+}
+int main(void)
+{
+   // Init system: HAL, clocks, etc.
+   ErrorHandler<em>Init();
+   SystemCore</em>Init();
+   ClockTick<em>Init();
+   HWTimer</em>Init();
+   // Create queues
+   command<em>queue = xQueueCreate(10, sizeof(int));
+   timestamp</em>queue = xQueueCreate(1, sizeof(int));
+   // Create queue sets
+   queue<em>set = xQueueCreateSet(10 + 1);
+   xQueueAddToSet((QueueSetMemberHandle</em>t)command<em>queue, queue</em>set);
+   xQueueAddToSet((QueueSetMemberHandle<em>t)timestamp</em>queue, queue_set);
+   // Create command and receiver tasks
+   xTaskCreate(command<em>task, &#8220;CMD&#8221;, 3 * configMINIMAL</em>STACK<em>SIZE, NULL, 1, &amp;command</em>task<em>handle);
+   xTaskCreate(receiver</em>task, &#8220;RCV&#8221;, 3 * configMINIMAL<em>STACK</em>SIZE, NULL, 4, &amp;receiver<em>task</em>handle);
+   vTaskStartScheduler();
+   return 0;
+}
+/*
+<h1>define configUSE_PREEMPTION                       1</h1>
+<h1>define configUSE<em>PORT</em>OPTIMISED<em>TASK</em>SELECTION    1</h1>
+<h1>define configUSE<em>TICKLESS</em>IDLE                    0</h1>
+<h1>define configCPU<em>CLOCK</em>HZ                         ( SystemCoreClock )</h1>
+<h1>define configTICK<em>RATE</em>HZ                         ( ( TickType<em>t ) 1000 ) /* Note! 1000 Hz is MAX, as HAL tick &amp; FreeRTOS shares SysTick</em>Handler() */</h1>
+<h1>define configUSE<em>16</em>BIT_TICKS                     0</h1>
+<h1>define configMAX_PRIORITIES                       5</h1>
+<h1>define configUSE<em>TIME</em>SLICING                     1</h1>
+<h1>define configIDLE<em>SHOULD</em>YIELD                    1</h1>
+<h1>define configMINIMAL<em>STACK</em>SIZE                   ( ( unsigned short ) 130 )</h1>
+<h1>define configMAX<em>TASK</em>NAME_LEN                    10</h1>
+<h1>define configUSE<em>TASK</em>NOTIFICATIONS               0</h1>
+<h1>define configUSE_MUTEXES                          1</h1>
+<h1>define configUSE<em>RECURSIVE</em>MUTEXES                1</h1>
+<h1>define configUSE<em>COUNTING</em>SEMAPHORES              0</h1>
+<h1>define configUSE<em>QUEUE</em>SETS                       1</h1>
+<h1>define configUSE<em>ALTERNATIVE</em>API                  0</h1>
+<h1>define configQUEUE<em>REGISTRY</em>SIZE                  8</h1>
+<h1>define configUSE<em>NEWLIB</em>REENTRANT                 1  /* Integrating with Newlib &amp; Newlib-Nano */</h1>
+<h1>define configENABLE<em>BACKWARD</em>COMPATIBILITY        0</h1>
+<h1>define configNUM<em>THREAD</em>LOCAL<em>STORAGE</em>POINTERS    0</h1>
+<h1>define configUSE<em>APPLICATION</em>TASK_TAG             0</h1>
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY  5</h1>
+*/
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem with Queue Set and xQueueOverwriteFromISR() on Cortex-M4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 2, 2018</div><div class="thread-post-content">If a queue is in a queue set, and data is written into that queue, then 
+the address of the queue is written into the queue set.  When you read 
+from the queue set you obtain that address and then read from the queue. 
+  There is therefore an assumption of a one to one relationship between 
+the number of items in the individual queues and the number of items in 
+the queue set.  If you were to use a queue overwrite to add something to 
+a queue all should be good, if however you then used a queue overwrite 
+to overwrite the item already in the queue then the queue set is going 
+to expect to items to be in the queue, whereas in fact there would be 
+only one &#8211; a second read of the queue would then fail (as there would 
+have only been one item in it).
+Do you think this is the scenario you are observing?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem with Queue Set and xQueueOverwriteFromISR() on Cortex-M4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/matsbygg">matsbygg</a> on February 5, 2018</div><div class="thread-post-content"><blockquote>
+  If a queue is in a queue set, and data is written into that queue, then 
+  the address of the queue is written into the queue set. When you read 
+  from the queue set you obtain that address and then read from the queue. 
+</blockquote>
+Yes, OK.
+<blockquote>
+  There is therefore an assumption of a one to one relationship between 
+  the number of items in the individual queues and the number of items in 
+  the queue set.
+</blockquote>
+So that is why I should sum the lengths of all queues and pass that value to xQueueCreateSet() ?
+<blockquote>
+     If you were to use a queue overwrite to add something to 
+  a queue all should be good,
+</blockquote>
+Because that would be the same as a successful xQueueSendToBack()&#8230; ?
+<blockquote>
+    if however you then used a queue overwrite 
+  to overwrite the item already in the queue then the queue set is going 
+  to expect to items to be in the queue, whereas in fact there would be 
+  only one &#8211; a second read of the queue would then fail (as there would 
+  have only been one item in it).
+</blockquote>
+So in my case, where I have setup the queue set with xQueueCreateSet(10 + 1), there will in this senario be two addresses stored in the queue set, pointing to the queue which have a length of only 1 ?
+Isn&#8217;t this a bug in FreeRTOS ?
+Based on this, I have now managed to reproduce it with the simple test application, and I think what you are describing is exactly what is happening. 
+Some of the commands take time to execute by the &#8220;receiver&#8221; task, therefore the &#8220;timestamp&#8221; queue will be overwritten several times until the &#8220;receiver&#8221; task has time to check the queue set.
+I tried to replace the timestamp queue with a binary semaphore. The problem then dissapeared, however, with a binary semaphore, I must then pass the actual data (a timestamp value) through a separate volatile variable, and that is not as clean design as using a queue&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem with Queue Set and xQueueOverwriteFromISR() on Cortex-M4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 7, 2018</div><div class="thread-post-content">I&#8217;ve just added an assert to catch that scenario.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Problem with Queue Set and xQueueOverwriteFromISR() on Cortex-M4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/matsbygg">matsbygg</a> on February 7, 2018</div><div class="thread-post-content">So this scenario is not supposed to work?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sprintf %f corrupts stack - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/December_2016/freertos_sprintf_f_corrupts_stack_8fbac97dj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="sprintf %f corrupts stack - FreeRTOS" />
+<meta property="og:description" content="sprintf %f corrupts stackPosted by dnadler on December 26, 2016I&#8217;m not sure this is a FreeRTOS problem, but&#8230; Cortex M4F (Kenetis K64), gcc, nano, newlib with float. Only one task uses floating point; no issues there. A sprintf of a floating point number returns the correct string but corrupts the stack. The corruption is miles &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/December_2016/freertos_sprintf_f_corrupts_stack_8fbac97dj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="sprintf %f corrupts stackPosted by dnadler on December 26, 2016I&#8217;m not sure this is a FreeRTOS problem, but&#8230; Cortex M4F (Kenetis K64), gcc, nano, newlib with float. Only one task uses floating point; no issues there. A sprintf of a floating point number returns the correct string but corrupts the stack. The corruption is miles [&hellip;]" />
+<meta name="twitter:title" content="sprintf %f corrupts stack - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202748' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202748' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202748' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202748' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146239' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2016%2Ffreertos_sprintf_f_corrupts_stack_8fbac97dj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FDecember_2016%2Ffreertos_sprintf_f_corrupts_stack_8fbac97dj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146239">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/December_2016_freertos_support_forum_archive_index.html/">December 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">sprintf %f corrupts stack</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on December 26, 2016</div><div class="thread-post-content">I&#8217;m not sure this is a FreeRTOS problem, but&#8230;
+Cortex M4F (Kenetis K64), gcc, nano, newlib with float.
+Only one task uses floating point; no issues there.
+A sprintf of a floating point number returns the correct string but corrupts the stack.
+The corruption is miles away from the top of the stack.
+FreeRTOS-aware debug says I have several kb of extra stack space for this task.
+Absolutely reproducible; this corrupts stack:  sprintf(out.pBuffer,&#8221;floatOutTest=%f&#8221;, 1.2345f);
+The buffer is in the right place and printing decimal values works fine.
+Thanks in advance for any ideas!
+Best Regards, Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 27, 2016</div><div class="thread-post-content">Things to check:
+1) The stack is 8 byte aligned at the point sprintf() is called (put a breakpoint on the call to sprintf() and check the value of the stack pointer in the debugger).
+2) Are you using a <a href="http://www.freertos.org/a00111.html">FreeRTOS heap memory allocator</a> other than heap<em>3.c?  If so, check sprintf() is not calling malloc().  heap</em>3.c is the only FreeRTOS memory allocator that will need malloc() to be configured correctly, and if it is not configured and sprintf() attempts to call it then anything could happen.  Probably the easiest way to check this is to provide your own implementation of malloc() that does nothing but contain an NOP instruction, or trigger an assert, then put a break point in your implementation of malloc() and see if it is ever called.
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on December 27, 2016</div><div class="thread-post-content">Stack alignment is AOK. I&#8217;m using your heap<em>4. Per your suggestion I added a dummy malloc with asm bkpt, and sure enough the damn thing is calling malloc:
+**  sprintf -> _svprintf</em>r -> <em>printf</em>float -> cvt -> <em>dtoa</em>r -> malloc  **
+Unfortunately I don&#8217;t have a library built with debug info. I suspect malloc is incorrectly set up by NXP/Freescale (dubious linker script with partioned M4F RAM) and/or its run out of the standard RTL heap&#8217;s memory. I could try stubbing it out with heap_4&#8230;
+Thanks for the help!
+Best Regards, Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on December 28, 2016</div><div class="thread-post-content">Update: Several nano newlib RTL functions (sprintf, strtok) unexpectedly used malloc() or <em>malloc</em>r().
+The default heap from Freescale/NXP was set to 1kB (for a processor with 256kB RAM!), and the RTL overflowed the heap without halting and corrupted memory. Very Nice!
+Do you guys have a replacement for the nano free storage functions that map to FreeRTOS heap functions, to give a single, debuggable pool? Ideally with hard stop on overrun? Is this a bad idea? Should I write this?
+Thanks as always,
+Best Regards, Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on December 28, 2016</div><div class="thread-post-content">You can provide your own doing something simple such as:
+<pre>
+void *malloc( size_t xBytes )
+{
+     return pvPortMalloc( xBytes );
+}
+void free( void *pvBuffer )
+{
+     vPortFree( pvBuffer );
+}
+</pre>
+The configASSERT() calls in pvPortMalloc() and vPortFree() will then 
+work as normal.  If you are using GCC (and maybe other compilers) then 
+there is a way of redirecting these calls using the command line &#8211; but 
+its probably easier and more portable just to add the above functions 
+into your code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on December 28, 2016</div><div class="thread-post-content">If I understand correctly, its a bit more complicated, as there is a whole family of heap routines included in newlib, and used within newlib. One example above is <em>malloc</em>r(). See newlib&#8217;s malloc.c source for the entire set. No?
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on December 28, 2016</div><div class="thread-post-content">One issue I have seen with some Librararies is they assume the heap can grow up to the stack, and once the kernal is started, the memory map is no longer what they expect. Sometimes using the heap prior to starting the kernal can help. I would make everything use the same heap either like posted above or making FreeRTOS use the libary heap (adding the needed code to make the library heap thread safe).
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ammaree">ammaree</a> on January 5, 2017</div><div class="thread-post-content">Maybe a suggestion to have a look at a complete [v/s/n/f]printf replacement on github. I uses no dynamic memory, supports floats and have a large number of optional extension that can be useful in an embedded environment.
+The supported functions can be selected at compile time to minimise the stack space used.
+Stack usage is completely predictable with no recursion.
+The printf functionality relies ()to some extent) on 2 additional modules also there namely x<em>time.c and x</em>string_general.c, so scratch around&#8230;
+Have a look at https://github.com/ksstech/support_common and shout if you have queries or suggestions, but it is fairly well documented in the source code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on February 26, 2017</div><div class="thread-post-content">Thanks Andre for the suggestion.
+Richard, can you point me at a replacement for newlib&#8217;s malloc and friends, that properly uses FreeRTOS heap functions and reentrancy structures?
+Thanks,
+Best Regards, Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on February 27, 2017</div><div class="thread-post-content">I just downloaded the newlib-nano repository itself and added the defines used to enable the reentrancy callls. These then call functions __malloc<em>lock and __malloc</em>unlock which can just call the scheduler suspend/resume functions like in heap_3.c
+I will need to get the exact repository address and files from work tomorrow. The queston comes to what options were the library compiled with, if it was compiled with full re-entrancy endabled, you may just need to define the <strong>malloc_lock/</strong>malloc_unlock functions.
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hs2sf">hs2sf</a> on February 27, 2017</div><div class="thread-post-content">Alternatively you could make use of the &#8216;wrap symbol&#8217; linker feature e.g. let the linker replace all &#8216;malloc&#8217; symbols with (your) <code>__wrap_malloc</code> implementation etc.
+You might even implement your own low level <code>_sbrk</code> function.
+(I&#8217;ve also overloaded the global new/delete operators with &#8216;noexcept&#8217; versions to safe some code space.)
+Good luck, HS2
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on March 2, 2017</div><div class="thread-post-content">The newlib repository is at sourceware.org
+In my case, the enviroment was already using newlib-nano, the package just wasn&#8217;t quite configured the way I needed. The use of newlib-nano seems fairly common if you have a gcc based development tool.
+If so, first I would see if it is configured to use the interlock functions already. See if a __malloc<em>lock() / __malloc</em>unlock functions stubs are already being used. If they are, you just need to define the lock function to call vTaskSuspendAll() and the unlock to call vTaskResumeAll() (and then test that these are called by malloc) and you are set.
+If not, you can just add the source code for the malloc module (newlib/libc/stdlib/nano-mallocr.c) to your project. There are other files malloc.c and mallocr.c too that you don&#8217; need (malloc.c is a stub to allow newlib to have reentrant routines, including malloc, and mallocr.c is a &#8216;big machine&#8217; version of the reentrant malloc).
+If your library isn&#8217;t based on newlib, you could still look at the newlib version to build a malloc for your self, but check if your library malloc does the work or if it just forwards to some other function.
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on July 1, 2017</div><div class="thread-post-content">Here&#8217;s what I finally ended up doing to sort the above problem:
+http://www.nadler.com/embedded/newlibAndFreeRTOS.html
+Thanks again for the help!
+Best Regards, Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on July 2, 2017</div><div class="thread-post-content">Hi Dave, thanks a lot for all these insights!
+I just want to confirm that the <code>[v][s][n]printf()</code> implementation in the <a href="http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/index.html">FreeRTOS Labs TCP/IP</a> ( attached below ) is quite complete and well tested. Unfortunately is misses the floating point formats ( <code>%f</code>, <code>%e</code>, <code>%g</code>, <code>%E</code>, <code>%G</code> ).
+These <code>printf()</code> functions only use stack ( about 70 bytes ) and they don&#8217;t use the heap.
+They are thread- and even interrupt-safe.
+I added two formats, to print IPv4 and IPv6 addresses :
+~~~
+    /* Dot notation for IP addresses: */
+<pre><code>printf( "IP = %xipn", 0xC0A80164 );
+/* will produce "IP = 192.168.1.100n" */
+printf( "IP = %pipn", pxIPv6_Address );
+/* 'pxIPv6_Address' is a pointer to a 16-byte array.
+It could produce "IP = fe80::1n" */
+</code></pre>
+~~~
+Memory protection:
+Printing a string with <code>%s</code> may lead to a crash in case you make a mistake with the parameters.
+The functions in <code>printf-stdarg.c</code> will check the validity of the pointer by calling :
+~~~
+/*
+ * Return 1 for readable, 2 for writeable, 3 for both.
+ * Function must be provided by the application.
+ */
+extern BaseType_t xApplicationMemoryPermissions( uint32_t aAddress );
+~~~
+Another habit of <code>printf-stdarg.c</code> is to use an external function to actually write the character to a peripheral.
+The function below is called in case <code>sprintf(NULL, xxx)</code> is called. We kept it for backward compatibility.
+~~~
+void vOutputChar( const char cChar, const TickType_t xTicksToWait  )
+{
+    /* Eg. send a byte to the UART. */
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">sprintf %f corrupts stack</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on July 2, 2017</div><div class="thread-post-content">Thanks Hein, I updated web page to note some of this,
+Best Regards, Dave
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

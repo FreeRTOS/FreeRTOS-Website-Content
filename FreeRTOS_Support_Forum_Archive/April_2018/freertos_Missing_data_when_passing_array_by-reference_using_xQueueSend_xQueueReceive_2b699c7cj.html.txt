@@ -1,0 +1,273 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Missing data when passing array by-reference using xQueueSend()/xQueueReceive() - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2018/freertos_Missing_data_when_passing_array_by-reference_using_xQueueSend_xQueueReceive_2b699c7cj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Missing data when passing array by-reference using xQueueSend()/xQueueReceive() - FreeRTOS" />
+<meta property="og:description" content="Missing data when passing array by-reference using xQueueSend()/xQueueReceive()Posted by nicholasd on April 17, 2018I&#8217;ve been experiencing difficulties in passing arrays via message queues using FreeRTOS. I am using Freertos v9.0, and my target device is the STM32L053 MCU (Cortex-M0+). I have two threads: &#8211; vKeypad() scans a keypad and sends a queue to vRadio that &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2018/freertos_Missing_data_when_passing_array_by-reference_using_xQueueSend_xQueueReceive_2b699c7cj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Missing data when passing array by-reference using xQueueSend()/xQueueReceive()Posted by nicholasd on April 17, 2018I&#8217;ve been experiencing difficulties in passing arrays via message queues using FreeRTOS. I am using Freertos v9.0, and my target device is the STM32L053 MCU (Cortex-M0+). I have two threads: &#8211; vKeypad() scans a keypad and sends a queue to vRadio that [&hellip;]" />
+<meta name="twitter:title" content="Missing data when passing array by-reference using xQueueSend()/xQueueReceive() - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202935' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202935' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202935' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202935' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147058' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2018%2Ffreertos_Missing_data_when_passing_array_by-reference_using_xQueueSend_xQueueReceive_2b699c7cj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2018%2Ffreertos_Missing_data_when_passing_array_by-reference_using_xQueueSend_xQueueReceive_2b699c7cj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147058">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2018_freertos_support_forum_archive_index.html/">April 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Missing data when passing array by-reference using xQueueSend()/xQueueReceive()</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nicholasd">nicholasd</a> on April 17, 2018</div><div class="thread-post-content">I&#8217;ve been experiencing difficulties in passing arrays via message queues using FreeRTOS. I am using Freertos v9.0, and my target device is the STM32L053 MCU (Cortex-M0+).
+I have two threads:
+&#8211; vKeypad() scans a keypad and sends a queue to vRadio that contains the corresponding keypad message. This thread runs periodically every ~100ms.
+&#8211; vRadio() waits to receive queue contents, and then transmits the received message using a packet radio.
+My application previously used the queue to pass a pointer to a 4-byte array to vRadio. This worked fine and data could be written by vKeypad() and read by vRadio() correctly without aparent issue. Recently my requirements changed, and I now need to use a 5-byte array instead of a 4-byte array, and the queue now seems to only pass the first four bytes properly, but the 5th byte is always 0 no matter what I do.
+In my code below, I write a value of 55 to  queueTX[4], the 5th element of the array whose pointer will be passed to the consumer thread vRadio. So I send queueTX= {11, 22, 33, 44, 55} to the array in vKeypad, and when vRadio receives the queue, queueRX contains {11, 22, 33, 44, 0}.
+I&#8217;ve posted simplified pieces relevant source code below:
+<strong>I initialize the queue as follows:</strong>
+~~~
+xRadioMessageQueue = xQueueCreate(1, sizeof(uint8_t *));
+~~~
+<strong>vKeypad thread (queue producer):</strong>
+~~~
+void vPortExpanderTask(void const * argument) {
+<pre><code>uint16_t buttonState = 0x0000;
+uint8_t queueTX[5] = {};
+while(1) {
+    buttonState = readPortExpander(&amp;hi2c1, PORT_EXP_ADDRESS);
+    // If a button has been pressed
+    if (buttonState) {
+        // Mock payload...
+        queueTX[0] = 11;
+        queueTX[1] = 22;
+        queueTX[2] = 33;
+        queueTX[3] = 44;
+        queueTX[4] = 55;
+        // Push data to xRadioMessageQueue
+        if ( xQueueSendToBack(xRadioMessageQueue, &amp;queueTX, 10) != pdPASS ) {
+            // Queue full
+        } else {
+            // Queue write successful
+        }
+    }
+    vTaskDelay(100);
+}
+</code></pre>
+}
+~~~
+<strong>vRadio thread (queue consumer):</strong>
+~~~
+void vRadio(void const * argument) {  
+  uint8<em>t queueRX[5] = {}; // Data received by xRadioMessageQueue queue
+  uint8</em>t destAddr = 1;
+  while(1) {
+<pre><code>if ( xQueueReceive(xRadioMessageQueue, &amp;queueRX, portMAX_DELAY) == pdPASS ) {
+  // Data has been successfully received by the queue
+  // Transmit the message
+  radioSendTo(&amp;g_radio, (uint8_t *) queueRX, sizeof(queueRX), dest_addr);
+}
+vTaskDelay(250);
+</code></pre>
+  }
+}
+~~~
+I would prefer to keep passing the array by reference, but if this implementation is flawed or anyone has suggestions on how to fix this, I would VERY much appreciate it!
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing data when passing array by-reference using xQueueSend()/xQueueReceive()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 18, 2018</div><div class="thread-post-content"><blockquote>
+  xRadioMessageQueue = xQueueCreate(1, sizeof(uint8_t *));
+</blockquote>
+This is creating a queue that will hold pointers &#8211; each pointer is 4 
+bytes, hence 4 bytes are copied in and 4 bytes are copied out when 
+sending and receiving respectively.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing data when passing array by-reference using xQueueSend()/xQueueReceive()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 18, 2018</div><div class="thread-post-content">Actually, he says that he want to pass the array by reference (which I take to mean that he want to pass the address of the array),  The problem is that when he get the data he is doing it wrong.
+The receiver should look like
+~~~
+  int *queueRx;  // NOT queueRX[5]]
+  if ( xQueueReceive(xRadioMessageQueue, &amp;queueRX, portMAX_DELAY) == pdPASS ) {
+ ~~~
+ If you want to pass an array &#8216;by reference&#8217; then you are passing the data via a pointer to the data so that is what you what to get out of the queue, and address. Note, if you do it this way, the source array needs to keep the sent values until they have been consumed by the receiver, as they haven&#8217;t been stored anywhere else.
+ This is one way to handle the sending of variable length messages via a queue, as the message as far as the queue is concerned is still always the same size, the size of a pointer.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing data when passing array by-reference using xQueueSend()/xQueueReceive()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nicholasd">nicholasd</a> on April 18, 2018</div><div class="thread-post-content">Thank you both for your replies.
+Just to confirm, would this be the proper way  implement the pass-by-reference via the xQueueSendToBack()/xQueueReceive()?
+Producer thread:
+~~~
+void vPortExpanderTask(void const * argument) {
+   &#8230;
+<pre><code>uint8_t queueTX[5] = {};
+while(1) {
+    buttonState = readPortExpander(&amp;hi2c1, PORT_EXP_ADDRESS);
+    if (buttonState) {
+        queueTX[0] = 1;
+        queueTX[1] = 2;
+        queueTX[2] = 3;
+        queueTX[3] = 4;
+        queueTX[4] = 5;
+        // Send queueTX (i.e. starting address of queueTX array) to xRadioMessageQueue
+        xQueueSendToBack(xRadioMessageQueue, &amp;queueTX, 10);
+    }
+    vTaskDelay(100);
+}
+</code></pre>
+}
+~~~
+Consumer thread:
+~~~
+void vRadio(void const * argument) {
+<pre><code>uint8_t * queueRX_ptr;
+uint8_t queueRX[5];
+...
+while(1) {
+    if ( xQueueReceive(xRadioMessageQueue, &amp;queueRX_ptr, portMAX_DELAY) == pdPASS )  {
+        // Populate queueRX[] with contents stored at address queueRX_ptr
+        queueRX[0] = *queueRX_ptr;
+        queueRX[1] = *queueRX_ptr++;
+        queueRX[2] = *queueRX_ptr++;
+        queueRX[3] = *queueRX_ptr++;
+        queueRX[4] = *queueRX_ptr++;
+        radioSendTo(&amp;g_radio, (uint8_t *) queueRX, sizeof(queueRX), dest_addr);
+    }
+        ...
+}
+</code></pre>
+}
+~~~
+I tried what&#8217;s shown above and only the first value was correct (value of 11), but the rest were not. I also tried to use xQueueReceive(xRadioMessageQueue, queueRX<em>ptr, portMAX</em>DELAY), writing directly to the pointer, but the MCU ran into a hard  fault when this was used.
+I could alternatively initialize xRadioMessageQueue to have elements five byte elements instead of four, but I&#8217;m not sure if this would be considered bad practise when using queues?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing data when passing array by-reference using xQueueSend()/xQueueReceive()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 18, 2018</div><div class="thread-post-content">I think you are still mixing passing by reference (queuing just a 
+pointer to the data, so you pass the address of the pointer into the 
+xQueueSendFunction(), and receive the data into a POINTER, not an ARRAY 
+as you are below), and passing by copy (where you would write all the 
+bytes into the queue, and receive into a separate ARRAY, not just a 
+pointer).
+However, if you only have one array, and you want to pass by reference, 
+both the sender and receiver will end up pointing to the same array &#8211; as 
+Richard D pointed out &#8211; you will only have one copy of the data.  If 
+that is what you truly want to do, at the risk of the data being 
+corrupted before the receiver has a chance to read it, then I don&#8217;t 
+think a queue is the right primitive to use any way.  You can have the 
+sender and receiver access the same array without passing a reference to 
+it on a queue &#8211; after all the reference (a pointer to the array) will be 
+identical in each case as the array never changes its address location. 
+Instead you could simply use a task notification to unblock the receiver 
+when the data in the array has changed and have the receiver read it 
+from the array.  If on the other hand you want to actually copy the data 
+to the receiver, so it can&#8217;t be corrupted before the receiver reads it, 
+consider using a stream buffer instead.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing data when passing array by-reference using xQueueSend()/xQueueReceive()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nicholasd">nicholasd</a> on April 18, 2018</div><div class="thread-post-content">Are you suggesting that it could be more efficient to declare the 5-element queue as a global variable, and simply have the producer thread give a semaphore, and have the consumer thread blocking until that semaphore is given? I may try that to simplify things.
+Also, thanks for suggesting using the stream buffer &#8211; I hadn&#8217;t looked into them before until now, but they look like they&#8217;d be a great fit for this message-passing.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Missing data when passing array by-reference using xQueueSend()/xQueueReceive()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 18, 2018</div><div class="thread-post-content">I&#8217;m suggesting that, if you really want to have a single array that two 
+tasks access directly (and potentially simultaneously [!] because all 
+you are doing is passing a pointer to the array to the reader task so 
+not duplicating the data) then you gain nothing from using a queue.  The 
+data you send on the queue is always identical, being the address of the 
+array, and you are just using the queue as a means of unblocking the 
+receiving task.  To that end, you can choose the most light weight 
+method of unblocking the task, which would be a direct to task 
+notification (not a semaphore, see 
+https://www.freertos.org/RTOS-task-notifications.html)
+However, both tasks accessing the same data would seem to be dangerous 
+as there is the risk of data being missed if it is updated twice before 
+the reading task reads it, or corrupted, if it is updated half way 
+through the reading task reading it.  Therefore using a stream buffer 
+that can contain three or four blocks of 5 data bytes would prevent that.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

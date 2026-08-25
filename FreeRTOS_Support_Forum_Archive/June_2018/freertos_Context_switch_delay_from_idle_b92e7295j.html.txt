@@ -1,0 +1,217 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Context switch delay from idle - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2018/freertos_Context_switch_delay_from_idle_b92e7295j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Context switch delay from idle - FreeRTOS" />
+<meta property="og:description" content="Context switch delay from idlePosted by friesen on June 8, 2018My processor is a pic32mz2064DAH176 from microchip and I am using 10.0.1 with + tcp. The issue at hand is a delay in switching to a ready thread. There is an external interrupt routine that gets fired and looks like this. ~~~ void chipisrext4(void) { &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2018/freertos_Context_switch_delay_from_idle_b92e7295j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta property="og:image" content="http://aercon.net/Public/trace.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Context switch delay from idlePosted by friesen on June 8, 2018My processor is a pic32mz2064DAH176 from microchip and I am using 10.0.1 with + tcp. The issue at hand is a delay in switching to a ready thread. There is an external interrupt routine that gets fired and looks like this. ~~~ void chipisrext4(void) { [&hellip;]" />
+<meta name="twitter:title" content="Context switch delay from idle - FreeRTOS" />
+<meta name="twitter:image" content="http://aercon.net/Public/trace.png" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202966' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202966' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202966' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202966' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147177' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2018%2Ffreertos_Context_switch_delay_from_idle_b92e7295j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2018%2Ffreertos_Context_switch_delay_from_idle_b92e7295j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147177">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2018_freertos_support_forum_archive_index.html/">June 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Context switch delay from idle</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/friesen">friesen</a> on June 8, 2018</div><div class="thread-post-content">My processor is a pic32mz2064DAH176 from microchip and I am using 10.0.1 with + tcp.
+The issue at hand is a delay in switching to a ready thread.   There is an external interrupt routine that gets fired and looks like this.
+~~~
+void chip<em>isr</em>ext4(void) {
+<pre><code>BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+if (gpfIsr) {
+gpfIsr();
+}
+IFS0CLR = _IFS0_INT4IF_MASK;
+if (gpfIsr) {
+vTaskNotifyGiveFromISR(xNetworkTaskHandle, &amp;xHigherPriorityTaskWoken);
+}
+</code></pre>
+}
+~~~
+The task looks like
+~~~
+//Priority 2
+void NetworkTasks(void){
+    while(1){
+    ulTaskNotifyTake(pdTRUE, 10 / portTICK<em>PERIOD</em>MS);
+    (void) xSemaphoreTake(HifMutex, portMAX<em>DELAY);
+    m2m</em>wifi<em>handle</em>events(NULL);
+    (void) xSemaphoreGive(HifMutex);
+    }<br />
+}
+~~~
+I am trying to understand why there is a 0.5ms delay in a trace capture before the network task is switched to.  I&#8217;m not sure how to ask this question exactly, so I&#8217;ll post the traces, see at 7.58.226.534 vTaskNotiveGiveFromISR(Network) where the isr fires, then the context switches to idle, then there are a number of Actor Readys with a delay I don&#8217;t understand, and Network doesn&#8217;t get switched to until 7.58.227.015.
+So I&#8217;m trying to understand what FreeRTOS and or the CPU is doing in this time, and wondering how I can get this to switch quicker?
+aercon.net/Public/trace.bin
+<img src="http://aercon.net/Public/trace.png" alt="" />
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context switch delay from idle</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 8, 2018</div><div class="thread-post-content">Not looked at the trace yet &#8211; but from a quick squizz at the code I see 
+you are not requesting the context switch from the ISR.  If 
+xHigherPriorityTaskWoken is set to a non zero value inside 
+vTaskNotifyGiveFromISR() then a task that has a priority above that of 
+the currently executing task was unblocked and a context switch should 
+be performed.  It is not done automatically to give you finer control 
+(consider not wanting to perform a context switch each time a character 
+in a stream was received).
+See the &#8220;Interrupt Service Routines&#8221; section on this page: 
+https://www.freertos.org/port<em>PIC32</em>MIPS_MK4.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context switch delay from idle</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/friesen">friesen</a> on June 8, 2018</div><div class="thread-post-content">I don&#8217;t quite follow here, so are you saying that if I set 
+xHigherPriorityTaskWoken = pdTRUE;
+that it will switch immediately?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context switch delay from idle</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/friesen">friesen</a> on June 8, 2018</div><div class="thread-post-content">I still would like to understand why it would be sitting idle, or what it is waiting on.
+From the docs I have seen, xHigherPriorityTaskWoken  wouldn&#8217;t apply against it running idle?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context switch delay from idle</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 8, 2018</div><div class="thread-post-content">The page I linked to before shows two methods of implementing an 
+interrupt that can cause a context switch.  Which one are you using?
+Also, now I have looked at the trace, I cannot see what is actually 
+executing, although I know you state it is the idle task.  Are you using 
+an idle hook function?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context switch delay from idle</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/friesen">friesen</a> on June 8, 2018</div><div class="thread-post-content">I am using the wrapper, not exactly like the one you have, but copied from the Microchip harmony stack. So for the ISR above , I have this in the .S file
+~~~
+//void __ISR(<em>EXTERNAL</em>4<em>VECTOR, ipl?AUTO) chip</em>isr<em>ext4(void)  *********************
+   .extern  chip</em>isr<em>ext4
+   .section .vector</em>23,code, keep
+   .equ     __vector<em>dispatch</em>23, IntVector<em>chip</em>isr<em>ext4
+   .global  __vector</em>dispatch<em>23
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVector</em>chip<em>isr</em>ext4
+IntVector<em>chip</em>isr<em>ext4:
+    portSAVE</em>CONTEXT
+    la    s6,  chip<em>isr</em>ext4
+    jalr  s6
+    nop
+    portRESTORE<em>CONTEXT
+    .end    IntVector</em>chip<em>isr</em>ext4
+~~~
+I do have configUSE<em>IDLE</em>HOOK to 1, but vApplicationIdleHook() is empty.
+I really don&#8217;t know that the idle task is running.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context switch delay from idle</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 8, 2018</div><div class="thread-post-content">Ok &#8211; so the first thing to see is which task is actually running, as if 
+you are using this wrapper than the context switch should happen as you 
+come out of the interrupt handler.  If you scroll to the left on the 
+trace you provided you should be able to see what is using the CPU time. 
+  Then we can look into that task to see why it is preventing a context 
+switch.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context switch delay from idle</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/friesen">friesen</a> on June 9, 2018</div><div class="thread-post-content">Ok, it is the idle.  So in this case, I suppose that xHigherPriorityTaskWoken  should do right. I&#8217;ll do some more looking. 
+It may be just me, but xHigherPriorityTaskWoken documentation isn&#8217;t real clear.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context switch delay from idle</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on June 9, 2018</div><div class="thread-post-content">Note, that xHignerPriorityTaskWoken is just a variable. The ISR needs to DO something with it to make anything happen. Unfortuanatly, it is somewhat port dependant on what this is. I suppose it would be nice if all the port supported something like 
+portEND<em>SWITCHING</em>ISR( xYieldRequired );
+so it could be in the main documentation, but as far as I know that hasn&#8217;t been added to all of them.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context switch delay from idle</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on June 9, 2018</div><div class="thread-post-content"><blockquote>
+  portEND<em>SWITCHING</em>ISR( xYieldRequired );
+  so it could be in the main documentation, but as far as I know that 
+  hasn&#8217;t been added to all of them.
+</blockquote>
+Yes &#8211; I have referenced the page on the FreeRTOS.org website that has 
+examples of how to do this on a PIC32 in a couple of previous posts on 
+this thread &#8211; and there are examples in the download too.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context switch delay from idle</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on June 9, 2018</div><div class="thread-post-content"><pre><code>Richard, my comment was that if ALL ports had portEND_SWITCHING_ISR(), then the main documentation, like for vTaskNotifyFromISR() could reference it, As it is, many example use it, but the main documentation tree doesn't have documentation for it, you need to look into the documentation for the port, which seems to trip up many people.
+Is there any port that couldn't define the way to end an ISR to be that way?
+</code></pre>
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safe passing of buffers through a queue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2013/freertos_Safe_passing_of_buffers_through_a_queue_7177431.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Safe passing of buffers through a queue - FreeRTOS" />
+<meta property="og:description" content="Safe passing of buffers through a queuePosted by anguel78 on March 25, 2013Hi&#033; In all FreeRTOS manuals I read that passing large buffers by reference &#040;pointers&#041; through a queue is common practice. But I have not seen a good explanation on how to protect the buffer contents. Let&#8217;s assume that&nbsp; I have a few producer &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2013/freertos_Safe_passing_of_buffers_through_a_queue_7177431.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Safe passing of buffers through a queuePosted by anguel78 on March 25, 2013Hi&#033; In all FreeRTOS manuals I read that passing large buffers by reference &#040;pointers&#041; through a queue is common practice. But I have not seen a good explanation on how to protect the buffer contents. Let&#8217;s assume that&nbsp; I have a few producer [&hellip;]" />
+<meta name="twitter:title" content="Safe passing of buffers through a queue - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202246' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202246' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202246' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202246' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144184' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2013%2Ffreertos_Safe_passing_of_buffers_through_a_queue_7177431.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2013%2Ffreertos_Safe_passing_of_buffers_through_a_queue_7177431.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144184">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2013_freertos_support_forum_archive_index.html/">March 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Safe passing of buffers through a queue</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/anguel78">anguel78</a> on March 25, 2013</div><div class="thread-post-content">Hi&#33;  
+In all FreeRTOS manuals I read that passing large buffers by reference &#40;pointers&#41; through a queue is common practice. But I have not seen a good explanation on how to protect the buffer contents.  
+Let&#8217;s assume that&nbsp; I have a few producer tasks and one consumer task that communicate through a queue. A global buffer must be filled appropriately by each producer task and then consumed by the consumer task. So I will pass the pointer to the buffer through the queue.   
+Now I wonder what is the best way to protect the buffer so that it can be safely shared between the producer tasks and the consumer task. Should I use semaphores? If so where and how many? And do I have to limit the queue size to one message to prevent corruption of the buffer?  
+Thank you in advance,  
+Anguel
+</div></div><div class="thread-post"><h3 class="thread-post-title">Safe passing of buffers through a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 25, 2013</div><div class="thread-post-content">The FreeRTOS+UDP code can be used as an example as it passes network buffers up and down the stack and between tasks by passing references to the buffers on queues.  
+There are several different approaches that you can take.&nbsp; The critical thing is to ensure that only one task has &#8216;ownership&#8217; of the buffer at any one time.&nbsp;   
+For example, if Task A obtains a buffer &#40;from a pool, or dynamically, an array, where ever&#41; then it &#8216;owns&#8217; the buffer.&nbsp; How that buffer is marked as in use &#40;so no other tasks obtain the same buffer&#41; is up to you.&nbsp; If the buffer is allocated dynamically &#40;using heap&#95;4.c for example, as that does not suffer so much from memory fragmentation&#41; then the task that allocates the buffer can use it quite safely without interference from other tasks because no other tasks know of its existence anyway.  
+If Task A then decides it no longer needs the buffer, because it owns it, Task A is also responsible for returning it.  
+If Task A fills the buffer with data that needs processing by another task it can pass a pointer to the buffer in a queue.&nbsp; At that point, Task A no longer owns the buffer and must not modify it, or in any way unallocate it.  
+If Task B receives a pointer to the buffer from the queue then Task B owns the buffer.&nbsp; It can do what it likes with it, but once it has finished with it it must either return/unallocate it &#40;to avoid memory leaks&#41; or pass it onto another task.  
+When the buffer is unallocated it is either freed &#40;if it was dynamically allocated in the first place&#41;, or in some other way marked as available again &#40;if it is returned to a pool of buffers&#41;.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Safe passing of buffers through a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/anguel78">anguel78</a> on March 25, 2013</div><div class="thread-post-content">Richard,  
+Thank you very much for the extremely fast reply. I actually had a look at the FreeRTOS+UDP code but did not really understand what technique it uses to protect the buffers. Probably it uses some of the buffer allocation techniques you described in your reply.  
+Now in my case I am sending pointers to string literal constants OR a pointer to a single modifiable global buffer in order to save RAM and to prevent the complexities of allocation. I thought to do it this way:<br />
+1&#46; Any producer tasks attempt to send a message with a buffer pointer to the queue &#40;queue length = 1 guarantees that only one producer will actually succeed&#41;.<br />
+2&#46; The consumer reads the message and pends on a semaphore to wait for the data to become available.<br />
+3&#46; As the producer&#8217;s message made it into the mailbox, this producer now has exclusive access to the buffer &#40;because of queue length = 1&#41; and can fill it with data. As soon as this is done it posts the semaphore to the consumer to signal that data is ready.<br />
+4&#46; The consumer now gets the semaphore and reads the data from the buffer and uses it.<br />
+5&#46; The consumer again starts waiting on the queue.  
+I don&#8217;t know if there is any more efficient or more safe way to do this. Any comments are welcome.  
+Regards,<br />
+Anguel
+</div></div><div class="thread-post"><h3 class="thread-post-title">Safe passing of buffers through a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/travfrog">travfrog</a> on March 25, 2013</div><div class="thread-post-content">Hi Anguel,  
+I have a system with similar requirements. I have several tasks that want to pipe data through a common communications link. The producer then has 2 options. 1&#41; it can block on a semaphore which the consumer will release once it has finished with the data or 2&#41; it can wait for a reply message from the producer.  
+The difference is the producer ether blocks completely or continues to execute if there are other things it can do that do not involve the data. Option 2 is necessary if the producer must continue to process incoming data from elsewhere. Option 1 is the simpler approach.  
+From your description, it appears you only have a single buffer shared between multiple tasks right? I think a semaphore will do the trick.&nbsp; Any task wishing to use the buffer must obtain the semaphore first &#8211; you might want to block for a set time period to help catch any system load issues or deadlock conditions.&nbsp; The Q size on the consumer need not be limited to 1, especially if there are other things it needs to be doing &#40;like processing communication link interrupts&#41;.  
+If you use some form of buffer-in-use indication, make sure the code that marks that buffer as in use is atomic otherwise you will end up with some hard to find corruption bugs.  
+Travfrog.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Safe passing of buffers through a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/anguel78">anguel78</a> on March 25, 2013</div><div class="thread-post-content">Thanks Travfrog,  
+I will have to think a little more how to do it. RTOSes look easy at first glance, but they can also introduce some very subtle problems into simple tasks :-&#40;  
+Regards,<br />
+Anguel
+</div></div><div class="thread-post"><h3 class="thread-post-title">Safe passing of buffers through a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/travfrog">travfrog</a> on March 25, 2013</div><div class="thread-post-content">They absolutely do :-&#41;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Safe passing of buffers through a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 26, 2013</div><div class="thread-post-content">A good RTOS should actually help here more than hurt., at least as long as your requirements are indicative of using one &#40;Needing rapid responses to some inputs&#41;. Anytime you have multiple threads of execution accessing common data, there are issues of needing interlocks of some form, this is fundamental. There are 3 basic ways to meet &#8220;Real Time&#8221; timing requirements:  
+1&#41; Put such a fast processor in that it can meet the requirements with non-pre-emptive code, this will often become expensive and power hungry. If it doesn&#8217;t, than this may well be the best choice.  
+2&#41; Do the critical timing in an interrupt routine, and have a single threaded main loop handling the rest. This doesn&#8217;t need a OS, and limits the limits how much code need to deal with pre-emptive issues, but that code is more difficult as you have less tools to deal with them, and the tools tend to be broader in effect. Typically critical sections of code will need to disable interrupt, causing added latency, or critical operations done inside an interrupt routine, possible delaying other critical operations. This may be the solution if you have just a few real time requirements.  
+3&#41; Use a Real TIme operating system to manage your requirements. Interrupt routines exist to field hardware request, and perhaps handle some of the&nbsp; most critical operations, while tasks handle the rest.   
+A key aspect that needs to be dealt with is working with shared data. Generally a piece of code should &#8220;own&#8221; the data that it is using, and not be sharing it at that moment. The one major exception is data so simple that its changes are &#8220;atomic&#8221; &#40;and you need to be very careful then that all accesses ARE done atomically&#41;. A RTOS will provide the tools to allow the various parts of the program to share and take ownership of the pieces of data it needs to use.  
+Where you are seeing &#8220;subtle problems cause by RTOSes&#8221;, it normally isn&#8217;t a problem caused by the RTOS, but by the definition of the requirements of the system, having defined data shared between two unsynchronized sections. Once the concept of proper ownership of data is put into place, then the only problem left is finding the right tool to implement it, which is what the RTOS will &#40;hopefully&#41; provide.  
+In the case presented, if there is a single buffer, which can be owned, sequentially, by one of several tasks at a time,&nbsp; then semaphores provide a good solution. From the problem statement I would use TWO semaphores, one to grant access by a producer, and one for access by the consumer. A producer grabs the producer semaphore, and when it has it, fills it with data. When done is sets the consumer semaphore. Thus no producer can access the buffer yet, as it is busy. When the consumer gets its semaphore, it can empty the buffer and then raise the producer semaphore, letting the next producer work. There is no need for a queue &#40;except in how semaphores are built on queues&#41;, as all you are passing between tasks is the fact of availability of THE buffer  
+A second method, if you want to allow producers to not need to wait to generate data, would be to have a set of buffers. Each producer when it wants to generate data, gets a buffer from a source &#40;perhaps a queue holding the list of buffers&#41;, fills the data, and then posts the address of the buffer to a queue for the consumer. The consumer then gets that address, consumes it, and returns it to the free buffer store.  
+In both of these methods a/the buffer is in one of several states: empty/ready for a producer, being used by a producer, full waiting to be consumed, being consumed. In each state its ownership is clear, and so is who can access/modify the data.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Safe passing of buffers through a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/anguel78">anguel78</a> on March 27, 2013</div><div class="thread-post-content">richard&#95;damon,  
+Thank you very much for the extensive explanation and the solution presented. I think that this is really a more efficient way than using the queue that I had in mind first. My initial idea was to be able to also pass additional data like producer ID through that queue but this can be probably easily added inside the semaphore protected section dealing with the global buffer.  
+Regarding your comment on atomic operations, if I remember correctly I read somewhere that with modern MCUs it is a high risk to rely on operations to be atomic as such MCUs use internal cache pipelines. So I will try to avoid this.  
+Thank you once again&#33;  
+Anguel
+</div></div><div class="thread-post"><h3 class="thread-post-title">Safe passing of buffers through a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 27, 2013</div><div class="thread-post-content">When you get to MULTI-CORE processors, you need to start worrying about things like cache coherency, and making sure all processors see the same data. For these sorts of machines you need to include a memory barrier in the instruction to force the processor to get the value from main ram and put the results back into main ram atomically too, which will be a slow operation &#40;internally the semaphore code will need to do something like this too, as all synchronization must depend on atomic operations, if not at the processor level, at least at the effective execution level.  
+To my knowledge, FreeRTOS is NOT set up to work on a Multi-core processor, as the &#8220;Disable Interrupt&#8221; operation is no longer good enough to provide a critical section. &#40;If a port did provide a PORT&#95;ENTER/EXIT&#95;CRITICAL that worked for a multi-processor it might&#41;.  
+The step from single core to multi-core is a much bigger step in complexity than from single threaded to multi-threaded &#40;in my opinion&#41;, although the OS might be able to hide that complexity.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Safe passing of buffers through a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/anguel78">anguel78</a> on March 29, 2013</div><div class="thread-post-content">The multi-core story sounds scary. For me it is hard to think of all possible scenarios on a single core and a few tasks doing things in parallel… And besides the complexity introduced by an RTOS what really concerns me is the time spent in synchronizing data. Real-time sounds &#8220;very fast&#8221; at first but it turns out that it actually takes away a lot of CPU cycles to achieve that real-time. Each time I have to access a simple shared variable from multiple tasks I feel bad about wasting CPU cycles for semaphores or queues. But on the other hand with todays fast MCUs we can achieve more flexibility through an RTOS.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Safe passing of buffers through a queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 30, 2013</div><div class="thread-post-content">Actually, if the access to the shared variable is quick enough, &#40;within allowable latency margin on interrupts&#41;, then using critical sections &#40;disable interrupts&#41; to protect is a much faster option. Real time is NOT &#8220;very fast&#8221; but managed maximum delays. 
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

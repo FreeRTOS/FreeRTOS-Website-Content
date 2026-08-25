@@ -1,0 +1,156 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>More efficient queue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2008/freertos_More_efficient_queue_2052807.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="More efficient queue - FreeRTOS" />
+<meta property="og:description" content="More efficient queuePosted by paul_piak on May 26, 2008Hi, My system receives commands through an RS232 serial port, which is sent to the application through a FreeRTOS message queue. Usually the RS232 messages are more than 1 byte long, typically about 10, but the length is variable up to 61 bytes. In the current situation, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2008/freertos_More_efficient_queue_2052807.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="More efficient queuePosted by paul_piak on May 26, 2008Hi, My system receives commands through an RS232 serial port, which is sent to the application through a FreeRTOS message queue. Usually the RS232 messages are more than 1 byte long, typically about 10, but the length is variable up to 61 bytes. In the current situation, [&hellip;]" />
+<meta name="twitter:title" content="More efficient queue - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201618' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201618' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201618' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201618' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138401' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2008%2Ffreertos_More_efficient_queue_2052807.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2008%2Ffreertos_More_efficient_queue_2052807.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138401">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2008_freertos_support_forum_archive_index.html/">May 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">More efficient queue</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/paul_piak">paul_piak</a> on May 26, 2008</div><div class="thread-post-content">Hi,
+My system receives commands through an RS232 serial port, which is sent to the application through a FreeRTOS message queue.
+Usually the RS232 messages are more than 1 byte long, typically about 10, but the length is variable up to 61 bytes. 
+In the current situation, the application task requests to receive 1 byte from the queue &#40;xQueueReceive&#40;&#41;&#41; and is put to sleep because the queue is still empty, resulting in a task-switch &#40;to for example the idle task&#41;.
+When the RS232 port receives a byte, the interrupt service routine moves this byte to the queue &#40;xQueueSendFromISR&#40;&#41;&#41;. The kernel discovers that a task is waiting for this queue to deliver the byte and this task is woken. This causes another task switch from the idle task bvack to my application task.
+However, only 1 byte does not make a full command. The application task continues to receive the rest of the bytes in the message &#40;which haven&#8217;t even been received by the RS232 by now, thus are not in the queue&#41;. Thus the task is immediately suspended again until it is rewoken &#40;indirectly by the RS232 interrupt service&#41; after the 2nd byte has been sent to the queue. Also for the 3rd, 4th etc bytes, the task is repeatedly suspended and rewoken when the byte is received until the message is complete. 
+This way, the application is suspended and rewoken once for every byte that is received.
+Every time this costs a few hundred cycles, and for a 60 bytes message on the RS232, this amounts to an awful lot of lost cycles.
+I would like to have the option to specify a variable number of items that is expected from the queue. The application would then only be woken after that number of bytes is received &#40;or at a time-out of course, just like xQueueReceive&#40;&#41;&#41;
+Thus only 1 suspend + wake are required for an arbitrary length message.
+Does anybody know if there is a clever way to do this with the current API? 
+I would think this requires a modification of the API since the queue mechanism needs a parameter to specify the number of bytes for each waiting task.
+I have 3 years experience with FreeRTOS by now and am very willing to do my part on this but if I am correct on needing to modify the task manager code I&#8217;m going to need some support &#40;especially I would like it to become included in the API when it has matured enough, so I don&#8217;t get stuck with 5.0.0 for the rest of this products economical life&#8230;&#41;
+Paul
+</div></div><div class="thread-post"><h3 class="thread-post-title">More efficient queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 26, 2008</div><div class="thread-post-content">This is the way that most of the demos work and it should be noted that it is not intended to be an optimal solution &#40;this is noted in most ports&#41;.&nbsp; In fact the demos often are written to generate as many interrupts and context switches as possible in order to test the port is robust.&nbsp; To do this a single char is received at a time and the UART FIFO&#8217;s and DMA&#8217;s are not sued.
+The way I would normally do this is to first of all make the peripheral as efficient as possible.&nbsp; This would mean making use of the buffering on the peripheral itself &#40;FIFO&#41; and using the DMA if one is available.&nbsp; The DMA or interrupt handler can then move characters from the peripheral and place them in a circular buffer.&nbsp; When a whole message is received, or a timeout occurs, the task that is going to process the characters can be woken through the use of a binary semaphore rather than a queue.&nbsp; The binary semaphore does not pass data, it just unblocks the task, and only does it when there is enough data to make it work unblocking the task.&nbsp; The task can then check the circular buffer and process all the characters it finds before going back to the blocked state.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">More efficient queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 26, 2008</div><div class="thread-post-content">While Richard Barry suggest a circular buffer, another option that I have used &#40;assuming the interrupt routine can parse message boundaries&#41; is to have a couple of message buffers to store messages, and when a message is received, you post a message to that effect identifying the buffer that contains the message. This may require more memory than the circular buffer, as the buffers will typically be statically allocated for the maximum message length, but it can ease the processing of the message as the task doesn&#8217;t need to copy the circular queue to a linear buffer or deal with processing the message in the circular buffer.
+</div></div><div class="thread-post"><h3 class="thread-post-title">More efficient queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/paul_piak">paul_piak</a> on June 3, 2008</div><div class="thread-post-content">Thanks for your suggestions, but&#8230;
+The processor is only a PIC18, so the hardware is pretty inefficient by nature. The fifo receive buffer can only raise the interrupt flag on the first incoming byte, so I have to interrupt on every byte.
+Fortunately I already copy the data from the queue to a circular buffer, so the required changes are to add a &#40;global?&#41; variable which specifies the number of requested items to the interrupt routine, and let the RS232 interrupt move the data directly to the circular buffer instead of the queue. The interrupt can unblock the task when the required number of bytes has been received. This actually saves memory, since the buffer stays the same size, but the semaphore is much smaller than the queue.
+The problem is that the interrupt can modify the buffer when new data is received, while the task is reading the buffer. Thus the buffer is corrupted. This has to be fixed by making access to the buffer a critical section. 
+All in all this is a can-do but smells a bit like a kludge. The programmer has to monitor a lot of possible situations, which a modified queue would do for him.
+Paul
+</div></div><div class="thread-post"><h3 class="thread-post-title">More efficient queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/incrediball">incrediball</a> on June 3, 2008</div><div class="thread-post-content">I might be missing something but this doesn&#8217;t sound too hard: since the number of bytes that needs to be received seems to be known only to the interrupt, the interrupt should signal the application by using a semaphore. The semaphore is only given when the interrupt has deemed that enough bytes have been received for a command. Otherwise you queue the bytes as you were originally doing but the application should not block on reading the queue. Instead it should wait for the semaphore, which will indicate that a complete command is ready for processing. When the application has the semaphore, it can then read the required number of bytes from the queue.
+</div></div><div class="thread-post"><h3 class="thread-post-title">More efficient queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/paul_piak">paul_piak</a> on June 4, 2008</div><div class="thread-post-content">Basically, I think you&#8217;re right. I forgot that I could &#95;keep&#95; the queue. In my enthusiasm for freeing up resources I tossed it away, but a queue is probably the way I am supposed to move data to a task. 
+Given the limitations of the framework, this is probably how it should be done.
+But then, a queue which is never used to block the receiving task is only used half. It still has the associated overhead of checking whether a task should be unblocked, and I already know the answer beforehand: NO. I think this also is overhead I could do without.
+Probably just the circular buffer with some critical sections is more efficient, albeit more dangerous since all the protection code &#40;against simultaneous write access by the task and the ISR&#41; needs to be placed by me.
+By the way: the &#95;task&#95; is the only one who knows the number of bytes that needs to be received, not the interrupt. That is why I proposed a &#8216;xQueueReceive&#40;&#41;&#8217; variant which also has an argument for the number of items. It should not test for tasks to unblock if not at least the requested number of bytes are in the queue.
+To me this seems to be a useful feature. How many applications out there receive no more than 1 byte at a time, or have only fixed size messages &#40;1 queue itemsize&#41;? I would guess this is the minority.
+If everybody else &#40;those who receive variable-length messages&#41; uses 2 queues: 1 queue which never blocks plus a semaphore &#40;= queue without length&#41;, to collect data into a multibyte message, then there is room for improvement.
+Paul
+PS.
+Alternatively, consider this: There is a stripped-down queue which has no length, only the blocking mechanism: the semaphore.
+Shouldn&#8217;t there also be a queue without blocking mechanism &#40;but with simultaneous write access protection&#41;?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

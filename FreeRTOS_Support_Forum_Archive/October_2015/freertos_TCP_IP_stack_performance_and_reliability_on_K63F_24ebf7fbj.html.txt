@@ -1,0 +1,370 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCP/IP stack performance and reliability on K63F - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2015/freertos_TCP_IP_stack_performance_and_reliability_on_K63F_24ebf7fbj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="TCP/IP stack performance and reliability on K63F - FreeRTOS" />
+<meta property="og:description" content="TCP/IP stack performance and reliability on K63FPosted by tselmeci on October 6, 2015Hello! We&#8217;ve got a custom PCB with Freescale Kinetis K63F @96MHz (Cortex M4). It&#8217;s running FreeRTOS-8.0.0, ported by Freescale, sources are taken from KSDK-1.2.0. I&#8217;ve added FreeRTOS Labs TCP/IP stack version 150825. The PHY is LAN8720a, uses RMII interface. In order to test &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2015/freertos_TCP_IP_stack_performance_and_reliability_on_K63F_24ebf7fbj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="TCP/IP stack performance and reliability on K63FPosted by tselmeci on October 6, 2015Hello! We&#8217;ve got a custom PCB with Freescale Kinetis K63F @96MHz (Cortex M4). It&#8217;s running FreeRTOS-8.0.0, ported by Freescale, sources are taken from KSDK-1.2.0. I&#8217;ve added FreeRTOS Labs TCP/IP stack version 150825. The PHY is LAN8720a, uses RMII interface. In order to test [&hellip;]" />
+<meta name="twitter:title" content="TCP/IP stack performance and reliability on K63F - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202565' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202565' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202565' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202565' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145115' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2015%2Ffreertos_TCP_IP_stack_performance_and_reliability_on_K63F_24ebf7fbj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2015%2Ffreertos_TCP_IP_stack_performance_and_reliability_on_K63F_24ebf7fbj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145115">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2015_freertos_support_forum_archive_index.html/">October 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on October 6, 2015</div><div class="thread-post-content">Hello!
+We&#8217;ve got a custom PCB with Freescale Kinetis K63F @96MHz (Cortex M4). It&#8217;s running FreeRTOS-8.0.0, ported by Freescale, sources are taken from KSDK-1.2.0. I&#8217;ve added FreeRTOS Labs TCP/IP stack version 150825. The PHY is LAN8720a, uses RMII interface.
+In order to test the stability and reliability of K63F ethernet HW/driver and my NetworkInterface.c implementation, I&#8217;ve made a small test suite comprising of a UDP and a TCP &#8220;flood&#8221; test. The only difference between them (apparently) is the protocol being used (TCP/UDP). Anyway, the working mechanism is the same:
+1. sender (PC / linux) generates a packet with random length (not greater than 1500 bytes);
+2. sender transmits the packet;
+3. receiver (K63F / FreeRTOS) receives the packet, checks the CRC, updates internal stats etc;
+4. receiver sends a packet back with the same format but with different contents (and size) to the sender (PC);
+5. PC checks the validity of the incoming message (CRC etc), updates stats etc;
+6. and this goes in an endless loop;
+I&#8217;ve got two questions regarding the network stack:
+<ol>
+<li>the transfer speed can&#8217;t be increased over ~380kB/s in each direction (TX/RX). If the payload size is smaller (e.g. ~800 bytes), it can RX/TX up to 460-470 packets in a second. If the payload is greater (e.g. ~1450 bytes), it can RX/TX less packets, but the final transfer speed will be somewhere around ~380kB/s. I believe there can be a HW bottleneck (memory bandwidth with memcpy tests is around ~100MB/s), or my NetworkInterface.c implementation is probably not optimal. What I&#8217;m curious is that according to your experiences what&#8217;s the expectable highest RX/TX speed on such a machine like mine? What transfer speeds have you faced?</li>
+<li>My UDP stress test appears to be able to run forever (>23 GB RX and >23 GB TX data, I&#8217;ve stopped it manually), but TCP test goes wrong. After ~12 hours of running (>14 GB RX and >14GB TX data) at the mentioned ~330kB/s speed (in each direction) something happens and the transfer speed falls back to ~30-40kB/s and some transfer errors occur (the CRC detects corrupt packets in my test program). With this reduced speed and some occasional badly received packets it still can run ~12 hours, when it totally crashes and the transfer speed goes down to 0-1 kB/s (0-1 packets/s). At first, I can imagine my NetworkInterface.c still needs some tuning, and the ethernet buffers for the Ethernet HW may also be need to be tuned. However, what is strange is that if I stop the test when the TCP speed is so slow (MCU is not restarted) and initiate a  UDP test, it runs at ~330kB/s as it should. If I restart the TCP test, the TCP transfer speed is still too low. This is the only sign that makes me ask you whether this can be a TCP/IP stack related issue? Have you got any idea? If needed, I can provide you with the source code of my UDP/TCP tests. Of course I haven&#8217;t given up examining my codes.</li>
+</ol>
+Thanks in advance,
+tselmeci
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on October 6, 2015</div><div class="thread-post-content">Hi Tamas,
+<blockquote>
+  the final transfer speed will be somewhere around ~380kB/s.
+</blockquote>
+That sounds <strong>very slow</strong> to me. I&#8217;m sure that it can do much better.
+<blockquote>
+  What transfer speeds have you faced?
+</blockquote>
+Varying between 1 and 10 MByte on a 100 mbit LAN, depending on the platform.
+On a Freescale Kinetis K63F @96MHz (Cortex M4), I would expect at least 3 MByte per second.
+When using DMA, having enough SRAM, etc.
+If you want, can you attach the following files?
+<ul>
+<li>FreeRTOSConfig.h</li>
+<li>FreeRTOSIPConfig.h</li>
+<li>NetworkInterface.c</li>
+<li>The actual MAC / ethernet / DMA / PHY driver(s)</li>
+<li>Your testing / demo code</li>
+</ul>
+Oh yes please tell us which choices that you made here:
+~~~~~
+    Source/portable/MemMang/heap<em>???.c
+    FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation</em>???.c
+~~~~~
+<blockquote>
+  After ~12 hours of running (..) something happens and the transfer speed falls back
+</blockquote>
+Do you have logging enabled? See FreeRTOSIPConfig.h :
+~~~~~
+    #define ipconfigHAS<em>PRINTF               1
+    #if( ipconfigHAS</em>PRINTF != 0 )
+        #define FreeRTOS_printf( MSG )  vLoggingPrintf MSG
+    #endif
+~~~~~
+Now before and after the speeds drops, it would be nice to give the command, declared in <code>FreeRTOS_Sockets.h</code> :
+~~~~~
+    void FreeRTOS_netstat( void );
+~~~~~
+This command will log how many sockets and buffers are being used.
+Here is a real example of the netstat output:
+~~~~~
+netstat
+Prot Port IP-Remote       : Port  R/T Status       Alive  tmout Child
+TCP  8001 0.0.0.0         :    0 0/0 eTCP<em>LISTEN   999999      0 0/12
+TCP  8000 0.0.0.0         :    0 0/0 eTCP</em>LISTEN   999999      0 0/12
+TCP    21 0.0.0.0         :    0 0/0 eTCP<em>LISTEN   999999      0 1/12
+TCP  8021 0.0.0.0         :    0 0/0 eTCP</em>LISTEN   999999      0 0/12
+TCP  2402 192.168.2.3     : 4281 1/1 eESTABLISHED       3  20000
+TCP    23 0.0.0.0         :    0 0/0 eTCP<em>LISTEN   999999      0 0/3
+TCP    80 0.0.0.0         :    0 0/0 eTCP</em>LISTEN   999999      0 12/16
+TCP  8080 0.0.0.0         :    0 0/0 eTCP<em>LISTEN   999999      0 0/16
+TCP 10145 0.0.0.0         :    0 0/0 eTCP</em>LISTEN   999999      0 0/10
+TCP    80 192.168.2.3     : 4331 1/1 eESTABLISHED    7464  12430
+TCP    80 192.168.2.3     : 4562 1/1 eESTABLISHED    7458  12440
+TCP    80 192.168.2.3     : 4563 1/1 eESTABLISHED    7782  12112
+TCP    80 192.168.2.3     : 4564 1/1 eESTABLISHED    7782  12112
+TCP    80 192.168.2.3     : 4565 1/1 eESTABLISHED    7768  12128
+TCP    80 192.168.2.3     : 4566 1/1 eESTABLISHED    7767  12131
+TCP    80 192.168.2.3     : 4584 1/1 eESTABLISHED   10233  12152
+TCP    80 192.168.2.3     : 4585 1/1 eESTABLISHED   10310  12074
+TCP    80 192.168.2.3     : 4586 1/1 eESTABLISHED    9674  12713
+TCP    80 192.168.2.3     : 4587 1/1 eESTABLISHED   10337  12048
+TCP    80 192.168.2.3     : 4588 1/1 eESTABLISHED   10338  12047
+TCP    80 192.168.2.3     : 4589 1/1 eESTABLISHED   10311  12076
+TCP    21 192.168.2.3     : 4596 1/1 eESTABLISHED    7828  12214
+TCP 57832 192.168.2.3     : 4597 1/0 eESTABLISHED       6     18
+UDP Port 30718
+UDP Port  2000
+UDP Port 30717
+FreeRTOS_netstat: 26 sockets 23 &lt; 24 &lt; 36 buffers free
+~~~~~
+There are 26 sockets at this moment, mostly opened by browsers (port 80).
+The buffers are interesting: a minimum of 23, currently 24 and a maximum of 36 buffers.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on October 7, 2015</div><div class="thread-post-content">Hello Hein!
+First of all, thanks for your response.
+K63F has 256KB SRAM, but I&#8217;ve allocated much less for ethernet buffers. The ethernet driver is based on the KSDK&#8217;s ethernet hal/drv, and is using IRQs but not using DMA. I&#8217;ve made a quick test and the KSDK driver can transmit ~30000 ethernet frames in a second (46 bytes in size), what equals to ~1.3MB/s. Increasing the packet size is expected to boost the transfer speed too. Unfortunately KSDK&#8217;s ethernet driver can produce strange things, so I have to solve these too.
+I believe I&#8217;m doing something wrong in my NetworkInterface.c and my TCP/IP settings also need some tuning.
+I&#8217;ve added FreeRTOS_netstat(). Displays the following when running at full speed:
+**Prot Port IP-Remote       : Port  R/T Status       Alive  tmout Child
+TCP  2222 0               ip:    0 0/0 eTCP<em>LISTEN        0      0 1/8
+TCP  2222 c0a8c9de        ip:47817 1/1 eESTABLISHED       0      0
+FreeRTOS</em>netstat: 2 sockets 19 &lt; 20 &lt; 20 buffers free
+**
+Displays the following just after the speed drops to 30kB/s (but still not RX errors):
+**Prot Port IP-Remote       : Port  R/T Status       Alive  tmout Child
+TCP  2222 0               ip:    0 0/0 eTCP<em>LISTEN        0      0 1/8
+TCP  2222 c0a8c9de        ip:47817 1/1 eESTABLISHED       0      0
+FreeRTOS</em>netstat: 2 sockets 18 &lt; 20 &lt; 20 buffers free
+**
+Using src/heap<em>3.c and BufferAllocation</em>1.c.
+Several files you requested are attached. None of them is compilable, since I had to remove some parts, but I hope they help you.
+I&#8217;m working on another (more important) project in 80% of my time, so that&#8217;s the reason for the slow reply. Nevertheless I want to solve all my issues by the end of the year, so I&#8217;m going to allocate the adequate amount of time to them.
+Regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on October 7, 2015</div><div class="thread-post-content">Hello Tamas,
+Thanks for attaching the sources. I&#8217;ll give a quick response now and another response after studying the sources in detail.
+<blockquote>
+  The Ethernet driver is based on the KSDK&#8217;s Ethernet hal/drv,
+  and is using IRQs but not using DMA.
+</blockquote>
+I&#8217;ve downloaded the drivers and had a look at them.
+I would definitely define:
+~~~~~
+    #define ENET<em>RECEIVE</em>ALL_INTERRUPT   0
+~~~~~
+If not, <code>ENET_DRV_ReceiveData()</code> will be called from a hardware interrupt.
+In stead of fetching the data, OSA_EventSet() can wake-up the task in NetworkInterface.c (using <code>xTaskNotify()</code> or <code>xSemaphoreGive()</code>).
+You can look into any of the existing NetworkInterface.c how this was done with <code>xTaskNotify()</code> / <code>xTaskNotifyGive()</code>.
+After being woken up, your MAC-task will call <code>ENET_DRV_ReceiveData()</code> to check if there is new RX data.
+<blockquote>
+  but not using DMA&#8230;
+</blockquote>
+I think it is using DMA although it is not mentioned as such. The MAC peripheral has direct access to SRAM to read and write packet data. That is also why it should be well aligned.
+<blockquote>
+  Unfortunately KSDK&#8217;s Ethernet driver can produce strange things, so I have to solve these too.
+  Maybe it will already help to stop using <code>ENET_RECEIVE_ALL_INTERRUPT = 1</code>.
+</blockquote>
+From your <code>test-pc.c</code> :
+<blockquote>
+  close(sock);
+  shutdown(sock, SHUT_RDWR);
+</blockquote>
+Oops : once a socket is closed, it may not be accessed any more. A socket is like a pointer to memory, once freed it may not be accessed.
+After issuing a <code>shutdown()</code>, the program should wait until the shutdown has been executed.
+After starting a graceful shutdown, you would see the following:
+<ul>
+<li>select(socket) => succeeds</li>
+<li>recv(socket) => 0 bytes</li>
+<li>Under Windows, you&#8217;d receive an event from WinSock: &#8220;FD_CLOSE&#8221;.</li>
+</ul>
+The above sequence is a possible sign that the shutdown sequence is ready.
+Under +TCP: keep on reading from the socket until you get a negative return value other than <code>-pdFREERTOS_ERRNO_EWOULDBLOCK</code>:
+~~~~~
+    /* For +TCP the second parameter of shutdown() is still ignored. <em>/
+    if( FreeRTOS_shutdown( xSocket, FREERTOS_SHUT_RDWR ) >= 0 )
+    {
+        for( ;; )
+        {
+           /</em> You may also use FreeRTOS<em>select() when
+           working with several sockets. */
+            xRc = FreeRTOS</em>recv( xSocket, xxx );
+            if( xRc > 0 )
+            {
+                /* Use xRc data bytes. <em>/
+            }
+            else if( ( xRc &lt; 0 ) &amp;&amp; ( xRc != -pdFREERTOS_ERRNO_EWOULDBLOCK ) )
+            {
+                /</em> The connection was shutdown gracefully. <em>/
+                break;
+            }
+        }
+    }
+    else
+    {
+        /</em> Shutdown failed, close the socket. */
+    }
+    FreeRTOS_closesocket( xSocket );
+~~~~~
+This is important: &#8220;a negative return value other than <code>-pdFREERTOS_ERRNO_EWOULDBLOCK</code>&#8221; : it always means that the socket has become unusable and may be closed.
+<blockquote>
+  I&#8217;ve added FreeRTOS<em>netstat(). Displays the following when running at full speed:
+  FreeRTOS</em>netstat: 2 sockets 19 &lt; 20 &lt; 20 buffers free
+</blockquote>
+That looks good, you only used at most 1 buffer (officially called a &#8220;network buffer descriptor&#8221;).
+<blockquote>
+  Displays the following just after the speed drops to 30kB/s (but still not RX errors):
+  Prot Port IP-Remote : Port R/T Status Alive tmout Child
+  TCP 2222 0 ip: 0 0/0 eTCP<em>LISTEN 0 0 1/8
+  TCP 2222 c0a8c9de ip:47817 1/1 eESTABLISHED 0 0
+  FreeRTOS</em>netstat: 2 sockets 18 &lt; 20 &lt; 20 buffers free
+</blockquote>
+Hm, that also looks good.
+<blockquote>
+  Using src/heap<em>3.c and BufferAllocation</em>1.c.
+</blockquote>
+Very well, <code>BufferAllocation_1</code> is the module that does <strong>not</strong> use pvPortMalloc(). It is faster that <code>BufferAllocation_2</code> and it guarantees that all <code>ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS</code> buffers will be available (independent from availability of heap memory).
+<blockquote>
+  Several files you requested are attached. None of them is compilable,
+  since I had to remove some parts, but I hope they help you.
+</blockquote>
+Thanks, no problem if it&#8217;s not compilable.
+<blockquote>
+  I&#8217;m working on another (more important) project in 80% of my time, so that&#8217;s the reason for the
+  slow reply. Nevertheless I want to solve all my issues by the end of the year, so I&#8217;m going to
+  allocate the adequate amount of time to them.
+</blockquote>
+That should be doable.
+As soon as I have my Freescale board I can help to boost the development.
+For now I can only help with the theory 🙂
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on October 7, 2015</div><div class="thread-post-content">Thanks.
+This sounds reasonable and I&#8217;ll give it a try:
+~~~~
+<h1>define ENET<em>RECEIVE</em>ALL_INTERRUPT 0</h1>
+~~~~
+About <code>shutdown</code> and <code>close</code>: I didn&#8217;t pay too much attention to use it correctly, since it wasn&#8217;t the point of test apps (instead testing the reliability of UDP/TCP transmissions).
+Regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on November 11, 2015</div><div class="thread-post-content">I&#8217;ve refactored the code to compile with
+<strong>#define ENET<em>RECEIVE</em>ALL_INTERRUPT 0</strong>
+but the max RX/TX transfer speed is still around ~330kB/s. I&#8217;m still thinking what could go wrong. About the stability there&#8217;s no relevant information available yet, since the stress test is about to be done over the night&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on November 12, 2015</div><div class="thread-post-content">The good news that the stability has improved. The bad is that I&#8217;ve found some other issues&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hackrid">hackrid</a> on November 23, 2015</div><div class="thread-post-content">what changes did you have to do to the source to make it work with the ENET<em>RECEIVE</em>ALL_INTERRUPT 0 flag ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hackrid">hackrid</a> on November 23, 2015</div><div class="thread-post-content">setting the ENET<em>RECEIVE</em>ALL_INTERRUPT flag to 0 results in a hardfault as soon as I try iperf test which properly works with the flag set to 1 (and having the runtime assertion in the generic receive function disabled)
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 23, 2015</div><div class="thread-post-content">Are you also working with Freescale Kinetis K63F, I assume?
+This is a new port. Tamás (who started this forum thread) and I are currently developing and testing a NetworkInterface.c
+I suggested to put the ENET<em>RECEIVE</em>ALL_INTERRUPT flag to zero in order to avoid that the ISR (<code>ENET_DRV_RxIRQHandler</code>) will execute a lot of code.
+It looks like Tamás has his driver almost stable. As soon as it runs perfectly, you&#8217;ll hear about it in this thread.
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hackrid">hackrid</a> on November 25, 2015</div><div class="thread-post-content">not exactly. I have it running on a TWR-K65F180 + TWR-SER combination.
+really great to hear someone is working on it!
+besides: I get ~ 3.6 MB/s performance with the old driver an my board.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on November 25, 2015</div><div class="thread-post-content">As Hein wrote earlier, I&#8217;ve successfully managed to make it work with
+<strong>#define ENET<em>RECEIVE</em>ALL_INTERRUPT   0</strong>
+enet<em>dev</em>if<em>t has a signal that is called by the driver once an ethernet frame is received. I made a task (deferred RX task) watching this signal and taking the RX frames out (ENET</em>DRV_ReceiveData) when the signal is set. Since ethernet driver is set up with preallocated buffers no memory allocation is needed in this step, so the received frame is simply passed to +TCP stack for further processing. +TCP also has preallocated buffers, so this step is very fast.
++TCP calls xNetworkInterfaceOutput when it wants to send an ethernet frame out. It can happen that enet driver at that very moment doesn&#8217;t have a free buffer. No matter if xNetworkInterfaceOutput returns with an error code, it won&#8217;t attempt to send that frame out again, so it&#8217;ll be lost. So my xNetworkInterfaceOutput driver is waiting till at least one enet buffer becomes available.
+On my machine the +TCP stack&#8217;s task priority must be higher than the deferred RX task&#8217;s priority (which is woken up by the mentioned signal). This is a bit weird, since Hein has just suggested me the opposite setup; with that configuration my enet driver was non-functional.
+About the transfer speed: I&#8217;ve created four tests:
+1. PC &#8211;> K63F ethernet frame flood;
+2. PC <--> K63F RX/TX ethernet frame flood (ping-pong);
+3. PC &#8211;> K63F TCP packet flood (size up to 1500 bytes);
+4. PC <--> K63F RX/TX TCP packet flood;
+1) PC sends to K63F as many raw ethernet frames with max size (1514) as possible. My K63F at 96MHz can receive them at almost 100Mbps;
+2) PC sends a raw ethernet frame, K63F receives and sends it back. This is surprisingly slow, ~15Mbps in each direction (RX/TX);
+3) PC sends to K63F as many TCP packets (size up to 1500 bytes) as possible. My K63F performs at ~30Mbps;
+4) PC sends a TCP packet, K63F receives and sends it back. This is the slowest of all, ~6-7Mbps in each direction (RX/TX);
+It turned out that the CRC16 algo I used to use on my K63F is quite slow and is a bottleneck. Replacing it with a much simpler checksum algo, the transfer speed had a big jump.
+Also, setting the correct task priorities, using vTaskDelay, taskYIELD etc. can also boost the performance, since other task don&#8217;t get starved.
+There are still options to further increase transfer speed (e.g. zero-copy, or by very thoroughly refactoring all memcpy calls, using MAC&#8217;s HW capabilities etc.). Or by reaching the theoretical highest speed of the MCU (120 MHz) 😉
+I want to say &#8220;thank you&#8221; for Hein&#8217;s exhaustive help 😉 he has given me some really good ideas.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hackrid">hackrid</a> on November 26, 2015</div><div class="thread-post-content">may I ask why you don&#8217;t use the hardare CRC unit in your processor?
+do you plan to release your work ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP/IP stack performance and reliability on K63F</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on November 27, 2015</div><div class="thread-post-content">This CRC (CRC16) is on top of the received TCP packet, which is already protected by TCP/IP&#8217;s CRC and ethernet frame&#8217;s CRC. I was just using it during development until I ensured that my TCP packets really get transferred without any corruption. In another words, I&#8217;d say it was a kind of paranoid check for my sake only. The MAC uses some HW accelerators, but I can&#8217;t tell you now exactly what. I&#8217;ve got a scheduled ticket to turn on more MAC HW accelerators to boost speed, but it&#8217;s of low priority now.
+I don&#8217;t plan on releasing my final NetworkInterface.c, since it&#8217;s the property of the company I&#8217;m working for and I&#8217;m not authorized to do so. I hope this isn&#8217;t against the licensing conditions of FreeRTOS/+TCP.
+By the way, if you read through this discussion carefully, you&#8217;ll find the skeleton of my original driver and following all the available descriptions and hints, you can create you own version too.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

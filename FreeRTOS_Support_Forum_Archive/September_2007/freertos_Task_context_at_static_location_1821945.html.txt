@@ -1,0 +1,192 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task context at static location - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2007/freertos_Task_context_at_static_location_1821945.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Task context at static location - FreeRTOS" />
+<meta property="og:description" content="Task context at static locationPosted by artlip on September 12, 2007Hi, The main idea is to allocate space for task context in the TCB e.g. typedef struct tskTaskControlBlock &#123; &#035;if &#040; configUSE&#095;STATIC&#095;CONTEXT&#095;FRAME == 1 &#041; &nbsp;&nbsp;&nbsp; portSTACK&#095;TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pxCpuContextFrame&#091; portCPU&#095;CONTEXT&#095;SIZE &#093;; &#035;else &nbsp;&nbsp;&nbsp; volatile portSTACK&#095;TYPE&nbsp; &#042;pxTopOfStack; &#035;endif &#8230; Basing on my previous experience with another RTOS &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2007/freertos_Task_context_at_static_location_1821945.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Task context at static locationPosted by artlip on September 12, 2007Hi, The main idea is to allocate space for task context in the TCB e.g. typedef struct tskTaskControlBlock &#123; &#035;if &#040; configUSE&#095;STATIC&#095;CONTEXT&#095;FRAME == 1 &#041; &nbsp;&nbsp;&nbsp; portSTACK&#095;TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pxCpuContextFrame&#091; portCPU&#095;CONTEXT&#095;SIZE &#093;; &#035;else &nbsp;&nbsp;&nbsp; volatile portSTACK&#095;TYPE&nbsp; &#042;pxTopOfStack; &#035;endif &#8230; Basing on my previous experience with another RTOS [&hellip;]" />
+<meta name="twitter:title" content="Task context at static location - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201517' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201517' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201517' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201517' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140222' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2007%2Ffreertos_Task_context_at_static_location_1821945.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2007%2Ffreertos_Task_context_at_static_location_1821945.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140222">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2007_freertos_support_forum_archive_index.html/">September 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Task context at static location</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/artlip">artlip</a> on September 12, 2007</div><div class="thread-post-content">Hi,
+The main idea is to allocate space for task context in the TCB e.g.
+typedef struct tskTaskControlBlock
+&#123;
+&#35;if &#40; configUSE&#95;STATIC&#95;CONTEXT&#95;FRAME == 1 &#41;
+&nbsp;&nbsp;&nbsp; portSTACK&#95;TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pxCpuContextFrame&#91; portCPU&#95;CONTEXT&#95;SIZE &#93;;
+&#35;else
+&nbsp;&nbsp;&nbsp; volatile portSTACK&#95;TYPE&nbsp; &#42;pxTopOfStack;
+&#35;endif
+&#8230;
+Basing on my previous experience with another RTOS and ARM platform I found that such solution has real advantages. It simplify and speeds up context save and restore &#40;at least for the ARM7 platform&#41;.
+The end results seems quite nice. For my benchmarks I got speedup up to 5% &#40;five tasks with the same priority doing only taskYIELD&#41;. 
+I&#8217;ve also observed speedup of interrupt processing. The time between interrupt generation to the first line of C code in the ISR is shorter over 8% &#40;even 9.5% with compiler optimized code&#41; and time from last line of C code in the ISR to the first instrucion in task is shorter nearly 4%.
+Tests was performed on LPC2114 using FreeRTOS 4.4 and GCC 4.2 compiler.
+Example code for context save for ARM7:
+&nbsp;&nbsp;&nbsp; /&#42; push R0 as we are going to use the register &#42;/
+&nbsp;&nbsp;&nbsp; STMDB&nbsp;&nbsp; SP&#33;, &#123;R0&#125;
+&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R0, =pxCurrentTCB
+&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R0, &#91;R0&#93;
+&nbsp;&nbsp;&nbsp; /&#42; seek to R1 location &#42;/
+&nbsp;&nbsp;&nbsp; ADD&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;16
+&nbsp;&nbsp;&nbsp; STMIA&nbsp;&nbsp; R0, &#123;R1-R14&#125;^
+&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R1, =ulCriticalNesting 
+&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R1, &#91;R1&#93;
+&nbsp;&nbsp;&nbsp; MRS&nbsp;&nbsp;&nbsp;&nbsp; R2, SPSR
+&nbsp;&nbsp;&nbsp; MOV&nbsp;&nbsp;&nbsp;&nbsp; R3, LR
+&nbsp;&nbsp;&nbsp; /&#42; pop R0 &#42;/
+&nbsp;&nbsp;&nbsp; LDMIA&nbsp;&nbsp; SP&#33;, &#123;R4&#125;
+&nbsp;&nbsp;&nbsp; /&#42; seek to SPSR location &#40;begin of the context frame&#41; &#42;/
+&nbsp;&nbsp;&nbsp; SUB&nbsp;&nbsp;&nbsp;&nbsp; R0, R0, &#35;16
+&nbsp;&nbsp;&nbsp; /&#42; R1 = ulCriticalNesting, R2 = SPSR, R3 = LR, R4 = R0 &#42;/
+&nbsp;&nbsp;&nbsp; STMIA&nbsp;&nbsp; R0, &#123;R1-R4&#125;
+Example code for context restore for ARM7:
+&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R0, =pxCurrentTCB
+&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R0, &#91;R0&#93;
+&nbsp;&nbsp;&nbsp; /&#42; R1 = ulCriticalNesting, R2 = SPSR &#42;/
+&nbsp;&nbsp;&nbsp; LDMIA&nbsp;&nbsp; R0&#33;, &#123;R1-R2, LR&#125;
+&nbsp;&nbsp;&nbsp; LDR&nbsp;&nbsp;&nbsp;&nbsp; R3, =ulCriticalNesting
+&nbsp;&nbsp;&nbsp; STR&nbsp;&nbsp;&nbsp;&nbsp; R1, &#91;R3&#93;
+&nbsp;&nbsp;&nbsp; MSR&nbsp;&nbsp;&nbsp;&nbsp; SPSR&#95;fsxc, R2
+&nbsp;&nbsp;&nbsp; LDMIA&nbsp;&nbsp; R0, &#123;R0-R14&#125;^
+&nbsp;&nbsp;&nbsp; NOP
+&nbsp;&nbsp;&nbsp; SUBS&nbsp;&nbsp;&nbsp; PC, LR, &#35;4
+I welcome any questions and critique.
+BTW&gt; Full patchset is available at request.
+Regards,
+&#45;- 
+Artur Lipowski
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task context at static location</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sashiono">sashiono</a> on September 12, 2007</div><div class="thread-post-content">do you have an example, or patchset that could be downloaded somewhere. I&#8217;d like to give it a try.&nbsp; What negative effects does/could this patch introduce? 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task context at static location</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sotd">sotd</a> on September 12, 2007</div><div class="thread-post-content">Why is it faster to store the context in an array rather than on the stack?
+Is this change portable?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task context at static location</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/artlip">artlip</a> on September 13, 2007</div><div class="thread-post-content">&gt; do you have an example, or patchset that could be 
+&gt; downloaded somewhere. I&#8217;d like to give it a try.
+I will send you a code by e-mail.
+&gt; What negative effects does/could this patch introduce?
+Well, till now I did not observe any bad things.
+It is one of reasons why I wrote on this forum &#8211; maybe other people will able to spot weak sides of this idea &#40;especially on other architectures&#41;.
+Regards,
+&#45;- 
+Artur Lipowski
+</div></div><div class="thread-post"><h3 class="thread-post-title">Task context at static location</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/artlip">artlip</a> on September 13, 2007</div><div class="thread-post-content">&gt; Why is it faster to store the context in an array rather 
+&gt; than on the stack?
+Existing code for context switch on ARM requires retrieving of the SP from different processor mode which complicates things &#40;a little bit&#41;. Another &#40;small&#41; speed up comes from the fact that we do not have to store SP twice in &#40;TCB and on the stack&#41;.
+In fact some speedup is also possible with using existing solution &#40;SP as a part of TCB&#41; and to treat stack as an array.
+&gt; Is this change portable?
+For current implementation the change is optional and it is just a matter of defining configUSE&#95;STATIC&#95;CONTEXT&#95;FRAME in FreeRTOSConfig.h
+Obviously changes for all ARM architectures &#40;including AVR32 ;-&#41; &#41; are very easy to port for other compilers.
+I will look at AVR if it can benefit from this idea.
+For other architectures I can only to hope for some feedback from this forum.
+Regards,
+&#45;- 
+Artur Lipowski
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

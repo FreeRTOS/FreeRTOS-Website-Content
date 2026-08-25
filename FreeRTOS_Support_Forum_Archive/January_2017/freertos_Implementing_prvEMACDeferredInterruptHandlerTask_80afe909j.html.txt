@@ -1,0 +1,442 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Implementing prvEMACDeferredInterruptHandlerTask - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2017/freertos_Implementing_prvEMACDeferredInterruptHandlerTask_80afe909j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Implementing prvEMACDeferredInterruptHandlerTask - FreeRTOS" />
+<meta property="og:description" content="Implementing prvEMACDeferredInterruptHandlerTaskPosted by orifai01 on January 3, 2017Hello, I&#8217;m trying to pass received data to the TCP/IP in a deferred interrupt handler task. I&#8217;ve implemented an ISR called xEthernetHandler as described in xTimerPendFunctionCallFromISR web page: void xEthernetHandler( void ) { BaseType_t xHigherPriorityTaskWoken = pdFALSE; NVIC_ClearPendingIRQ(ETHERNET_IRQn); if(smsc9220_RxStatusFifoLevelIrq()) { xTimerPendFunctionCallFromISR( prvEMACDeferredInterruptHandlerTask, NULL, 1, &amp;xHigherPriorityTaskWoken ); portYIELD_FROM_ISR( xHigherPriorityTaskWoken &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2017/freertos_Implementing_prvEMACDeferredInterruptHandlerTask_80afe909j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Implementing prvEMACDeferredInterruptHandlerTaskPosted by orifai01 on January 3, 2017Hello, I&#8217;m trying to pass received data to the TCP/IP in a deferred interrupt handler task. I&#8217;ve implemented an ISR called xEthernetHandler as described in xTimerPendFunctionCallFromISR web page: void xEthernetHandler( void ) { BaseType_t xHigherPriorityTaskWoken = pdFALSE; NVIC_ClearPendingIRQ(ETHERNET_IRQn); if(smsc9220_RxStatusFifoLevelIrq()) { xTimerPendFunctionCallFromISR( prvEMACDeferredInterruptHandlerTask, NULL, 1, &amp;xHigherPriorityTaskWoken ); portYIELD_FROM_ISR( xHigherPriorityTaskWoken [&hellip;]" />
+<meta name="twitter:title" content="Implementing prvEMACDeferredInterruptHandlerTask - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202751' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202751' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202751' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202751' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146256' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2017%2Ffreertos_Implementing_prvEMACDeferredInterruptHandlerTask_80afe909j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2017%2Ffreertos_Implementing_prvEMACDeferredInterruptHandlerTask_80afe909j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146256">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2017_freertos_support_forum_archive_index.html/">January 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/orifai01">orifai01</a> on January 3, 2017</div><div class="thread-post-content">Hello, I&#8217;m trying to pass received data to the TCP/IP in a deferred interrupt handler task.
+I&#8217;ve implemented an ISR called xEthernetHandler as described in xTimerPendFunctionCallFromISR web page:
+void xEthernetHandler( void )
+{
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+<pre><code>NVIC_ClearPendingIRQ(ETHERNET_IRQn);
+if(smsc9220_RxStatusFifoLevelIrq())
+{
+    xTimerPendFunctionCallFromISR( prvEMACDeferredInterruptHandlerTask,
+                                   NULL,
+                                   1,
+                                   &amp;xHigherPriorityTaskWoken );
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+}
+</code></pre>
+}
+void prvEMACDeferredInterruptHandlerTask( void * pvParameter1, uint32<em>t ulParameter2 )
+{
+    NetworkBufferDescriptor</em>t *pxBufferDescriptor;
+    size_t xBytesReceived;
+    unsigned int index = 0;
+<pre><code>/* Used to indicate that xSendEventStructToIPTask() is being called because
+of an Ethernet receive event. */
+IPStackEvent_t xRxEvent;
+for( ;; )
+{
+    /* Wait for the Ethernet MAC interrupt to indicate that another packet
+    has been received.  The task notification is used in a similar way to a
+    counting semaphore to count Rx events, but is a lot more efficient than
+    a semaphore. */
+    ulTaskNotifyTake( pdFALSE, portMAX_DELAY );
+    /* See how much data was received.  Here it is assumed ReceiveSize() is
+    a peripheral driver function that returns the number of bytes in the
+    received Ethernet frame. */
+    xBytesReceived = smsc9220_recv_size();
+    if( xBytesReceived &gt; 0 )
+    {
+        /* Allocate a network buffer descriptor that points to a buffer
+        large enough to hold the received frame.  As this is the simple
+        rather than efficient example the received data will just be copied
+        into this buffer. */
+        pxBufferDescriptor = pxGetNetworkBufferWithDescriptor( xBytesReceived, 0 );
+        if( pxBufferDescriptor != NULL )
+        {
+            if(smsc9220_recv_packet((unsigned int *)pxBufferDescriptor-&gt;pucEthernetBuffer, &amp;index))
+            {
+                printf("Packet receive failed.n");
+                vReleaseNetworkBufferAndDescriptor( pxBufferDescriptor );
+            }
+            else
+            {
+                pxBufferDescriptor-&gt;xDataLength = xBytesReceived;
+                /* See if the data contained in the received Ethernet frame needs
+                to be processed.  NOTE! It is preferable to do this in
+                the interrupt service routine itself, which would remove the need
+                to unblock this task for packets that don't need processing. */
+                if( eConsiderFrameForProcessing( pxBufferDescriptor-&gt;pucEthernetBuffer )
+                                                                      == eProcessBuffer )
+                {
+                    /* The event about to be sent to the TCP/IP is an Rx event. */
+                    xRxEvent.eEventType = eNetworkRxEvent;
+                    /* pvData is used to point to the network buffer descriptor that
+                    now references the received data. */
+                    xRxEvent.pvData = ( void * ) pxBufferDescriptor;
+                    /* Send the data to the TCP/IP stack. */
+                    if( xSendEventStructToIPTask( &amp;xRxEvent, 0 ) == pdFALSE )
+                    {
+                        /* The buffer could not be sent to the IP task so the buffer
+                        must be released. */
+                        vReleaseNetworkBufferAndDescriptor( pxBufferDescriptor );
+                        /* Make a call to the standard trace macro to log the
+                        occurrence. */
+                        iptraceETHERNET_RX_EVENT_LOST();
+                    }
+                    else
+                    {
+                        /* The message was successfully sent to the TCP/IP stack.
+                        Call the standard trace macro to log the occurrence. */
+                        iptraceNETWORK_INTERFACE_RECEIVE();
+                    }
+                }
+                else
+                {
+                    /* The Ethernet frame can be dropped, but the Ethernet buffer
+                    must be released. */
+                    vReleaseNetworkBufferAndDescriptor( pxBufferDescriptor );
+                }
+            }
+        }
+        else
+        {
+            iptraceETHERNET_RX_EVENT_LOST();
+        }
+    }
+}
+</code></pre>
+}
+I&#8217;m using BufferAllocation<em>2.c. ipconfigIP</em>TASK<em>PRIORITY is set to (configMAX</em>PRIORITIES &#8211; 1).
+Two questions:
+1. I don&#8217;t understand why ulTaskNotifyTake() is necessary, as we already got an Ethernet MAC interrupt (that&#8217;s the reason we entered handllerTask function).
+2.Althugh xTimerPendFunctionCallFromISR changes xHigherPriorityTaskWoken to be pdTRUE, prvEMACDeferredInterruptHandlerTask is not being called and all task seem to be stuck.
+Thank you for your help
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on January 3, 2017</div><div class="thread-post-content">The library FreeRTOS+TCP does not make use of FreeRTOS&#8217; timer functions.
+In all published versions of <code>NetworkInterface.c</code>, the TaskNotify mechanism is used to wake-up the <code>prvEMACDeferredInterruptHandlerTask</code>.
+~~~~
+void xEthernetHandler( void )
+{
+BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+<pre><code>NVIC_ClearPendingIRQ(ETHERNET_IRQn);
+if(smsc9220_RxStatusFifoLevelIrq())
+{
+    TaskNotifyGiveFromISR( xDeferredInterruptTaskHandle, ( BaseType_t * ) &amp;xHigherPriorityTaskWoken );
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+}
+</code></pre>
+}
+~~~~
+<blockquote>
+  <ol>
+  <li>I don&#8217;t understand why <code>ulTaskNotifyTake()</code> is necessary</li>
+  </ol>
+</blockquote>
+The function will go sleeping until an interrupt has occurred, which is soon after <code>TaskNotifyGiveFromISR()</code>. Note the <code>for(;;)</code> loop.
+Normally I would let it sleep for a limited amount of time: the PHY&#8217;s Link Status (LS) must be checked. When the LS goes low, transmission of packets is impossible and should be inhibited.
+<blockquote>
+  2.Although xTimerPendFunctionCallFromISR changes xHigherPriorityTaskWoken
+  to be pdTRUE, prvEMACDeferredInterruptHandlerTask is not being called and
+  all task seem to be stuck.
+</blockquote>
+I&#8217;m not sure what the reason is for that, but I would use the &#8216;lighter&#8217; method of <code>TaskNotify</code>.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/orifai01">orifai01</a> on January 3, 2017</div><div class="thread-post-content">Hi Hein,
+Thank you for your answer.
+<ol>
+<li>But the Ethernet interrupt has already occurred. That&#8217;s the reason you&#8217;ve entered xEthernetHandler. At that point I would like to read the received bytes but ulTaskNotifyTake() forces me to wait for additional interrupt. Shouldn&#8217;t it be at the end of the loop?</li>
+</ol>
+I have two additional questions:
+2. Shall I disable &amp; clean the interrupt at the begging of xEthernetHandler and enable it somewhere?
+3. Is this task running from scheduler startup or only from the first time Ethernet interrupt occures? What happens after receiving the second interrupt?
+Thank you,
+Orit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on January 3, 2017</div><div class="thread-post-content">Hi Orit,
+<blockquote>
+  But the Ethernet interrupt has already occurred.
+  That&#8217;s the reason you&#8217;ve entered xEthernetHandler.
+  At that point I would like to read the received bytes
+  but ulTaskNotifyTake() forces me to wait for additional
+  interrupt. Shouldn&#8217;t it be at the end of the loop?
+</blockquote>
+It doesn&#8217;t matter if the <code>ulTaskNotifyTake()</code> is placed at the beginning or at the end. The function will  be sleeping 99.9% of the time.
+The following will be the order of events, it all happens within micro seconds:
+● The interrupt handler <code>xEthernetHandler()</code> is called
+● It will call <code>TaskNotifyGiveFromISR()</code> to make <code>prvEMACDeferredInterruptHandlerTask()</code> runnable again
+● xHigherPriorityTaskWoken will be pdTRUE, and the YIELD will succeed
+● The task running <code>prvEMACDeferredInterruptHandlerTask()</code> is unblocked immediately ( unless there are other runnable tasks with a higher priority ).
+<blockquote>
+  <ol>
+  <li>Shall I disable &amp; clean the interrupt at the beginning of xEthernetHandler and enable it somewhere?</li>
+  </ol>
+</blockquote>
+I would think that it doesn&#8217;t make any difference.
+<blockquote>
+  <ol>
+  <li>Is this task running from scheduler startup or only
+  from the first time Ethernet interrupt occures?
+  What happens after receiving the second interrupt?</li>
+  </ol>
+</blockquote>
+Please have a good look at any of the other versions of <code>NetworkInterface.c</code>: you will see that <code>prvEMACDeferredInterruptHandlerTask()</code> will be started up once and that will will run for ever. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/orifai01">orifai01</a> on January 4, 2017</div><div class="thread-post-content">Hi Hein,
+I changed the xTimerPendFunctionCallFromISR() to TaskNotifyGiveFromISR() in the irq and rewrote xNetworkInterfaceInitialise so now it creates the deferred interrupt handler task.
+I&#8217;ve encountered a different problem. Context switch occurs but I keep receiving interrupts that preventing me from continuing.
+TaskHandle_t xDeferredInterruptTaskHandle = NULL;
+portBASE<em>TYPE xNetworkInterfaceInitialise(void)
+{
+    portBASE</em>TYPE xreturn;
+    xreturn = xTaskCreate(  xDeferredInterruptHandlerTask,
+                            &#8220;RCV&#8221;,
+                            configMINIMAL<em>STACK</em>SIZE * 3,
+                            NULL,
+                            mainDEFERRED<em>IRQ</em>TASK_PRIORITY,
+                            &amp;xDeferredInterruptTaskHandle );
+<pre><code>Common_EnableIrq(ETHERNET_IRQn, 223);
+return xreturn;
+</code></pre>
+}
+void xEthernetHandler( void )
+{
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+<pre><code>Common_DisableIrq(ETHERNET_IRQn);
+NVIC_ClearPendingIRQ(ETHERNET_IRQn);
+if(smsc9220_RxStatusFifoLevelIrq())
+{
+    vTaskNotifyGiveFromISR( xDeferredInterruptTaskHandle, ( BaseType_t * ) &amp;xHigherPriorityTaskWoken );
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+}
+Common_EnableIrq(ETHERNET_IRQn, configMAX_SYSCALL_INTERRUPT_PRIORITY);
+</code></pre>
+}
+What shall be the ETHERNET<em>IRQn irq priority if configKERNEL</em>INTERRUPT<em>PRIORITY equals to 255 and configMAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY equals to 191.
+Thank you,
+Orit
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 4, 2017</div><div class="thread-post-content">Interrupt priorities on Cortex-M cores is often the cause of some 
+confusion, so we have tried to explain it on the following page:
+http://www.freertos.org/RTOS-Cortex-M3-M4.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on January 5, 2017</div><div class="thread-post-content">Hi Orit,
+I would be curious to see <code>smsc9220_RxStatusFifoLevelIrq()</code>.
+In general: there are many possible triggers for <code>ETHERNET_IRQn</code>. Only the triggers that you need (RX, error?) should be enabled (the others are said to be &#8220;masked off&#8221;). Now if your interrupt-handler is called, the cause of the interrupt must be reset / cleared. How it is to be cleared depends on the peripheral.
+In some cases it suffices to read the STATUS bits, sometimes a logical <strong>0</strong> or <strong>1</strong> must be written to the status-bit in order to reset it. Yet in other cases, nothing has to be done.
+So if you observe that the interrupt keeps on being called, try to make clear what the reason is and how it can be cleared.
+I do not think it is necessary to call <code>Common_DisableIrq()</code> and <code>Common_EnableIrq()</code> from within the interrupt handler.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/orifai01">orifai01</a> on January 5, 2017</div><div class="thread-post-content">Hi Hein,
+The Trigger I need is &#8220;RX FIFO Status Interrupt Level&#8221;.  smsc9220_RxStatusFifoLevelIrq() simply checks the &#8220;RX FIFO Status Interrupt Level&#8221; bit in interrupt status register:
+int smsc9220<em>RxStatusFifoLevelIrq(void)
+{
+    return CHECK</em>BIT(SMSC9220->INT_STS, 3);
+}
+I would like the task function to read received bytes everytime interrupt occurs. I do not want the interrupt to occur during the reading process so I disable it, and enable it after reading a packet. 
+The problem is that the interrupt keeps on being called because I receive a lot of packets, and no other task can run. Is it better to implement this listener as a simple reading function (without a loop) and call xTimerPendFunctionCallFromISR() instead of a task?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on January 6, 2017</div><div class="thread-post-content">Hi Orit,
+~~~~
+int smsc9220<em>RxStatusFifoLevelIrq(void)
+{
+/* HT : if CHECK</em>BIT() is only testing the value of a bit,
+  this action will probably not reset the cause of the interrupt.
+  It is documented as a R/WC bit: Read/Write Clear:
+  A register bit with this attribute can be read and written.
+  However, a write of a 1 clears (sets to 0) the corresponding
+  bit and a write of a 0 has no effect
+*/
+    return CHECK_BIT(SMSC9220->INT_STS, 3);
+}
+~~~~
+<blockquote>
+  I would like the task function to read received bytes every time
+  interrupt occurs. I do not want the interrupt to occur during the
+  reading process so I disable it, and enable it after reading a packet.
+</blockquote>
+You better leave the interrupt enabled all the time, no problem. All it does is make your task runnable. The next call to <code>ulTaskNotifyTake()</code> will succeed immediately without blocking.
+If you disable the RX interrupt, you might miss data or receive them too late.
+<blockquote>
+  The problem is that the interrupt keeps on being called because I
+  receive a lot of packets, and no other task can run.
+</blockquote>
+I dare to doubt this theory 🙂
+Please check which interrupt bits are enabled in <code>INT_EN</code> and make sure that during the interrupt, the corresponding bits in <code>INT_STS</code> will be cleared.
+That will stop the heavy load of interrupts.
+If you still see too many RX data, make sure that the MAC filtering is OK: do not use promiscuous mode but set certain MAC addresses that are used by your device.
+<blockquote>
+  Is it better to implement this listener as a simple reading function
+  (without a loop) and call xTimerPendFunctionCallFromISR() instead of a task?
+</blockquote>
+I don&#8217;t think so.
+The proposal is as follows:
+~~~~
+    for( ;; )
+    {
+        ulTaskNotifyTake( pdFALSE, ulMaxBlockTime );
+        for( ;; )
+        {
+            xBytesReceived = smsc9220<em>recv</em>size();
+           if( xBytesReceived &lt;= 0 )
+           {
+               break;
+           }
+           /* send the received packet to the IP-task. */
+        }
+    }
+~~~~
+The ETH interrupt remains active (enabled) all the time. If an interrupt occurs while reading RX packets, that is no problem. Only <code>vTaskNotifyGiveFromISR()</code> will be called, causing the next <code>ulTaskNotifyTake()</code> to &#8220;fall through&#8221;.
+Please have a look of one of the other ports, such as:
+<pre><code>FreeRTOS-Plus-TCP/portable/NetworkInterface/ATSAM4E/NetworkInterface.c
+</code></pre>
+Its interrupt handlers will also set a (volatile) bit to indicate what type of interrupt has occurred. This is tested later in the task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/orifai01">orifai01</a> on January 8, 2017</div><div class="thread-post-content">First of all, thank you very much for your time and efforts!
+<ol>
+<li>I&#8217;ve check INT<em>EN. only RX Fifo level interrupt is enabled (INT</em>EN = 0b1000).</li>
+<li>I tried to clean the RX interrupt by setting the third bit in INT_STS. For some reason it remains 1. I even tried to clear all interrupts but it didn&#8217;t help. What could be the reason for that?</li>
+<li>In order to set the perfect filtering mode, the following bits in MAC<em>CR were cleared at smsc initialization: MCPAS (19), PRMS (18), INVFILT (17), HO (15), HPFILT (13). MAC</em>CR = 0x1000000C.</li>
+<li>In two cases I stop receiving too many RX data: When setting BCAST in MAC<em>CR or when setting RX level to FF (i.e. setting FIFO</em>INT to 0xFFFFFFFF).</li>
+<li>I&#8217;ve checked MAC<em>ADDRH and MAC</em>ADDRL and they seem to be correct.
+If you have additional ideas of what could be wrong, I&#8217;ll be very glad to hear.</li>
+</ol>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on January 8, 2017</div><div class="thread-post-content">Hi Orit,
+<blockquote>
+  I&#8217;ve check INT<em>EN. only RX Fifo level interrupt is enabled (INT</em>EN = 0x1000).
+</blockquote>
+Setting 0x1000 would set bit 12, which is marked as reserved and RO. Did you mean <code>INT_EN = b'00001000'</code> or <code>0x08</code> ?
+<blockquote>
+  I tried to clean the RX interrupt by setting the third bit in INT_STS.
+  For some reason it remains 1. I even tried to clear all interrupts but
+  it didn&#8217;t help. What could be the reason for that?
+</blockquote>
+That is unexpected.
+What happens if within the interrupt you clear <code>INT_EN</code> bit 3, and re-enable the same bit from within the task, after emptying the RX FIFO?
+<blockquote>
+  In order to set the perfect filtering mode, the following bits in MAC<em>CR were
+  cleared at smsc initialisation: MCPAS (19), PRMS (18), INVFILT (17), HO (15),
+  HPFILT (13). MAC</em>CR = 0x10 00 00 0C.
+</blockquote>
+Did you set bit 28 your self? It is described as reserved.
+I would set bit 23: &#8220;Disable Receive Own (RCVOWN)&#8221;, if not you will receive your own packets as well.
+Later on, you might want to set <code>Pass All Multicast (MCPAS)</code>, in case you want to enable <code>LLMNR</code> protocol.
+<blockquote>
+  In two cases I stop receiving too many RX data: When setting BCAST
+  in MAC<em>CR or when setting RX level to FF (i.e. setting FIFO</em>INT to 0xFFFFFFFF).
+</blockquote>
+With <code>0xFFFFFFFF</code> you would be writing 1&#8217;s to reserved bits, which is normally &#8216;not done&#8217;.
+Wouldn&#8217;t you set it to e.g. 0x48000030 ?
+&#8216;0x30&#8217; or 48 bytes is assumed to be a minimum frame length.
+What I can not find is: how do you know when a received frame is complete?
+<blockquote>
+  If you have additional ideas of what could be wrong, I&#8217;ll be very glad to hear.
+</blockquote>
+<code>BCAST</code> disables broadcast. Can you check the following: run WireShark on your laptop, connected to the same LAN, and see if there is an abundant amount of broadcast messages. These messages have the MAC address <code>ff:ff:ff:ff:ff:ff</code> as a target.
+UDP broadcast messages can be quite disturbing for small embedded applications. Solution: filter them as soon as possible, preferably in the &#8216;deferred interrupt handler task&#8217;. The function <code>xPortHasUDPSocket()</code> tells whether a UDP port number is bound to a socket.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/orifai01">orifai01</a> on January 9, 2017</div><div class="thread-post-content">Hi Hein,
+1. Thanks. I ment 0b1000.
+2. Apparently this behavior caused by packets accumulation in TX FIFO. I let it run + changed FIFO<em>INT to 0x4800000C ( 12 dwords, 48 bytes, as the length is specify in dwords).
+3. I&#8217;ve changed MAC</em>CR to 0x90000C (disable receive own, disable heartbeat, enable xmit and enable receiver) and I&#8217;ve added xPortHasUDPSocket() to task function as you advised. Thank you very much!
+As you mentioned, interrupt shall occur when a full packet is received. I thought maybe &#8220;Magic Packet Detection&#8221; would fit but it detects reception of a specific pattern. I continue to investigate&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Implementing prvEMACDeferredInterruptHandlerTask</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/orifai01">orifai01</a> on January 10, 2017</div><div class="thread-post-content">I found the solution. RX Status level represents the number of words in RX status (not in RX data), so it is actually represents the number of received packets. Changed RX Status level to 0.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

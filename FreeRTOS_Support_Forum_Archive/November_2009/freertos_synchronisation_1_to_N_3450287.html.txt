@@ -1,0 +1,160 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>synchronisation 1 to N - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2009/freertos_synchronisation_1_to_N_3450287.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="synchronisation 1 to N - FreeRTOS" />
+<meta property="og:description" content="synchronisation 1 to NPosted by avatron on November 5, 2009Hi, I will need to solve this problem: I will refresh HW &#040;let&#8217;s say digital imputs&#041; through ISR and than I need to wake up several task, which wait for this refresh. It seems to me, that using mutex/binary semaphor will result in waking up only &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2009/freertos_synchronisation_1_to_N_3450287.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="synchronisation 1 to NPosted by avatron on November 5, 2009Hi, I will need to solve this problem: I will refresh HW &#040;let&#8217;s say digital imputs&#041; through ISR and than I need to wake up several task, which wait for this refresh. It seems to me, that using mutex/binary semaphor will result in waking up only [&hellip;]" />
+<meta name="twitter:title" content="synchronisation 1 to N - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201815' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201815' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201815' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201815' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140979' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2009%2Ffreertos_synchronisation_1_to_N_3450287.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2009%2Ffreertos_synchronisation_1_to_N_3450287.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140979">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2009_freertos_support_forum_archive_index.html/">November 2009 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">synchronisation 1 to N</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/avatron">avatron</a> on November 5, 2009</div><div class="thread-post-content">Hi,<br />
+I will need to solve this problem: I will refresh HW &#40;let&#8217;s say digital imputs&#41; through ISR and than I need to wake up several task, which wait for this refresh. It seems to me, that using mutex/binary semaphor will result in waking up only for 1 &#40;highest&#41; task. Am I right?  
+Could you suggest me how to solve this?  
+Tomas Novak
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jwestmoreland">jwestmoreland</a> on November 19, 2009</div><div class="thread-post-content">Have you looked aqt the tick hook mechanism?
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alexsvetek">alexsvetek</a> on November 19, 2009</div><div class="thread-post-content">I am also looking for a way to implement one-to-many and many-to-one<br />
+task synchronization. I guess it could be done with a combination of semaphores and event flags.  
+I am thinking about how to efficiently integrate event flags in FreeRTOS.<br />
+Richard, do you have any plans for this? Is something maybe already in the pipeline?   
+~Ales
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/avatron">avatron</a> on November 19, 2009</div><div class="thread-post-content">It seems to me that &#8220;tick hook mechanism&#8221; is for another purposes. Could You please explain me your suggestion?  
+Events &#8211; that&#8217;s it&#33; But I think there is no events in FreeRTOS and I do not know any workaround for it. So, what to do?  
+Tomas  
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/*anonymous">*anonymous</a> on November 19, 2009</div><div class="thread-post-content">Indeed there are no barriers in FreeRTOS, but barriers can easily be implemented using semaphores and counters.
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 19, 2009</div><div class="thread-post-content">This is a topic that comes up here from time to time &#40;as does &#8216;timers&#8217;, which is more appropriate for tick hooks&#41;.&nbsp;   
+There are two problems with talking about &#8216;events&#8217;:  
+&#45; First there is no universal definition of what an &#8216;event&#8217; is.&nbsp; People normally talk at cross purposes.&nbsp; People from a uCOS background will talk about events in the way uCOS does, but others will mean something completely different.&nbsp; For example, when porting a TCP/IP stack to FreeRTOS I was told it was impossible because FreeRTOS didn&#8217;t support &#8216;events&#8217;, but I found during the exercise that they thought an event was simple a way of one task signalling another, or an interrupt signalling a task.&nbsp; All that was needed was a binary semaphore&#33;<br />
+&#45; The second problem is, if you do mean events in the same way uCOS does then I have never found an implementation that was suitably efficient for inclusion in FreeRTOS.&nbsp; Nowhere in FreeRTOS are linked lists walked while interrupts are disabled, or from within interrupts for that matter.  
+It would be great to have an elaborate bitwise event mechanism, but its not going to happen soon.&nbsp; If you want to have multiple tasks signal one task then you can use a queue with multiple writers and a single reader &#8211; then pass a structure on the queue to say where the message came from or what the data it contains represents.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/avatron">avatron</a> on November 20, 2009</div><div class="thread-post-content">Hi Richard,  
+I understand that it is not quite easy to add new feature. But it seems to me that there is now &#8220;clever&#8221; workaroud for my project. As I wrote above, I need to signal from 1 ISR to unknown count of tasks. The finest way is to wait for event &#8220;HW updated&#8221;. So, could you write &#40;shortly&#41; what is according to you &#8220;the best way&#8221; with current FreeRTOS?  
+Thanks in advance,  
+Tomas  
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/avatron">avatron</a> on November 20, 2009</div><div class="thread-post-content">Sorry, there should be<br />
+…. But it seems to me that there is no &#8220;clever&#8221; workaroud for my project. ….  
+One letter and quite big difference in meaning :-&#41;  
+Tomas
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 22, 2009</div><div class="thread-post-content">If I were to have an application that needed to send an &#8220;event&#8221; to many &#40;possibly unknown number at compile time&#41; tasks, what I would do was to have the interrupt use a single semaphore/queue to flag a distribution task, and each task that wants to be notified of the event register a semaphore/queue with that task. The distribution task waits for a signal from the interrupt, and passes it to the list of tasks that have registered they want to know of the interrupt. The distribution task should have a priority higher than any task that wants to be notified. Using a task avoids to distribute keeps down the length of time the system can&#8217;t see new interrupts.  
+How to store the list of tasks to be notified can be done a number of ways depending on how well you know how many tasks may need to be notified
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/avatron">avatron</a> on November 24, 2009</div><div class="thread-post-content">Hi Richard,<br />
+so you think it is better to use special distribution task instead of handling several semaphores inside ISR, don&#8217;t you? I think &#40;for simplicity&#41; that handling a dynamic link list of binary semaphores &#40;10 at maximum I asume&#41; in ISR is possible, it will not take big long time, I hope.<br />
+Tomas  
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aturowski">aturowski</a> on November 24, 2009</div><div class="thread-post-content">I agree with Richard, because the main requirement on any RTOS is its responsiveness. This depends on longest critical section. By distributting several semaphores from ISR you are increasing execution time of critical section, which affect whole system.  
+Having distribution task which runs on highest priority doen&#8217;t compromise RTOS responsiveness regardless of amount of semaphores to be distributed. Distribution task execution time will be almost the same as ISR &#40;task has overhead for context switch, but it is not big&#41;.&nbsp; The drawback is that this solution is slightly more complicated than pure ISR. But it is also much more generic.  
+I personally prefer distribution task solution, but it is up to you which solution you will use.  
+Regards,<br />
+Adam
+</div></div><div class="thread-post"><h3 class="thread-post-title">synchronisation 1 to N</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on November 24, 2009</div><div class="thread-post-content">Running the list in the ISR will &#8220;work&#8221;, assuming you can tolerate the additional interrupt latency in your system. If you do it in the ISR, since ISRs are critical sections, no other interrupt which needs to interface with FreeRTOS can occur &#40;or none at all if your port doesn&#8217;t support interrupt nesting&#41;. Doing the distribution in a task allows you to get the interrupt back online faster. While the distribution task should have higher priority than all the tasks it is activating, it might be lower than some other very high priority task that might be triggered by another interrupt.  
+If the list of tasks really is no more than ten, and you can afford interrupts being down for a bit, your concept of doing it in the interrupt may be acceptable. One thought is if you really can put a hard upper limit that low, it may make more sense for the list of semaphores to be stored in a static array with a counter for how many elements there are instead of a linked list.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

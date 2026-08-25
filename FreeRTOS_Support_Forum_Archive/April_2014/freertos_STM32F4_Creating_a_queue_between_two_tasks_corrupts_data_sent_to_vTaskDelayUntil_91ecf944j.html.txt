@@ -1,0 +1,434 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2014/freertos_STM32F4_Creating_a_queue_between_two_tasks_corrupts_data_sent_to_vTaskDelayUntil_91ecf944j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil - FreeRTOS" />
+<meta property="og:description" content="[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntilPosted by benoitdes on April 15, 2014Hi everyone, I&#8217;m using coocox and yagarto on a STM32F427 with FreeRTOS 7.5.2. I have 5 tasks running simultaneously with several priorities. All interrupts are set to NVICPriorityGroup4 and until now preemption priorities were right. TASK 1 : &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2014/freertos_STM32F4_Creating_a_queue_between_two_tasks_corrupts_data_sent_to_vTaskDelayUntil_91ecf944j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntilPosted by benoitdes on April 15, 2014Hi everyone, I&#8217;m using coocox and yagarto on a STM32F427 with FreeRTOS 7.5.2. I have 5 tasks running simultaneously with several priorities. All interrupts are set to NVICPriorityGroup4 and until now preemption priorities were right. TASK 1 : [&hellip;]" />
+<meta name="twitter:title" content="[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202377' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202377' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202377' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202377' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143836' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2014%2Ffreertos_STM32F4_Creating_a_queue_between_two_tasks_corrupts_data_sent_to_vTaskDelayUntil_91ecf944j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2014%2Ffreertos_STM32F4_Creating_a_queue_between_two_tasks_corrupts_data_sent_to_vTaskDelayUntil_91ecf944j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143836">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2014_freertos_support_forum_archive_index.html/">April 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/benoitdes">benoitdes</a> on April 15, 2014</div><div class="thread-post-content">Hi everyone,
+I&#8217;m using coocox and yagarto on a STM32F427 with FreeRTOS 7.5.2. I have 5 tasks running simultaneously with several priorities. All interrupts are set to NVIC<em>PriorityGroup</em>4 and until now preemption priorities were right.
+TASK 1 : Higher priority (4). Synchronized with a timer interrupt and a binary semaphore. Receive messages through a queue from task 2 (buttons task). OK
+TASK 2 : Priority (3). Check buttons of user interface periodically. Task delayed with a vTaskDelayUntil(). OK
+TASK 3 : Priority (2). Show leds periodically. Task delayed with a vTaskDelayUntil(). OK
+TASK 4 : Priority (1). Screen task. Cyclic task delayed with a vTaskDelayUntil(). Until now, OK
+TASK 5 : Priority (1). Low priority and frequency task. Doesn&#8217;t do anything.
+All of this worked well. I tried to add a queue filled by TASK 1 and read by TASK 4 (when it&#8217;s possible). Since this change, when i receive a message in the TASK 4 the values of pxPreviousWakeTime and xTimeIncrement seemed to be corrupted (become a random very large number).
+And this TASK no longer executes periodically. Before receiving a message from this queue everything works fine.
+I precise that i have enough heap configured, i use heap_4 and HighWaterMark of each task is sufficient.
+Do you know what it could be ?
+And do you know if there is a way to Block TASK 4 until a message arrive in the queue whereas this TASK has a lower priority than the sender ?
+Thanks !
+</div></div><div class="thread-post"><h3 class="thread-post-title">[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dumarjo">dumarjo</a> on April 15, 2014</div><div class="thread-post-content">Hi,
+Without showing the code that is use to fill the queue is hard to help.
+Jonathan
+</div></div><div class="thread-post"><h3 class="thread-post-title">[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 15, 2014</div><div class="thread-post-content">In addition to Jonathan&#8217;s reply, are you using a recent version of FreeRTOS with <a href="http://www.freertos.org/a00110.html#configASSERT">configASSERT()</a> defined?  The most recent versions include additional assert() calls to help track down common configuration errors.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/benoitdes">benoitdes</a> on April 15, 2014</div><div class="thread-post-content">Thanks for your answers,
+Well, my code is like this.
+In the main : 
+<pre>
+xQueueHandle xQueueMidiMessages;
+xQueueHandle xQueueScreenMessages;
+/* Declare a variable of type xSemaphoreHandle.  This is used to reference the
+semaphore that is used to synchronize a task with an interrupt. */
+xSemaphoreHandle xBinarySemaphoreCoreLoop;
+int main(void)
+{
+    /* System Initialization. */
+    SystemInit();
+    SystemCoreClockUpdate();
+    /* Before a semaphore is used it must be explicitly created */
+    xBinarySemaphoreCoreLoop = xSemaphoreCreateCounting(3,0);
+    // We need to know the size of an internal midi message ! 20 messages of uint32_t they said.
+    xQueueMidiMessages = xQueueGenericCreate(20, 32, (unsigned char)0);
+    xQueueScreenMessages = xQueueGenericCreate(5, 32, (unsigned char)0);
+    GPIO_Config();          // Config des E/S et des RCC
+    Reset_all_high_luminosity_step();
+    Update_leds_registers(0,0,0);
+    Display_Led_Startup();
+    Interrupt_Config();     // BPM & Encoders 1, 2, 4, 5, 6 interrupt config
+    SPI2_Config();          // Config SPI pour l'ecran
+    DAC_Config();
+    USART_Config();         // Config du midi in, midi out et de l'interruption sur midi in
+    Interrupt_Config();     // BPM & Encoders 1, 2, 4, 5, 6 interrupt config
+    i2C_Config();           // Config i2C pour le touchpad
+    ADC_Config();           // Config des 4 entrees analogiques
+    screen_init();
+    tab_screen_init();
+    set_zone_white(0,0,127,63);
+    //USB_Stop();
+    USB_Config();
+    // Force analog outputs at 0V
+    GPIO_ResetBits(GPIOB, GPIO_Pin_11); //GATE
+    Set_DAC_Ch1_Voltage(0); // CV
+    Set_DAC_Ch2_Voltage(0); // ANALOG
+    // All note off (MIDI + USB)
+    Send_All_Note_Off();
+    if (xBinarySemaphoreCoreLoop != NULL && xQueueMidiMessages != NULL && xQueueScreenMessages != NULL) {
+        // Allumage de la led de debug SWD
+        Switch_Leds(LED_SWD_OFF);
+        // This is the timer for the core loop (accuracy => us) TIM2
+        TIM_Config();
+        // Interrupt triggered by the timer TIM2
+        EnableTimerInterrupt();
+        //vTrack_Loop needs a stack size in bytes after the task name
+        xTaskCreate(vTrack_Loop, (signed char *)"Core_Loop", 512, NULL, 4, NULL);
+        // vIHM_Checker is launched every 5 ms, can you believe it ?
+        xTaskCreate(vIHM_Checker, (signed char *)"IHM_Loop", 128, NULL, 3, NULL);
+        // vDisplay_Led is launched every 1 ms
+        xTaskCreate(vDisplay_Led, (signed char *)"Led_Loop", 128, NULL, 2, NULL);
+        // vUpdate_Screen is launched every 30 ms
+        xTaskCreate(vUpdate_Screen, (signed char *)"Screen_Loop", 128, NULL, 1, NULL);
+        // vCheck_Slowly is launched every 2 seconds
+//      xTaskCreate(vCheck_Slowly, (signed char *)"Slow_Loop", 1024, NULL, 1, NULL);
+        uint16_t prio = configKERNEL_INTERRUPT_PRIORITY;
+        vTaskStartScheduler();
+    }
+    for(;;);
+    while(1);
+}
+</pre>
+From Core_loop, the Sender :
+<pre>
+extern xQueueHandle xQueueScreenMessages;
+void Send_To_Screen(uint8_t message_type, uint16_t content){
+    uint32_t mess_to_send = (message_type << 16) | content;
+    xQueueGenericSend(xQueueScreenMessages, &#038;mess_to_send, 0, pdFALSE);
+}
+</pre>
+In Screen_Loop, the receiver :
+<pre>
+/*
+ * The purpose of this task is to update the screen
+ */
+void vUpdate_Screen( void *pvParameters )
+{
+    uint32_t uxHighWaterMark;
+    /* Inspect our own high water mark on entering the task. */
+    uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+    portTickType xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
+    /* This task is launched every 30ms */
+    portTickType currentPortTick = 30/(portTICK_RATE_MS);
+    portBASE_TYPE xStatus = pdFALSE;
+    const uint32_t message_from_core;
+    /* Variables */
+    static uint8_t Count = 0;
+    static uint8_t Logo_OFF = FALSE;
+    /* Start of the task vSystem_Timer */
+    TASK_LOOP
+    {
+        // DEBUG
+        if (uxHighWaterMark < 10){while(1);}
+        xStatus = xQueueReceive(xQueueScreenMessages, &#038;message_from_core, 0);
+        if (xStatus == pdPASS) {ReadAndDecodeFromCore(message_from_core);}
+            /* Delay */
+        vTaskDelayUntil( &#038;xLastWakeTime, currentPortTick);
+    }
+} 
+</pre>
+The first time i receive something through the queue, when returning from xQueueReceive, xLastWakeTime and currentPortTick seemed corrupted. 
+I have this kind of assert defined : 
+<pre>
+define configASSERT( x ) if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); for( ;; ); }
+</pre>
+The new types of assert are in version 8.0.0 of FreeRTOS ?
+Regards,
+Benoit
+</div></div><div class="thread-post"><h3 class="thread-post-title">[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dumarjo">dumarjo</a> on April 15, 2014</div><div class="thread-post-content">Hi,
+Le 2014-04-15 09:31, BenoitDes a écrit :
+>
+<blockquote>
+  Thanks for your answers,
+  Well, my code is like this.
+  In the main :
+  xQueueHandle xQueueMidiMessages;
+  xQueueHandle xQueueScreenMessages;
+  /* Declare a variable of type xSemaphoreHandle.  This is used to reference the
+  semaphore that is used to synchronize a task with an interrupt. */
+  xSemaphoreHandle xBinarySemaphoreCoreLoop;
+  int main(void)
+  {
+       /* System Initialization. */
+       SystemInit();
+       SystemCoreClockUpdate();
+<pre><code> /* Before a semaphore is used it must be explicitly created */
+ xBinarySemaphoreCoreLoop = xSemaphoreCreateCounting(3,0);
+ // We need to know the size of an internal midi message ! 20 messages of uint32_t they said.
+ xQueueMidiMessages = xQueueGenericCreate(20, 32, (unsigned char)0);
+ xQueueScreenMessages = xQueueGenericCreate(5, 32, (unsigned char)0);
+</code></pre>
+  why not using the macro to create your queue directly ?
+  Also from the comment above the creation of the Midi queue this should 
+  look like this
+</blockquote>
+xQueueMidiMessages = xQueueCreate(20, sizeof(uint32<em>t));
+xQueueScreenMessages = xQueueCreate(20, sizeof(uint32</em>t));
+>
+<blockquote>
+<pre><code> GPIO_Config();          // Config des E/S et des RCC
+ Reset_all_high_luminosity_step();
+ Update_leds_registers(0,0,0);
+ Display_Led_Startup();
+ Interrupt_Config();     // BPM &amp; Encoders 1, 2, 4, 5, 6 interrupt config
+ SPI2_Config();          // Config SPI pour l'ecran
+ DAC_Config();
+ USART_Config();         // Config du midi in, midi out et de l'interruption sur midi in
+ Interrupt_Config();     // BPM &amp; Encoders 1, 2, 4, 5, 6 interrupt config
+ i2C_Config();           // Config i2C pour le touchpad
+ ADC_Config();           // Config des 4 entrees analogiques
+ screen_init();
+ tab_screen_init();
+ set_zone_white(0,0,127,63);
+ //USB_Stop();
+ USB_Config();
+ // Force analog outputs at 0V
+ GPIO_ResetBits(GPIOB, GPIO_Pin_11); //GATE
+ Set_DAC_Ch1_Voltage(0); // CV
+ Set_DAC_Ch2_Voltage(0); // ANALOG
+ // All note off (MIDI + USB)
+ Send_All_Note_Off();
+ if (xBinarySemaphoreCoreLoop != NULL &amp;&amp; xQueueMidiMessages != NULL &amp;&amp; xQueueScreenMessages != NULL) {
+     // Allumage de la led de debug SWD
+     Switch_Leds(LED_SWD_OFF);
+     // This is the timer for the core loop (accuracy =&gt; us) TIM2
+     TIM_Config();
+     // Interrupt triggered by the timer TIM2
+     EnableTimerInterrupt();
+     //vTrack_Loop needs a stack size in bytes after the task name
+     xTaskCreate(vTrack_Loop, (signed char *)"Core_Loop", 512, NULL, 4, NULL);
+     // vIHM_Checker is launched every 5 ms, can you believe it ?
+     xTaskCreate(vIHM_Checker, (signed char *)"IHM_Loop", 128, NULL, 3, NULL);
+     // vDisplay_Led is launched every 1 ms
+     xTaskCreate(vDisplay_Led, (signed char *)"Led_Loop", 128, NULL, 2, NULL);
+     // vUpdate_Screen is launched every 30 ms
+     xTaskCreate(vUpdate_Screen, (signed char *)"Screen_Loop", 128, NULL, 1, NULL);
+     // vCheck_Slowly is launched every 2 seconds
+</code></pre>
+  //      xTaskCreate(vCheck<em>Slowly, (signed char *)"Slow</em>Loop", 1024, NULL, 1, NULL);
+<pre><code>     uint16_t prio = configKERNEL_INTERRUPT_PRIORITY;
+     vTaskStartScheduler();
+ }
+ for(;;);
+ while(1);
+</code></pre>
+  }
+  From Core_loop, the Sender :
+  extern xQueueHandle xQueueScreenMessages;
+  void Send<em>To</em>Screen(uint8<em>t message</em>type, uint16_t content){
+<pre><code> uint32_t mess_to_send = (message_type &lt;&lt; 16) | content;
+ xQueueGenericSend(xQueueScreenMessages, &amp;mess_to_send, 0, pdFALSE);
+</code></pre>
+  }
+  In Screen_Loop, the receiver :
+  /*
+    * The purpose of this task is to update the screen
+    <em>/
+  void vUpdate_Screen( void *pvParameters )
+  {
+       uint32_t uxHighWaterMark;
+       /</em> Inspect our own high water mark on entering the task. */
+       uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+<pre><code> portTickType xLastWakeTime;
+ xLastWakeTime = xTaskGetTickCount();
+ /* This task is launched every 30ms */
+ portTickType currentPortTick = 30/(portTICK_RATE_MS);
+ portBASE_TYPE xStatus = pdFALSE;
+ const uint32_t message_from_core;
+ /* Variables */
+ static uint8_t Count = 0;
+ static uint8_t Logo_OFF = FALSE;
+ /* Start of the task vSystem_Timer */
+ TASK_LOOP
+ {
+     // DEBUG
+     if (uxHighWaterMark &lt; 10){while(1);}
+     xStatus = xQueueReceive(xQueueScreenMessages, &amp;message_from_core, 0);
+     if (xStatus == pdPASS) {ReadAndDecodeFromCore(message_from_core);}
+         /* Delay */
+     vTaskDelayUntil( &amp;xLastWakeTime, currentPortTick);
+ }
+</code></pre>
+  }
+  the first look look OK to me. What happend if you don't call 
+  ReadAndDecodeFromCore ?
+</blockquote>
+regards
+Jonathan
+<hr />
+Ce courrier électronique ne contient aucun virus ou logiciel malveillant parce que la protection avast! Antivirus est active.
+http://www.avast.com
+</div></div><div class="thread-post"><h3 class="thread-post-title">[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 15, 2014</div><div class="thread-post-content">A couple of points:
+uxHighWaterMark only ever seems to be set on entry into the task - which is before the task has really used much stack.  Try updating it on every loop.  Do you have a stack overflow hook defined?  If not I would definitely recommend defining one: http://www.freertos.org/Stacks-and-stack-overflow-checking.html
+message<em>from</em>core is defined as a const but its value is not being set at definition (as would need to be the case for a const), and then you are trying to update it by passing it into xQueueReceive() despite it being declared const.  I'm not sure what the compiler will make of that, probably nothing at low optimisation levesl, but a lot at high optimisation levels.  I would expect this to generate multiple compiler warnings.
+You are calling xQueueGenericSend() which is <b>not</b> part of the documented API.  You should be calling xQueueSend(), xQueueSendToBack() (which is the same as xQueueSend()), or xQueueSendToFront().
+Likewise you are calling xQueueGenericCreate() which is <b>not</b> a part of the documented API.  You should be calling xQueueCreate().  When you do create xQueueScreenMessages (using the wrong API function) you are setting the item size to 32, but when you send and receive from the queue you are using a variable that has a size of 4 -> this will definitely cause corruption and is no doubt the root cause of your problem.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dumarjo">dumarjo</a> on April 15, 2014</div><div class="thread-post-content">Hi.
+Le 2014-04-15 09:58, Real Time Engineers ltd. a écrit :
+>
+<blockquote>
+  A couple of points:
+  uxHighWaterMark only ever seems to be set on entry into the task - 
+  which is before the task has really used much stack. Try updating it 
+  on every loop. Do you have a stack overflow hook defined? If not I 
+  would definitely recommend defining one: 
+  http://www.freertos.org/Stacks-and-stack-overflow-checking.html
+  message<em>from</em>core is defined as a const but its value is not being set 
+  at definition (as would need to be the case for a const), and then you 
+  are trying to update it by passing it into xQueueReceive() despite it 
+  being declared const. I'm not sure what the compiler will make of 
+  that, probably nothing at low optimisation levesl, but a lot at high 
+  optimisation levels. I would expect this to generate multiple compiler 
+  warnings.
+  You are calling xQueueGenericSend() which is <em>not</em> part of the 
+  documented API. You should be calling xQueueSend(), xQueueSendToBack() 
+  (which is the same as xQueueSend()), or xQueueSendToFront().
+  Likewise you are calling xQueueGenericCreate() which is <em>not</em> a part 
+  of the documented API. You should be calling xQueueCreate(). When you 
+  do create xQueueScreenMessages (using the wrong API function) you are 
+  setting the item size to 32, but when you send and receive from the 
+  queue you are using a variable that has a size of 4 -> this will 
+  definitely cause corruption and is no doubt the root cause of your 
+  problem.
+  i' missed that one 🙂
+</blockquote>
+Regards.
+<blockquote>
+  <hr />
+  [STM32F4] Creating a queue between two tasks corrupts data sent to 
+  vTaskDelayUntil 
+  <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/91ecf944/?limit=25#012e">https://sourceforge.net/p/freertos/discussion/382005/thread/91ecf944/?limit=25#012e</a>
+  <hr />
+  Sent from sourceforge.net because you indicated interest in 
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit 
+  https://sourceforge.net/auth/subscriptions/
+  -- 
+  This message has been scanned for viruses and
+  dangerous content by <em>MailScanner</em> <a href="http://www.mailscanner.info/">http://www.mailscanner.info/</a>, and is
+  believed to be clean. 
+</blockquote>
+<hr />
+Ce courrier électronique ne contient aucun virus ou logiciel malveillant parce que la protection avast! Antivirus est active.
+http://www.avast.com
+</div></div><div class="thread-post"><h3 class="thread-post-title">[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/benoitdes">benoitdes</a> on April 15, 2014</div><div class="thread-post-content">I was sure it was a dumb cause... 
+I tried several things that's why generic functions where used. All the points are corrected. And of course now it works well. Strange i didn't see this memory issue before with xQueueMidiMessages which i use for two month now...
+Thanks a lot !
+Benoit
+</div></div><div class="thread-post"><h3 class="thread-post-title">[STM32F4] Creating a queue between two tasks corrupts data sent to vTaskDelayUntil</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dumarjo">dumarjo</a> on April 15, 2014</div><div class="thread-post-content">Hi,
+it's only a chance that you don't have seen the bug.
+Jonathan
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

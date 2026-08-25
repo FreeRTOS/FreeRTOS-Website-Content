@@ -1,0 +1,340 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tickless idle mode and wakeup interrupts - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2018/freertos_Tickless_idle_mode_and_wakeup_interrupts_30a858262fj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tickless idle mode and wakeup interrupts - FreeRTOS" />
+<meta property="og:description" content="Tickless idle mode and wakeup interruptsPosted by amilaperera on November 27, 2018Sorry for my previous mail. I didn&#8217;t attach a subject. Resending the same content with an appropriate subject. I am in the process of enabling RTOS tickless idle mode and have already made the necessary changes to replace systick with a low power timer &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2018/freertos_Tickless_idle_mode_and_wakeup_interrupts_30a858262fj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Tickless idle mode and wakeup interruptsPosted by amilaperera on November 27, 2018Sorry for my previous mail. I didn&#8217;t attach a subject. Resending the same content with an appropriate subject. I am in the process of enabling RTOS tickless idle mode and have already made the necessary changes to replace systick with a low power timer [&hellip;]" />
+<meta name="twitter:title" content="Tickless idle mode and wakeup interrupts - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203042' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203042' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203042' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203042' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147465' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2018%2Ffreertos_Tickless_idle_mode_and_wakeup_interrupts_30a858262fj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2018%2Ffreertos_Tickless_idle_mode_and_wakeup_interrupts_30a858262fj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147465">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2018_freertos_support_forum_archive_index.html/">November 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Tickless idle mode and wakeup interrupts</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amilaperera">amilaperera</a> on November 27, 2018</div><div class="thread-post-content">Sorry for my previous mail. I didn&#8217;t attach a subject. Resending the same content with an appropriate subject.
+I am in the process of enabling RTOS tickless idle mode and have already made the necessary changes to replace systick with a low power timer tick as the first step.
+I have couple of questions in this regard.
+1. I am using SW timers as well along with the tickless idle mode, therefore is it safe to assume that <code>eTaskConfirmSleepModeStatus()</code> always returns either <code>eAbortSleep</code> or <code>eStandardSleep</code> ?
+2. I&#8217;m using STM32 LPTIM1 as my tick source (low power timer) and using <code>STOP2</code> mode when the tickless idle is triggered. Before going to sleep I <strong>assume</strong> that interrupts should be enabled so that the CPU can be woken up by the interrupts working in deep sleep mode(including the LPTIM1 tick interrupt).  However in the examples provided with FreeRTOS package(STM32L152<em>Discovery</em>IAR) I notice that the interrupts are disabled before going to sleep mode and they are enabled when the processor is woken up by from deep sleep modes. I wonder how this can really happen ? Am I missing something here. To me it seems that the interrupts should be enabled just before gong to deep sleep mode as for the processor to be taken out from sleep mode(either tick interrupt or any other wake up source).
+Please find my implementation of <code>vPortSuppressTicksAndSleep()</code>. As my current observation, I need to enable interrupts just before going to stop2 mode to make it work.
+Can anyone shed some light in this regard ?
+~~~
+void vPortSuppressTicksAndSleep(uint32<em>t xExpectedIdleTime ) {
+  if (xExpectedIdleTime > maximum</em>suppressible<em>ticks) {
+    xExpectedIdleTime = maximum</em>suppressible<em>ticks;
+  }
+  /*
+   * Calculate the reload value required to wait xExpectedIdleTime tick periods.
+   */
+  uint32</em>t reload<em>value = xExpectedIdleTime * reload</em>value<em>for</em>one<em>tick;
+  /*
+   * TODO: Any compensation for the time the timer is stopped
+   */
+  /*
+   * Stop the timer momentarily
+   */
+  HAL</em>LPTIM<em>Counter</em>Stop<em>IT(&amp;lptim</em>handle);
+  /*
+   * Enter a critical section but don&#8217;t use the taskENTER_CRITICAL()
+   * method as that will mask interrupts that should exit sleep mode.
+   */
+  __asm volatile( &#8220;cpsid i&#8221; );
+  __asm volatile( &#8220;dsb&#8221; );
+  __asm volatile( &#8220;isb&#8221; );
+  /*
+   * tick flag is set to false before going to sleep
+   */
+  tick_flag = pdFALSE;
+  /*
+   * If a context switch is pending then abandon the low power entry as the
+   * context switch might have been pended by an external interrupt that requires
+   * processing.
+   <em>/
+  eSleepModeStatus sleep_action = eTaskConfirmSleepModeStatus();
+  if (sleep_action == eAbortSleep) {
+    /</em>
+     * Restart the tick
+     <em>/
+    HAL_LPTIM_Counter_Start_IT(&amp;lptim_handle, reload_value_for_one_tick);
+    /</em>
+     * Re-enable the interrupts
+     */
+    __asm volatile( &#8220;cpsie i&#8221; );
+  } else {
+    /*
+     * TODO: Need to update the tick count
+     */
+    /*
+     * Restart the tick
+     */
+    HAL_LPTIM_Counter_Start_IT(&amp;lptim_handle, reload_value);
+    uint32_t modifiable_time = xExpectedIdleTime;
+<pre><code>/*
+ * Check for nullness of power_manager_instance before operating on it.
+ * This is necessary to assure that we're not triggering the sleep mode processing
+ * before the controller creates the power_manager instance.
+ */
+if (power_manager_instance) {
+  /*
+   * Let the application carry out pre-sleep processing
+   */
+  configPRE_SLEEP_PROCESSING(modifiable_time);
+  /*
+   * Sleep
+   */
+  if (modifiable_time &gt; 0) {
+    power_manager_instance-&gt;EnterLowPowerMode(marconi::controller::LowPowerMode::kStop2);
+  }
+  /*
+   * Let the application carry out post-sleep processing
+   */
+  configPOST_SLEEP_PROCESSING(modifiable_time);
+}
+/*
+ * Stop low power timer.
+ * The time the clock is stopped for is not accounted here, since
+ * the clock is so slow. It is quite unlikely it is stopped for a complete count period.
+ */
+HAL_LPTIM_Counter_Stop_IT(&amp;lptim_handle);
+uint32_t count_after_sleep = HAL_LPTIM_ReadCounter(&amp;lptim_handle);
+/*
+ * Re-enable interrupts.
+ */
+__asm volatile( "cpsie i" );
+__asm volatile( "dsb" );
+__asm volatile( "isb" );
+uint32_t complete_tick_periods = 0;
+if (tick_flag != pdFALSE) {
+  /*
+   * Tick interrupt ended the sleep.
+   */
+  complete_tick_periods = xExpectedIdleTime - 1UL;
+  HAL_LPTIM_Counter_Start_IT(&amp;lptim_handle, reload_value_for_one_tick);
+} else {
+  /*
+   * Something other than the tick interrupt ended the sleep.
+   */
+  complete_tick_periods = count_after_sleep / reload_value_for_one_tick;
+  count_after_sleep %= reload_value_for_one_tick;
+  if (count_after_sleep == 0) {
+    count_after_sleep = reload_value_for_one_tick;
+    ++complete_tick_periods;
+  }
+  HAL_LPTIM_Counter_Start_IT(&amp;lptim_handle, count_after_sleep);
+}
+/*
+ * Wind the tick forward by the number of tick periods that the MCU remained in a low power state.
+ */
+vTaskStepTick(complete_tick_periods);
+</code></pre>
+  }
+}
+~~~
+Thank you.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle mode and wakeup interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 27, 2018</div><div class="thread-post-content"><blockquote>
+  <ol>
+  <li>I am using SW timers as well along with the tickless idle mode, 
+  therefore is it safe to assume that |eTaskConfirmSleepModeStatus()| 
+  always returns either |eAbortSleep| or |eStandardSleep| ?</li>
+  </ol>
+</blockquote>
+I don&#8217;t think the behaviour or eTaskConfirmSleepModeStatus() will change 
+if you have software timers &#8211; but eStandardSleep is not one of the 
+values it returns &#8211; is this just a mistype or did you get the code from 
+somewhere other than us?
+<blockquote>
+  <ol>
+  <li>I&#8217;m using STM32 LPTIM1 as my tick source (low power timer) and using 
+  |STOP2| mode when the tickless idle is triggered. Before going to sleep 
+  I <em>assume</em> that interrupts should be enabled so that the CPU can be 
+  woken up by the interrupts working in deep sleep mode(including the 
+  LPTIM1 tick interrupt). However in the examples provided with FreeRTOS 
+  package(STM32L152<em>Discovery</em>IAR) I notice that the interrupts are 
+  disabled before going to sleep mode and they are enabled when the 
+  processor is woken up by from deep sleep modes. I wonder how this can 
+  really happen ? Am I missing something here. To me it seems that the 
+  interrupts should be enabled just before gong to deep sleep mode as for 
+  the processor to be taken out from sleep mode(either tick interrupt or 
+  any other wake up source).</li>
+  </ol>
+</blockquote>
+If interrupts were enabled before going to sleep you would get into a 
+race condition as an interrupt may occur that unblocks a task, then you 
+would enter sleep mode when you shouldn&#8217;t.  The hardware is designed to 
+avoid this &#8211; hence when you sleep with interrupts disabled an interrupt 
+will still bring the MCU out of sleep mode BUT the interrupt will not 
+actually execute until you enable interrupts again.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle mode and wakeup interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amilaperera">amilaperera</a> on November 27, 2018</div><div class="thread-post-content">Hi Richard,
+Thanks for the answer.
+<blockquote>
+  I am using SW timers as well along with the tickless idle mode, 
+  therefore is it safe to assume that |eTaskConfirmSleepModeStatus()| 
+  always returns either |eAbortSleep| or |eStandardSleep| ?
+  <blockquote>
+    I don&#8217;t think the behaviour or eTaskConfirmSleepModeStatus() will change 
+    if you have software timers &#8211; but eStandardSleep is not one of the 
+    values it returns &#8211; is this just a mistype or did you get the code from 
+    somewhere other than us?
+  </blockquote>
+</blockquote>
+I am using the official FreeRTOS port and this is what is in the <code>task.h</code> file.
+~~~
+/* Possible return values for eTaskConfirmSleepModeStatus(). <em>/
+typedef enum
+{
+    eAbortSleep = 0,        /</em> A task has been made ready or a context switch pended since portSUPPORESS<em>TICKS</em>AND_SLEEP() was called &#8211; abort entering a sleep mode. */
+    eStandardSleep,         /* Enter a sleep mode that will not last any longer than the expected idle time. */
+    eNoTasksWaitingTimeout  /* No tasks are waiting for a timeout so it is safe to enter a sleep mode that can only be exited by an external interrupt. */
+} eSleepModeStatus;
+~~~
+If the behaviour of what <code>eTaskConfirmSleepModeStatus()</code> returns does not change depending on the usage of software timers I think we&#8217;re fine.
+<blockquote>
+  If interrupts were enabled before going to sleep you would get into a 
+  race condition as an interrupt may occur that unblocks a task, then you 
+  would enter sleep mode when you shouldn&#8217;t. The hardware is designed to 
+  avoid this &#8211; hence when you sleep with interrupts disabled an interrupt 
+  will still bring the MCU out of sleep mode BUT the interrupt will not 
+  actually execute until you enable interrupts again.
+</blockquote>
+Thanks for the explanation, Richard. I now understand the rationale behind the chunk of code there. I think I have found the relevant information in the chip datasheet as well. It&#8217;s as follows.
+<blockquote>
+  Some embedded systems might have to execute system restore tasks after the processor wakes up, and before it executes an interrupt handler. To achieve this set the PRIMASK bit to 1 and the FAULTMASK bit to 0. If an interrupt arrives that is enabled and has a higher priority than current exception priority, the processor wakes up but does not execute the interrupt handler until the processor sets PRIMASK to zero. For more information about PRIMASK and FAULTMASK see Exception mask registers on page 22.
+</blockquote>
+So, I assume still this would take <code>BASEPRI</code> value into consideration and would execute instructions untile the interrupts are re-enabled and would execute the ISR afterwards. So, ideally the above code (<code>vPortSuppressTicksAndSleep</code>) should work without enabling the interrupts then.
+Just another question specially regarding the use of low power timer(LPTIM) for tickless idle mode with deep sleeping. I know this is going to be a bit chip specific rather than RTOS related, but I would like to hear from anyone with similar experience.
+The current STM32 datasheet for LPTIM mentions that* reading counter register is not reliable and it should be read consecutively until they become identical to assert that it is a valid counter read*. I&#8217;m using LPTIM for my time base in tickless idle implementation and actually relying on the value of counter register in time adjustment calculation.
+As of my current observation, the entire implementation is quite unreliable and I notice a slippage in time when using LPTIM with RTOS tickless mode to transition to STOP2.
+Does anyone have success using LPTIM with tickless idle, or the above extract from datasheet is sufficient to suggest that LPTIM <em>can not be used</em> as a time base with tickless idle mode.
+Any way to isolate the issues, I&#8217;m currently in the process of using tickless idle with a GP timer (but of course then I have another issue of not being able to use STOP modes and have to go to SLEEP mode instead, which further raises concerns about the power budget).
+I highly appreciate your thoughts on this.
+Thank you in advane.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle mode and wakeup interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on November 28, 2018</div><div class="thread-post-content">A few comments on the STM32 LPTIM and the issues you are seeing (I am currently studying the part for a project). 
+My understanding of the reading issue is that the LPTIM counter is likely implemented on a different clock domain that used to read it, and the timer uses &#8216;slow&#8217; gates to save power, so if you read the counter value at the same time as it is incrementing, then the value returned might have some new bits and some old bits. The only way to tell that this happened is to read it twice. If you get the same value, then the read was good, if not, then one of them is bad, but you have no idea which one, so you need to keep on reading. When you get consistant values you stop and use it. (There is also a mode where the read resets the value, so you can&#8217;t read it again, which says that basically you can&#8217;t tell if the number is accurate, not sure how useful that mode is).
+Also, some slipage of time when using tickless idle is totally expected. Time measured by the LPTimer is by necessity much less accurate because it is slower, and there is a bit of inaccuracy in switching from one timer to another. You really should only be going into tickless idle when you don&#8217;t have something that needs accurate timing happening anyway.
+One other option to keep a more accurate long term timebase is to setup the RTC to provide the long term timing, and compare its idea of what time it is to what the high speed timer says when coming out of tickless idle and make the correction based on it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle mode and wakeup interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amilaperera">amilaperera</a> on December 3, 2018</div><div class="thread-post-content">Thanks for the reply, Richard.
+I understand the slipage is unavoidable, but the slipage I was experiencing is quite noticeable from the very start(I even don&#8217;t think it was accumulating over time). I will give more details on this once I happen to successfully use tickless idle mode with a normal GPIO timer(which is my plan as of now).
+I will consider on RTC compensation as well. Actually we don&#8217;t rely on the absolute time, but only software delays.
+So, as per your observations do you assume that LPTIM can be used as the tick source for tickless idle mode inspite of the unreliable counter readings.
+Or are you thinking of using some other tick source and using LPTIM purely as a wakeup source to interrupt the processor after going to STOP mode ?
+Thank you.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle mode and wakeup interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on December 3, 2018</div><div class="thread-post-content">The LPTIM appears to be able to be read relaibly by doing the multiple reads suggested in the documentation.<br />
+Read &amp; Save,
+Read Again, if same then is a good read.
+If not, save and repeat until you get two readings in the row the same.
+This should get you a reliable reading, it may just take a couple of readings (but it shouldn&#8217;t need too many). 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle mode and wakeup interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/amilaperera">amilaperera</a> on December 3, 2018</div><div class="thread-post-content">Hi Richard,
+Thanks for the feedback. I will try to use LPTIM as a ticksource and will definietely let you know the progress of this.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle mode and wakeup interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/michatroniker">michatroniker</a> on April 16, 2019</div><div class="thread-post-content">Hi Amila,
+I would very much appreciate if you could share your findigs of using LPTIM as a tick source for the STM32 in tickless idle mode. I am facing exactly the same issue as you described above, trying to get this running using LPTIM since several days.
+Thanks!
+Michael
+</div></div><div class="thread-post"><h3 class="thread-post-title">Tickless idle mode and wakeup interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on April 17, 2019</div><div class="thread-post-content">Another thing that I have been using is use the LPTIM as my main tick source (instead of the build in Systic) and running with a prescaler of 32 so the base frequency of the timer is 1024 Hz, this can get you close to a 1ms tick if you really want that fast or with a divide by 10, about a 10ms tick. It also says that if you want to go tickless, you can set the trigger to up to just over a minute in the future. (raising the prescaler to 256 give a 128 Hz clock, giving a base interrupt rate of about 8 ms, and a tickless limit of about 8 minutes.
+I haven&#8217;t tried writing actual tickless code to handle this (working on other parts of the system) but it looks like by always using the the same timer for tick and tickless modes looks like it may have some advantages. One idea is that if you wake up from some other interrupt, you can set the timer trigger to a futer multiple of the base tick rate, you can avoid the normal tickless slips.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

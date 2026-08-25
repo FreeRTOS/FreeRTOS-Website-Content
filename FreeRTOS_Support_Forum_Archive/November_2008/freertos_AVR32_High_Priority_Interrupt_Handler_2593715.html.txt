@@ -1,0 +1,159 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVR32 High Priority Interrupt Handler - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2008/freertos_AVR32_High_Priority_Interrupt_Handler_2593715.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="AVR32 High Priority Interrupt Handler - FreeRTOS" />
+<meta property="og:description" content="AVR32 High Priority Interrupt HandlerPosted by bmenkveld on November 21, 2008Hello, I&#8217;m working on an application running on an AVR32 UC3A0512 CPU.&nbsp; One of the things the application has to manage is commutation of a stepper motor.&nbsp; This requires accurate output updates at a rate of up to 10KHz. I set up a timer tick &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2008/freertos_AVR32_High_Priority_Interrupt_Handler_2593715.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="AVR32 High Priority Interrupt HandlerPosted by bmenkveld on November 21, 2008Hello, I&#8217;m working on an application running on an AVR32 UC3A0512 CPU.&nbsp; One of the things the application has to manage is commutation of a stepper motor.&nbsp; This requires accurate output updates at a rate of up to 10KHz. I set up a timer tick [&hellip;]" />
+<meta name="twitter:title" content="AVR32 High Priority Interrupt Handler - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201682' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201682' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201682' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201682' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141300' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2008%2Ffreertos_AVR32_High_Priority_Interrupt_Handler_2593715.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2008%2Ffreertos_AVR32_High_Priority_Interrupt_Handler_2593715.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141300">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2008_freertos_support_forum_archive_index.html/">November 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">AVR32 High Priority Interrupt Handler</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bmenkveld">bmenkveld</a> on November 21, 2008</div><div class="thread-post-content">Hello,
+I&#8217;m working on an application running on an AVR32 UC3A0512 CPU.&nbsp; One of the things the application has to manage is commutation of a stepper motor.&nbsp; This requires accurate output updates at a rate of up to 10KHz.
+I set up a timer tick interrupt to operate at a rate of 10KHz, and then poked a spare output in the ISR so I could observer the timing consistency on a scope.
+What I found was very large jitter in the timing of the interrupt, with the ISR executing as much as 90us late.&nbsp; That will obviously make for very large disruptions in the control of the stepper motor driver waveforms.
+I tried increasing the timer tick interrupt priority from 0 to 3.&nbsp; All other interrupt handlers run at priority 0 &#40;the lowest&#41;, so I thought this would solve the problem.&nbsp; Instead, it hardly made any difference.&nbsp; The average jitter did seem to decrease somewhat, but there were still extreme cases of 90us.
+Then I got looking at the FreeRTOS kernel code.&nbsp; The vTick&#40;&#41; handler for the RTOS timer tick interrupt is in port.c.&nbsp; It encloses its central call to vTaskIncrementTick&#40;&#41; in portENTER/EXIT&#95;CRITICAL&#40;&#41; calls.&nbsp; When I commented these CRITICAL calls out, the jitter in my 10KHz ISR was reduced to 2us&#33;
+The portENTER&#95;CRITICAL&#40;&#41; call disables interrupts altogether to ensure the crucial kernel work doesn&#8217;t get messed up by an interrupt that might make some kernel call.&nbsp; However, my high priority interrupt handler won&#8217;t make any kernel calls.
+It seems to me that if my program never makes any kernel calls from any interrupt handler with a higher priority than vTick&#40;&#41;, then there should not be a problem with removing the portENTER&#95;CRITICAL&#40;&#41; call from vTick&#40;&#41;.&nbsp; Is that true?
+At /wp-content/uploads/2019/07/index.html I did find the following under &quot;Can interrupts be nested?&quot;:
+&quot;In the case that a very fast interrupt response is required for a certain peripheral then the peripheral priority can normally be set to above that of the kernel itself. This means the processing of the peripheral will never be delayed by the action of the kernel. &quot;
+That sounds like what I want, but it does not make any mention of removing the&nbsp; portENTER&#95;CRITICAL&#40;&#41; call from vTick&#40;&#41;.
+Does anyone know whether it is safe to do that?
+On a side note, I was rather surprised to find the kernel taking this long to execute on a processor running at 66MHz.
+Thanks in advance for any&nbsp; help.
+&#45;-
+Bert Menkveld
+</div></div><div class="thread-post"><h3 class="thread-post-title">AVR32 High Priority Interrupt Handler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on November 22, 2008</div><div class="thread-post-content">I don&#8217;t think the link you posted is the one intended. 
+Here is a link that explains the interrupt priorities of the latest FreeRTOS ports which support interrupt nesting http://www.freertos.org/a00110.html&#35;kernel&#95;priority . The older ports generally don&#8217;t support interrupt nesting. I&#8217;m not familiar with the AVR32 code so don&#8217;t know which camp this falls into.
+The link shows a diagram for a hypothetical processor where interrupt functions up to priority 4 can contain FreeRTOS API calls. Critical sections that protect kernel data structures have to mask interrupts up to 4 &#40;in this hypothetical case&#41; so interrupts at priority 4 and below will get jitter in their timing.&nbsp; Interrupts running at priority 5 and above will never be masked by the kernel executing so will not experience any jitter over and above that which would normally be expected for the processor. In other words the kernel does not add any jitter.
+The tick interrupt is not the best place to add such high frequency code. Take a look at this demo http://www.freertos.org/portLM3Sxxxx&#95;Eclipse.html which shows a 20KHz timer running at a priority above configMAX&#95;SYSCALL&#95;PRIORITY and measures the jitter experienced. The max jitter settles around 120ns on a 50MHz processor, which is equal to the number of processor cycles that can be skipped when the processor performs tail chaining, so is what you would expect to see whether an RTOS was used or not.
+How is the interrupt prioritization done on the AVR32? Is there an equivalent to an ARM7 FIQ that could be used to get the same result?
+</div></div><div class="thread-post"><h3 class="thread-post-title">AVR32 High Priority Interrupt Handler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/bmenkveld">bmenkveld</a> on November 22, 2008</div><div class="thread-post-content">Hello Dave,
+Thanks for the response.&nbsp; You are quite right, the link I posted doesn&#8217;t work.&nbsp; My browser doesn&#8217;t seem to show complete web addresses for the various pages on the freertos site.
+I had also read the page you mention.&nbsp; Unfortunately, AVR32 is not one of the ports that support interrupt nesting.&nbsp; 
+The AVR32 does support 4 levels of prioritization for interrupt handlers &#40;for interrupt groups, actually&#41;.&nbsp; It seems to me that if I keep the OS and all the interrupt handlers that make OS calls at interrupt level 0 &#40;the lowest level&#41;, then the OS shouldn&#8217;t care if some higher priority handler interrupts a low-priority handler, because that higher priority handler won&#8217;t make any OS calls.&nbsp; Certainly that appears to be working for me.
+However, looking over some of the low-level guts of the FreeRTOS code shows a frightening amount of complexity dealing with potentially interrupted interrupt handlers, so I&#8217;m worried I may be setting up the potential for some rare failure scenario that will come back and bite me in the future.
+&#45;-
+Bert
+</div></div><div class="thread-post"><h3 class="thread-post-title">AVR32 High Priority Interrupt Handler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rnowotny">rnowotny</a> on November 25, 2008</div><div class="thread-post-content">Dear Richard, 
+In the Documentation, it is noted that : 
+&#42;&#42;&#42;
+configKERNEL&#95;INTERRUPT&#95;PRIORITY is currently only in Cortex-M3, PIC24, dsPIC and PIC32 ports. configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY is currently only available in the PIC32 and Cortex M3 ports. Other ports will get upgraded shortly. 
+&#42;&#42;&#42;
+Since i also need that function, may I kindly ask when that functionality will be available for the AVR32 &#40;323&#41; Port ?
+yours sincerely
+Robert Nowotny / Vienna
+</div></div><div class="thread-post"><h3 class="thread-post-title">AVR32 High Priority Interrupt Handler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rnowotny">rnowotny</a> on November 25, 2008</div><div class="thread-post-content">Correction &#8211; I mean the ATMega323 Port.
+Yours sincerely
+Robert / Vienna
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

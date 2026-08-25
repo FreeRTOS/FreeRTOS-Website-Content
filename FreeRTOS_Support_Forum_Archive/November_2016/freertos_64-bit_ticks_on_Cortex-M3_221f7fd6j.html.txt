@@ -1,0 +1,193 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>64-bit ticks on Cortex-M3 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_64-bit_ticks_on_Cortex-M3_221f7fd6j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="64-bit ticks on Cortex-M3 - FreeRTOS" />
+<meta property="og:description" content="64-bit ticks on Cortex-M3Posted by philpem on November 16, 2016We&#8217;ve had a code review issue raised that our code could potentially suffer issues when the RTOS tick counter wraps around; at a tick interval of 100Hz with 32-bit ticks, this would be every 2^32 ticks, or 497 days &#8212; or 248.55 days if ticks are &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2016/freertos_64-bit_ticks_on_Cortex-M3_221f7fd6j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="64-bit ticks on Cortex-M3Posted by philpem on November 16, 2016We&#8217;ve had a code review issue raised that our code could potentially suffer issues when the RTOS tick counter wraps around; at a tick interval of 100Hz with 32-bit ticks, this would be every 2^32 ticks, or 497 days &#8212; or 248.55 days if ticks are [&hellip;]" />
+<meta name="twitter:title" content="64-bit ticks on Cortex-M3 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202731' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202731' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202731' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202731' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146191' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_64-bit_ticks_on_Cortex-M3_221f7fd6j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2016%2Ffreertos_64-bit_ticks_on_Cortex-M3_221f7fd6j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146191">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2016_freertos_support_forum_archive_index.html/">November 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">64-bit ticks on Cortex-M3</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/philpem">philpem</a> on November 16, 2016</div><div class="thread-post-content">We&#8217;ve had a code review issue raised that our code could potentially suffer issues when the RTOS tick counter wraps around; at a tick interval of 100Hz with 32-bit ticks, this would be every 2^32 ticks, or 497 days &#8212; or 248.55 days if ticks are being subtracted (used in a signed fashion).
+I&#8217;d like to increase the size of TickType_t to 64 bits, i.e. &#8220;unsigned long long&#8221;. Is this likely to have any adverse side effects which would need to be addressed?
+Thanks,
+Phil.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64-bit ticks on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 16, 2016</div><div class="thread-post-content">If the review says there is something wrong in FreeRTOS, then you need 
+to say what it is.
+If the review says there is something wrong in your code, then I would 
+recommend fixing it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64-bit ticks on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 16, 2016</div><div class="thread-post-content">Increasing the width of TickType_t sounds like postponing the problem.
+The tick count value is normally treated as unsigned, and taking an unsigned difference is safe:
+~~~~
+    TickType<em>t xNow = xTaskGetTickCount();
+    TickType</em>t xDifference = xNow &#8211; xThen;
+~~~~
+Only if you need timers and time-outs that last longer that 497 days (using 100 HZ), I would consider increasing the width.
+The FreeRTOS kernel and libraries are fully aware that the tick-counter will have overflows.
+It has recently been proposed to have the tick-counter start at an unusual value like:
+~~~~
+    /* Let xTickCount have the first overflow 5 minutes after booting. */
+<pre><code>#define configINITIAL_TICK_COUNT_VALUE  ( ( ( TickType_t )~0u ) - pdMS_TO_TICKS( 5ul * 60000ul ) )
+xTickCount = configINITIAL_TICK_COUNT_VALUE;
+</code></pre>
+~~~~
+This change might be usefull for testing your code. At least the overflow will occur quickly.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64-bit ticks on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 16, 2016</div><div class="thread-post-content"><blockquote>
+  Only if you need timers and time-outs that last longer that 497 days
+  (using 100 HZ), I would consider increasing the width.
+</blockquote>
+&#8230;and even then it is not necessary as waking unnecessarily every 497 
+days in not going to impact battery life in any measurable way.  You 
+just wake, see that you timed out rather than woke due to an event, then 
+go back to sleep for another 497 days.
+Using a 64-bit tick type on a 32-bit architecture is possible, but it 
+requires a very minor code change.  That is not the point though &#8211; at 
+the moment I don&#8217;t know what the OP wishes to make this change, and if 
+we knew that, we could provide a helpful answer.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64-bit ticks on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/philpem">philpem</a> on November 17, 2016</div><div class="thread-post-content">The review stated there was an issue in our code, not FreeRTOS.
+We use xTaskGetTickCount() in a few places, e.g. to find out if a set period has elapsed since the last time an event occurred, using a function called &#8220;isTimeAfter&#8221; which has been posted here previously.
+The issue was that our implementation would fail roughly every 248.5 days, when the timer wrapped around.
+While the correct fix is obviously to add some kind of background task to set a &#8220;timer has expired Y/N&#8221; flag which invalidates the event flag (or to rework the code to use FreeRTOS software timers &#8212; but there was a desire not to use these because it would involve enabling another FreeRTOS build option and there was a strong desire not to do this &#8220;just for one minor feature&#8221;).
+The general air of the code review was that &#8220;by increasing the timer tick to 64 bits, we can avoid problems like this in the future.&#8221;
+</div></div><div class="thread-post"><h3 class="thread-post-title">64-bit ticks on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 17, 2016</div><div class="thread-post-content">If you change the tick type to 64-bits then you will also need to edit 
+the portmacro.h file for your port to set portTICK<em>TYPE</em>IS_ATOMIC to 0. 
+  However I would not recommend it, the tick type is used all over the 
+place and making it twice the natural word size of the architecture will 
+have a performance impact.
+Do these functions help your case?
+http://www.freertos.org/vTaskSetTimeOutState.html
+http://www.freertos.org/xTaskCheckForTimeOut.html
+The second link includes example code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64-bit ticks on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on November 17, 2016</div><div class="thread-post-content">Philip, would you mind posting the source of <code>isTimeAfter</code> again? I can not find it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64-bit ticks on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/philpem">philpem</a> on November 22, 2016</div><div class="thread-post-content">It&#8217;s from way back in the archives:
+http://www.freertos.org/FreeRTOS<em>Support</em>Forum<em>Archive/February</em>2012/freertos<em>Tick</em>count<em>overflow</em>5005076.html
+Apparently it was originally called timeAfter &#8212; we converted it from a function-like macro to an inline function (type checking is quite important for us from a software reliability POV) and renamed it.
+</div></div><div class="thread-post"><h3 class="thread-post-title">64-bit ticks on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/philpem">philpem</a> on November 22, 2016</div><div class="thread-post-content">I should also clarify: the specific case of this going wrong is that we were advised against using FreeRTOS Software Timers as it would require an additional Third Party Review to be done on that part of FreeRTOS, and we already had &#8220;timeAfter&#8221; reviewed.
+This was suggested and implemented:
+<ul>
+<li>A global variable is set to xTaskGetTickCount() + 5 minutes when event &#8220;A&#8221; occurs</li>
+<li>It&#8217;s reset to five minutes when further &#8220;event A&#8221;s occur</li>
+<li>It stops waiting completely (set to zero) when a different type of event (&#8220;B&#8221;) occurs</li>
+<li>Other things can poll to see if the five minutes has elapsed &#8212; that is to say, event &#8220;A&#8221; has elapsed, and five minutes have elapsed without either an event &#8220;A&#8221; resetting the counter to 5 minutes again, or an event &#8220;B&#8221; to say &#8220;done waiting, too late&#8221;.</li>
+</ul>
+In the review, this came up:
+timeAfter() will return an incorrect return value when xTaskGetTickCount reaches half of its range, but event &#8220;A&#8221; hasn&#8217;t occurred yet (the global timer is still zero).
+If you look at it in terms of 16-bit ticks:
+xTaskGetTickCount = 0x7FFF
+GlobalTimer = 0
+timeAfter = (GlobalTimer &#8211; 0x7FFF) = 0x8001 = TRUE
+timeAfter = (GlobalTimer &#8211; 0x8000) = 0x8000 = TRUE
+timeAfter = (GlobalTimer &#8211; 0x8001) = 0x7FFF = FALSE
+timeAfter = (GlobalTimer &#8211; 0x8002) = 0x7FFE = FALSE
+The same holds if this is extended to 32-bit ticks.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

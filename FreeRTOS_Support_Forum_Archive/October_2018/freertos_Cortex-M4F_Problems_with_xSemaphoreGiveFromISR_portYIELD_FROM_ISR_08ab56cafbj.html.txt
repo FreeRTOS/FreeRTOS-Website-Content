@@ -1,0 +1,269 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cortex-M4F: Problems with xSemaphoreGiveFromISR / portYIELD_FROM_ISR - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2018/freertos_Cortex-M4F_Problems_with_xSemaphoreGiveFromISR_portYIELD_FROM_ISR_08ab56cafbj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Cortex-M4F: Problems with xSemaphoreGiveFromISR / portYIELD_FROM_ISR - FreeRTOS" />
+<meta property="og:description" content="Cortex-M4F: Problems with xSemaphoreGiveFromISR / portYIELD_FROM_ISRPosted by damien_d on October 12, 2018Dear All, I am currently attempting to debug a problem I have running stock FreeRTOS v10.1.0 on an NXP S32K144 EVK (ARM Cortex-M4F) using GCC 7.3.1: ~~~ /opt/gcc-arm-none-eabi-7-2018-q2-update/bin/arm-none-eabi-gcc &#8211;version arm-none-eabi-gcc (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [ARM/embedded-7-branch revision 261907] ~~~ &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2018/freertos_Cortex-M4F_Problems_with_xSemaphoreGiveFromISR_portYIELD_FROM_ISR_08ab56cafbj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Cortex-M4F: Problems with xSemaphoreGiveFromISR / portYIELD_FROM_ISRPosted by damien_d on October 12, 2018Dear All, I am currently attempting to debug a problem I have running stock FreeRTOS v10.1.0 on an NXP S32K144 EVK (ARM Cortex-M4F) using GCC 7.3.1: ~~~ /opt/gcc-arm-none-eabi-7-2018-q2-update/bin/arm-none-eabi-gcc &#8211;version arm-none-eabi-gcc (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [ARM/embedded-7-branch revision 261907] ~~~ [&hellip;]" />
+<meta name="twitter:title" content="Cortex-M4F: Problems with xSemaphoreGiveFromISR / portYIELD_FROM_ISR - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203019' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203019' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203019' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203019' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147377' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2018%2Ffreertos_Cortex-M4F_Problems_with_xSemaphoreGiveFromISR_portYIELD_FROM_ISR_08ab56cafbj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2018%2Ffreertos_Cortex-M4F_Problems_with_xSemaphoreGiveFromISR_portYIELD_FROM_ISR_08ab56cafbj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147377">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2018_freertos_support_forum_archive_index.html/">October 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Cortex-M4F: Problems with xSemaphoreGiveFromISR / portYIELD_FROM_ISR</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/damien_d">damien_d</a> on October 12, 2018</div><div class="thread-post-content">Dear All,
+I am currently attempting to debug a problem I have running stock FreeRTOS v10.1.0 on an NXP S32K144 EVK (ARM Cortex-M4F) using GCC 7.3.1:
+~~~
+/opt/gcc-arm-none-eabi-7-2018-q2-update/bin/arm-none-eabi-gcc &#8211;version
+arm-none-eabi-gcc (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [ARM/embedded-7-branch revision 261907]
+~~~
+In this application, I have a sensor sampling task triggered by a HW timer servicing 3 sensors at 3200Hz, two comms tasks (a UART and CAN), and a general debugging task triggered from the tick hook.
+The problem I have is in the sensor task.  The three sensors are each on their own SPI bus, which operate almost simultaneously.  At the end of the SPI transaction, an interrupt is generated, where it wakes the main sensor task with a semaphore, i.e.
+~~~
+void SensorN<em>SPI</em>Interrupt(void)
+{
+    // <snip>
+<pre><code>// Check if the transaction is complete
+if (m_spi_txIndex &gt;= m_spi_numTransactions)
+{
+    #if (SPI_BUSY_WAIT)
+        m_spi_ready = 1;
+    #else
+        // Flag the main loop
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        xSemaphoreGiveFromISR(m_spi_semaphore, &amp;xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    #endif
+}
+else
+{
+    // Stuff more data in the SPI port
+}
+</code></pre>
+}
+~~~
+(The ISR is implemented three times, each pointing to unique data structures,  and have their own interrupt vector and priority).
+The sensor loop waits on the sensor as follows:
+~~~
+void SensorN<em>SPI</em>TransactionSequence<em>Wait(void)
+{
+    #if (SPI</em>BUSY<em>WAIT)
+        while (!m</em>spi<em>ready)
+        {
+        }
+    #else
+        const TickType</em>t xMaxExpectedBlockTime = portMAX<em>DELAY;
+        xSemaphoreTake(m</em>spi_semaphore, xMaxExpectedBlockTime);
+    #endif
+}
+~~~
+So far, I have observed the following behavior:
+a) If I have exactly one sensor operating, then the system operates indefinately
+b) if I have all three sensors running, then it will crash anywhere between 10sec and 3 minutes, with no apparent activity in any thread or interrupt. configASSERT() is defined, but appears not to execute.
+c) If I define SPI<em>BUSY</em>WAIT which uses a busy wait rather than the semaphore mechanism, then the system operates indefinately.
+I suspect therefore it has something to do with yielding when multiple interrupts are pending execution.
+I have checked the usual advice with respect to Cortex-M interrupt. The NXP S32K144 implements 4 priority bits. The SPI interrupts each operate at (unshifted) priority 9, although changing the priorites to be 7, 8 and 9 on each sensor makes no difference.
+Stack overflow detection is enabled, and there is no evidence of any task getting close to their stack limit.
+~~~
+/* The lowest interrupt priority that can be used in a call to a &#8220;set priority&#8221;
+function. */
+<h1>define configLIBRARY<em>LOWEST</em>INTERRUPT_PRIORITY  (0x0F)</h1>
+/* The highest interrupt priority that can be used by any interrupt service
+routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
+INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER
+PRIORITY THAN THIS! (higher priorities are lower numeric values. */
+<h1>define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY     (0x05)</h1>
+/* Interrupt priorities used by the kernel port layer itself.  These are generic
+to all Cortex-M ports, and do not rely on any particular library functions. */
+<h1>ifndef configKERNEL<em>INTERRUPT</em>PRIORITY</h1>
+  #define configKERNEL<em>INTERRUPT</em>PRIORITY         (configLIBRARY<em>LOWEST</em>INTERRUPT<em>PRIORITY &lt;&lt; (8-configPRIO</em>BITS))
+<h1>endif</h1>
+/* !!!! configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY must not be set to zero !!!!
+See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
+<h1>ifndef configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY</h1>
+  #define configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY    (configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY &lt;&lt; (8-configPRIO</em>BITS))
+<h1>endif</h1>
+~~~
+I have been following this thread with interest as it appears to also have some problems with task switching behavior:
+https://sourceforge.net/p/freertos/discussion/382005/thread/0fd89fda36/
+Is there anything you might suggest that I try to help debug what may be happening?
+Kind regards,
+Damien.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Cortex-M4F: Problems with xSemaphoreGiveFromISR / portYIELD_FROM_ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/damien_d">damien_d</a> on October 12, 2018</div><div class="thread-post-content">Interesting, the initial workaround on the forum topic linked does NOT work for me, although the lock-up does seems to take much longer to manifest.  That is, whereas previously it would take between 1-3 minutes to manifest, it will now run for a long as 10 minutes without locking up.  Not having the task switching (i.e. using SPI<em>BUSY</em>WAIT in the original description) runs overnight without problems.
+So, it seems to help, but it&#8217;s not the full story.
+~~~
+        /* Select a new task to run using either the generic C or port
+        optimised asm code. */
+        __asm (&#8220;CPSID  i&#8221;);
+        taskSELECT_HIGHEST_PRIORITY_TASK(); /*lint !e9079 void * is used as this macro is used with timers and co-routines too.  Alignment is known to be fine as the type of the pointer stored and retrieved is the same. */
+        traceTASK_SWITCHED_IN();
+         __asm (&#8220;CPSIE  i&#8221;);
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Cortex-M4F: Problems with xSemaphoreGiveFromISR / portYIELD_FROM_ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 12, 2018</div><div class="thread-post-content">I think the conclusion of that thread was that the work around you 
+posted would not actually fix the issue.  In the other thread the issue 
+manifests itself (and can be explained) when run time stats are turned 
+on &#8211; do you have run time stats on, or any other code inserted into the 
+context switch code (such as a trace macro implemented)?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Cortex-M4F: Problems with xSemaphoreGiveFromISR / portYIELD_FROM_ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/damien_d">damien_d</a> on October 15, 2018</div><div class="thread-post-content">Strangely enough, no.  I&#8217;m still working on any particular configuration that appears to trigger ti more (or less) often, or not at all.
+My baseline FreeRTOS config looks like this:
+~~~
+<h1>define configUSE_PREEMPTION                     1</h1>
+<h1>define configSUPPORT<em>STATIC</em>ALLOCATION          1</h1>
+<h1>define configSUPPORT<em>DYNAMIC</em>ALLOCATION         1</h1>
+<h1>define configUSE<em>IDLE</em>HOOK                      0</h1>
+<h1>define configUSE<em>TICK</em>HOOK                      1</h1>
+<h1>define configCPU<em>CLOCK</em>HZ                       ( 80000000UL )</h1>
+<h1>define configTICK<em>RATE</em>HZ                       ((TickType_t)1000)</h1>
+<h1>define configMAX_PRIORITIES                     ( 7 )</h1>
+<h1>define configMINIMAL<em>STACK</em>SIZE                 (128)</h1>
+<h1>define configTOTAL<em>HEAP</em>SIZE                    ((size_t) 4096)</h1>
+<h1>define configMAX<em>TASK</em>NAME_LEN                  ( 16 )</h1>
+<h1>define configUSE<em>16</em>BIT_TICKS                   0</h1>
+<h1>define configUSE_MUTEXES                        1</h1>
+<h1>define configQUEUE<em>REGISTRY</em>SIZE                8</h1>
+<h1>define configUSE<em>PORT</em>OPTIMISED<em>TASK</em>SELECTION  1</h1>
+<h1>define configUSE<em>TIME</em>SLICING                   0</h1>
+/* Co-routine definitions. */
+<h1>define configUSE<em>CO</em>ROUTINES                    0</h1>
+<h1>define configMAX<em>CO</em>ROUTINE_PRIORITIES          ( 2 )</h1>
+/* Set the following definitions to 1 to include the API function, or zero
+to exclude the API function. */
+<h1>define INCLUDE_vTaskPrioritySet        1</h1>
+<h1>define INCLUDE_uxTaskPriorityGet       1</h1>
+<h1>define INCLUDE_vTaskDelete             1</h1>
+<h1>define INCLUDE_vTaskCleanUpResources   1</h1>
+<h1>define INCLUDE_vTaskSuspend            1</h1>
+<h1>define INCLUDE_vTaskDelayUntil         1</h1>
+<h1>define INCLUDE_vTaskDelay              1</h1>
+~~~
+Note that there is no configGENERATE<em>RUN</em>TIME_STATS defined.
+In this &#8220;baseline&#8221; configuration, it will generally last about 15min before locking up.
+if I add the following line, then it takes generally 1-3 minutes to lock up:
+~~~
+<h1>define configCHECK<em>FOR</em>STACK_OVERFLOW           1</h1>
+~~~
+which is the only extra line that appears to add code to the FreeRTOS task switching routine.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Cortex-M4F: Problems with xSemaphoreGiveFromISR / portYIELD_FROM_ISR</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/damien_d">damien_d</a> on October 17, 2018</div><div class="thread-post-content">After spending a few days debugging, the best I can come up with is as follows:
+<ol>
+<li>The lock-up is an imprecise hard fault. Setting DISDEFWBUF turns it into a precise fault.</li>
+<li>The HFSR reports 0x40000000, noting the FORCED bit is set.</li>
+</ol>
+I have tried all sorts of things to attempt what may or may not cause the problem, including:
+1. Removing all FPU computations (they exist only in one task) to remove the possibility it may have to do with lazy stacking of the FPU registers
+2. All FreeRTOS objects are static.  Padding queue and stack buffers with extra data, and esnuring all FreeRTOS onbjects are aligned to 8 bytes makes no difference. 
+3. Based on (2), inspecting the memory shows no evidence of any structure over-running its alloted bounds.
+There are only two ways I can stop the lock-up from occuring:
+1. Replace the binary semaphores with busy loops (see the original post); or
+2. Re-work the task to use direct-to task notifications instead of binary semaphores.
+I am at a loss to explain how or why this is occuring, or why the binary semaphores seem to be the common theme here. Even more troubling is that the application was a port from an STM32 to an S32K (both Cortex M4F) using the same FreeRTOS primitives, but (of course) using device-specific drivers for CAN, SPI, timers, etc.  From FreeRTOS&#8217;s perspective, only two things changed:
+1. Upgrade from FreeRTOS 10.0.0 to 10.1.0, and
+2. Change from dynamically allocated structures to statically allocated structures.
+I&#8217;m happy to test ideas, but for the moment, I will proceed with the task notification based &#8220;semaphores&#8221; as it seems to solve my problem.
+  &#8212; Damien.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

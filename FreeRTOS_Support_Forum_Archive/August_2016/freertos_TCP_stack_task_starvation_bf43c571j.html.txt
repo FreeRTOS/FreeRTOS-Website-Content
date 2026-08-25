@@ -1,0 +1,192 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCP stack: task starvation - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2016/freertos_TCP_stack_task_starvation_bf43c571j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="TCP stack: task starvation - FreeRTOS" />
+<meta property="og:description" content="TCP stack: task starvationPosted by tselmeci on August 22, 2016Hello all! I&#8217;d like to report an issue I&#8217;ve found in the recent weeks. Kinetis K64F (Cortex M4F), FreeRTOS-8.2.0, TCP-160112. The K64F is the server. There&#8217;s a persistent connection between the K64F and PC. The PC regularly sends 100-200 bytes long requests, and the K64F replies &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2016/freertos_TCP_stack_task_starvation_bf43c571j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="TCP stack: task starvationPosted by tselmeci on August 22, 2016Hello all! I&#8217;d like to report an issue I&#8217;ve found in the recent weeks. Kinetis K64F (Cortex M4F), FreeRTOS-8.2.0, TCP-160112. The K64F is the server. There&#8217;s a persistent connection between the K64F and PC. The PC regularly sends 100-200 bytes long requests, and the K64F replies [&hellip;]" />
+<meta name="twitter:title" content="TCP stack: task starvation - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202693' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202693' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202693' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202693' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146040' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2016%2Ffreertos_TCP_stack_task_starvation_bf43c571j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2016%2Ffreertos_TCP_stack_task_starvation_bf43c571j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146040">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2016_freertos_support_forum_archive_index.html/">August 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">TCP stack: task starvation</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on August 22, 2016</div><div class="thread-post-content">Hello all!
+I&#8217;d like to report an issue I&#8217;ve found in the recent weeks.
+Kinetis K64F (Cortex M4F), FreeRTOS-8.2.0, TCP-160112.
+The K64F is the server. There&#8217;s a persistent connection between the K64F and PC. The PC regularly sends 100-200 bytes long requests, and the K64F replies with packets smaller than 1500 bytes.
+An HTTP server is also running and can serve 3 parallel requests. The PC is executing many parallel wgets to get the homepage on K64F at the highest pace possible.
+When everything is up and running (1 persistent TCP connection + 3 continuously connecting, downloading and disconnecting HTTP clients) the machine gets rebooted by the HW watchdog after a while (usually within 1-5 minutes). The watchdog has a dedicated reset task, with a priority lower than the IP task&#8217;s priority.
+I&#8217;ve figured out that prvCalculateSleepTime(&#8230;) function sometimes calculates a 0 tick of sleep time, thus it doesn&#8217;t let lower priority tasks getting CPU time. Even worse, it appears that if prvCalculateSleepTime(&#8230;) once calculates a zero ms of sleep time, it will never recover and will calculate this bad value until eternity (or until the watchdog resets ;)).
+I&#8217;ve applied a simple fix to the end of the function:
+~~~
+    if (xMaximumSleepTime == 0)
+        xMaximumSleepTime = pdMS<em>TO</em>TICKS(10);
+~~~
+And in my case this makes the trick, the system no longer gets starved.
+I didn&#8217;t have time to dig into the code to find the real reasons of this; the fix above has been running for more than 10 days without a stop, so I hope it can&#8217;t be that bad&#8230; 😉
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 22, 2016</div><div class="thread-post-content">Hi Tamas,
+Thanks for taking the time to report this &#8211; we can try and replicate the 
+situation.
+I presume a calculated sleep time of 0 will be legitimate in some 
+circumstances, so that in itself does not sound like a problem (I would 
+have to check), but there should not be a persistent time of 0 after 
+that but without being able to duplicate the problem first (and then 
+step through the code) I could not be sure.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 22, 2016</div><div class="thread-post-content">Hi Tamás,
+There is a very <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/5778f6f8/?limit=25#f352">recent post</a> about the same subject.
+In the upcoming Labs release this will be solved. Your patch will also work. I chose for a <code>pdMS_TO_MIN_TICKS()</code> that returns minimal 1
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on August 24, 2016</div><div class="thread-post-content">Hello Hein!
+No, my issue has nothing to do with the tick frequency of FreeRTOS. Since we&#8217;ve figured out that my TCP problems occur due to the 200Hz setting, I&#8217;m using FreeRTOS at 1000Hz; the problem I described above is really independent of this.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 24, 2016</div><div class="thread-post-content">An updated Labs release was uploaded yesterday.  This new release is a maintenance release for existing code, rather than a release of the main development branch.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 24, 2016</div><div class="thread-post-content">I don&#8217;t know if this is the case here, but this sounds very much like the problem that happens with a delay-until loop when it falls behind. It wants to do extra work right now to catch up, but that can cause starvation of lower priority tasks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 24, 2016</div><div class="thread-post-content">Tamás, are you maybe using FreeRTOS_select() ?
+If you let select() wake-up on a WRITE condition ( you may write to a socket ), then select will keep on returning without blocking until the output buffer is full.
+The same for the other conditions: if it unblocks because of a socket has an exception ( connection closure ), and you omit to handle that exception, the next select() will keep on returning without sleeping.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 24, 2016</div><div class="thread-post-content">Another question:
+when <code>prvCalculateSleepTime()</code> returns zero, can you say which timer had expired ?
+Was it ARP, DHCP, TCP, or DNS.
+If it was TCP, it looks much like the frequency problem.
+Have you tried <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/5778f6f8/?limit=25#f352">this solution</a> already?
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on August 26, 2016</div><div class="thread-post-content">No, I&#8217;m not using FreeRTOS_select(&#8230;) at all. Only simple reads and writes on the socket, which has ~100-200ms timeout set.
+I can&#8217;t tell you if it was ARP, DHCP, etc. timer, since I didn&#8217;t begin figuring it out.
+My machine is running with 1000Hz tick; according to our earlier conversation in email, I thought I don&#8217;t have to fix the pdMS<em>TO</em>TICKS(&#8230;) issue (it may return 0) unless the tick rate isn&#8217;t 1000Hz.
+So do you still recommend me to apply this small fix despite the FreeRTOS is running at 1000Hz on my machine? Anyways, since my primitive fix has been applied it appears to be stable in my current usage scenario&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 26, 2016</div><div class="thread-post-content">If you use a tickrate of 1000 Hz, it is indeed unlikely that applying the pdMS<em>TO</em>MIN_TICKS macro will change anything to the problem.
+It would still be interesting to know for what protocol (ARP, DHCP, TCP, or DNS) xMaximumSleepTime was set to zero.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on August 31, 2016</div><div class="thread-post-content">After some further checking, we found a solution to the problem that Tamás reports here above, the starvation of lower-priority tasks.
+Please change the following static-inline function in include/FreeRTOS<em>IP</em>Private.h :
+~~~~
+    static portINLINE UBaseType<em>t uxGetRxEventCount( void )
+    {
+&#8211;        extern volatile UBaseType</em>t uxRxEventCount;
+&#8211;        return uxRxEventCount;
++        return 0u;
+    }
+~~~~
+In other words, let this function always return zero.
+Rationale :
+When +TCP was first developed, we thought it would be advantageous to constantly keep track of how many RX packets are queued-up for the IP-task.  It would allow the IP-task to give priority to RX processing above sending TCP packets.
+The internal variable <code>uxRxEventCount</code> would keep track of the number of RX packets queued in <code>xNetworkEventQueue</code>.
+The starvation: as long as <code>uxRxEventCount</code> was non-zero, the IP-task wouldn&#8217;t block.  <code>xTCPTimerCheck()</code> in FreeRTOS_Socket.c would return 0 ticks:
+<pre><code>if( uxGetRxEventCount() != 0u )
+{
+    /* This was interrupted, but want to be called as soon as
+    possible to finish checking the other sockets. * /
+    xShortest = ( TickType_t ) 0;
+    break;
+}
+</code></pre>
+The above code is not needed at all: as long as the <code>xNetworkEventQueue</code> is non-empty, the IP-task won&#8217;t block unless another task has work to do at a higher priority.
+In the latest release of +TCP, you will see in <code>FreeRTOS_TCP_IP.c</code> that <code>uxGetRxEventCount()</code> won&#8217;t be checked any more.  That was thanks to Andrzej Burski, who noted that under some circumstances, the IP-task just stops sending TCP packets.
+Tamás, thanks for reporting the above.  In the next release, I think that <code>uxRxEventCount</code> will have disappeared altogether 🙂
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 31, 2016</div><div class="thread-post-content">A 160831 release is now available with all use of the uxRxEventCount 
+variable removed.
+</div></div><div class="thread-post"><h3 class="thread-post-title">TCP stack: task starvation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tselmeci">tselmeci</a> on September 1, 2016</div><div class="thread-post-content">I can confirm that this little modification has solved my issues 🙂
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

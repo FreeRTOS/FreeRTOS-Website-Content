@@ -1,0 +1,308 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS and GPIO interrupt handler - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2017/freertos_FreeRTOS_and_GPIO_interrupt_handler_92ff6ffej.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS and GPIO interrupt handler - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS and GPIO interrupt handlerPosted by k1mgy on November 2, 2017AT91SAMG Atmel Studio ASF FreeRTOS 8.0.9 To service a touch screen, I&#8217;ve established a GPIO line configured to fire an interrupt service routine when the screen is touched. This will then cause certain actions to occur based on the touch event. Communications with the touch &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2017/freertos_FreeRTOS_and_GPIO_interrupt_handler_92ff6ffej.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS and GPIO interrupt handlerPosted by k1mgy on November 2, 2017AT91SAMG Atmel Studio ASF FreeRTOS 8.0.9 To service a touch screen, I&#8217;ve established a GPIO line configured to fire an interrupt service routine when the screen is touched. This will then cause certain actions to occur based on the touch event. Communications with the touch [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS and GPIO interrupt handler - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202869' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202869' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202869' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202869' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146732' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2017%2Ffreertos_FreeRTOS_and_GPIO_interrupt_handler_92ff6ffej.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2017%2Ffreertos_FreeRTOS_and_GPIO_interrupt_handler_92ff6ffej.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146732">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/a00104.html" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/FAQ.html" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2017_freertos_support_forum_archive_index.html/">November 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS and GPIO interrupt handler</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/k1mgy">k1mgy</a> on November 2, 2017</div><div class="thread-post-content">AT91SAMG
+Atmel Studio
+ASF
+FreeRTOS 8.0.9
+To service a touch screen, I&#8217;ve established a GPIO line configured to fire an interrupt service routine when the screen is touched.  This will then cause certain actions to occur based on the touch event.
+Communications with the touch screen is accomplished through the SPI bus.  I don&#8217;t want to re-write my HAL to use the FreeRTOS SPI driver.
+Is it legal to handle interrupts outside of FreeRTOS?  By outside, I mean that the ISR is not managed by the FreeRTOS scheduler.
+Are there any reason to do this differently, and if so, can you suggest something?
+ps: the ISR fires and seems to work fine with a simple FreeRTOS task list.  The ISR does not eat up much time, however.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS and GPIO interrupt handler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 3, 2017</div><div class="thread-post-content">FreeRTOS doesn&#8217;t manage the interrupts, but there are rules on how you 
+use the API from inside an interrupt service routine.  Roughly the rules 
+are:
+<ul>
+<li>don&#8217;t call an API function that does not end in &#8216;FromISR&#8221; from inside 
+an ISR.</li>
+<li>don&#8217;t call any API function from an interrupt that has a priority 
+above configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY.</li>
+</ul>
+I would recommend reading the book that is provided as a free PDF 
+download: http://www.freertos.org/Documentation/RTOS_book.html and the 
+following page: http://www.freertos.org/RTOS-Cortex-M3-M4.html
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS and GPIO interrupt handler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/k1mgy">k1mgy</a> on November 6, 2017</div><div class="thread-post-content">Thank you.  I read the material on interrupts.  I&#8217;m including the relevant code below.
+My processor is the AT91SAMG55 (ARM Cortex-M4).  The data sheet tells me that priority 0 is the highest (opposite of most other devices).  What I can&#8217;t fathom is the maximum number of interrupt priorities available.  It&#8217;s either a 4 or 8 bit register.. but there are some complexities.  Maybe this doesn&#8217;t matter.  Uncertain how this plays into the FreeRTOS event priority scheme or even if these are related.  <strong><em>For now I am going to assume that the priority scheme relies on the CPU and therefore that 0 has the highest priority.</em></strong> 
+Questions:
+1.** configMAX_PRIORITIES** is set to 5 in FreeRTOSConfig.h.  Is this the setting to establish the max number of priorities available on the device?  It&#8217;s unclear from the description of this setting.  For now, since priority 0 = max on the CPU, I have set <strong>#tskIDLE_PRIORITY</strong> to 5 (assuming for the moment that 5 is the lowest).
+<ol>
+<li>Are interrupts turned off at any time during running of the scheduler?  It appears at first glance this is so, as my GPIO interrupt handler is not triggered during scheduler execution.</li>
+<li>For now, I have set up a simple boolean token that will, I hope, prevent any conflict between two timer tasks from accessing the SPI buss at the same time.  A task that needs access to the SPI must get the token.  If it does not, then any SPI calls within the task are disallowed.  I&#8217;m concerned however that two timer-based tasks might request the token simultaneously.  Hopefully these will not clash.  I&#8217;d rather use a FreeRTOS-based token that guarantees its integrity.  Any suggestions?</li>
+</ol>
+Priority constants:
+~~~
+<h1>define tskIDLE<em>PRIORITY            ( ( UBaseType</em>t ) 5U )</h1>
+<h1>define TOUCHPARSE<em>TASK</em>PRIORITY            ( 1 )</h1>
+<h1>define TOUCHPARSE<em>STACK</em>SIZE               (1024/sizeof(portSTACK_TYPE))</h1>
+<h1>define ADC<em>CONVERT</em>TASK_PRIORITY           ( 3 )</h1>
+<h1>define ADC<em>CONVERT</em>STACK<em>SIZE              (1024/sizeof(portSTACK</em>TYPE))</h1>
+<h1>define SCREEN<em>UPDATE</em>TASK_PRIORITY         ( 2 )</h1>
+<h1>define SCREEN<em>UPDATE</em>STACK<em>SIZE            (1024/sizeof(portSTACK</em>TYPE))</h1>
+// task definitions
+<h1>define TASK<em>MONITOR</em>STACK<em>SIZE            (1024/sizeof(portSTACK</em>TYPE))</h1>
+<h1>define TASK<em>MONITOR</em>STACK<em>PRIORITY        (tskIDLE</em>PRIORITY)</h1>
+<h1>define TASK<em>LED</em>STACK<em>SIZE                (1024/sizeof(portSTACK</em>TYPE))</h1>
+<h1>define TASK<em>LED</em>STACK<em>PRIORITY            (tskIDLE</em>PRIORITY)</h1>
+// global
+bool GpuReadToken;
+bool GetGPUReadToken(void)
+{
+    if (!GpuReadToken)
+        GpuReadToken=true;
+    return(GpuReadToken);
+}
+void ClearGPUReadToken(void)
+{
+    GpuReadToken=false;
+}
+&#8212;
+main.c:
+<pre><code>/* Create task to monitor processor activity */
+if (xTaskCreate(task_mon, "Monitor", TASK_MONITOR_STACK_SIZE, NULL,
+                TASK_MONITOR_STACK_PRIORITY, NULL) != pdPASS)
+{
+    printf("Failed to create task_mon taskrn");
+}
+// Create task to make led blink
+if (xTaskCreate(task_led, "Led", TASK_LED_STACK_SIZE, NULL,
+                TASK_LED_STACK_PRIORITY, NULL) != pdPASS)
+{
+    printf("Failed to create test led taskrn");
+}
+if (xTaskCreate(TouchParse, "TouchParse", TOUCHPARSE_STACK_SIZE, NULL,
+                TOUCHPARSE_TASK_PRIORITY, NULL) != pdPASS)
+{
+    printf("Failed to create adc_conv taskrn");
+}
+if (xTaskCreate(adc_conv, "ADC Convert", ADC_CONVERT_STACK_SIZE, NULL,
+                ADC_CONVERT_TASK_PRIORITY, NULL) != pdPASS)
+{
+    printf("Failed to create adc_conv taskrn");
+}
+if (xTaskCreate(ScreenUpdate, "Screen Update", SCREEN_UPDATE_STACK_SIZE, NULL,
+                SCREEN_UPDATE_TASK_PRIORITY, NULL) != pdPASS)
+{
+    printf("Failed to create ScreenUpdate taskrn");
+}
+</code></pre>
+&#8212; callbacks &#8212;
+void TouchParse(void *pvParameters)
+{
+    static portCHAR szList[256];
+    UNUSED(pvParameters);
+<pre><code>for (;;)
+{
+    if (GetGPUReadToken())
+    {
+        // SPI CALL
+        tag_touched = Ft_Gpu_Hal_Rd32(phost, REG_TOUCH_TAG) &amp; 0xFF;
+        ClearGPUReadToken();
+    }
+    // valid press
+    if (tag_touched&gt;0 &amp;&amp; tag_touched&lt;99)
+    {
+        printf("***TP: Valid tag_touched[%i]nr",tag_touched);
+        Play_Sound(0x23,255);
+        vTaskDelay(50);
+        Stop_Sound();
+        vTaskDelay(450);
+        sprintf(cUtilStr,"Touched [%i] ",tag_touched);
+    }
+    vTaskDelay(250);    // 250mS
+}
+</code></pre>
+}
+void ScreenUpdate(void *pvParameters)
+{
+<pre><code>UNUSED(pvParameters);
+for (;;)
+{
+    if (GetGPUReadToken())
+    {
+        // SPI CALL
+        BaseScreen();
+        ClearGPUReadToken();
+    }
+    is_conversion_done = false;
+    adc_start_software_conversion(ADC);
+    vTaskDelay(1000);
+}
+</code></pre>
+}
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS and GPIO interrupt handler</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on November 6, 2017</div><div class="thread-post-content"><blockquote>
+  My processor is the AT91SAMG55 (ARM Cortex-M4). The data sheet tells me 
+  that priority 0 is the highest (opposite of most other devices). 
+</blockquote>
+That is always the case for a Cortex-M device.  What is different 
+between devices is the number of interrupt priorities. 
+http://www.freertos.org/RTOS-Cortex-M3-M4.html
+<blockquote>
+  What I 
+  can&#8217;t fathom is the maximum number of interrupt priorities available. 
+  It&#8217;s either a 4 or 8 bit register.. 
+</blockquote>
+Write 0xff into one of the 8-bit priority registers, then read the value 
+back again, that will tell you how many bits are implemented by the 
+device &#8211; bits that are not implemented are read back as 0.  If you use 
+the latest head revision of FreeRTOS, from SVN, then it will do that for 
+you and assert() if you have it set wrong.
+<blockquote>
+  Questions:
+  1.<em>configMAX_PRIORITIES</em> is set to 5 in FreeRTOSConfig.h. Is this the 
+  setting to establish the max number of priorities available on the 
+  device? 
+</blockquote>
+No.  It is nothing to do with the hardware. 
+http://www.freertos.org/a00110.html#configMAX_PRIORITIES
+I would recommend investing a short time in reading the free to download 
+FreeRTOS book. http://www.freertos.org/Documentation/RTOS_book.html
+<blockquote>
+  It&#8217;s unclear from the description of this setting. For now, 
+  since priority 0 = max on the CPU, I have set <em>#tskIDLE_PRIORITY</em> to 5 
+  (assuming for the moment that 5 is the lowest).
+</blockquote>
+Do not edit any constants that do not start with &#8216;config&#8217;.  Your system 
+is not going to work otherwise.
+<blockquote>
+   1.
+<pre><code>Are interrupts turned off at any time during running of the
+scheduler? It appears at first glance this is so, as my GPIO
+interrupt handler is not triggered during scheduler execution.
+</code></pre>
+</blockquote>
+What do you mean by &#8216;scheduler execution&#8217;?  Do you mean while some of 
+the FreeRTOS functions are executing?  Or do you just mean when the RTOS 
+is running user tasks?
+<blockquote>
+   2.
+<pre><code>For now, I have set up a simple boolean token that will, I hope,
+prevent any conflict between two timer tasks from accessing the SPI
+buss at the same time. A task that needs access to the SPI must get
+the token. If it does not, then any SPI calls within the task are
+disallowed. I'm concerned however that two timer-based tasks might
+request the token simultaneously. Hopefully these will not clash.
+I'd rather use a FreeRTOS-based token that guarantees its integrity.
+Any suggestions?
+</code></pre>
+</blockquote>
+My biggest suggestion is to read the book referenced above, or, as a 
+very minimum, some of the pages on the website.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/RTOS.html" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

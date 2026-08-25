@@ -1,0 +1,203 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSP430, gcc, CCE, and task yields in ISRs - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2007/freertos_MSP430_gcc_CCE_and_task_yields_in_ISRs_1789608.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="MSP430, gcc, CCE, and task yields in ISRs - FreeRTOS" />
+<meta property="og:description" content="MSP430, gcc, CCE, and task yields in ISRsPosted by plinder13 on July 31, 2007I have a general question about the MSP430 GCC port.&nbsp; The ISRs calls the taskYIELD&#040;&#041; macro when there is a need for a context switch.&nbsp; Eventually in the macro, portRESTORE&#095;CONTEXT&#040;&#041; is called which provides the neccessary assembly instructions to restore the context &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2007/freertos_MSP430_gcc_CCE_and_task_yields_in_ISRs_1789608.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="MSP430, gcc, CCE, and task yields in ISRsPosted by plinder13 on July 31, 2007I have a general question about the MSP430 GCC port.&nbsp; The ISRs calls the taskYIELD&#040;&#041; macro when there is a need for a context switch.&nbsp; Eventually in the macro, portRESTORE&#095;CONTEXT&#040;&#041; is called which provides the neccessary assembly instructions to restore the context [&hellip;]" />
+<meta name="twitter:title" content="MSP430, gcc, CCE, and task yields in ISRs - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201505' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201505' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201505' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201505' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139878' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2007%2Ffreertos_MSP430_gcc_CCE_and_task_yields_in_ISRs_1789608.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2007%2Ffreertos_MSP430_gcc_CCE_and_task_yields_in_ISRs_1789608.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139878">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2007_freertos_support_forum_archive_index.html/">July 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">MSP430, gcc, CCE, and task yields in ISRs</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/plinder13">plinder13</a> on July 31, 2007</div><div class="thread-post-content">I have a general question about the MSP430 GCC port.&nbsp; The ISRs calls the taskYIELD&#40;&#41; macro when there is a need for a context switch.&nbsp; Eventually in the macro, portRESTORE&#95;CONTEXT&#40;&#41; is called which provides the neccessary assembly instructions to restore the context for the next task.&nbsp; However, from what I can tell, it fails to clean up the stack as modified by the entrance into the ISR.&nbsp; For the Tick ISR this seems to be acceptable because the ISR is given a &quot;naked&quot; atrribute, and hence, I assume the gcc compiler does not modify the stack upon entry to this function.&nbsp; However, the serial ISRs are not declared as &quot;naked&quot;, so won&#8217;t this cause a memory leak &#40;as the stack manipulation peformed by the compiler entering this ISR is not cleaned up&#41;?
+I am actually not using gcc but the CCE Pro version offered by TI so I can&#8217;t look at the assembly that gcc creates upon an non-naked ISR entry.&nbsp; I believe I have everything ported except for this ISR issue.
+For those who are interested, some simple things I have done to port gcc to CCE:
+1.&nbsp; Use the &#35;pragma FUNC&#95;NEVER&#95;RETURNS&#40;&#41; to make an ISR &quot;naked&quot;
+2.&nbsp; Put a space between the &quot; and the first assembly mneumonic of each asm&#40;&#41; instruction
+3.&nbsp; Use mov.w R1,0&#40;R12&#41; in place of mov.w R1,@R12
+4.&nbsp; Define inline as nothing &quot;&#35;define inline&quot; &#40;taken from Westmoreland port&#41;
+5.&nbsp; removed &quot;volatile&quot; keyword from all asm&#40;&#41; instructions
+6.&nbsp; Added &quot;asm&#40;&quot; .global pxCurrentTCB&quot;&#41;;&quot; underneath pxCurrentTCB declaration as the compiler was not adding this because there was not statement in C &#40;other than some asm&#40;&#41; statements&#41; that used this variable.
+7.&nbsp; Added TIMERA0&#95;ISR&#40;prvTickISR&#41;; for Tick ISR
+8.&nbsp; Added an &quot;&#35;include &quot;portmacro.h&quot;&quot; to portable.h &#8211; a better fix would be to create a symbol for the CCE build and place this include inside of an &#35;ifdef
+9.&nbsp; I have not yet found that I needed any special compiler or linker settings &#8211; the default has worked thus far.
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430, gcc, CCE, and task yields in ISRs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sotd">sotd</a> on July 31, 2007</div><div class="thread-post-content">I would guess from other ports that entering the ISR pushes registers onto the stack of the task that was interrupted by the ISR.&nbsp; When this task next runs, it will continue from the point at which the yield occurred, which means it will then run the code that pops said registers from its stack before returning to the task code itself.
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430, gcc, CCE, and task yields in ISRs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jwestmoreland">jwestmoreland</a> on July 31, 2007</div><div class="thread-post-content">This is the behavior of most modern compilers when dealing with ISR&#8217;s.&nbsp; Some type of minimal context switch &#40;speaking of RISC&#41;
+save/restore is done &#8211; with CISC-like machines something similar takes place.
+My advice is to get things running with the default behavior of the tools first, then look at the assembler entry/exit code on
+the ISR&#8217;s and do any assembly fix-up that may be appropriate.&nbsp; Sounds like the CCE Pro tools won&#8217;t let you do this so that&#8217;s
+a bit of a shame.&nbsp; I don&#8217;t trust any toolset that doesn&#8217;t let me look at 100% of assembly in a debugger &#8211; no reason to 
+put up with that today.&nbsp; Better to buy IAR or Keil or Rowley or another tool-set to send a message to the vendor.
+If you&#8217;re having any type of stack problem &#8211; it&#8217;ll show up rather quickly in the MSP430 since you don&#8217;t have a very big area of
+RAM.&nbsp; Also check to make sure the port isn&#8217;t resetting; then happily starting again &#8211; making you think everything is OK.
+Some debuggers &#8211; like IAR &#8211; have a logging feature you can turn on to log if it hits the reset vector; for instance &#8211; or start-
+up code &#8211; whichever is easier to monitor.&nbsp; A memory leak in the form of a stack bug usually rears its ugly head rather quickly
+with the MSP430.&nbsp; It&#8217;d be nice to have a stack probe for the MSP430 &#8211; IAR has one in their debugger &#8211; but it&#8217;s tied directly
+to the tools &#8211; since FreeRTOS defines its own stack &#8211; the IAR stack probe always complains.&nbsp; I think this can be fixed in the
+debugger customizations &#8211; but all it does it monitor if the stack is in an allocated area.&nbsp; You can set advanced breakpoints 
+on the MSP430 to look at when, for instance, the Stack Pointer &#40;SP&#41; exceeds the max RAM address &#8211; which is a rather easy one
+to implement to check for a corrupt SP.&nbsp; You can also set one for the min RAM address as well.&nbsp; A corrupt SP is usually what 
+will occur &#40;eventually&#41; if there is a stack problem.&nbsp; Since the MSP430 has such a limited area of RAM &#8211; it&#8217;s a lot easier to
+find than looking for one on a Pentium P4 for instance with a 4GB SDRAM space. 
+HTH,
+John W.
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430, gcc, CCE, and task yields in ISRs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/plinder13">plinder13</a> on July 31, 2007</div><div class="thread-post-content">Thank you for your replies, you are both right.
+As far as using taskYIELD&#40;&#41; in interupts, I have been able to verify that the stack eventually unwinds as SOTD said.
+What had prompted my e-mail was my code ending up int &quot;free space&quot;.&nbsp; I looked further and found that I had defined a task function without giving it the &quot;&#40;void &#42; pvParameters&#41;&quot;, I had declared it &quot;void taskfunction&#40;void&#41;&quot;.
+The CCE tools do give full assembly, when I said I couldn&#8217;t look at the assembly I meant that I didn&#8217;t have a gcc system up and running so I couldn&#8217;t compile one of the gcc demo apps to look at the assembly produced by gcc.
+I have been able to get my code mostly up and running.&nbsp; I am able to suspend tasks and resume them inside of an ISR without any problem.
+However, I now have a new problem.&nbsp; The TIC ISR is causing a stack issue.&nbsp; So far in my app, all of the created tasks are being triggered from other ISRs, ie, I can turn the TIC ISR off and my app works fine.&nbsp; Upon the portRESTORECONTEXT&#40;&#41;, the PC is getting filled with 0xCCCC &#8211; clearly a stack problem.&nbsp; I am stepping through the portRESTORECONTEXT&#40;&#41; in the TIC ISR.&nbsp; I have minimum stack size at 48, my heap set at 1400 and the SP is 0x040A right before the &quot;reti&quot; instruction.&nbsp; Surely someone has seen this before and can give me a quick answer?&nbsp; In the mean time, I will be digging through trying to figure it out.
+Thanks for your help.
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430, gcc, CCE, and task yields in ISRs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jwestmoreland">jwestmoreland</a> on July 31, 2007</div><div class="thread-post-content">plinder,
+Check in port.c which register&#40;s&#41; pass function arg information &#8211; note this is compiler dependent.
+If memory serves me &#8211; I&#8217;ve seen this error occur due to improper function argument handling in port.c.&nbsp; You have to point
+pvParameters to the correct register in port.c &#8211; this is different for different toolsets.&nbsp; Different compilers put it different
+places for the MSP430 &#8211; GCC and Rowley use R15 &#8211; IAR uses R12 &#8211; also depends if its a structure pointer or long or double &#8211; but
+the port settings handle this in FreeRTOS &#40;I think, anyway&#8230;&#41;.
+The 0xCCCC would make me think that something&#8217;s up with R12.&nbsp; Sounds like maybe an IAR port taken over to CCE perhaps?
+The SP will point to the SR info before a RETI is executed.&nbsp; Immediately following this in the stack should be the correct
+value for the PC &#8211; if it isn&#8217;t &#8211; stack is corrupt.&nbsp; A SP issue is about the nastiest thing you can deal with in an RTOS &#40;IMHO&#41; &#8211; 
+so might as well get acquainted with what&#8217;s needed after RETI&#8217;s, RET&#8217;s, and RETA&#8217;s &#40;if using 430X&#41;.&nbsp; All of this is in the
+appropriate datasheet for the MSP430.
+HTH,
+John W.
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430, gcc, CCE, and task yields in ISRs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/plinder13">plinder13</a> on August 1, 2007</div><div class="thread-post-content">I figured it out&#33;
+In CCE, the FUNC&#95;NEVER&#95;RETURNS&#40;&#41; pragma makes a function &quot;naked&quot; unless it is specified with the &quot;interrupt&quot; keyword.&nbsp; When the function is declared an &quot;interrupt&quot; function, the FUNC&#95;NEVER&#95;RETURNS is basically ignored.
+The compiler was pushing R11-R15 onto the stack before calling portSAVE&#95;CONTEXT&#40;&#41;.&nbsp; Hence, when portRESTORE&#95;CONTEXT&#40;&#41; was being called, the &quot;reti&quot; instruction caused the R11 and R12 values that were pushed onto the stack upon entering the ISR to be pushed onto the SR and PC.
+I have two solutions for this issue:
+1.&nbsp; Do not use the &quot;interrupt&quot; keyword on the Port Tic ISR, only use the &quot;FUNC&#95;NEVER&#95;RETURNS&#40;&#41;&quot; pragma.&nbsp; This will create a &quot;naked&quot; function which will return when the &quot;reti&quot; in portRESTORE&#95;CONTEXT&#40;&#41; is executed.
+2.&nbsp; Call portYIELD&#95;TASK&#40;&#41; instead of using the other macros
+interrupt void prvTickISR&#40; void &#41;
+&#123;
+&nbsp;&nbsp;&nbsp; vTaskIncrementTick&#40;&#41;;
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430, gcc, CCE, and task yields in ISRs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/plinder13">plinder13</a> on August 1, 2007</div><div class="thread-post-content">2&#46; Call portYIELD&#95;TASK&#40;&#41; instead of using the other macros:
+interrupt void prvTickISR&#40; void &#41;
+&#123;
+&nbsp;&nbsp; vTaskIncrementTick&#40;&#41;;
+&nbsp;&nbsp; portYIELD&#95;TASK&#40;&#41;;
+&#125;
+For my app, I am going with option 1 for the prvTickISR&#40;&#41;.&nbsp; In all of my other ISRs, I do not make them naked as they force a context change rarely, and have events that cannot handle the extra overhead &#40;eg, some Timer B events need to be very fast where others force a context switch&#41;, so I use portYIELD&#95;TASK&#40;&#41;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430, gcc, CCE, and task yields in ISRs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jwestmoreland">jwestmoreland</a> on August 1, 2007</div><div class="thread-post-content">plinder,
+I&#8217;m glad you got this working &#8211; I have a question for you &#8211; 
+in your port &#8211; is portSAVE&#95;CONTEXT&#40;&#41; a function or a macro?
+Regards,
+John W.
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430, gcc, CCE, and task yields in ISRs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/plinder13">plinder13</a> on August 2, 2007</div><div class="thread-post-content">John,
+I have portSAVE&#95;CONTEXT&#40;&#41; as a macro.&nbsp; It is similar to the GCC version:
+I would be happy to e-mail you my CCE port if it would be useful to you &#8211; especially since your website seems to be one of the harbors of MSP430 ports.
+Penn
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430, gcc, CCE, and task yields in ISRs</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jwestmoreland">jwestmoreland</a> on August 2, 2007</div><div class="thread-post-content">Penn,
+Sure &#8211; why don&#8217;t you zip up your project and e-mail it to:&nbsp; john@WestmorelandEngineering.com &#8211; I have the free tools from TI &#8211; so I don&#8217;t know that I will
+be able to rebuild it &#8211; but I can certainly post it and credit you &#40;if that&#8217;s what you want&#41; on my site.
+Thanks&#33;
+John W.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

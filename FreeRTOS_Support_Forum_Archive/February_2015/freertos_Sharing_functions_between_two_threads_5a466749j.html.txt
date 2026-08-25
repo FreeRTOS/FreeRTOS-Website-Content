@@ -1,0 +1,214 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sharing functions between two threads - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2015/freertos_Sharing_functions_between_two_threads_5a466749j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Sharing functions between two threads - FreeRTOS" />
+<meta property="og:description" content="Sharing functions between two threadsPosted by dibosco on February 27, 2015I&#8217;ve got a situation that is &#8211; to me at least &#8211; rather complicated. I have two interfaces that are bit-bashed lighting interfaces. There is a Tx pin and an Rx pin that are controlled by timer interrupts and pin change interrupts. They are Manchester &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2015/freertos_Sharing_functions_between_two_threads_5a466749j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Sharing functions between two threadsPosted by dibosco on February 27, 2015I&#8217;ve got a situation that is &#8211; to me at least &#8211; rather complicated. I have two interfaces that are bit-bashed lighting interfaces. There is a Tx pin and an Rx pin that are controlled by timer interrupts and pin change interrupts. They are Manchester [&hellip;]" />
+<meta name="twitter:title" content="Sharing functions between two threads - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202487' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202487' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202487' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202487' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145260' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2015%2Ffreertos_Sharing_functions_between_two_threads_5a466749j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2015%2Ffreertos_Sharing_functions_between_two_threads_5a466749j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145260">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2015_freertos_support_forum_archive_index.html/">February 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Sharing functions between two threads</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on February 27, 2015</div><div class="thread-post-content">I&#8217;ve got a situation that is &#8211; to me at least &#8211; rather complicated. I have two interfaces that are bit-bashed lighting interfaces. There is a Tx pin and an Rx pin that are controlled by timer interrupts and pin change interrupts. They are Manchester encoded interfaces that need to act completely independently to each other.
+That in itself is not so complicated; I have written code to do one interface that works nicely and I could duplicate this code using different a timer and a different pin change interrupt for the second interface. 
+However, what is not at all clear to me is how much code I can share in terms of sending messages in and out of the two interfaces. I will attempt to explain the kind of thing I mean.
+The send message is like this,  presented here in a simplified manner:
+int16<em>t SendMessage(uint8</em>t Address, uint8<em>t Data, uint8</em>t ReceiveData)
+{
+<pre><code>int16_t RetVal;
+uint8_t Data;
+</code></pre>
+// Here Address and Data variables are turned into a sixteen bit value to send out
+// This sixteen bit value is a static variable to this module
+<pre><code>DisableReception(); // Disable Rx pin interrpt
+</code></pre>
+// The timer bit-bashes the data and enables the Rx pin interrupt if necessary
+// when the sixteen bits have been sent out
+    StartTimer();<br />
+    if (ReceiveData == TRUE)
+        {
+        if (xQueueReceive(xRxQueue,Data,TIMEOUT<em>VALUE) == pdTRUE) 
+            RetVal = (int16</em>t)Data;   // Pin int fills xRxQueue 
+        else
+            return NO<em>DATA</em>RECEIVED;
+        }
+    else
+        RetVal = NO<em>DATA</em>RETURN_REQUESTED;
+<pre><code>return RetVal;
+</code></pre>
+}
+The xRxQueue is filled by the pin interrupt if a slave is [supposed to be] returning data.
+This works a treat for the one interface. I can easily write a version for the second interface,  to end up with two functions:
+int16<em>t SendMessageA(uint8</em>t Address, uint8<em>t Data, uint8</em>t ReceiveData);
+int16<em>t SendMessageB(uint8</em>t Address, uint8<em>t Data, uint8</em>t ReceiveData);
+The two functions would have their own RxQueue, use their own timer and own pin interrupt of course.
+I have a commands.c/commands.h module which calls this SendMessage() function. Here is an example:
+uint8<em>t ProgramShortAddress(uint8</em>t NewShortAddress)
+{
+<pre><code>int16_t Reply;
+uint8_t RetVal;
+NewShortAddress &lt;&lt;= 1;
+NewShortAddress |= 1;
+Reply = SendMessage(PROGRAM_SHORT_ADDRESS, NewShortAddress, TRUE);
+if (Reply == 0xFF)
+    RetVal = TRUE;
+else
+    RetVal = FALSE;
+return RetVal;
+</code></pre>
+}
+Now, I would like to mod this and all the other similar commands this so I pass an extra variable in to the function, which specifies which of the two interfaces I am addressing. It would become:
+uint8<em>t ProgramShortAddress(uint8</em>t NewShortAddress, uint8_t Interface)
+{
+<pre><code>// All stays the same inside the function except:
+if (Interface == INTERFACE_A)
+    Reply = SendMessageA(PROGRAM_SHORT_ADDRESS, NewShortAddress, TRUE);
+else if (Interface == INTERFACE_B)
+    Reply = SendMessageB(PROGRAM_SHORT_ADDRESS, NewShortAddress, TRUE);
+</code></pre>
+}
+So, here is the crux of the matter:
+If I have two threads, one running for interface A and one for interface B, one calls ProgramShortAddress(), its time slice ends while in this function and the other interface calls ProgramShortAddress(), is this going to be an issue? It&#8217;s not like having an SPI port and locking it out with a mutex as far as I can see, as it&#8217;s going to talk to one of two interfaces. There would never be an occasion when two threads would try to access the same interface.
+Does this make sense? Have I explained it clearly enough? Am I worrying over nothing or maybe I am tackling this in completely the wrong manner? 
+Many thanks. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Sharing functions between two threads</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on February 27, 2015</div><div class="thread-post-content"><blockquote>
+  If I have two threads, one running for interface A and one for
+  interface B, one calls ProgramShortAddress(), its time slice ends
+  while in this function and the other interface calls
+  ProgramShortAddress(), is this going to be an issue
+</blockquote>
+I don&#8217;t see any problem with that. The task-switch may come at any moment and it will be safe.
+The essence of a task-switch is saving and restoring a context.
+A context can be described as a set of registers, most importantly the PC (Program Counter) and the SP (Stack Pointer).
+~~~~~
+uint8<em>t ProgramShortAddress(uint8</em>t NewShortAddress, uint8_t Interface)
+{
+    // All stays the same inside the function except:
+<pre><code>/* Suppose a task switch comes here, just before testing the
+variable "Interface" */
+if (Interface == INTERFACE_A)
+    Reply = SendMessageA(PROGRAM_SHORT_ADDRESS, NewShortAddress, TRUE);
+else if (Interface == INTERFACE_B)
+    Reply = SendMessageB(PROGRAM_SHORT_ADDRESS, NewShortAddress, TRUE);
+</code></pre>
+~~~~~
+Function parameters and automatic variables (variable on stack, declared within a function) are thread-safe and they&#8217;re private to a task.
+Very often the parameters and automatic variables are optimised and stored directly in registers. That is no problem because all relevant registers will be stored and restored.
+So: sharing function among tasks does not pose any problem.
+I once had a device with 16 Manchester-encoded devices attached to it (wall panels) and took (had to take) a slightly different approach:
+The baud-rate was 4800. Every bit is sent as two bits &#8217;10&#8217; or &#8217;01&#8217;, so I needed at least a 9600 Hz Timer.
+I stored live information about each of 16 connections in a structure. All devices were served by a single task.
+I installed one Timer/Counter (TC) running at 3 * 2 * 4800 = 28.8 KHz.
+The ISR of the TC did two things: it takes samples of the RX values and at every 3rd tick it may send a sample.
+Normally the TC interrupt is disabled, unless any of the lines needs attention. Once the last message has been exchanged, the ISR goes off again.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Sharing functions between two threads</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on February 27, 2015</div><div class="thread-post-content">Smashing! That puts my mind at rest and will simplify the code a lot! Thanks again for such a clear explanation. :~) 
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

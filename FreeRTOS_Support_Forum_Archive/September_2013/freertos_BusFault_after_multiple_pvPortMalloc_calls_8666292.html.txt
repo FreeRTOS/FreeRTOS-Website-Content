@@ -1,0 +1,270 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BusFault after multiple pvPortMalloc calls - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2013/freertos_BusFault_after_multiple_pvPortMalloc_calls_8666292.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="BusFault after multiple pvPortMalloc calls - FreeRTOS" />
+<meta property="og:description" content="BusFault after multiple pvPortMalloc callsPosted by dueringa on September 4, 2013Hello, I&#8217;m currently developing an application on an Cortex-M3 &#040;STM32F103ZG&#041; using FreeRTOS 7.5.0 &#040;non-MPU&#041;. The memory allocation implementation used was heap2, switched to heap4 now, but the following error still occurs. The IDE used is Keil µVision with MDK-ARM toolchain 4.21 &#040;C compiler 4.1.0.713&#041; The &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2013/freertos_BusFault_after_multiple_pvPortMalloc_calls_8666292.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="BusFault after multiple pvPortMalloc callsPosted by dueringa on September 4, 2013Hello, I&#8217;m currently developing an application on an Cortex-M3 &#040;STM32F103ZG&#041; using FreeRTOS 7.5.0 &#040;non-MPU&#041;. The memory allocation implementation used was heap2, switched to heap4 now, but the following error still occurs. The IDE used is Keil µVision with MDK-ARM toolchain 4.21 &#040;C compiler 4.1.0.713&#041; The [&hellip;]" />
+<meta name="twitter:title" content="BusFault after multiple pvPortMalloc calls - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202290' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202290' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202290' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202290' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144817' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2013%2Ffreertos_BusFault_after_multiple_pvPortMalloc_calls_8666292.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2013%2Ffreertos_BusFault_after_multiple_pvPortMalloc_calls_8666292.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144817">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2013_freertos_support_forum_archive_index.html/">September 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">BusFault after multiple pvPortMalloc calls</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dueringa">dueringa</a> on September 4, 2013</div><div class="thread-post-content">Hello,  
+I&#8217;m currently developing an application on an Cortex-M3 &#40;STM32F103ZG&#41; using FreeRTOS 7.5.0 &#40;non-MPU&#41;. The memory allocation implementation used was heap2, switched to heap4 now, but the following error still occurs.  
+The IDE used is Keil µVision with MDK-ARM toolchain 4.21 &#40;C compiler 4.1.0.713&#41;<br />
+The application consists of about 20 tasks.  
+Under certain circumstances, a task does some extensive data operations. This includes allocating &#40;quite big&#41; memory blocks &#40;one is 8K&#41;, reading in a file from SD card and freeing the block again after processing. According to xPortGetFreeHeapSize, after freeing, the memory is available again &#40;but what about fragmentation?&#41;. This task &#42;always&#42; does the memory allocating and freeing. But the file reading is only done under the circumstances.<br />
+After these operations, uxTaskGetStackHighWaterMark reports 100 byte &#40;words?&#41; minimal stack remaining for this task.  
+After the task has finished the operations, a context switch to another task occurs, which also tries to allocate some memory for a buffer. This is when the BusFault occurs. The bus fault does not occur there when the previous task doesn&#8217;t do these extensive operations.  
+In the BusFault&#95;Handler, Keil reports the following &#40;Fault reports window&#41;:  
+BUS&#95;FAULT&#95;ADDR: 0x00312800 &#40;What does that tell me anyway?&#41;<br />
+BUS&#95;FAULT&#95;STAT: 0x82<br />
+Flags set: PRECISERR, BFARVALID  
+LR in exception handler: 0xfffffffd &#40;bit 2 = 1, Process stack? According to ARM appnote 209&#41;<br />
+PSP: 0x20009318  
+Memory window:  
+<pre><code>(R0) 0x20009318: 0x00312800
+(R1) 0x2000931C: 0x20009A78
+(R2) 0x20009320: 0x00000000
+(R3) 0x20009324: 0x00312800
+(R12) 0x20009328: 0x00000000
+(LR) 0x2000932C: 0x0802F619 (unaligned address? now that's interesting)
+(PC) 0x20009330: 0x0802F25A
+(PSR) 0x20009334: 0x81000000
+</code></pre>
+The PC address is inside heap&#95;4.c:  
+<pre><code>   343:         for( pxIterator = &amp;xStart; pxIterator-&gt;pxNextFreeBlock &lt; pxBlockToInsert; pxIterator = pxIterator-&gt;pxNextFreeBlock ) 
+   344:         { 
+   345:                 /* Nothing to do here, just iterate to the right position. */ 
+   346:         } 
+   347:  
+   348:         /* Do the block being inserted, and the block it is being inserted after 
+   349:         make a contiguous block of memory? */    
+0x0802F254 4816      LDR      r0,[pc,#88]  ; @0x0802F2B0
+0x0802F256 E000      B        0x0802F25A
+0x0802F258 6800      LDR      r0,[r0,#0x00]
+0x0802F25A 6803      LDR      r3,[r0,#0x00]
+0x0802F25C 428B      CMP      r3,r1
+0x0802F25E D3FB      BCC      0x0802F258
+   350:         puc = ( unsigned char * ) pxIterator; 
+</code></pre>
+&nbsp;&nbsp;<br />
+LR&nbsp; address is also inside heap&#95;4.c:  
+<pre><code>   223:                                         xFreeBytesRemaining -= pxBlock-&gt;xBlockSize; 
+   224:  
+   225:                                         /* The block is being returned - it is allocated and owned 
+   226:                                         by the application and has no "next" block. */ 
+0x0802F618 490C      LDR      r1,[pc,#48]  ; @0x0802F64C
+0x0802F61A 6860      LDR      r0,[r4,#0x04]
+0x0802F61C 6809      LDR      r1,[r1,#0x00]
+0x0802F61E EBA10000  SUB      r0,r1,r0
+0x0802F622 490A      LDR      r1,[pc,#40]  ; @0x0802F64C
+0x0802F624 6008      STR      r0,[r1,#0x00]
+   227:                                         pxBlock-&gt;xBlockSize |= xBlockAllocatedBit; 
+</code></pre>
+Can somebody give me advice what to do about this? The unaligned address in the saved LR makes me very suspicious, but where does it come from?  
+Thanks in advance&#33;<br />
+Andreas  
+FreeRTOSConfig.h:  
+<pre><code>#ifndef FREERTOS_CONFIG_H
+#define FREERTOS_CONFIG_H
+#define configUSE_PREEMPTION                        1
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION     1
+#define configUSE_TICKLESS_IDLE                     0
+#define configCPU_CLOCK_HZ                          72000000UL
+#define configTICK_RATE_HZ                          100
+#define configMAX_PRIORITIES                        5
+#define configMINIMAL_STACK_SIZE                    128
+#define configTOTAL_HEAP_SIZE                       ( 45 * 1024 )
+#define configMAX_TASK_NAME_LEN                     6
+#define configUSE_16_BIT_TICKS                      0
+#define configIDLE_SHOULD_YIELD                     1
+#define configUSE_MUTEXES                           0
+#define configUSE_RECURSIVE_MUTEXES                 0
+#define configUSE_COUNTING_SEMAPHORES               0
+// don't use this feature
+#define configQUEUE_REGISTRY_SIZE                   0
+#define configUSE_QUEUE_SETS                        0
+/* Hook function related definitions. */
+#define configUSE_IDLE_HOOK                         0
+#define configUSE_TICK_HOOK                         0
+#define configCHECK_FOR_STACK_OVERFLOW              2
+// If used, must be void vApplicationMallocFailedHook( void );
+#define configUSE_MALLOC_FAILED_HOOK                0
+#ifdef MYDEBUG
+#define configGENERATE_RUN_TIME_STATS               1
+#define configUSE_STATS_FORMATTING_FUNCTIONS        0
+#define configUSE_TRACE_FACILITY                    1
+//#include "trcKernelPort.h"
+extern unsigned long uiOverflowCounter;
+void App_Trace_vActivateTimer(void);
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()    {App_Trace_vActivateTimer();}
+#define portGET_RUN_TIME_COUNTER_VALUE()            uiOverflowCounter
+#endif
+/* Co-routine definitions. */
+#define configUSE_CO_ROUTINES                       0
+#define configMAX_CO_ROUTINE_PRIORITIES             2
+/* Software timer related definitions. */
+// do not use freertos software timers
+#define configUSE_TIMERS                            0
+/* Interrupt nesting behaviour configuration. */
+/* This is the raw value as per the Cortex-M3 NVIC.  Values can be 255
+(lowest) to 0 (1?) (highest). */
+#define configKERNEL_INTERRUPT_PRIORITY             255
+// Syscall priority - all INTs with higher prio (==lower number) can NOT use FreeRTOS API!
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY        (8&lt;&lt;4) //only 4 bits  //NEVER! 0 /* No IRQs will interrupt the criticals anymore*/
+/* This is the value being used as per the ST library which permits 16
+priority values, 0 to 15.  This must correspond to the
+configKERNEL_INTERRUPT_PRIORITY setting.  Here 15 corresponds to the lowest
+NVIC value of 255. */
+#define configLIBRARY_KERNEL_INTERRUPT_PRIORITY     15
+// Same name
+#define configMAX_API_CALL_INTERRUPT_PRIORITY       15
+/* Define to trap errors during development. */
+//#define configASSERT( ( x ) )     if( ( x ) == 0 ) vAssertCalled( __FILE__, __LINE__ )
+/* Set the following definitions to 1 to include the API function, or zero
+to exclude the API function. */
+#define INCLUDE_vTaskPrioritySet                    0
+#define INCLUDE_uxTaskPriorityGet                   0
+#define INCLUDE_vTaskDelete                         0
+#define INCLUDE_vTaskSuspend                        1
+#define INCLUDE_xResumeFromISR                      0
+#define INCLUDE_vTaskDelayUntil                     0
+#define INCLUDE_vTaskDelay                          1
+#define INCLUDE_xTaskGetSchedulerState              0
+#define INCLUDE_xTaskGetCurrentTaskHandle           0
+#define INCLUDE_xTaskGetIdleTaskHandle              0
+#define INCLUDE_xTimerGetTimerDaemonTaskHandle      0
+#define INCLUDE_pcTaskGetTaskName                   0
+#define INCLUDE_eTaskGetState                       0
+#define INCLUDE_uxTaskGetStackHighWaterMark 1
+#ifdef STACK_CHECK
+#define INCLUDE_uxTaskGetStackHighWaterMark 1
+#endif
+#endif /* FREERTOS_CONFIG_H */
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">BusFault after multiple pvPortMalloc calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 4, 2013</div><div class="thread-post-content">Why do you have configASSERT&#40;&#41; commented out &#8211; it is there to help you catch problems in your code.  
+Are you using the STM32 peripheral library from ST?&nbsp; If so, then before spending time looking into this, I recommend upgrading to FreeRTOS V7.5.2, uncommenting configASSERT&#40;&#41; and then running the same application.&nbsp; V7.5.2 contains code specifically for users of the ST peripheral libraries, which have some special Cortex-M3 configuration requirements &#40;unlike any other dirvers we have encountered, they require you to change the Cortex-M3 configuration from its power up default&#41;.&nbsp; See <a href="http://www.freertos.org/History.txt">http://www.freertos.org/History.txt</a>  
+Try that then get back to us to let us know if it caught a &#40;Cortex-M3&#41; configuration issue.&nbsp; If not, we can try to diagnose your problem.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">BusFault after multiple pvPortMalloc calls</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dueringa">dueringa</a> on September 4, 2013</div><div class="thread-post-content">Hello Richard,  
+thanks for your reply.<br />
+I upgraded to FreeRTOS 7.5.2 and uncommented configASSERT, creating a function so I can inspect the file and line number.  
+Upgrading fixed the assert in PortValidateInterruptPriority &#40;line 650&#41; I got in v7.5.0.&nbsp; And yes, I&#8217;m using the STM32PeriphLib &#40;and thus calling NVIC&#95;PriorityGroupConfig&#40;NVIC&#95;PriorityGroup&#95;4&#41;; before scheduler starts&#41;  
+Now I don&#8217;t get configASSERTs anymore.  
+Indeed, the problem occurs when actually reading the file into the buffer. If I don&#8217;t write anything into the buffer, everything works fine.<br />
+The buffer I&#8217;m allocating memory for is a struct &#40;well, an array of them&#41; consisting of multiple char-arrays, each struct is 36 byte in size. I&#8217;m using configASSERT now to check if I write out of the buffer and/or the character arrays, but that doesn&#8217;t happen.  
+…<br />
+Actually, the sizes of the character array were kind of &#8220;uneven&#8221; &#40;10, 5, 3, 4, 6, 3, 5 Bytes&#41;. I just changed it to &#40;10, 6, 4, 4, 6, 4, 6&#41;, resulting in a total of 40 bytes per struct. And now it works fine, the error is gone.<br />
+Looks like it was an alignment problem?  
+Regards,  
+Andreas
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

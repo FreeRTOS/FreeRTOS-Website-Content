@@ -1,0 +1,325 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interrupts and task switches in the ARM7 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2008/freertos_Interrupts_and_task_switches_in_the_ARM7_2094886.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Interrupts and task switches in the ARM7 - FreeRTOS" />
+<meta property="og:description" content="Interrupts and task switches in the ARM7Posted by jorick23 on June 26, 2008Processor: STR750 &#040;ARM7&#041; Compiler:&nbsp; IAR I just saw a post asking about interrupt wrappers for the ARM7 so I thought I&#8217;d respond with this post.&nbsp; Since it doesn&#8217;t really answer his question, I&#8217;m making it a new thread. I&#8217;ve set up my interrupts &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2008/freertos_Interrupts_and_task_switches_in_the_ARM7_2094886.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Interrupts and task switches in the ARM7Posted by jorick23 on June 26, 2008Processor: STR750 &#040;ARM7&#041; Compiler:&nbsp; IAR I just saw a post asking about interrupt wrappers for the ARM7 so I thought I&#8217;d respond with this post.&nbsp; Since it doesn&#8217;t really answer his question, I&#8217;m making it a new thread. I&#8217;ve set up my interrupts [&hellip;]" />
+<meta name="twitter:title" content="Interrupts and task switches in the ARM7 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201631' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201631' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201631' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201631' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140856' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2008%2Ffreertos_Interrupts_and_task_switches_in_the_ARM7_2094886.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2008%2Ffreertos_Interrupts_and_task_switches_in_the_ARM7_2094886.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140856">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2008_freertos_support_forum_archive_index.html/">June 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Interrupts and task switches in the ARM7</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jorick23">jorick23</a> on June 26, 2008</div><div class="thread-post-content">Processor: STR750 &#40;ARM7&#41;
+Compiler:&nbsp; IAR
+I just saw a post asking about interrupt wrappers for the ARM7 so I thought I&#8217;d respond with this post.&nbsp; Since it doesn&#8217;t really answer his question, I&#8217;m making it a new thread.
+I&#8217;ve set up my interrupts to be normal functions running in Thumb mode.&nbsp; They&#8217;re called from an interrupt handler that takes care of everything: saving and restoring task contexts, resetting the interrupt pending bits, etc.&nbsp; The IRQ handler even contains the SWI handler.&nbsp; In order to speed things up &#40;30% less execution time&#41; and reduce stack usage, I have the RTOS store the task context in the Task Control Block instead of on the stack.&nbsp; There was a previous post to this board about how to do that so I took the code and optimized it.
+Here is the interrupt function:
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;
+&#42;~&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SWI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Software Interrupt exception vector&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42;~&nbsp;&nbsp;&nbsp; &#95;Vector&#95;IRQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Interrupt exception vector&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42;~&nbsp;&nbsp;&nbsp; vPortStartFirstTask&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Start the first task&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;
+&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42; This function handles exceptions.&nbsp; The task state is saved prior to calling &#42;
+&#42; the exception handler and restored upon completion.&nbsp; During the exception,&nbsp; &#42;
+&#42; it&#8217;s possible for the task context to change if a task was awakened by the&nbsp; &#42;
+&#42; exception handler.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42; Normally, ARM interrupts on the STR750 are handled by branching to the&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42; Interrupt Vector Register which holds a previously stored &quot;ldr pc, &#35;offset&quot; &#42;
+&#42; instruction, and the offset was read and set from a table.&nbsp; This requires&nbsp;&nbsp; &#42;
+&#42; interrupt functions to be in ARM mode.&nbsp; However, some interrupt functions&nbsp;&nbsp; &#42;
+&#42; in the pump software were written in Thumb mode so this method of handling&nbsp; &#42;
+&#42; interrupts won&#8217;t work.&nbsp; So instead of an instruction, interrupt vectors are &#42;
+&#42; read from a table in ROM.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Args:&nbsp;&nbsp; void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Return: void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;
+&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+// &#42;&#42;&#42;&#42;&#42; SWI exception handler &#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;
+&#95;Vector&#95;SWI:
+// The return address is bumped by 4 to make it look like the context was saved
+// during an IRQ handler.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; add&nbsp;&nbsp;&nbsp;&nbsp; lr, lr, &#35;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Adjust the link register
+// &#42;&#42;&#42;&#42;&#42; IRQ exception handler &#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;
+&#95;Vector&#95;IRQ:
+// &#42;&#42;&#42;&#42;&#42; Save the task context
+// The task context is saved in the task control block.&nbsp; If the task is changed
+// during the interrupt, the task context restored at the end of this function
+// will be different.&nbsp; First, the r0 register is saved and used to read the
+// current TCB pointer.&nbsp; The registers r1 through r14 are saved in the TCB.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stmdb&nbsp;&nbsp; sp&#33;, &#123;r0&#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Save r0 for use as scratch register
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r0, =pxCurrentTCB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Point to the current TCB pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r0, &#91;r0&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Get it
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; add&nbsp;&nbsp;&nbsp;&nbsp; r0, r0, &#35;16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Find the position of the r1 register
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stmia&nbsp;&nbsp; r0, &#123;r1-r14&#125;^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Save the task context
+// The critical nesting depth, status register, link register, and saved r0
+// register are loaded into registers and saved in the task control block.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r1, =ulCriticalNesting&nbsp; // Point to the critical nesting depth
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r1, &#91;r1&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Get it
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mrs&nbsp;&nbsp;&nbsp;&nbsp; r2, spsr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Get the status register
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp; r3, lr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Get the link register
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldmia&nbsp;&nbsp; sp&#33;, &#123;r4&#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Get the saved r0 register
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sub&nbsp;&nbsp;&nbsp;&nbsp; r0, r0, &#35;16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Find the start of the context frame
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stmia&nbsp;&nbsp; r0, &#123;r1-r4&#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Save the rest of the task context
+// &#42;&#42;&#42;&#42;&#42; SWI: Switch contexts
+// If this function was called from &#95;Vector&#95;SWI &#40;the SWI handler&#41;, it switches
+// contexts.&nbsp; Otherwise, if this function was called because of a pending
+// interrupt, the interrupt is handled.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mrs&nbsp;&nbsp;&nbsp;&nbsp; r0, cpsr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Get the condition codes
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tst&nbsp;&nbsp;&nbsp;&nbsp; r0, &#35;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Check if SWI or IRQ
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; beq&nbsp;&nbsp;&nbsp;&nbsp; &#95;IrqHandler&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // If IRQ, go handle the interrupt
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r0, =vTaskSwitchContext // Point to the task switcher
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp; lr, pc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Set up the return address
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Switch task contexts
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vPortStartFirstTask&nbsp;&nbsp;&nbsp;&nbsp; // Go restore the task context
+// &#42;&#42;&#42;&#42;&#42; IRQ: Handle the interrupt
+// If this is an interrupt, the interrupting channel is read and used to index
+// into the vector table to find the address of the handler, which is then
+// called.
+&#95;IrqHandler:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r0, =EIC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Point to the EIC registers
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r1, &#91;r0, &#35;EIC&#95;IVR&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Update them &#40;dummy read&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r0, &#91;r0, &#35;EIC&#95;CICR&#93;&nbsp;&nbsp;&nbsp;&nbsp; // Get the interrupting channel number
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp; r0, r0, lsl &#35;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Convert it to a table index
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r1, =&#95;IrqVectorTable&nbsp;&nbsp;&nbsp; // Point to the vector table
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r0, &#91;r1, +r0&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Get the handler address
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp; lr, pc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Set up the return address
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Call the appropriate function
+// After the interrupt has been handled, the interrupting channel is read and
+// used to clear the pending flag.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r0, =EIC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Point to the EIC registers
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r1, &#91;r0, &#35;EIC&#95;CICR&#93;&nbsp;&nbsp;&nbsp;&nbsp; // Get the interrupting channel number
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp; r2, &#35;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Set up a flag bit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;&nbsp; r2, r2, lsl r1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Position it in the word
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; str&nbsp;&nbsp;&nbsp;&nbsp; r2, &#91;r0, &#35;EIC&#95;IPR&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Clear the interrupt pending flag
+// &#42;&#42;&#42;&#42;&#42; Restore the task context
+// This part of the exception handler also starts the first task by restoring
+// the task context created by the task scheduler.
+vPortStartFirstTask:
+// The critical nesting depth, status register, and link register are restored.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; load&nbsp;&nbsp;&nbsp; r0, pxCurrentTCB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Get the current TCB pointer
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldmia&nbsp;&nbsp; r0&#33;, &#123;r1-r2, lr&#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Read the values
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldr&nbsp;&nbsp;&nbsp;&nbsp; r3, =ulCriticalNesting&nbsp; // Point to the critical nesting depth
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; str&nbsp;&nbsp;&nbsp;&nbsp; r1, &#91;r3&#93;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Restore it
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msr&nbsp;&nbsp;&nbsp;&nbsp; spsr&#95;cxsf, r2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Restore the status register
+// The task&#8217;s system mode registers are restored.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ldmia&nbsp;&nbsp; r0, &#123;r0-r14&#125;^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Restore the user mode registers
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &#91;Banked register access insurance&#93;
+// The function returns to the task.&nbsp; This might not be the same task that was
+// interrupted, if the task context was changed.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; subs&nbsp;&nbsp;&nbsp; pc, lr, &#35;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Return from the interrupt
+// &#42;&#42;&#42;&#42;&#42; Interrupt &#40;EIC&#41; vector table
+&#95;IrqVectorTable:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; 0: Wakeup
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; 1: TIM2 Output Compare 2 &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; 2: TIM2 Output Compare 1 &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; 3: TIM2 Input Capture &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; 4: TIM2 Update &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; 5: TIM1 Output Compare 2 &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; 6: TIM1 Output Compare 1 &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; 7: TIM1 Input Capture &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; 8: TIM1 Update &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp; 9: TIM0 Output Compare 2 &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 10: TIM0 Output Compare 1 &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 11: TIM0 Input Capture &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 12: TIM0 Update &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 13: PWM Output Compare &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 14: PWM Timer Emergency &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 15: PWM Timer Update &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; I2C&#95;Irq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 16: I2C
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 17: SSP1 &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 18: SSP0 &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; Keypad&#95;Irq&#95;Touch&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 19: UART 2 &#40;Touchscreen interface&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; Serial&#95;Rs485&#95;Irq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 20: UART 1 &#40;RS485&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; Serial&#95;RS232&#95;Irq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 21: UART 0 &#40;RS232&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 22: CAN &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; USB&#95;Istr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 23: Low priority USB
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; CTR&#95;HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 24: High priority USB
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; ADC&#95;Irq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 25: Analog to Digital Converter
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 26: DMA &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;EXTIT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 27: External interrupts
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 28: MRCC &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 29: FLASHSMI &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; &#95;Vector&#95;SpuriousIrq&nbsp;&nbsp;&nbsp;&nbsp; // 30: Real Time Clock &#40;not used&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dc32&nbsp;&nbsp;&nbsp; vPortPreemptiveTick&nbsp;&nbsp;&nbsp;&nbsp; // 31: Time base timer
+// &#42;&#42;&#42;&#42;&#42; Spurious interrupt
+// The registers are set as follows:
+//&nbsp;&nbsp;&nbsp; r0 = EIC register pointer
+//&nbsp;&nbsp;&nbsp; r1 = IRQ vector table pointer
+//&nbsp;&nbsp;&nbsp; r2 = spsr
+//&nbsp;&nbsp;&nbsp; r3 = Return address to the point just after the interrupt occurred
+//&nbsp;&nbsp;&nbsp; r4-r12 are undefined
+&#95;Vector&#95;SpuriousIrq:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sub&nbsp;&nbsp;&nbsp;&nbsp; lr, lr, &#35;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Point to the interrupted instruction
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // SPURIOUS INTERRUPT TRAP
+In the TCB, I added one line right at the beginning, so it now reads:
+typedef struct tskTaskControlBlock
+&#123;
+&nbsp;&nbsp; portSTACK&#95;TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pxCpuContextFrame&#91; portCPU&#95;CONTEXT&#95;SIZE &#93;;
+&nbsp;&nbsp; volatile portSTACK&#95;TYPE &#42;pxTopOfStack;&nbsp;&nbsp;&nbsp; /&#42;&lt; Points to the location of the last item placed on the tasks stack.&gt;&#42;/
+&nbsp;&nbsp; &#8230;
+The pxPortInitialiseStack function has been changed to:
+portSTACK&#95;TYPE &#42;pxPortInitialiseStack&#40; portSTACK&#95;TYPE &#42;ctx, portSTACK&#95;TYPE &#42;pxTopOfStack, pdTASK&#95;CODE pxCode, void &#42;pvParameters &#41;
+&#123;
+&nbsp;&nbsp; /&#42; Interrupt flags cannot always be stored on the stack and will
+&nbsp;&nbsp; instead be stored in a variable, which is then saved as part of the
+&nbsp;&nbsp; tasks context. &#42;/
+&nbsp;&nbsp; &#42;ctx = portNO&#95;CRITICAL&#95;NESTING;
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; /&#42; The status register is set for system mode, with interrupts enabled. &#42;/
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; portINITIAL&#95;SPSR;
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; /&#42; The return address &#8211; which in this case is the start of the task.&nbsp; The
+&nbsp;&nbsp; offset is added to make the return address appear as it would within an
+&nbsp;&nbsp; IRQ ISR.&#42;/
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; pxCode + portINSTRUCTION&#95;SIZE;
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; /&#42; When the task starts is will expect to find the function parameter in
+&nbsp;&nbsp; R0. &#42;/
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; pvParameters; /&#42; R0 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x01010101;&nbsp;&nbsp; /&#42; R1 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x02020202;&nbsp;&nbsp; /&#42; R2 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x03030303;&nbsp;&nbsp; /&#42; R3 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x04040404;&nbsp;&nbsp; /&#42; R4 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x05050505;&nbsp;&nbsp; /&#42; R5 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x06060606;&nbsp;&nbsp; /&#42; R6 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x07070707;&nbsp;&nbsp; /&#42; R7 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x08080808;&nbsp;&nbsp; /&#42; R8 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x09090909;&nbsp;&nbsp; /&#42; R9 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x10101010;&nbsp;&nbsp; /&#42; R10 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x11111111;&nbsp;&nbsp; /&#42; R11 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0x12121212;&nbsp;&nbsp; /&#42; R12 &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; pxTopOfStack; /&#42; Stack used when task starts goes in R13. &#42;/
+&nbsp;&nbsp; ctx++;
+&nbsp;&nbsp; &#42;ctx = &#40; portSTACK&#95;TYPE &#41; 0xaaaaaaaa;&nbsp;&nbsp; /&#42; R14 &#42;/
+&nbsp;&nbsp; return pxTopOfStack;
+&#125;
+Since there&#8217;s an extra parameter in pxPortInitialiseStack, the call in Task.c needs to change to:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pxNewTCB-&gt;pxTopOfStack = pxPortInitialiseStack&#40; pxNewTCB-&gt;pxCpuContextFrame, pxTopOfStack, pvTaskCode, pvParameters &#41;;
+An extra bonus is that my interrupt functions can now be located anywhere in memory, not just the first 64K as is the case when using the interrupt vector register.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Interrupts and task switches in the ARM7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on June 26, 2008</div><div class="thread-post-content">Cool. The ARM7 port is now one of the older ports maybe could do with a revamp. The PIC32 and Cortex ports &#40;which are newer&#41; are more featured. Thoughts Richard?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

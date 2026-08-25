@@ -1,0 +1,371 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>strange scheduling issue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2015/freertos_strange_scheduling_issue_8fc8fec9j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="strange scheduling issue - FreeRTOS" />
+<meta property="og:description" content="strange scheduling issuePosted by e_bak on April 9, 2015Hi, I have a strange scheduling issue with the cooperative scheduler on Cortex M3. I have a logger task which writes onto the serial port. I have a task which intends to test the logger task: void taskPrintTest(void *params) { uint32_t cnt = 0; while (1) { &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2015/freertos_strange_scheduling_issue_8fc8fec9j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="strange scheduling issuePosted by e_bak on April 9, 2015Hi, I have a strange scheduling issue with the cooperative scheduler on Cortex M3. I have a logger task which writes onto the serial port. I have a task which intends to test the logger task: void taskPrintTest(void *params) { uint32_t cnt = 0; while (1) { [&hellip;]" />
+<meta name="twitter:title" content="strange scheduling issue - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202506' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202506' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202506' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202506' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145438' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2015%2Ffreertos_strange_scheduling_issue_8fc8fec9j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2015%2Ffreertos_strange_scheduling_issue_8fc8fec9j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145438">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2015_freertos_support_forum_archive_index.html/">April 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">strange scheduling issue</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/e_bak">e_bak</a> on April 9, 2015</div><div class="thread-post-content">Hi,
+I have a strange scheduling issue with the cooperative scheduler on Cortex M3.
+I have a logger task which writes onto the serial port.
+I have a task which intends to test the logger task:
+<pre>
+void taskPrintTest(void *params) {
+    uint32_t cnt = 0;
+    while (1) {
+        printf("TaskName: %s, cnt: %dn", pcTaskGetTaskName(NULL), cnt++);
+        /* vTaskDelay(pdMS_TO_TICKS(250)); */
+        /* TODO look for why only "pr2" is scheduled when the delay is removed !!! */
+    }
+}
+</pre>
+In the main() function I create 3 instances of them:
+<pre>
+xTaskCreate(
+    taskPrintTest, "pr0", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+xTaskCreate(
+    taskPrintTest, "pr1", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+xTaskCreate(
+    taskPrintTest, "pr2", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+</pre>
+The printf() method is used to send print event to the logger task via a queue:
+<pre>
+static void lock() {
+    /* take mutex */
+    configASSERT(
+        xSemaphoreTake(mutex, portMAX_DELAY));
+    /* save task handle */
+    taskToNotify = xTaskGetCurrentTaskHandle();
+}
+static void release() {
+    /* get task notification */
+    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+    /* release mutex */
+    configASSERT(
+        xSemaphoreGive(mutex));
+}
+void printf(const char * fmt, ...) {
+    va_list va;
+    QueueEvent event;
+    lock();
+    va_start(va, fmt);
+    vsprintf(sprintfBuf, fmt, va);
+    va_end(va);
+    event.type = PrintEvent;
+    event.msg = sprintfBuf;
+    /* write to task event queue */
+    configASSERT(
+        xQueueSendToBack(queue, &event, portMAX_DELAY));
+    release();
+}
+</pre>
+After the event is written into the queue, the task should block at ulTaskNotifyTake(pdTRUE, portMAX_DELAY), the xTaskNotifyGive(taskToNotify) is made by the logger task.
+My experience is that only one of the taskPrintTest task is getting executed. On the serial console I see messages from task &#8220;pr2&#8221; only:
+&#8230;
+TaskName: pr2, cnt: 297710
+TaskName: pr2, cnt: 297711
+TaskName: pr2, cnt: 297712
+TaskName: pr2, cnt: 297713
+TaskName: pr2, cnt: 297714
+TaskName: pr2, cnt: 297715
+&#8230;
+When I enable the delay in the taskPrintTest task &#8220;vTaskDelay(pdMS<em>TO</em>TICKS(250));&#8221;, the scheduling seems to be corrected:
+&#8230;
+TaskName: pr2, cnt: 0
+TaskName: pr0, cnt: 0
+TaskName: pr1, cnt: 0
+TaskName: pr2, cnt: 1
+TaskName: pr0, cnt: 1
+TaskName: pr1, cnt: 1
+TaskName: pr2, cnt: 2
+TaskName: pr0, cnt: 2
+TaskName: pr1, cnt: 2
+&#8230;
+I think even in the first case, when there is no delay in the print loop, the scheduler should execute &#8220;pr0&#8221; and &#8220;pr1&#8221; too in a Round-Robin manner. I think the taskPrintTest task is surely gets blocked at ulTaskNotifyTake(pdTRUE, portMAX_DELAY) in the release() method, at this point the scheduler should switch into an other instance of taskPrintTest.
+Is it a normal behavior? What can cause this anomaly?
+(Beside the taskPrintTest tasks I have the logger task and a led blinker task, these both seems to be scheduled and working all right.)
+main.c: http://pastebin.com/vPBZmB7e
+LoggerTask.c: http://pastebin.com/5pB39bT2
+</div></div><div class="thread-post"><h3 class="thread-post-title">strange scheduling issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 10, 2015</div><div class="thread-post-content">You said you were using &#8220;Cooperative Scheduling&#8221;. Your task (without the delay) isn&#8217;t being &#8220;cooperative&#8221; and giving up its control, so the other tasks will never  get a chance to run.
+&#8220;Round Robin&#8221; is normally used to describe time slicing with pre-emption, so doesn&#8217;t apply in &#8220;Cooperative&#8221; scheduling. 
+An alternative to using Delay, would be to add a taskYIELD() in the loop, to cooperate and let the other task have its turn. (This is the &#8220;Cooperative&#8221; part of the scheduling).
+</div></div><div class="thread-post"><h3 class="thread-post-title">strange scheduling issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/e_bak">e_bak</a> on April 10, 2015</div><div class="thread-post-content">&#8220;isn&#8217;t being &#8220;cooperative&#8221; and giving up its control&#8221;
+It gives up control at ulTaskNotifyTake(pdTRUE, portMAX_DELAY) in the release() method. (there are the blinker task and logger task which scheduled right)
+Currently I think the following happens:
+&#8220;pr2&#8221; executes printf() which takes &#8220;mutex&#8221; and blocks at ulTaskNotifyTake(pdTRUE, portMAX_DELAY). When it is blocked &#8220;pr0&#8221; and later &#8220;pr1&#8221; also get executed but they block at &#8220;mutex&#8221; because &#8220;pr2&#8221; holds it.
+Later &#8220;pr2&#8221; gets the notification, releases &#8220;mutex&#8221;, and loops forward. Since this point it is not yielded it retakes &#8220;mutex&#8221; from &#8220;pr0&#8221; and &#8220;pr1&#8221;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">strange scheduling issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 10, 2015</div><div class="thread-post-content">If the co-operative scheduler is in use then I would still expect tasks
+of equal priority to be executed in turn, but without time slicing, so
+only when on task yields or blocks.
+In your case you have all the tasks blocking though, and your explanation&#8230;
+<blockquote>
+  &#8220;pr2&#8221; executes printf() which takes &#8220;mutex&#8221; and blocks at
+  ulTaskNotifyTake(pdTRUE, portMAX_DELAY). When it is blocked &#8220;pr0&#8221;
+  and later &#8220;pr1&#8221; also get executed but they block at &#8220;mutex&#8221; because
+  &#8220;pr2&#8221; holds it. Later &#8220;pr2&#8221; gets the notification, releases &#8220;mutex&#8221;,
+  and loops forward. Since this point it is not yielded it retakes
+  &#8220;mutex&#8221; from &#8220;pr0&#8221; and  &#8220;pr1&#8221;.
+</blockquote>
+&#8230;would seem reasonable.  You can test that by using a taskYIELD() 
+after the xSemaphoreTake() call.
+Also, as there are two spaces in the queue, you won&#8217;t get any messages 
+printed out until there are two message in the queue, as that is the 
+time the tasks posting to the queue will block (the queue will be full). 
+  It might be an idea to have the task that does the printing have a 
+higher priority, and then add a taskYIELD() after writing to the queue. 
+  That will cause the print task to run immediately that there is 
+something to print.
+I would question why you need the mutex at all since you are using the 
+co-operative scheduler.
+I just tried the simple code below with the cooperative scheduler, and 
+the output was:
+Task 2
+Task 3
+Task 1
+Task 2
+Task 3
+Task 1
+Task 2
+Task 3
+Task 1
+Task 2
+Task 3
+code:
+<pre>
+QueueHandle_t xQueue;
+const char *pcString1 = "Task 1rn";
+const char *pcString2 = "Task 2rn";
+const char *pcString3 = "Task 3rn";
+void vTask1( void *pvParameters )
+{
+   for( ;; )
+   {
+     xQueueSend( xQueue, &pcString1, portMAX_DELAY );
+   }
+}
+void vTask2( void *pvParameters )
+{
+   for( ;; )
+   {
+     xQueueSend( xQueue, &pcString2, portMAX_DELAY );
+   }
+}
+void vTask3( void *pvParameters )
+{
+   for( ;; )
+   {
+     xQueueSend( xQueue, &pcString3, portMAX_DELAY );
+   }
+}
+void vPrintTask( void *pvParameters )
+{
+char *pcStringToPrint;
+   for( ;; )
+   {
+     xQueueReceive( xQueue, &pcStringToPrint, portMAX_DELAY );
+     printf( pcStringToPrint );
+   }
+}
+int main( void )
+{
+   xQueue = xQueueCreate( 1, sizeof( char * ) );
+   xTaskCreate( vTask1, "task1", 1000, NULL, 3, NULL );
+   xTaskCreate( vTask2, "task2", 1000, NULL, 3, NULL );
+   xTaskCreate( vTask3, "task3", 1000, NULL, 3, NULL );
+   xTaskCreate( vPrintTask, "print", 1000, NULL, 4, NULL );
+   vTaskStartScheduler();
+}
+</pre>
+regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">strange scheduling issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/e_bak">e_bak</a> on April 10, 2015</div><div class="thread-post-content">&#8220;I would question why you need the mutex at all since you are using the
+co-operative scheduler.&#8221;
+The printf() function sends a PrintEvent into the logger task, the event also contains a pointer to a string which needs to be sent/print. The logger task copies the string into the DMA buffer. If there is not enough available buffer space, the caller task of printf() have to be blocked because otherwise that could corrupt the message part which is not yet copied into the buffer. To achieve this printf() waits for a notification, the notification is sent by the logger task when it managed to place the whole string into the buffer.
+Since printf() waits for a notification, which blocks, task switch will happen and that would allow other tasks to call printf() while the previous string is not yet processed. The logger task can&#8217;t handle this, so printf() is guarded by the mutex.
+The queue can hold 2 entries, but only one PrintEvent entry can be in the queue at once. The other queue place is reserved for the DMA interrupt event. The mutex also ensures this condition.
+&#8220;Also, as there are two spaces in the queue, you won&#8217;t get any messages
+printed out until there are two message in the queue,&#8221;
+printf() writes a PrintEvent into the queue, than waits for a notification from the logger task. So it will be blocked and the logger task will be scheduled.
+There is only one PrintEvent in the queue at once.
+</div></div><div class="thread-post"><h3 class="thread-post-title">strange scheduling issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/e_bak">e_bak</a> on April 18, 2015</div><div class="thread-post-content">Hi,
+I&#8217;d like to illustrate this issue with a simple example.
+There is a method which takes a mutex, sleeps, than releases the mutex, while writing trace messages onto the console:
+<pre>
+static void guardedMethod() {
+    con_printf("Task %s is taking the mutex.n", pcTaskGetTaskName(NULL));
+    configASSERT(
+        xSemaphoreTake(mutex, portMAX_DELAY));
+    con_printf("Task %s has taken the mutex.n", pcTaskGetTaskName(NULL));
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    configASSERT(
+        xSemaphoreGive(mutex));
+    con_printf("Task %s has released the mutex.n", pcTaskGetTaskName(NULL));
+}
+</pre>
+There is a task which calls repeatedly the method above:
+<pre>
+static void taskStrangeMutexDemo(void * params) {
+    while (1) {
+        guardedMethod();
+    }
+}
+</pre>
+Two of these tasks are scheduled with the cooperative scheduler and with the same priority:
+<pre>
+    xTaskCreate(
+        taskStrangeMutexDemo, "Strange0", configMINIMAL_STACK_SIZE, NULL, BASE_TASK_PRIO, NULL);
+    xTaskCreate(
+        taskStrangeMutexDemo, "Strange1", configMINIMAL_STACK_SIZE, NULL, BASE_TASK_PRIO, NULL);
+</pre>
+Here is the console log:
+<pre>
+Task Strange0 is taking the mutex.
+Task Strange0 has taken the mutex.
+Task Strange1 is taking the mutex.
+Task Strange0 has released the mutex.
+Task Strange0 is taking the mutex.
+Task Strange0 has taken the mutex.
+Task Strange0 has released the mutex.
+Task Strange0 is taking the mutex.
+Task Strange0 has taken the mutex.
+Task Strange0 has released the mutex.
+Task Strange0 is taking the mutex.
+Task Strange0 has taken the mutex.
+Task Strange0 has released the mutex.
+</pre>
+Here you see that the 1st scheduled task takes the mutex then the 2nd scheduled task also tries to take it but blocks because it has been already taken. It is all right.
+But after this, the 1st scheduled task releases the mutex than re-takes it without being blocked and the 2nd task woken up. It is strange. Having a cooperative scheduler shouldn&#8217;t mean to not have proper inter-process communication.
+I think a mutex should work in the following way:
+&#8211; when it is taken by task &#8220;A&#8221; and task &#8220;B&#8221; tries to take it, task &#8220;B&#8221; should be blocked and placed into the end of the wait queue of the mutex
+&#8211; when it is released by task &#8220;A&#8221; and the mutex&#8217;s wait queue is not empty, task &#8220;A&#8221; should be swapped-out with Ready state, the 1st task from the mutex wait queue should be removed (from the queue) and waken up (priorities should also be considered e.g. with priority queues) 
+I guess it would involve more RAM usage and processing. It would be even more CPU consuming to remove the timed-out tasks from the wait queue.
+Easier solution would be to place portYIELD() after the xSemaphoreGive(mutex) call. But I think it is also not efficient when there is no task blocked by the mutex. Would it be possible to only execute portYIELD() when an other task is waiting for the mutex?
+What is your opinion about it?
+Here is the demonstration code: http://pastebin.com/3bZGZcWc
+Regards
+</div></div><div class="thread-post"><h3 class="thread-post-title">strange scheduling issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on April 18, 2015</div><div class="thread-post-content"><blockquote>
+  I think a mutex should work in the following way:
+  &#8211; when it is taken by task &#8220;A&#8221; and task &#8220;B&#8221; tries to take it, task &#8220;B&#8221; should be blocked and placed into the end of the wait queue of the mutex
+</blockquote>
+Yes.
+<blockquote>
+  <ul>
+  <li>when it is released by task &#8220;A&#8221; and the mutex&#8217;s wait queue is not empty, task &#8220;A&#8221; should be swapped-out with Ready state, the 1st task from the mutex wait queue should be removed (from the queue) and waken up (priorities should also be considered e.g. with priority queues)</li>
+  </ul>
+</blockquote>
+Not always, especially if you are using the cooperative scheduler. I think cooperative scheduling used to work like that in old versions of FreeRTOS but then the behavior was corrected to be truly cooperative, so only a manual yield or a block switches to the other task. Search http://www.freertos.org/History.txt for &#8220;Changes between V7.5.3 and V7.6.0 released 18th November 2013&#8221;
+</div></div><div class="thread-post"><h3 class="thread-post-title">strange scheduling issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/e_bak">e_bak</a> on April 18, 2015</div><div class="thread-post-content">Ok. Thanks for the info!
+I have tried a similar test code with pthread on Linux. And as I see it behaves like FreeRTOS. The mutex is &#8220;re-taken&#8221; and task switch seems to be only occur at preemption.
+It seems what I believed strange is just the usual way 🙂
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Use RTC rather than SysTick as the tick source? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2019/freertos_Use_RTC_rather_than_SysTick_as_the_tick_source_44e1dff619j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Use RTC rather than SysTick as the tick source? - FreeRTOS" />
+<meta property="og:description" content="Use RTC rather than SysTick as the tick source?Posted by fearless-fool on July 23, 2019[Note: This is a cross-post from https://stackoverflow.com/questions/57156855/use-rtc-rather-than-systick-as-the-tick-source-for-freertos &#8212; I&#8217;m not sure which is the better venue for this question.] I&#8217;m familiar with FreeRTOS ports for the Cortex-M0 that use SysTick for normal operations and switch to the RTC during tickless mode. &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2019/freertos_Use_RTC_rather_than_SysTick_as_the_tick_source_44e1dff619j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Use RTC rather than SysTick as the tick source?Posted by fearless-fool on July 23, 2019[Note: This is a cross-post from https://stackoverflow.com/questions/57156855/use-rtc-rather-than-systick-as-the-tick-source-for-freertos &#8212; I&#8217;m not sure which is the better venue for this question.] I&#8217;m familiar with FreeRTOS ports for the Cortex-M0 that use SysTick for normal operations and switch to the RTC during tickless mode. [&hellip;]" />
+<meta name="twitter:title" content="Use RTC rather than SysTick as the tick source? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203166' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203166' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203166' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203166' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138157' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2019%2Ffreertos_Use_RTC_rather_than_SysTick_as_the_tick_source_44e1dff619j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2019%2Ffreertos_Use_RTC_rather_than_SysTick_as_the_tick_source_44e1dff619j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138157">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2019_freertos_support_forum_archive_index.html/">July 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Use RTC rather than SysTick as the tick source?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fearless-fool">fearless-fool</a> on July 23, 2019</div><div class="thread-post-content">[Note: This is a cross-post from https://stackoverflow.com/questions/57156855/use-rtc-rather-than-systick-as-the-tick-source-for-freertos &#8212; I&#8217;m not sure which is the better venue for this question.]
+I&#8217;m familiar with FreeRTOS ports for the Cortex-M0 that use SysTick for normal operations and switch to the RTC during tickless mode.
+But why not use the RTC all the time as the tick source?  Are there examples of doing that?
+As far as I understand, using the RTC full-time would simplify the logic getting into and out of tick-less sleep states since the RTC is always running.
+Am I missing something?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Use RTC rather than SysTick as the tick source?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/xz8987f">xz8987f</a> on July 23, 2019</div><div class="thread-post-content">It depends  on the resolution of the RTC tick. And not sure to which port you are referring. But here is what I use and do on Cortex-M:
+a) Systick is used by default
+b) Approach a) can be combined with tickless-idle mode
+c) for low power, it depends what can wake me up from low power (depending on the mode). If Systick wakes me up (basically any interrupt), systick can be used
+d) if Systick is not an exit from low power mode, I&#8217;m using a low power timer (which usually has a 1 ms resolution which is good enough)
+e) if I need to go deeper in low power, I could use the RTC. That usually means that the RTC alarm interrupt is the only thing which can wake me up, so the low power timer does not help. But typically the RTC has a resolution of 1 sec which is not appropriate for most cases. In that case I&#8217;m using the low power timer (or systick) in tickless mode, and for extended sleep periods I set an RTC alarm to wake me up and continue to use the Systick or low power timer for &#8216;normal&#8217; operation.
+So I don&#8217;t switch the time-base (systick or low power timer): what I do is to use the RTC alarm to wake me up after some time.
+I&#8217;m sure there are other ways doing this, but this has worked very well for me.
+I hope this helps,
+Erich
+</div></div><div class="thread-post"><h3 class="thread-post-title">Use RTC rather than SysTick as the tick source?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fearless-fool">fearless-fool</a> on July 23, 2019</div><div class="thread-post-content">Hi Erich!
+Before switching to FreeRTOS, I have typically used the RTC running at
+32KHz and used its COMP interrupt to wake the processor from sleep
+mode(s).
+Perhaps its because what I&#8217;m already familiar with, but is seems as if
+FreeRTOS would benefit by using the RTC all the time: for &#8220;wake&#8221; modes the
+COMP interrupt would be set for 1mSec, for &#8220;sleep&#8221; (aka tickless) modes,
+the COMP interrupt would be set for N seconds in the future.
+The advantage of this approach is simplicity and accuracy: you don&#8217;t have
+to convert between two time bases, and since the RTC runs continually, you
+never lose any accuracy.  (I&#8217;ve read the code for tickless.c and I can see
+where and why it would lose some accuracy.)
+<ul>
+<li>rdp</li>
+</ul>
+On Tue, Jul 23, 2019 at 7:33 AM Erich Styger <a href="/FreeRTOS_Support_Forum_Archive/July_2019/&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#x78;&#122;&#x38;&#x39;&#56;&#x37;&#102;&#x40;&#x75;&#115;&#x65;&#114;&#x73;&#x2e;&#115;&#x6f;&#117;&#x72;&#x63;&#101;&#x66;&#111;&#x72;&#x67;&#101;&#x2e;&#110;&#x65;&#x74;">&#x78;&#122;&#x38;&#x39;&#56;&#x37;&#102;&#x40;&#x75;&#115;&#x65;&#114;&#x73;&#x2e;&#115;&#x6f;&#117;&#x72;&#x63;&#101;&#x66;&#111;&#x72;&#x67;&#101;&#x2e;&#110;&#x65;&#x74;</a>
+wrote:
+<blockquote>
+  It depends on the resolution of the RTC tick. And not sure to which port
+  you are referring. But here is what I use and do on Cortex-M:
+  a) Systick is used by default
+  b) Approach a) can be combined with tickless-idle mode
+  c) for low power, it depends what can wake me up from low power (depending
+  on the mode). If Systick wakes me up (basically any interrupt), systick can
+  be used
+  d) if Systick is not an exit from low power mode, I&#8217;m using a low power
+  timer (which usually has a 1 ms resolution which is good enough)
+  e) if I need to go deeper in low power, I could use the RTC. That usually
+  means that the RTC alarm interrupt is the only thing which can wake me up,
+  so the low power timer does not help. But typically the RTC has a
+  resolution of 1 sec which is not appropriate for most cases. In that case
+  I&#8217;m using the low power timer (or systick) in tickless mode, and for
+  extended sleep periods I set an RTC alarm to wake me up and continue to use
+  the Systick or low power timer for &#8216;normal&#8217; operation.
+  So I don&#8217;t switch the time-base (systick or low power timer): what I do is
+  to use the RTC alarm to wake me up after some time.
+  I&#8217;m sure there are other ways doing this, but this has worked very well
+  for me.
+  I hope this helps,
+  <h2>Erich</h2>
+  Use RTC rather than SysTick as the tick source?
+  <h2><a href="https://sourceforge.net/p/freertos/discussion/382005/thread/44e1dff619/?limit=25#71c9">https://sourceforge.net/p/freertos/discussion/382005/thread/44e1dff619/?limit=25#71c9</a></h2>
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Use RTC rather than SysTick as the tick source?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 23, 2019</div><div class="thread-post-content">When I tried running the code found the sequence to be as follows:
+After a short time the lines in DetectLimitReach() executed.
+<pre><code>if(heures&gt;=2)
+{
+  ComptFin = xEventGroupSetBits(
+    ComptFin_Group,
+    ( 1 &lt;&lt; 2 ));
+}
+vTaskDelay(400 / portTICK_RATE_MS);
+</code></pre>
+  }
+  vTaskDelete(NULL);
+This set bit 1&lt;&lt;2 in the event group, which unblocked RaZheure<em>IPC() &#8211;
+but RaZheure</em>IPC() didn&#8217;t run immediately as it has the same priority as
+DetectLimitReach().  When DetectLimitReach() then executed vTaskDelay(),
+which put it into the blocked state, RaZheure_IPC() executed&#8230;.which I
+think was your intended behaviour.
+There is a subtle bug in your code however as the event group is created
+in DetectLimitReach(), which is a task that has equal priority to other
+tasks that are attempting to use the event group &#8211; if any other task
+should happen to run first (which would be the case if you changed the
+order in which the tasks were created) then the code would crash because
+an attempt was made to access an event group before it was created.
+Creating the event group in main() before the scheduler is started would
+prevent that.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Use RTC rather than SysTick as the tick source?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 23, 2019</div><div class="thread-post-content">I think one key reason FreeRTOS by default uses the SysTick is that it is universally available as a core resource for the full processor family, and thus there can be a single port that doesn&#8217;t depend on the particular processor. An RTC is not so universal.
+A second issue is that for the Systick, the tick rate is typically able to be set to EXACTLY 1000 Hz (or 100 Hz or what ever round number is desired) while a low power timer based on a 32768 Hz crystal will give you something like 1024 Hz. While in most cases this difference isn&#8217;t important, for some people it is (or they think it is).
+FreeRTOS does readily allow you to replace the Systick interrupt with something else for its time base, and I think a low power timer based on a 32768 Hz base works well (I will typically prescale by 32 and then divide by 10 to give me a 102.4 Hz tick rate, close enough to a 100 Hz/10ms tick.) This allowes a tickless idle period of about a minute, and if you need longer than the RTC could be used instead for that timeout (and let the tick count get off).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Use RTC rather than SysTick as the tick source?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fearless-fool">fearless-fool</a> on July 23, 2019</div><div class="thread-post-content">Richard:
+On Tue, Jul 23, 2019 at 9:00 AM Richard Damon wrote:
+<blockquote>
+  I think one key reason FreeRTOS by default uses the SysTick is that it is
+  universally available as a core resource for the full processor family, and
+  thus there can be a single port that doesn&#8217;t depend on the particular
+  processor. An RTC is not so universal.
+  Point well taken&#8230;
+  A second issue is that for the Systick, the tick rate is typically able to
+  be set to EXACTLY 1000 Hz &#8230; While in most cases this difference isn&#8217;t
+  important, for some people it is (or they think it is).
+  Exactly: there&#8217;s nothing magic about a tick rate of exactly 1mSec.  Or if
+  it IS important, then you&#8217;d also care about losing accuracy across tickless
+  (sleeping) intervals.  Using a continually-running RTC avoids that drift.
+  FreeRTOS does readily allow you to replace the Systick interrupt with
+  something else for its time base, and I think a low power timer based on a
+  32768 Hz base works well (I will typically prescale by 32 and then divide
+  by 10&#8230;
+</blockquote>
+This implies you&#8217;ve done this?  Is there a code example I could stare at?
+It would accelerate my learning&#8230;
+>
+<blockquote>
+  This allowes a tickless idle period of about a minute, and if you need
+  longer than the RTC could be used instead for that timeout (and let the
+  tick count get off).
+</blockquote>
+The RTC&#8217;s I&#8217;ve been working with are 32 bits, so if you use the COMP
+interrupt to wake the processor, you can get delays of up to (almost)
+131072 seconds (1.5 days) &#8212; adequate for many applications.
+Many thanks!
+<ul>
+<li>rdp</li>
+</ul>
+<hr />
+>
+<blockquote>
+  Use RTC rather than SysTick as the tick source?
+  <h2><a href="https://sourceforge.net/p/freertos/discussion/382005/thread/44e1dff619/?limit=25#bd41">https://sourceforge.net/p/freertos/discussion/382005/thread/44e1dff619/?limit=25#bd41</a></h2>
+  Sent from sourceforge.net because you indicated interest in
+  https://sourceforge.net/p/freertos/discussion/382005/
+  To unsubscribe from further messages, please visit
+  https://sourceforge.net/auth/subscriptions/
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Use RTC rather than SysTick as the tick source?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 23, 2019</div><div class="thread-post-content"><blockquote>
+<pre><code>FreeRTOS does readily allow you to replace the Systick interrupt with
+something else for its time base, and I think a low power timer
+based on a
+32768 Hz base works well (I will typically prescale by 32 and then
+divide
+by 10...
+</code></pre>
+  This implies you&#8217;ve done this? Is there a code example I could stare at?
+  It would accelerate my learning&#8230;
+</blockquote>
+What is it you are looking for an example of?  Replacing the systick
+with something else, or using a 32KHz clock to generate the tick?
+Replacing the systick as the clock is a matter of providing your own
+implementation of vPortSetupTimerInterrupt() as the default
+implementation is maked as a weak symbol:
+https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/portable/GCC/ARM<em>CM4</em>MPU/port.c#l550
+You then have to install the interrupt handler for whichever interrupt
+the timer you chose generates.  The interrupt handler would be
+functionally identical to this one, although you may need additional
+code that is specific to managing the chosen timer:
+https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/portable/GCC/ARM<em>CM4</em>MPU/port.c#l529
+</div></div><div class="thread-post"><h3 class="thread-post-title">Use RTC rather than SysTick as the tick source?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fearless-fool">fearless-fool</a> on July 23, 2019</div><div class="thread-post-content">Richard:
+On Tue, Jul 23, 2019 at 9:32 AM Richard Barry <a href="/FreeRTOS_Support_Forum_Archive/July_2019/&#109;&#x61;&#x69;&#108;&#116;&#x6f;:&#114;&#x74;&#x65;&#108;&#64;&#x75;s&#101;&#x72;&#x73;&#46;&#115;&#x6f;u&#114;&#x63;&#x65;&#102;&#111;&#x72;&#103;&#101;&#x2e;&#x6e;&#101;&#x74;">&#114;&#x74;&#x65;&#108;&#64;&#x75;s&#101;&#x72;&#x73;&#46;&#115;&#x6f;u&#114;&#x63;&#x65;&#102;&#111;&#x72;&#103;&#101;&#x2e;&#x6e;&#101;&#x74;</a>
+wrote:
+What is it you are looking for an example of?  Replacing the systick with
+<blockquote>
+  something else, or using a 32KHz clock to generate the tick?
+</blockquote>
+Is that not the same thing?  🙂
+Replacing the systick as the clock is a matter of providing your own
+<blockquote>
+  implementation of vPortSetupTimerInterrupt() as the default implementation
+  is marked as a weak symbol:
+  https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/portable/GCC/ARM<em>CM4</em>MPU/port.c#l550
+  You then have to install the interrupt handler for whichever interrupt the
+  timer you chose generates. The interrupt handler would be functionally
+  identical to this one, although you may need additional code that is
+  specific to managing the chosen timer:
+  https://sourceforge.net/p/freertos/code/HEAD/tree/tags/V10.2.1/FreeRTOS/Source/portable/GCC/ARM<em>CM4</em>MPU/port.c#l529
+</blockquote>
+Perfect &#8212; those are the pointers I was seeking.  Many thanks.
+<ul>
+<li>rdp</li>
+</ul>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Use RTC rather than SysTick as the tick source?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on July 24, 2019</div><div class="thread-post-content">Yes, I have done it, but the code is part of a product that I really can&#8217;t share. Richard Barry has shared the links to the documentation that I used to derive it, and that part is fairly simple.
+My example is also for an M4, so not directly applicatable (but very similar), and most of the code is operating the timer, which would be different than your needs.
+In my case, I am using a 16 bit low power timer in the chip, which can run and wake up the processor even when largely put to sleep (the main processor clock is stopped and most perpherals, other than a few &#8216;low power&#8217; ones frozen). Yes, a 32 bit timer would give you much more time.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Use RTC rather than SysTick as the tick source?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/fearless-fool">fearless-fool</a> on July 24, 2019</div><div class="thread-post-content">Richard D:
+Thank you for the confirmation.
+<blockquote>
+   I am using a 16 bit low power timer in the chip, which can run and wake up the processor even when largely put to sleep&#8230;
+</blockquote>
+That&#8217;s my use case as well: the RTC is the only thing left running while the processor and other peripherals sleep.  A match on the RTC&#8217;s COMP register can bring the processor out of sleep.  
+As I alluded to above, my motivation for using the RTC as FreeRTOS&#8217;s sole tick source is that you never lose any counts across sleeps, since the RTC runs continually without getting reset.
+I&#8217;ll follow Mr. Barry&#8217;s pointers and see what I can cobble together.  Thanks!
+<blockquote>
+  Yes, a 32 bit timer would give you much more time.
+</blockquote>
+(Sure, but even a 16 bit timer running at 32KHz with a 32:1 prescaler will give you 1 millisecond resolution with 67M seconds before rolling over&#8230;)
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

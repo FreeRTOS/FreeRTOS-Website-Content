@@ -1,0 +1,465 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>stm32f429i Disco ADC DMA - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_stm32f429i_Disco_ADC_DMA_e7737424j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="stm32f429i Disco ADC DMA - FreeRTOS" />
+<meta property="og:description" content="stm32f429i Disco ADC DMAPosted by antheri9 on September 27, 2015Hello, Im developing some applicatnion whitch must use FreeRTOS and sample 2 channels ADC. I decided to use DMA mechanism for easier data preparation. Code is fully generated from ST CubeMx and just without FreeRTOS works fine. Here is same topic but there is no answer: &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_stm32f429i_Disco_ADC_DMA_e7737424j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="stm32f429i Disco ADC DMAPosted by antheri9 on September 27, 2015Hello, Im developing some applicatnion whitch must use FreeRTOS and sample 2 channels ADC. I decided to use DMA mechanism for easier data preparation. Code is fully generated from ST CubeMx and just without FreeRTOS works fine. Here is same topic but there is no answer: [&hellip;]" />
+<meta name="twitter:title" content="stm32f429i Disco ADC DMA - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202564' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202564' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202564' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202564' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145642' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_stm32f429i_Disco_ADC_DMA_e7737424j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_stm32f429i_Disco_ADC_DMA_e7737424j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145642">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2015_freertos_support_forum_archive_index.html/">September 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">stm32f429i Disco ADC DMA</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/antheri9">antheri9</a> on September 27, 2015</div><div class="thread-post-content">Hello,
+Im developing some applicatnion whitch must use FreeRTOS and sample 2 channels ADC. I decided to use DMA mechanism for easier data preparation. Code is fully generated from ST CubeMx and just without FreeRTOS works fine.
+Here is same topic but there is no answer:
+<a href="https://my.st.com/public/STe2ecommunities/mcu/Lists/STM32Discovery/Flat.aspx?RootFolder=https%3a%2f%2fmy%2est%2ecom%2fpublic%2fSTe2ecommunities%2fmcu%2fLists%2fSTM32Discovery%2fADC%20with%20DMA%20in%20FreeRTOS&amp;FolderCTID=0x01200200770978C69A1141439FE559EB459D75800084C20D8867EAD444A5987D47BE638E0F&amp;currentviews=955">here</a>
+I created few task to refresh LCD, read Touchscreen state and some more&#8230; DMA works once and then processor do not goes into DMA interrupt and do not refresh buffer. I have no more ideas. I think FreeRTOS is bad configured for DMA and thats the reason of this behaviour.
+Can you help?
+~~~~
+<h1>include &#8220;stm32f4xx_hal.h&#8221;</h1>
+<h1>include &#8220;cmsis_os.h&#8221;</h1>
+/* USER CODE BEGIN Includes */
+<h1>include &#8220;stm32f429i<em>discovery</em>lcd.h&#8221;</h1>
+<h1>include &#8220;stm32f429i<em>discovery</em>ts.h&#8221;</h1>
+<h1>include &#8220;expander_mcp23s17.h&#8221;</h1>
+/* USER CODE END Includes */
+/* Private variables &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;*/
+ADC_HandleTypeDef hadc3;
+DMA_HandleTypeDef hdma_adc3;
+DAC_HandleTypeDef hdac;
+SPI_HandleTypeDef hspi4;
+UART_HandleTypeDef huart5;
+osThreadId defaultTaskHandle;
+/* USER CODE BEGIN PV <em>/
+/</em> Private variables &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;*/
+/* USER CODE END PV */
+/* Private function prototypes &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;*/
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
+static void MX_ADC3_Init(void);
+static void MX_DAC_Init(void);
+static void MX_SPI4_Init(void);
+static void MX_UART5_Init(void);
+void StartDefaultTask(void const * argument);
+/* USER CODE BEGIN PFP <em>/
+/</em> Private function prototypes &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;*/
+osThreadId ScreenTaskHandle;
+osThreadId TouchPanelTaskHandle;
+void ScreenTask(void const * argument);
+void TouchPanelTask (void const * argument);
+/* USER CODE END PFP */
+/* USER CODE BEGIN 0 */
+TS_StateTypeDef touch;
+uint32<em>t g</em>ADCBuffer[2];
+/* USER CODE END 0 */
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
+  /* USER CODE END 1 */
+  /* MCU Configuration&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-*/
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+  /* Configure the system clock */
+  SystemClock_Config();
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_ADC3_Init();
+  //MX_DAC_Init();
+  MX_SPI4_Init();
+  MX_UART5_Init();
+  /* USER CODE BEGIN 2 */
+<pre><code>    HAL_ADC_Start_DMA(&amp;hadc3, g_ADCBuffer, 2);
+</code></pre>
+  /* USER CODE END 2 */
+  /* USER CODE BEGIN RTOS<em>MUTEX */
+  /* add mutexes, &#8230; */
+  /* USER CODE END RTOS</em>MUTEX */
+  /* USER CODE BEGIN RTOS<em>SEMAPHORES */
+  /* add semaphores, &#8230; */
+  /* USER CODE END RTOS</em>SEMAPHORES */
+  /* USER CODE BEGIN RTOS<em>TIMERS */
+  /* start timers, add new ones, &#8230; */
+  /* USER CODE END RTOS</em>TIMERS */
+  /* Create the thread(s) <em>/
+  /</em> definition and creation of defaultTask */
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* USER CODE BEGIN RTOS_THREADS */
+<pre><code>    osThreadDef(ScreenTask, ScreenTask, osPriorityNormal, 0, 128);
+</code></pre>
+  ScreenTaskHandle = osThreadCreate(osThread(ScreenTask), NULL);
+<pre><code>    osThreadDef(TouchPanelTask, TouchPanelTask, osPriorityNormal, 0, 128);
+</code></pre>
+  TouchPanelTaskHandle = osThreadCreate(osThread(TouchPanelTask), NULL);
+  /* USER CODE END RTOS_THREADS */
+  /* USER CODE BEGIN RTOS<em>QUEUES */
+  /* add queues, &#8230; */
+  /* USER CODE END RTOS</em>QUEUES */
+  /* Start scheduler */
+  osKernelStart();
+  /* We should never get here as control is now taken by the scheduler */
+  /* Infinite loop <em>/
+  /</em> USER CODE BEGIN WHILE <em>/
+  while (1)
+  {
+  /</em> USER CODE END WHILE */
+  /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
+/** System Clock Configuration
+*/
+void SystemClock_Config(void)
+{
+  RCC<em>OscInitTypeDef RCC</em>OscInitStruct;
+  RCC<em>ClkInitTypeDef RCC</em>ClkInitStruct;
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
+  __PWR<em>CLK</em>ENABLE();
+  __HAL<em>PWR</em>VOLTAGESCALING<em>CONFIG(PWR</em>REGULATOR<em>VOLTAGE</em>SCALE1);
+  RCC<em>OscInitStruct.OscillatorType = RCC</em>OSCILLATORTYPE<em>HSI;
+  RCC</em>OscInitStruct.HSIState = RCC<em>HSI</em>ON;
+  RCC<em>OscInitStruct.HSICalibrationValue = 16;
+  RCC</em>OscInitStruct.PLL.PLLState = RCC<em>PLL</em>ON;
+  RCC<em>OscInitStruct.PLL.PLLSource = RCC</em>PLLSOURCE<em>HSI;
+  RCC</em>OscInitStruct.PLL.PLLM = 10;
+  RCC<em>OscInitStruct.PLL.PLLN = 210;
+  RCC</em>OscInitStruct.PLL.PLLP = RCC<em>PLLP</em>DIV2;
+  RCC<em>OscInitStruct.PLL.PLLQ = 4;
+  HAL</em>RCC<em>OscConfig(&amp;RCC</em>OscInitStruct);
+  RCC<em>ClkInitStruct.ClockType = RCC</em>CLOCKTYPE<em>SYSCLK|RCC</em>CLOCKTYPE<em>PCLK1
+                              |RCC</em>CLOCKTYPE<em>PCLK2;
+  RCC</em>ClkInitStruct.SYSCLKSource = RCC<em>SYSCLKSOURCE</em>PLLCLK;
+  RCC<em>ClkInitStruct.AHBCLKDivider = RCC</em>SYSCLK<em>DIV1;
+  RCC</em>ClkInitStruct.APB1CLKDivider = RCC<em>HCLK</em>DIV4;
+  RCC<em>ClkInitStruct.APB2CLKDivider = RCC</em>HCLK<em>DIV2;
+  HAL</em>RCC<em>ClockConfig(&amp;RCC</em>ClkInitStruct, FLASH<em>LATENCY</em>5);
+  PeriphClkInitStruct.PeriphClockSelection = RCC<em>PERIPHCLK</em>LTDC;
+  PeriphClkInitStruct.PLLSAI.PLLSAIN = 120;
+  PeriphClkInitStruct.PLLSAI.PLLSAIR = 2;
+  PeriphClkInitStruct.PLLSAIDivR = RCC<em>PLLSAIDIVR</em>2;
+  HAL<em>RCCEx</em>PeriphCLKConfig(&amp;PeriphClkInitStruct);
+  HAL<em>SYSTICK</em>Config(HAL<em>RCC</em>GetHCLKFreq()/1000);
+  HAL<em>SYSTICK</em>CLKSourceConfig(SYSTICK<em>CLKSOURCE</em>HCLK);
+}
+/* ADC3 init function */
+void MX_ADC3_Init(void)
+{
+  ADC_ChannelConfTypeDef sConfig;
+<pre><code>/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+*/
+</code></pre>
+  hadc3.Instance = ADC3;
+  hadc3.Init.ClockPrescaler = ADC<em>CLOCKPRESCALER</em>PCLK<em>DIV4;
+  hadc3.Init.Resolution = ADC</em>RESOLUTION12b;
+  hadc3.Init.ScanConvMode = ENABLE;
+  hadc3.Init.ContinuousConvMode = ENABLE;
+  hadc3.Init.DiscontinuousConvMode = DISABLE;
+  hadc3.Init.ExternalTrigConvEdge = ADC<em>EXTERNALTRIGCONVEDGE</em>NONE;
+  hadc3.Init.DataAlign = ADC<em>DATAALIGN</em>RIGHT;
+  hadc3.Init.NbrOfConversion = 2;
+  hadc3.Init.DMAContinuousRequests = ENABLE;
+  hadc3.Init.EOCSelection = EOC<em>SINGLE</em>CONV;
+  HAL<em>ADC</em>Init(&amp;hadc3);
+<pre><code>/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+*/
+</code></pre>
+  sConfig.Channel = ADC<em>CHANNEL</em>4;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC<em>SAMPLETIME</em>144CYCLES;
+  HAL<em>ADC</em>ConfigChannel(&amp;hadc3, &amp;sConfig);
+<pre><code>/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+*/
+</code></pre>
+  sConfig.Channel = ADC<em>CHANNEL</em>13;
+  sConfig.Rank = 2;
+  HAL<em>ADC</em>ConfigChannel(&amp;hadc3, &amp;sConfig);
+<pre><code>    HAL_ADC_MspInit(&amp;hadc3);
+</code></pre>
+}
+/* DAC init function */
+void MX_DAC_Init(void)
+{
+  DAC_ChannelConfTypeDef sConfig;
+<pre><code>/**DAC Initialization
+*/
+</code></pre>
+  hdac.Instance = DAC;
+  HAL<em>DAC</em>Init(&amp;hdac);
+<pre><code>/**DAC channel OUT2 config
+*/
+</code></pre>
+  sConfig.DAC<em>Trigger = DAC</em>TRIGGER<em>NONE;
+  sConfig.DAC</em>OutputBuffer = DAC<em>OUTPUTBUFFER</em>ENABLE;
+  HAL<em>DAC</em>ConfigChannel(&amp;hdac, &amp;sConfig, DAC<em>CHANNEL</em>2);
+}
+/* SPI4 init function */
+void MX_SPI4_Init(void)
+{
+  hspi4.Instance = SPI4;
+  hspi4.Init.Mode = SPI<em>MODE</em>MASTER;
+  hspi4.Init.Direction = SPI<em>DIRECTION</em>2LINES;
+  hspi4.Init.DataSize = SPI<em>DATASIZE</em>8BIT;
+  hspi4.Init.CLKPolarity = SPI<em>POLARITY</em>LOW;
+  hspi4.Init.CLKPhase = SPI<em>PHASE</em>1EDGE;
+  hspi4.Init.NSS = SPI<em>NSS</em>SOFT;
+  hspi4.Init.BaudRatePrescaler = SPI<em>BAUDRATEPRESCALER</em>256;
+  hspi4.Init.FirstBit = SPI<em>FIRSTBIT</em>MSB;
+  hspi4.Init.TIMode = SPI<em>TIMODE</em>DISABLED;
+  hspi4.Init.CRCCalculation = SPI<em>CRCCALCULATION</em>DISABLED;
+  hspi4.Init.CRCPolynomial = 10;
+  HAL<em>SPI</em>Init(&amp;hspi4);
+<pre><code>    HAL_SPI_MspInit(&amp;hspi4);
+</code></pre>
+}
+/* UART5 init function */
+void MX_UART5_Init(void)
+{
+  huart5.Instance = UART5;
+  huart5.Init.BaudRate = 115200;
+  huart5.Init.WordLength = UART<em>WORDLENGTH</em>8B;
+  huart5.Init.StopBits = UART<em>STOPBITS</em>1;
+  huart5.Init.Parity = UART<em>PARITY</em>NONE;
+  huart5.Init.Mode = UART<em>MODE</em>TX<em>RX;
+  huart5.Init.HwFlowCtl = UART</em>HWCONTROL<em>NONE;
+  huart5.Init.OverSampling = UART</em>OVERSAMPLING<em>16;
+  HAL</em>UART_Init(&amp;huart5);
+<pre><code>    HAL_UART_MspInit(&amp;huart5);
+</code></pre>
+}
+/**
+  * Enable DMA controller clock
+  <em>/
+void MX_DMA_Init(void)
+{
+  /</em> DMA controller clock enable */
+  __DMA2_CLK_ENABLE();
+  /* DMA interrupt init */
+  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+}
+/** Configure pins as
+        * Analog
+        * Input
+        * Output
+        * EVENT<em>OUT
+        * EXTI
+*/
+void MX</em>GPIO_Init(void)
+{
+  GPIO<em>InitTypeDef GPIO</em>InitStruct;
+  /* GPIO Ports Clock Enable */
+  __GPIOE_CLK_ENABLE();
+  __GPIOF_CLK_ENABLE();
+  __GPIOC_CLK_ENABLE();
+  __GPIOA_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
+  __GPIOD_CLK_ENABLE();
+  __GPIOG_CLK_ENABLE();
+  /*Configure GPIO pins : PE3 PE4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+  HAL_GPIO_Init(GPIOE, &amp;GPIO_InitStruct);
+  /*Configure GPIO pin : PA0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+  /*Configure GPIO pins : PG13 PG14 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+  HAL_GPIO_Init(GPIOG, &amp;GPIO_InitStruct);
+}
+/* USER CODE BEGIN 4 */
+/* ScreenTask function */
+void ScreenTask(void const * argument)
+{
+                BSP_LCD_Init();
+                BSP_LCD_LayerDefaultInit(0, (uint32_t) LCD_FRAME_BUFFER);
+                BSP_LCD_SetLayerVisible(0, ENABLE);
+<pre><code>            BSP_LCD_SelectLayer(0);
+            BSP_LCD_Clear(LCD_COLOR_RED);
+            BSP_LCD_SetBackColor(LCD_COLOR_RED);
+            BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+            BSP_LCD_DisplayOn();
+            BSP_LCD_DisplayStringAtLine(1, (uint8_t *) "SAMPLE TEXT");
+            while(1)
+            {
+                    osDelay(200);
+            }
+</code></pre>
+}
+/* TouchPanelTask function */
+void TouchPanelTask (void const * argument)
+{
+                BSP_TS_Init(240, 320);
+<pre><code>            while(1)
+            {
+                            BSP_TS_GetState(&amp;touch);
+                            osDelay(200);
+            }
+</code></pre>
+}
+/* USER CODE END 4 */
+/* StartDefaultTask function */
+void StartDefaultTask(void const * argument)
+{
+  /* USER CODE BEGIN 5 */
+  uint8_t start = 0;
+        uint8_t fr = 1;
+<pre><code>    Expander_MCP23s17_Set_Direction(&amp;hspi4, GPIOE, GPIO_PIN_4, VoltageCard, 0, 0);
+    Expander_MCP23s17_Set_Direction(&amp;hspi4, GPIOE, GPIO_PIN_4, VoltageCard, 0, 1);
+    Expander_MCP23s17_Set_Pin(&amp;hspi4, GPIOE, GPIO_PIN_4, VoltageCard, 7, 0);
+    Expander_MCP23s17_Set_Pin(&amp;hspi4, GPIOE, GPIO_PIN_4, VoltageCard, 6, 1);
+</code></pre>
+  for(;;)
+  {<br />
+                uint8<em>t elo[10] = &#8220;&#8221;;
+                HAL</em>UART_Transmit(&amp;huart5, elo, sizeof(elo), 1);
+<pre><code>            sprintf(elo, "%i", g_ADCBuffer[0]);
+            BSP_LCD_DisplayStringAtLine(11, (uint8_t*)elo);
+            sprintf(elo, "%i", g_ADCBuffer[1]);
+            BSP_LCD_DisplayStringAtLine(12, (uint8_t*)elo);
+osDelay(200);
+            HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_14 | GPIO_PIN_13);
+            if(touch.TouchDetected) {
+                    if((!start &amp;&amp; touch.X &gt;= 50 &amp;&amp; touch.X &lt;= 150 &amp;&amp; touch.Y &gt;= 200 &amp;&amp; touch.Y &lt;= 250) || fr) {
+                            BSP_LCD_Clear(LCD_COLOR_RED);
+                            BSP_LCD_DrawRect(50, 50, 100, 50);
+                            BSP_LCD_DisplayStringAt(60, 75, (uint8_t*) "BTN1", LEFT_MODE);
+                            if(!fr)
+                                    BSP_LCD_DisplayStringAtLine(1, (uint8_t*)"BTN2 pressed");
+                            start = 1;
+                            fr = 0;
+                    }
+                    else if(start &amp;&amp; touch.X &gt;= 50 &amp;&amp; touch.X &lt;= 150 &amp;&amp; touch.Y &gt;= 50 &amp;&amp; touch.Y &lt;= 100){
+                            BSP_LCD_Clear(LCD_COLOR_RED);
+                            BSP_LCD_DrawRect(50, 200, 100, 50);
+                            BSP_LCD_DisplayStringAt(60, 210, (uint8_t*) "BTN2", LEFT_MODE);
+                            BSP_LCD_DisplayStringAtLine(1, (uint8_t*)"BTN1 pressed");
+                            start = 0;
+                    }
+            }
+</code></pre>
+  }
+  /* USER CODE END 5 */
+}
+GeSHi
+~~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">stm32f429i Disco ADC DMA</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on September 27, 2015</div><div class="thread-post-content">Please note, this forum can assist in the use of FreeRTOS, using the FreeRTOS API, we are not able to support or advise on chip specific periipheral setup, or support third party code.
+We can try and help with your specific question &#8211; which I think is related to a DMA that fires only once.  There is too much code to read through though, can you be more specific, and highlight just the code that is causing the problem.  I would suggest creating an application, or commenting out all other code, so you have a FreeRTOS application that does nothing but perform the ADC conversions using the DMA so you can see how it behaves in isloation (without any other code).  If that does not work there will be much less code to try and diagnose &#8211; and if it does work you can then start adding the rest of the application code until you find the point where the ADC/DMA stops working.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

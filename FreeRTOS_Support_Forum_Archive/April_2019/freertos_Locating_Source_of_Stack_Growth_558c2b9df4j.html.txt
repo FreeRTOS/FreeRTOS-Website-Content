@@ -1,0 +1,164 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Locating Source of Stack Growth - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2019/freertos_Locating_Source_of_Stack_Growth_558c2b9df4j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Locating Source of Stack Growth - FreeRTOS" />
+<meta property="og:description" content="Locating Source of Stack GrowthPosted by hillridge on April 16, 2019I&#8217;m having an issue where a task is overflowing its stack (or at least appears to be) at some unpredictable point in time. I have vApplicationStackOverflowHook enabled, and found that one of my tasks was triggering it. I added a call to uxTaskGetStackHighWaterMark() in that &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2019/freertos_Locating_Source_of_Stack_Growth_558c2b9df4j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Locating Source of Stack GrowthPosted by hillridge on April 16, 2019I&#8217;m having an issue where a task is overflowing its stack (or at least appears to be) at some unpredictable point in time. I have vApplicationStackOverflowHook enabled, and found that one of my tasks was triggering it. I added a call to uxTaskGetStackHighWaterMark() in that [&hellip;]" />
+<meta name="twitter:title" content="Locating Source of Stack Growth - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203104' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203104' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203104' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203104' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147704' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2019%2Ffreertos_Locating_Source_of_Stack_Growth_558c2b9df4j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2019%2Ffreertos_Locating_Source_of_Stack_Growth_558c2b9df4j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147704">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2019_freertos_support_forum_archive_index.html/">April 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Locating Source of Stack Growth</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hillridge">hillridge</a> on April 16, 2019</div><div class="thread-post-content">I&#8217;m having an issue where a task is overflowing its stack (or at least appears to be) at some unpredictable point in time.
+I have vApplicationStackOverflowHook enabled, and found that one of my tasks was triggering it.  I added a call to uxTaskGetStackHighWaterMark() in that task, and monitor the result.  Upon creation, the HWM reports back as 34.  The task itself is quite simple: read an ADC, convert the result to a properly formatted string, send it out the debug serial port.  There&#8217;s nothing in there that should cause the stack to grow or shrink after the initial pass through the While(1) body of the task, but I also haven&#8217;t fully investigated all of the calls to some vendor supplied driver functions. 
+However, if I wait for the code to crash (by getting trapped in vApplicationStackOverflowHook()), then go back and look at the debug port output, I see that this task&#8217;s stack&#8217;s HWM keeps decreasing sporadically with the last reported value before crash being 10.  The time it takes for this to happen is variable and unpredictable.   I&#8217;ve kept an eye on it over the last 20 minutes and it&#8217;s only down to 30 now 
+What are potential causes of this?  My first thought was interrupts, but It&#8217;s my understanding that the FreeRTOS port I&#8217;m using (for a Cortex-M4) uses a separate stack for exceptions/interrupts.  How can I confim this is true?  Is there another component of the RTOS  that can cantribute to stack growth like this?
+Thanks
+</div></div><div class="thread-post"><h3 class="thread-post-title">Locating Source of Stack Growth</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/waveringradiant">waveringradiant</a> on April 16, 2019</div><div class="thread-post-content">Something you said there:
+<blockquote>
+  The task itself is quite simple: read an ADC, <strong><em>convert the result to a properly formatted string</em></strong>, send it out the debug serial port.
+</blockquote>
+Question:  any chance you&#8217;re using something like <code>sprintf()</code> to format the string?  Traditionally the &#8220;printf&#8221; family of functions are very hard on the stack&#8230;
+If you&#8217;re using sprintf(), try commenting that out and just send a byte like &#8216;A&#8217; out the port, and see if the stack overflow goes away&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Locating Source of Stack Growth</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hillridge">hillridge</a> on April 16, 2019</div><div class="thread-post-content">I am using sprintf, but the format of what I&#8217;m printing never changes, including the character count.  What in that function could cause the stack usage to increase suddenly after being the same for the last X-hundred calls? 
+I will try your suggestion, though the unpredictable nature of this issues makes it hard to tell if a change has removed the problem.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">Locating Source of Stack Growth</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/pete-bone">pete-bone</a> on April 16, 2019</div><div class="thread-post-content">Hi Adam,
+Just another suggestion for your melting pot&#8230;
+Are you calling sprintf() from other threads also?
+If so you should probably check if the libc implementation you are using supports reentrancy for the sprintf() function.
+Kind Regards,
+Pete
+</div></div><div class="thread-post"><h3 class="thread-post-title">Locating Source of Stack Growth</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/waveringradiant">waveringradiant</a> on April 16, 2019</div><div class="thread-post-content">Yes you ask a very good question&#8230; I could speculate on possible causes, but there are many.
+In Handler mode (exceptions), the CM4 always uses the main stack.  While in Thread Mode, depending on configuration, the application mode could also be using the main stack. (I use many RTOSes, I can&#8217;t recall how FreeRTOS is configured by default, I suspect it might be everything uses the main stack)
+Also if you are using the FPU in or more tasks, the amount of context stacked depends on FPU usage.  (You only need to save/stack FPU regs for task(s) that use the FPU).
+There are other possibilities to explain why &#8220;doing the same thing sometimes behaves differently&#8221; due to the asynchronous nature of interrupts (for example, nested interrupts), but I don&#8217;t even know if you&#8217;re using the FPU and/or nested interrupts.
+Often soemthing like this happens when things line up in time &#8220;in just the wrong way&#8221;
+So let&#8217;s see about printf() and then go from there.  Fun problem but not when you&#8217;re the one on the short end trying to ship a product&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Locating Source of Stack Growth</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 16, 2019</div><div class="thread-post-content">Can&#8217;t recall if the HWM is in bytes or words, would need to look at the
+docs or source to see &#8211; but in any case &#8211; 30 odd does not sound very
+much.  It is conceivable that you call sprintf() lots of times with no
+problem because there didn&#8217;t happen to be a context switch to another
+task within the call, then at some point there is a context switch &#8211; at
+which point the task&#8217;s context is also saved to the stack and boom &#8211; it
+overflows.
+In answer to another post in this thread &#8211; on Cortex-M parts FreeRTOS
+uses a different stack for interrupts.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Locating Source of Stack Growth</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hillridge">hillridge</a> on April 16, 2019</div><div class="thread-post-content">Thanks Pete, I <em>think</em> all the printf family of functions I&#8217;m using are thread safe and reentrant, but I will check to make sure once I dig them out of the IDE that obfuscates things somewhat.
+Richard &#8211; I believe it is in words.  So you&#8217;re saying that when my issue is happening I may just be timing things right with maximum stack usage (due to the extra overhead of sprintf) at the moment of a context switch? That&#8217;s plausible.  I&#8217;m going to simply increase the stack for now and see if it continues to grow beyond where it would normally overflow.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Locating Source of Stack Growth</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hillridge">hillridge</a> on April 16, 2019</div><div class="thread-post-content">Oh I am well aware of &#8220;in just the wrong way&#8221;. I spent the better part of a week debugging an intermittent I2C issue that turned out to be triggered by a context switch perfectly timed between a write and read operation.
+You did bring up a point that prompts  a new question from me &#8211; my processor has a built in FPU, and I do make use of it in some tasks.  Do I need to manually do something to stack the FPU regs, or is that handled automatically?  I haven&#8217;t seen any FPU related issues yet, but I may have just been lucky.  
+Richard&#8217;s post below brought up something I hadn&#8217;t thought of which ties sprintf and interrupts together, and I think it&#8217;s likely the root cause.  I have a bit of investigating to do though.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Locating Source of Stack Growth</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 16, 2019</div><div class="thread-post-content">As this is a Cortex-M FPU is handled automatically (for anybody else
+finding this post &#8211; it is specific to Cortex-M!).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Locating Source of Stack Growth</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/waveringradiant">waveringradiant</a> on April 18, 2019</div><div class="thread-post-content">Adam &#8211; any updates on the root cause?  Just wondering if the usual suspect (printf) was chewing up the stack&#8230;
+Problems like this are fun to debug &#8212; when you&#8217;re not under schedule pressure &#8212; because you always learn something.  Then again, who isn&#8217;t constantly under schedule pressure?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Locating Source of Stack Growth</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hillridge">hillridge</a> on April 18, 2019</div><div class="thread-post-content">It was most likely printf&#8217;s (or similar) doing.  I think what Richard suggested was the root cause &#8211; a context switch at just the right (wrong) time when the stack was nearly full pushed it over.  I increased that task&#8217;s stack by a modest 20 words, and after running for quite some time I think the lowest the HWM got to was around 13, so previously it was overflowing by 7 words.  The long term HWM also changes depending on other code changes I&#8217;ve made, which further points to that issue.  I&#8217;ll let you know if I discover anything else though!
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

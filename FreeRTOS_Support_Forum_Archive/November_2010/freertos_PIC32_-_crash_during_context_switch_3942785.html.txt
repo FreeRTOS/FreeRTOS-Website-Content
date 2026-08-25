@@ -1,0 +1,204 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIC32 - crash during context switch - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/November_2010/freertos_PIC32_-_crash_during_context_switch_3942785.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="PIC32 - crash during context switch - FreeRTOS" />
+<meta property="og:description" content="PIC32 &#8211; crash during context switchPosted by piero74 on November 12, 2010Hi all. we found a very strange situation. We had PIC32 in crash, and we verified the following: &#045; Stack pointer was on flash address &#040;it pointed to xISRStack address&#041; &#045; using tracer, it seemed that micro stops inside PORT&#095;SAVE&#095;CONTEXT code, after this instruction: &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/November_2010/freertos_PIC32_-_crash_during_context_switch_3942785.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="PIC32 &#8211; crash during context switchPosted by piero74 on November 12, 2010Hi all. we found a very strange situation. We had PIC32 in crash, and we verified the following: &#045; Stack pointer was on flash address &#040;it pointed to xISRStack address&#041; &#045; using tracer, it seemed that micro stops inside PORT&#095;SAVE&#095;CONTEXT code, after this instruction: [&hellip;]" />
+<meta name="twitter:title" content="PIC32 - crash during context switch - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201952' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201952' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201952' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201952' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144372' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2010%2Ffreertos_PIC32_-_crash_during_context_switch_3942785.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FNovember_2010%2Ffreertos_PIC32_-_crash_during_context_switch_3942785.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144372">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/November_2010_freertos_support_forum_archive_index.html/">November 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">PIC32 &#8211; crash during context switch</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/piero74">piero74</a> on November 12, 2010</div><div class="thread-post-content">Hi all.  
+we found a very strange situation.  
+We had PIC32 in crash, and we verified the following:  
+&#45; Stack pointer was on flash address &#40;it pointed to xISRStack address&#41;<br />
+&#45; using tracer, it seemed that micro stops inside PORT&#95;SAVE&#95;CONTEXT code, after this instruction:<br />
+&nbsp;&nbsp;&nbsp; /&#42; Swap to the system stack. &#42;/<br />
+la sp, xISRStackTop<br />
+&#45; changing a little the application code &#40;even adding a NOP&#41;, we remove crash, probably because timing changed, and critical situation didn&#8217;t occur  
+we are using:<br />
+&#45; FreeRTOS V6.0.2<br />
+&#45; configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY 0x06 and we have different ISR routines that use RTOS api and work using lower priority&nbsp;   
+It is only a theory &#40;we should be in wrong&#41;: our doubts are related to macro portSAVE&#95;CONTEXT, expecially in these rows:  
+/&#42; Swap to the system stack. &#42;/<br />
+la sp, xISRStackTop<br />
+lw sp, &#40;sp&#41;  
+What&#8217;s happen if an interrupt occurs in the middle of these instructions? SP will be corrupted as we found?<br />
+Could be useful to wrap these instructions with critical sections, blocking INTERRUPTS?  
+We will wait some feedbacks  
+Thanks to all in advance<br />
+Piero
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 &#8211; crash during context switch</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on November 12, 2010</div><div class="thread-post-content">Are you sure that interrupts are enabled when these lines are executed. The MIPS core will disable all interrupts when an interrupt is taken, and then the scheduler selectively enables and disables up to a certain priority value during the context switch code. I would be surprised if the lines you have quoted are executed while interrupts can clobber the register values.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 &#8211; crash during context switch</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/piero74">piero74</a> on November 12, 2010</div><div class="thread-post-content">Thanks for your reply.  
+We think the same, but reading the code, it seems that scheduler enables irq BEFORE these lines:  
+/&#42; Enable interrupts above the current priority. &#42;/<br />
+srl k0, k0, 0xa<br />
+ins k1, k0, 10, 6<br />
+ins k1, zero, 1, 4  
+/&#42; s5 is used as the frame pointer. &#42;/<br />
+add s5, zero, sp  
+/&#42; Check the nesting count value. &#42;/<br />
+la k0, uxInterruptNesting<br />
+lw s6, &#40;k0&#41;  
+/&#42; If the nesting count is 0 then swap to the the system stack, otherwise<br />
+the system stack is already being used. &#42;/<br />
+bne s6, zero, .+20<br />
+nop  
+/&#42; Swap to the system stack. &#42;/<br />
+la sp, xISRStackTop<br />
+lw sp, &#40;sp&#41;  
+At this point,<br />
+Richard, can you help us? any idea regarding the crash?  
+Bye<br />
+Piero
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 &#8211; crash during context switch</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 12, 2010</div><div class="thread-post-content">I&#8217;ve just had a look at the code, and I think edwards3 could be right here.  
+In the code you are referring to, my quick inspection &#40;which I&#8217;m willing to be proven wrong on&#41; is that:  
+0&#41; Interrupt are globally disabled on interrupt entry.<br />
+1&#41; K1 is loaded with the priority of the executing interrupt.<br />
+2&#41; The interrupt nesting count is inspected and if it is 0 a swap is made to the system stack &#8211; this is where the code you highlighted is executed.<br />
+3&#41; The interrupt nesting count is incremented and saved.<br />
+4&#41; Only then is the interrupt mask set to that of the currently executing interrupt &#8211; effectively enabling interrupts above the priority of the currently executing interrupt.&nbsp; In my 6.1.0 version this is done on line 106 by the instruction &#8220;mtc0 k1, &#95;CP0&#95;STATUS&#8221; &#40;remember the interrupt priority was saved into k1&#41;.  
+I hope this clears this up.&nbsp; Please tell me if you still think there is an issue.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 &#8211; crash during context switch</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on November 12, 2010</div><div class="thread-post-content">Just saw your next post &#8211; interrupt are enabled after the snippet you have posted &#40;see my first post&#41;.&nbsp; The code you show only loads K1 with the value that the interrupt mask is later set to.&nbsp; The comment is perhaps a bit misleading.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 &#8211; crash during context switch</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/piero74">piero74</a> on November 12, 2010</div><div class="thread-post-content">Hi Richard<br />
+Thanks for your feedback… now the code is more clear.  
+But we are at the beginning again:<br />
+we don&#8217;t know the reason of crash.  
+Current code hasn&#8217;t this bug &#40;or, it could be hidden in same operations sequence &#8211; we saw it in previous cose doing always the same operations an our board&#41;. We saw mcu locked, with PC and to a strange address &#40;it should be address of general exception&#41;, cause register didn&#8217;t help us, EPC provide an address of apiece of code that has run a lot of time without trouble, and all around &#40;vars, pointers&#41; seemed ok. The only rilevant thing is ths SP that pointed to flash &#40;task and ISR stacks has free space, no overflows&#41;.  
+I really don&#8217;t know what i ahve to search. And i&#8217;m worried that bug can happen again.<br />
+Any idea to debug it if we will see it again?  
+Thanks<br />
+Piero
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 &#8211; crash during context switch</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jussippi">jussippi</a> on April 14, 2014</div><div class="thread-post-content">Hi,
+Have you seen this problem again?
+We run into similar problem with FreeRTOS 7.6.0 and PIC32MX795F512L.
+First indication was that the code stopped in general exception, reason was &#8220;Bus Error Exception (instruction fetch)&#8221;. EPC register was &#8220;A5A5A5A5&#8221; which is the value the stack initialized to. Task SP was updated to invalid value and therefore program counter got value where no memory existed.
+Further studying led us to situation that we found a task stack pointer pointing to ISR stack area.
+This problem vanishes by altering the code / timing. Which is very scary, unless we understand the reason.
+There seems to be something seriously wrong in FreeRTOS scheduler / interrupt handling&#8230;
+BR,
+&#8211;Jussi
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 &#8211; crash during context switch</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on April 14, 2014</div><div class="thread-post-content">Most likely cause is misuse of the API with respect to interrupts.
+Are you following the instructions in the &#8220;interrupt service routines&#8221; section of the following page: http://www.freertos.org/port<em>PIC32</em>MIPS<em>MK4.html &#8211; in particular, are you <b>100% certain</b> that you are not using an interrupt safe FreeRTOS API function from an interrupt that has a priority above whatever you have set configMAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY to?
+Are you correctly wrapping any interrupts with the provided asm code?
+Have you read the following page of the FAQ and ensured you are following the information contained there (like not calling functions that don&#8217;t end in &#8220;from isr&#8221; from an interrupt.
+http://www.freertos.org/FAQHelp.html
+etc.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">PIC32 &#8211; crash during context switch</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jussippi">jussippi</a> on April 15, 2014</div><div class="thread-post-content">Hi,
+Thanks for the hints &#8211; although we had gone through all of that. 🙂
+Anyway, you were right. We had a callback from the old SW interrupt, which was using generic function to read data. That function now uses a mutex (non ISR) for data protection&#8230; Which caused all the bad things.
+BR,
+&#8211;Jussi
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

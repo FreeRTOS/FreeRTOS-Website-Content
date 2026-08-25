@@ -1,0 +1,168 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event flags:more discussion &amp; practical issue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2007/freertos_Event_flags_more_discussion_amp_practical_issue_1651940.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Event flags:more discussion &amp; practical issue - FreeRTOS" />
+<meta property="og:description" content="Event flags:more discussion &#038; practical issuePosted by dutchuncle on January 16, 2007Practical and philosophical issues of Event Flag Groups Rather than making this a feature request, I&#8217;m working on a contribution, and hitting a snag. Background:&nbsp; Event Flags are typically implemented as bitwise flags in a portBASE&#095;TYPE.&nbsp; The flags may be set by any process &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2007/freertos_Event_flags_more_discussion_amp_practical_issue_1651940.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Event flags:more discussion &#038; practical issuePosted by dutchuncle on January 16, 2007Practical and philosophical issues of Event Flag Groups Rather than making this a feature request, I&#8217;m working on a contribution, and hitting a snag. Background:&nbsp; Event Flags are typically implemented as bitwise flags in a portBASE&#095;TYPE.&nbsp; The flags may be set by any process [&hellip;]" />
+<meta name="twitter:title" content="Event flags:more discussion &amp; practical issue - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201428' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201428' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201428' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201428' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139395' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2007%2Ffreertos_Event_flags_more_discussion_amp_practical_issue_1651940.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2007%2Ffreertos_Event_flags_more_discussion_amp_practical_issue_1651940.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139395">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2007_freertos_support_forum_archive_index.html/">January 2007 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Event flags:more discussion &#038; practical issue</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dutchuncle">dutchuncle</a> on January 16, 2007</div><div class="thread-post-content">Practical and philosophical issues of Event Flag Groups
+Rather than making this a feature request, I&#8217;m working on a contribution, and hitting a snag.
+Background:&nbsp; Event Flags are typically implemented as bitwise flags in a portBASE&#95;TYPE.&nbsp; The flags may be set by any process that has the group&#8217;s handle, in any combination &#40;essentially a bitwise OR&#41;.&nbsp; More importantly, the group may be waited on by multiple processes at once, ALL OF WHOM see the flag post&#40;s&#41; simultaneously &#40;and atomically&#41;.&nbsp; This is very different from a queue or semaphore.&nbsp; When an empty queue is written, ONLY the highest-priority process waiting on that queue gets the data; when a flag is posted, ALL of the processes wating on that flag are readied &#40;though of course they get the opportunity to run in priority order&#41;. This is complicated by the operations provided for waiting on flags:&nbsp; the process can specify a 32-bit mask and a code indicating whether ALL of the bits must match or ANY of the bits are sufficient, and in some systems whether the bits should be atomically cleared after a successful match &#8211; though as stated clearing by one process does NOT interfere with another pending process &quot;seeing&quot; the bits for its own readiness test.
+FreeRTOS queues are implemented by activating the highest priority task on the event list, with all queue manipulation being done in the context of the task.&nbsp; The problem with doing this for flags is that the processes would run in priority order with cascading effects, rather than the atomic operations required.&nbsp; Besides, unlike queues which typically have one consumer waiting, flags are designed to have multiple processes awaiting different combinations of flags.&nbsp; &#40;In a VRTX application, we had a dozen processes waiting with masks which mostly had different conditions and &#42;all&#42; had two common bits for STOP and RESET.&#41;&nbsp; It would be inefficient to wake up all of the processes, perform all of the context switches, and let them all test for readiness &#40;and probably suspend again&#41; in context; instead, efficiency suggests performing the masking by scanning the waiting-event-list within the flag-post routine to decide which process&#40;es&#41; to awaken.&nbsp; That means the mask and operation-code isn&#8217;t kept in the context stack, and it&#8217;s per-process, so it makes sense to put it in the process control structure.&nbsp;&nbsp; BUT in good structured style, richardbarry has hidden the process structure inside the tasks.c module along with various private functions to maintain the various process lists, which means that either &#40;a&#41; the masking and process-waking routine should be in tasks.c violating functional separation, or &#40;b&#41; tasks.c should provide accessor and setting functions to private data along with whatever new function is needed to manipulate the process queue&#40;s&#41; incuring more overhead and complexity and &#42;still&#42; violating functional separation somewhat the other direction.
+My own inclination is to bring the flag operation into tasks.c for efficiency, because it seems to me like keeping more privacy around the process handling, thus the lesser evil.&nbsp; What do other people think?
+PS:&nbsp; The extra words could be used for different purposes, like &quot;number to get&quot; for queue or semaphore operations.&nbsp; The same issues come up if one permits &quot;value&quot; operations on semaphores &#40;post N or take N where N &#33;= 1&#41;.&nbsp; I have seen this used to manage data-block usage where processes needed various numbers of blocks atomically for temporary or message use,&nbsp; and hoarding caused resource lockup.&nbsp; It&#8217;s an easier concept &#40;and more efficient&#41; than looping to get blocks and then having to unwind if there aren&#8217;t enough.&nbsp; 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Event flags:more discussion &#038; practical issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 16, 2007</div><div class="thread-post-content">Let me see if I am keeping up with this ;-&#41;
+&gt; Rather than making this a feature request, I&#8217;m working on a contribution, and
+&gt; hitting a snag.
+Excellent &#8211; thanks.
+&gt; FreeRTOS queues are implemented by activating the highest priority task on the
+&gt; event list, with all queue manipulation being done in the context of the task.
+Just to clarify&#8230;FreeRTOS queues are implemented by &#8216;readying&#8217; the highest priority task on the event list, rather than &#8216;activating&#8217; it.&nbsp; The task is removed from the event list and placed into the ready list.&nbsp; It does not necessarily run, unless it coincidentally also has the highest priority out of all the Ready state tasks.
+&gt; The problem with doing this for flags is that the processes would run in priority
+&gt; order with cascading effects, rather than the atomic operations required.&nbsp; 
+It would be possible to move more than one task from a &#8216;waiting for event&#8217; list into the appropriate Ready list, and only perform one call to the scheduler when all the tasks have been moved.&nbsp; The scheduler would then select the highest priority ready task as the task to enter the Running state.
+&gt;Besides,
+&gt; unlike queues which typically have one consumer waiting, flags are designed
+&gt; to have multiple processes awaiting different combinations of flags.&nbsp; &#40;In a
+&gt; VRTX application, we had a dozen processes waiting with masks which mostly had
+&gt; different conditions and &#42;all&#42; had two common bits for STOP and RESET.&#41;&nbsp; It
+&gt; would be inefficient to wake up all of the processes, perform all of the context
+&gt; switches, and let them all test for readiness &#40;and probably suspend again&#41; in
+&gt; context; 
+&gt;instead, efficiency suggests performing the masking by scanning the
+&gt; waiting-event-list within the flag-post routine to decide which process&#40;es&#41;
+&gt; to awaken.&nbsp; 
+Just a general comment &#8211; scanning lists can be time consuming so normally would not be done within a critical section implemented using portENTER&#95;CRITICAL&#40;&#41;, but instead using vTaskSuspendAll&#40;&#41; which keeps interrupts enabled.&nbsp; This technique cannot be done within an interrupt however.
+The data structures chosen to reference tasks to bits I think will be the key to the efficiency.
+One random thought&nbsp; &#8211; should RAM permits &#8211; would be to have an event handler task.&nbsp; This would run at a high priority and handle all the readying of tasks from &#40;at the task level&#41;.
+&gt;That means the mask and operation-code isn&#8217;t kept in the context
+&gt; stack, and it&#8217;s per-process, so it makes sense to put it in the process control
+&gt; structure.&nbsp;&nbsp; BUT in good structured style, richardbarry has hidden the process
+&gt; structure inside the tasks.c module 
+Thats always a bugger ;-&#41;
+&gt;along with various private functions to
+&gt; maintain the various process lists, which means that either &#40;a&#41; the masking
+&gt; and process-waking routine should be in tasks.c violating functional separation,
+&gt; or &#40;b&#41; tasks.c should provide accessor and setting functions to private data
+&gt; along with whatever new function is needed to manipulate the process queue&#40;s&#41;
+&gt; incuring more overhead and complexity and &#42;still&#42; violating functional separation
+&gt; somewhat the other direction.
+Yes &#8211; the queues make calls into the task module to perform the event handling, with the queues themselves performing the queue data manipulation, but this is only ever called once as only a single task is woken, as you say.
+All good stuff.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Event flags:more discussion &#038; practical issue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dutchuncle">dutchuncle</a> on January 16, 2007</div><div class="thread-post-content">&gt;&gt;One random thought &#8211; should RAM permits &#8211; would be to have an event handler task. This would run at a high priority and handle all the readying of tasks from &#40;at the task level&#41;. 
+Do you mean a task that scurries around and checks the status of all of the event flags and all of the things pending on them?&nbsp; Nah, the burden belongs on the task doing a post, because only that flag needs to be checked.&nbsp; Unless you&#8217;re trying to decouple realtime by pushing that work into user state from interrupts . . . which helps avoid latency but winds up doing exactly the same amount of work.&nbsp; 
+Unless we were to hide this &quot;task&quot; right inside the kernel, just below the clock tick, like the opposite of an idle task?&nbsp; Hey, where are the timeouts handled anyway &#8211; TaskIncrementTick is in interrupt state, isn&#8217;t it? That could also be a process at infinite priority, if it isn&#8217;t already, with this event stuff tagging along.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

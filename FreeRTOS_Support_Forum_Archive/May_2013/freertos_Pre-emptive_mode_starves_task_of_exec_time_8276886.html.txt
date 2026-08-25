@@ -1,0 +1,185 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-emptive mode starves task of exec time - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2013/freertos_Pre-emptive_mode_starves_task_of_exec_time_8276886.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Pre-emptive mode starves task of exec time - FreeRTOS" />
+<meta property="og:description" content="Pre-emptive mode starves task of exec timePosted by tomwbarclay on May 24, 2013Hi, I am using FreeRTOS 7.3.0 on an Atmel SAM4 chip using the ASF library.&nbsp; I have a task that executes 4 calls in sequence then blocks. Each one is an interrupt driven state machine that issues an event from the ISR at &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2013/freertos_Pre-emptive_mode_starves_task_of_exec_time_8276886.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Pre-emptive mode starves task of exec timePosted by tomwbarclay on May 24, 2013Hi, I am using FreeRTOS 7.3.0 on an Atmel SAM4 chip using the ASF library.&nbsp; I have a task that executes 4 calls in sequence then blocks. Each one is an interrupt driven state machine that issues an event from the ISR at [&hellip;]" />
+<meta name="twitter:title" content="Pre-emptive mode starves task of exec time - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202264' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202264' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202264' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202264' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144534' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2013%2Ffreertos_Pre-emptive_mode_starves_task_of_exec_time_8276886.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2013%2Ffreertos_Pre-emptive_mode_starves_task_of_exec_time_8276886.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144534">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2013_freertos_support_forum_archive_index.html/">May 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Pre-emptive mode starves task of exec time</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on May 24, 2013</div><div class="thread-post-content">Hi,<br />
+I am using FreeRTOS 7.3.0 on an Atmel SAM4 chip using the ASF library.&nbsp; I have a task that executes 4 calls in sequence then blocks. Each one is an interrupt driven state machine that issues an event from the ISR at the end. Each call waits for such an event before exiting. Each call invokes some SPI traffic which I can monitor on an external logic analyzer. What I observe is  
+Set the tick rate to 1ms and I see approx 1ms gaps between the calls.<br />
+Set the tick rate to 5ms and I see approx 5ms gaps between the calls.   
+Set the config&#95;USEPREEMPTIVE to 0  
+And I see very small gaps between the calls.  
+Clearly when &#8216;preemtive&#8217;, the RTOS is going off to do something else during these gaps.  
+In my code all tasks block, either on input Qs or output Q&#8217;s or wait for events. The entire design is asynchronous<br />
+and event driven.<br />
+In my test setup I have no regular activity other than an LED flasher running at 100ms period.<br />
+I start the test activity by a keypress.  
+I had presumed that at the RTOS tick the kernel would go around the other tasks, find they were all blocked<br />
+and come back pretty sharpish to continue executing the test task … but it appears not.  
+Anyone have any ideas ??? …before I get down and dirty and start putting debug code into FreeRTOS itself.  
+Any help appreciated.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Pre-emptive mode starves task of exec time</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 24, 2013</div><div class="thread-post-content">Sorry, but I&#8217;m struggling to understand either the scenario or the problem you are describing.&nbsp; I think you have several event driven tasks that run through a state machine in response to events originating from interrupts, but I&#8217;m not sure what &#8220;that issues an event from the ISR at the end&#8221; as tasks can issue events &#42;from&#42; interrupts.&nbsp; Equally I don&#8217;t understand &#8220;Each call waits for such an event before exiting&#8221;.  
+Please post a little outline of the tasks, with a description of the behaviour you are seeing, and I may be able to explain why you are seeing that behaviour.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Pre-emptive mode starves task of exec time</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on May 25, 2013</div><div class="thread-post-content">OK…hope it all makes more sense after reading this….  
+I have 14 tasks. Each task has the pattern  
+task start<br />
+forever loop<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wait on event or message<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do something<br />
+loop end<br />
+task end  
+One of the tasks waits on a 200ms timer expiring &#40;using vTaskDelay&#41; which flashes an LED. All the other tasks block indefinitely.  
+In my test task, the do something part,&nbsp; there are 4 methods executing sequentially, call them A,B,C,D  
+Each method starts a sequence of SPI transactions that happens purely in the interrupt domain and then&nbsp; waits for the final interrupt to issue a xSemaphoreGiveFromISR. The sequence of actions in the interrupt domain is a state machine,<br />
+each interrupt setting up the next SPI transfer and next state. The interrupts occur when an SPI transfer completes. The<br />
+important point &#40;I think&#41; as its at the end of the interrupt sequence when an RTOS call is made.  
+So basically once the test task runs it executes as<br />
+&nbsp; methodA entry<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; start SPI transactions&nbsp; &#8212;-&gt; SPI transfers in sequence of&nbsp; interrupts &#8211;&gt; send event from ISR<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wait for event from ISR<br />
+methodA end  
+methodB entry<br />
+&nbsp;&nbsp;&nbsp; ditto.<br />
+etc etc etc  
+On the logic analyzer I observe the bursts of&nbsp; SPI data transfer &#40;shown below&#41;   
+….&#33;&#33;&#33;&#33;&#33;……………………..&#33;&#33;&#33;&#33;&#33; ………………….&#33;&#33;&#33;&#33;………………………..&#33;&#33;&#33;&#33;&#33;&#33;&#33;&#33;&#33;&#33;&#33;&#33;&#33;&#33;&#33;&#33;…….  
+as each method executes.  
+The odd thing is that the gap between the bursts correlates &#40;roughly&#41;&nbsp; to the tick period. There is virtually no gap when I switch of the pre-emptive mode of RTOS operation.   
+Hope this helps … Tom
+</div></div><div class="thread-post"><h3 class="thread-post-title">Pre-emptive mode starves task of exec time</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 25, 2013</div><div class="thread-post-content">Seems clear. Are you context switching in the interrupt using portEND&#95;SWITCHING&#95;ISR or portYILD&#95;FROM&#95;ISR &#40;depending on the port&#41; when the event is sent to the task? If not then the switch will only happen on the next tick and the next task wont initiate its SPI transfer until that time.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Pre-emptive mode starves task of exec time</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on May 25, 2013</div><div class="thread-post-content">DaveDoors,   
+In the interrupt routine there is   
+1&#41; … higher&#95;prio&#95;task&#95;woken = event&#95;ISR&#95;signal&#40;&#42; txfr&#95;complete&#41;; // signal data ready  
+then on exit  
+2&#41; …portEND&#95;SWITCHING&#95;ISR&#40;higher&#95;prio&#95;task&#95;woken&#41;;  
+Just out of interest, in FreeRTOS 7.3.0 the &#8216;higher&#95;prio&#95;task&#95;woken&#8217; can be set to NULL.  
+What would be the impact ?  
+… Tom  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Pre-emptive mode starves task of exec time</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on May 25, 2013</div><div class="thread-post-content">Thinking about the scheduling points… given that the only task available to run &#40;ie not blocked&#41; is the one task that was running, then would the call portEND&#95;SWITCHING&#95;ISR&#40;pdTRUE&#41; at the end of the interrupt force the same task to be re-scheduled ?&nbsp; Its not after all a higher priority &#33;&#33;&#33;  
+or is the label of the variable &#8220;higher&#95;prio&#95;task&#95;woken&#8221;&nbsp; misleading ? and a task of the same priority would also be<br />
+scheduled ?  
+I&#8217;ll try forcing the re-schedule and let you know what happens.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">Pre-emptive mode starves task of exec time</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on May 25, 2013</div><div class="thread-post-content">OK … looks like its a issue with value of&nbsp; &#8220;higher&#95;prio&#95;task&#95;woken&#8221;.&nbsp; I&#8217;ll have to walk through and check all the code to make sure I haven&#8217;t missed any execution steps or that the value of&nbsp; &#8220;higher&#95;prio&#95;task&#95;woken&#8221; is not being overwritten somewhere&nbsp; but forcing the issue by using   
+portEND&#95;SWITCHING&#95;ISR&#40;pdTRUE&#41;;  
+at the end of the interrupt fixes the problem.   
+Thanks for all your help,
+</div></div><div class="thread-post"><h3 class="thread-post-title">Pre-emptive mode starves task of exec time</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 25, 2013</div><div class="thread-post-content">Also ensure configIDLE&#95;SHOULD&#95;YIELD is set to one in FreeRTOSConfig.h, otherwise if the idle task is running it will continue to run until the next tick interrupt occurs.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Pre-emptive mode starves task of exec time</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 25, 2013</div><div class="thread-post-content">Forgot to say if you leave the xHigherPriorityTaskWoken parameter NULL then you have no way of knowing if calling the function caused a higher priority task to unblock or not.&nbsp; It is only meant as an optimisation that can be used when you know that a context switch is never needed.  
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queue crash problem - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2010/freertos_Queue_crash_problem_3915792.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Queue crash problem - FreeRTOS" />
+<meta property="og:description" content="Queue crash problemPosted by rousea on October 27, 2010I am developing a project using an STM32 ARM processor and FreeRTOS.&nbsp; there are 3 USARTS, and the RX ISR for each gives a semphore which is taken by task&nbsp; vUSART&#095;RXcharReceived: void vUSART_RXcharReceived(void* pvParameters){ portTickType TimeOut; u8 Port; TimeOut = portMAX_DELAY; Port = *(u8*)pvParameters; vSemaphoreCreateBinary(prvHIO.USART_RXcharReceived[Port]); // Make &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2010/freertos_Queue_crash_problem_3915792.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Queue crash problemPosted by rousea on October 27, 2010I am developing a project using an STM32 ARM processor and FreeRTOS.&nbsp; there are 3 USARTS, and the RX ISR for each gives a semphore which is taken by task&nbsp; vUSART&#095;RXcharReceived: void vUSART_RXcharReceived(void* pvParameters){ portTickType TimeOut; u8 Port; TimeOut = portMAX_DELAY; Port = *(u8*)pvParameters; vSemaphoreCreateBinary(prvHIO.USART_RXcharReceived[Port]); // Make [&hellip;]" />
+<meta name="twitter:title" content="Queue crash problem - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201949' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201949' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201949' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201949' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139094' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2010%2Ffreertos_Queue_crash_problem_3915792.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2010%2Ffreertos_Queue_crash_problem_3915792.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139094">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2010_freertos_support_forum_archive_index.html/">October 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Queue crash problem</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rousea">rousea</a> on October 27, 2010</div><div class="thread-post-content">I am developing a project using an STM32 ARM processor and FreeRTOS.&nbsp; there are 3 USARTS, and the RX ISR for each gives a semphore which is taken by task&nbsp; vUSART&#95;RXcharReceived:  
+<pre><code>void vUSART_RXcharReceived(void* pvParameters){
+    portTickType    TimeOut;
+    u8  Port;
+    TimeOut = portMAX_DELAY;
+    Port = *(u8*)pvParameters;
+    vSemaphoreCreateBinary(prvHIO.USART_RXcharReceived[Port]);
+    //  Make sure the semaphore is cleared initially
+    xSemaphoreTake(prvHIO.USART_RXcharReceived[Port], 0);
+    while (1){
+        if (xSemaphoreTake(prvHIO.USART_RXcharReceived[Port], TimeOut) == pdPASS){  //  If we received a char...
+            TimeOut = 35000/SysConfig.COMport[Port].BaudRate;   //  Time for 3.5 chars
+            if (TimeOut &lt; 2)
+                TimeOut = 2;
+        }else{      //  End of message
+            TimeOut = portMAX_DELAY;
+            xQueueSend(HIO.CheckMessage, &amp;Port, portMAX_DELAY);
+        }
+    }
+}
+</code></pre>
+There are three insances of this task, one for each USART, and as you see they wait for&nbsp; a break in transmission then add an item to queue HIO.CheckMessage to identify which port now contains a message.  
+The queue is received by vCheckMessage:  
+<pre><code>void vCheckMessage(void* pvParameters){
+    s16 MsgLen, Response = DONE;
+    u8  DiagnosticsDisplayed;
+    u8  Port;
+    HIO.CheckMessage = xQueueCreate(15, sizeof(u8));
+    while (1){
+        xQueueReceive(HIO.CheckMessage, &amp;Port, portMAX_DELAY);
+        |
+        |
+        |
+    }
+}
+</code></pre>
+I am testing it using traffic on only one USART. The programme works correctly for the first six messages, then fails, giving a Hard Fault exception, which means it has tried to access an invalid memory address.&nbsp; The fault always occurs as the code is running xQueueSend&#40;HIO.CheckMessage, &amp;Port, portMAX&#95;DELAY&#41; in vUSART&#95;RXcharReceived&#40;&#40;&#41;.&nbsp; I have pinpointed to error to task vListRemove&#40; &#41; in FreeRTOS list.c. This copies a value to a pointer   
+pxList = &#40; xList &#42; &#41; pxItemToRemove-&gt;pvContainer;  
+However, when the system fails it is because the value of this pointer is 0 &#40;NULL&#41;, so when it is subsequently used the code attempts to write to Flash code space.  
+I obviously cannot change the code within FreeRTOS, yet I can&#8217;t see anything I am doing wrong to cause the problem.&nbsp; When the failure occurs I can look at the memory location of&nbsp; pxItemToRemove and see that all elements appear to hold sensiboe values except pvContainer, which is 0.&nbsp; I can&#8217;t put a watch on it to trap when it is set to 0, since it is constantly being updated when the code is running.  
+Any suggestions?  
+Regards<br />
+Alan Rouse  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue crash problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on October 27, 2010</div><div class="thread-post-content">While I am not familiar with this particular port, the issue sounds like what can happen if the interrupt isn&#8217;t setup right and doesn&#8217;t respect the Critical Section code. The key here is that the priority of the interrupt needs to be set properly. If it can interrupt during a Critical Section or causes unexpected interrupt nesting then the interrupts can corrupt the data structures.  
+The other possibility is that an interrupt is using a non FromISR routine which can also cause this sort of issue.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue crash problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rousea">rousea</a> on October 27, 2010</div><div class="thread-post-content">Thanks for your ideas.&nbsp; I have already repeatedly checked to confirm that all semaphore and queue accesses from ISR&#8217;s use the correct call format.&nbsp; However, the queue that is failing has no connection with interrupts.&nbsp; It is simply passing a queue from one task to another.  
+Regarding your first thought, do you mean the FreeRTOS priorities or the ARM priorities? On the ARM the Systick intterupt is higehst &#40;0&#41; and the USART interrupts are lowest &#40;4&#41;.&nbsp; On FreeRTOS the USART task priority is set to 3, so it is higher than the CheckMessage&#40;&#41; task, which is set to priority 2. I believe that taskENTER&#95;CRITICAL&#40;&#41; disables all interrupts, so I can&#8217;t understand why there should be any problem if an interrupt occurs during critical code sections.  
+Since posting the problem I checked which version of FreeRTOS is being used and found it is V5.4.2.&nbsp; I have now downloaded the latest version, 6.1.0 in the hope that it may fix the problem.&nbsp; However, I can&#8217;t yet get it to work:&nbsp; vTaskStartScheduler&#40;&#41; calls vPortStartFirstTask&#40;&#41;, which comprises a small number of assembler instructions.&nbsp; When it executes the last instruction, svc 0, the processor jumps to the default handler exception.&nbsp; If I revert back to FreeRTOS V5.4.2 the programme starts properly, but exhibits the original problem.&nbsp; It would appear, therefore, that there is a compatibility problem between V5 and V6 of FreeRTOS.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue crash problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 28, 2010</div><div class="thread-post-content"><blockquote>
+  Regarding your first thought, do you mean the FreeRTOS priorities or the ARM priorities? 
+</blockquote>
+I think richard&#95;damon is referring to the interrupt priorities.  
+<blockquote>
+  On the ARM the Systick intterupt is higehst &#40;0&#41; and the USART interrupts are lowest &#40;4&#41;. 
+</blockquote>
+This does not sound right and if so will cause the sort of problem you are seeing.&nbsp; The Systick would normally be the lowest &#40;255, or 15, depending on how you want to define it&#41;.&nbsp; The UART interrupts can be above the &#40;lower numeric values&#41; but must have a lower or equal interrupt priority than whatever configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY is set to if you are calling FreeRTOS API functions from the interrupt.  
+<blockquote>
+  I have now downloaded the latest version, 6.1.0 in the hope that it may fix the problem.
+</blockquote>
+From what you have said, it looks like an interrupt priority problem.&nbsp; Changing FreeRTOS versions is not going to fix that.  
+<blockquote>
+  When it executes the last instruction, svc 0, the processor jumps to the default handler exception
+</blockquote>
+Presumably therefore you have not installed an SVC handler.&nbsp; The way the kernel is started changed at some point, I cannot remember when but this will be documented in the change history &#40;<a href="http://www.freertos.org/History.txt%29.">http://www.freertos.org/History.txt&#41;.</a>  
+Please go to the documentation page for the port you are using on the FreeRTOS web site and read the &#8220;RTOS Port specific configuration&#8221; section that describes how to set up the interrupt priorities.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue crash problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rousea">rousea</a> on October 28, 2010</div><div class="thread-post-content">Richard  
+Thanks for your response.&nbsp; Since my original posting and richard&#95;damon’s response I have looked closely into interrupt priorities.&nbsp; I was wrong in assuming the SysTick interrupt was set to priority 0.&nbsp; It is in fact 255 as you say.&nbsp; I have realised the following:  
+1&#46; On ARM processors the priority level is 8-bits, divided into Pre-emption Priority &#40;the most significant part&#41; and Sub-Priority &#40;the least significant part&#41;. NVIC&#95;PriorityGroupConfig defines the split, between 7:1 and 0:8. An interrupt at a given Pre-emption Priority Level will pre-empt any in higher-numbered interrupt.&nbsp; Simultaneous interrupts at the same Pre-emption Priority Level are processed in Sub-Priority sequence &#40;lowest first&#41;, but I can see no purpose in Sub-Priority level.  
+2&#46; The STM32 only implements 16 Pre-emption Priority levels so expects the NVIC&#95;PriorityGroupConfig&nbsp; to define the split as 4:4 &#40;i.e. the most significant 4 bits define Pre-emption Priority and the least significant 4 bits define Sub-Priority&#41;.&nbsp; However, it doesn’t use the latter, since whatever value is written the value read back is 0.   
+3&#46; The FreeRTOS definitions for configKERNEL&#95;INTERRUPT&#95;PRIORITY and configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY must reflect this structure, so should bet set to 0xN0 where N is the required level.  
+4&#46; FreeRTOS disables interrupts by copying configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY to its BASEPRI register.&nbsp; This register is not very well documented by either ARM or ST, but if set to any value other than 0 it disables only interrupts set to higher Pre-emption Priority levels.   
+Bearing this in mind I have set configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY to 0x30 and configKERNEL&#95;INTERRUPT&#95;PRIORITY to 0xFF.&nbsp; I have then set all the interrupts I use to values greater than 0x30.&nbsp; I can confirm the settings by examining the relevant registers within the NVIC block.  
+However, I still get the same problem, namely that the system crashes with a Hard Fault on the 7th message received via a USART. pxCurrentTCB shows the failure at the vUSART&#95;RXcharReceived task.&nbsp; I have again confirmed that the fault is due to pxList being set to 0.&nbsp; I cannot see what is wrong with my code to cause this problem, so I am still looking for ideas.  
+Regarding FreeRTOS V6:  
+FreeRTOS v5.4.2/Source/portable/GCC/ARM&#95;CM3/port.c includes<br />
+&nbsp;&nbsp; &#35;define vPortSVCHandler SVC&#95;Handler<br />
+&nbsp;&nbsp; &#35;define xPortPendSVHandler PendSV&#95;Handler<br />
+&nbsp;&nbsp; &#35;define xPortSysTickHandler SysTick&#95;Handler<br />
+followed by definitions of the functions.  
+However, FreeRTOS v6.1.0/Source/portable/GCC/ARM&#95;CM3/port.c defines the functions but doesn’t include the &#35;defines.&nbsp; If I copy them from the older version the system works.&nbsp; However, it exhibits the same problem with pxList, as expected.  
+Regards  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue crash problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rousea">rousea</a> on October 29, 2010</div><div class="thread-post-content">Update:  
+I have now modified my code in a way that I hoped would overcome the problem, but it now manifests itself in a different way:  
+I have added diagnostics functions SetGPIO&#40;&#41; and ClearGPIO&#40;&#41; to force digital states on spare CPU output pins that can be monitored on an oscilloscope.&nbsp; I have also implemented re-triggerable timers in the USART receive interrupt routines to eliminate the need for intermediate task vUSART&#95;RXcharReceived&#40;&#41;.&nbsp; When a timer lapses it generates an interrupt which adds the port number to the CheckMessage queue:  
+<pre><code>void    TIM2_IRQHandler(void){
+    portBASE_TYPE xHigherPriorityTaskWokenByPost;
+    u8  Port;
+    ClearGPIO(TP1);
+    |
+    |
+    Port = COM3;
+    xQueueSendFromISR(HIO.CheckMessage, &amp;Port, &amp;xHigherPriorityTaskWokenByPost);
+}
+</code></pre>
+Port TP1 is set every time a character is received and cleared when the message is added to the CheckMessage queue;  
+I have also added diagnostics in vCheckMessage&#40;&#41;:  
+<pre><code>void vCheckMessage(void* pvParameters){
+    u8  Port;
+    HIO.CheckMessage = xQueueCreate(15, sizeof(u8));
+    while (1){
+        ClearGPIO(TP2);
+        prvHIO.MessagesInQueue = uxQueueMessagesWaiting(HIO.CheckMessage);
+        xQueueReceive(HIO.CheckMessage, &amp;Port, portMAX_DELAY);
+        SetGPIO(TP2);
+        prvHIO.NoOfMessages++;
+        |
+        |
+    }
+}
+</code></pre>
+I should therefore be able to see on the oscilloscope a pulse on TP1 when a message is received and a pulse on TP2 when it is processed.&nbsp; Furthermore, NoOfMessages and MessagesInQueue allow me to check how many messages have been processed and the number waiting in the queue.  
+The diagnostics show that after correctly processing 5 messages vCheckMessage&#40;&#41; remains permanently blocked. TIM2&#95;IRQHandler&#40;&#41; continues to receive messages but can’t add them to the queue because it is full.   
+Can anyone give me any ideas?  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue crash problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rousea">rousea</a> on November 1, 2010</div><div class="thread-post-content">Cracked it&#33;  
+I eventually found the problem:  
+Under certain circumstances my CheckMessage&#40;&#41; routine could execute a FreeRTOS xTaskResumeAll&#40;&#41; without first executing vTaskSuspendAll&#40;&#41;.&nbsp; The effect of this is apparently to corrupt message handling.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue crash problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hooverphonique">hooverphonique</a> on November 9, 2010</div><div class="thread-post-content">so how were you able to create such a problem by just using the FreeRTOS API functions? Looking at your checkmessage function, I would say that if it doesn&#8217;t work, it indicates a bug in FreeRTOS.  
+how did you solve the problem, exactly?  
+thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Queue crash problem</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rousea">rousea</a> on November 9, 2010</div><div class="thread-post-content">Some messages processed by CheckMessage&#40;&#41; modify global data using read-modify-write so I need to ensure to other tasks can interrupt them.&nbsp; I therefore use&nbsp; vTaskSuspendAll&#40;&#41; within an if&#123;&#125; statment, carry out some common functionality, then include xTaskResumeAll&#40;&#41;.within another if&#123;&#125; statement.&nbsp; Unfortunately the if&#123;&#125; statements were very slightly different, so some messages did not satisfy the first but did satisfy the second.&nbsp; Hence these messages caused xTaskResumeAll&#40;&#41;.to be executed without a preceding vTaskSuspendAll&#40;&#41;, even though CheckMessage&#40;&#41; exectued without any apparent errors.  
+I tracked down the problem by dogged persistence&#33;&nbsp; I was looking for problems in queue handling so it took me a long time to realise that this can be affected by other API tasks.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

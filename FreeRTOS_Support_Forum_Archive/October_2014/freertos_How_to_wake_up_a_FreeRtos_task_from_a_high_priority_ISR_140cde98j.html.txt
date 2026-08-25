@@ -1,0 +1,232 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to wake up a FreeRtos task from a high priority ISR? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2014/freertos_How_to_wake_up_a_FreeRtos_task_from_a_high_priority_ISR_140cde98j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How to wake up a FreeRtos task from a high priority ISR? - FreeRTOS" />
+<meta property="og:description" content="How to wake up a FreeRtos task from a high priority ISR?Posted by joe-merten on October 10, 2014Using: Stm32F10x, F2xx, F4xx FreeRtos 8.1.1 gcc-arm-none-eabi-4_8-2014q2 I have an ISR which must run with high interrupt priority, so that&#8217;s forbidden to call FreeRtos Api from within this ISR (see here and here). In some cases these ISR &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2014/freertos_How_to_wake_up_a_FreeRtos_task_from_a_high_priority_ISR_140cde98j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="How to wake up a FreeRtos task from a high priority ISR?Posted by joe-merten on October 10, 2014Using: Stm32F10x, F2xx, F4xx FreeRtos 8.1.1 gcc-arm-none-eabi-4_8-2014q2 I have an ISR which must run with high interrupt priority, so that&#8217;s forbidden to call FreeRtos Api from within this ISR (see here and here). In some cases these ISR [&hellip;]" />
+<meta name="twitter:title" content="How to wake up a FreeRtos task from a high priority ISR? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202444' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202444' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202444' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202444' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145095' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2014%2Ffreertos_How_to_wake_up_a_FreeRtos_task_from_a_high_priority_ISR_140cde98j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2014%2Ffreertos_How_to_wake_up_a_FreeRtos_task_from_a_high_priority_ISR_140cde98j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145095">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2014_freertos_support_forum_archive_index.html/">October 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joe-merten">joe-merten</a> on October 10, 2014</div><div class="thread-post-content">Using:
+<ul>
+<li>Stm32F10x, F2xx, F4xx</li>
+<li>FreeRtos 8.1.1</li>
+<li>gcc-arm-none-eabi-4_8-2014q2</li>
+</ul>
+I have an ISR which must run with high interrupt priority, so that&#8217;s forbidden to call FreeRtos Api from within this ISR (see <a href="http://www.freertos.org/RTOS-Cortex-M3-M4.html">here</a> and <a href="http://www.freertos.org/a00110.html#kernel_priority">here</a>).
+In some cases these ISR detects conditions, for which a sleeping FreeRtos task should be waked up with at least possible latency.
+Normally (if the ISR was allowed to call FreeRtos Api because of enough low priority) I would use a queue or semaphore to solve this.
+But how to realize that with a high priority ISR?
+My current interims approach is like this (briefly outlined):
+<pre><code>volatile int flag = 0;
+void XYZ_IRQHandler() {
+    if (someCondition)
+        flag = 1;
+}
+void FreeRtosTaskFunction(void* parameters) {
+    for (;;) {
+        if (flag == 1)
+            doSomething();
+        vTaskDelay(1);  // sleep 10ms (tick frequency is 100Hz)
+    }
+}
+</code></pre>
+But this approach has the disadvantages:
+<ul>
+<li>Latency (from setting the flag in ISR until task wakeup) to is up to 1 FreeRtos tick.</li>
+<li>Need to poll the flag (waste of cpu cycles).</li>
+</ul>
+Another approacht might be (not tested until now) to set up an additional low priority interrupt and trigger this from my high priority ISR using <code>EXTI_GenerateSWInterrupt()</code>.
+This way seems to solve the latency problem but for the cost of a EXTI line and also an additional IRQ channel.
+Any suggestions to solve this in a better way?
+What&#8217;s the FreeRtos prefered way to such things?
+Joe.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 10, 2014</div><div class="thread-post-content">You are venturing into the depths of &#8216;expert user&#8217; territory, and non-portable code here, but something like the following should work:
+At the bottom of FreeRTOSConfig.h (or in a header file included from the bottom of FreeRTOSConfig.h) define a macro something along the lines of:
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#define traceTASK<em>SWITCHED</em>OUT() </span><span style="color: #888888">/* Must use this name. <em>/</span><span style="color: #557799"></span>
+{
+  <span style="color: #008800; font-weight: bold">if</span>( flag <span style="color: #333333">!=</span> <span style="color: #0000DD; font-weight: bold">0</span> )
+  {
+    <span style="color: #888888">/</em> Give the semaphore on which the task you want</span>
+<span style="color: #888888">    to wake is blocked.  xSemaphoreGiveFromISR() is a</span>
+<span style="color: #888888">    much lighter function in the SVN head revision</span>
+<span style="color: #888888">    than in the current release!  You must use the</span>
+<span style="color: #888888">    &#39;FromISR&#39; version. */</span>
+    xSemaphoreGiveFromISR( ... );
+    flag <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+  }
+}
+</pre></div>
+Then add the line:
+portYIELD<em>FROM</em>ISR( pdTRUE );
+after you set the flag to 1 in your ISR.
+Theory:  Calling portYIELD<em>FROM</em>ISR( pdTRUE ) will result in a context switch being requested.  Inside the context switch interrupt the traceTASK<em>SWITCHED</em>OUT() macro will get called before another task is selected to enter the running state &#8211; placing the task you want to run into the Ready state, and so making it the task that is selected to run (assuming it is the highest priority ready task).
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/joe-merten">joe-merten</a> on October 11, 2014</div><div class="thread-post-content">Thanks for this very interesting post; especially because it shows me a bit more how the task switching works in FreeRtos.
+I though about you approach for a while, but after then, I think that using a trace macro as a hook for productive functionality is a bit too hacky for my project.
+Now finally, it seems that I succeed using the EXTI approach.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alainm3">alainm3</a> on October 13, 2014</div><div class="thread-post-content">I agree with you,
+The recommended way, as in the FreeRTOS manual (btw, you bought one, 
+right?&#8230;) is to use a binary semaphore. Some task is waiting on that 
+semaphore ans the ISR uses <em>xSemaphoreGiveFromISR</em>()
+Alain
+Em 10-10-2014 22:10, Joe Merten escreveu:
+>
+<blockquote>
+  Thanks for this very interesting post; especially because it shows me 
+  a bit more how the task switching works in FreeRtos.
+  I though about you approach for a while, but after then, I think that 
+  using a trace macro as a hook for productive functionality is a bit 
+  too hacky for my project.
+  <hr />
+  How to wake up a FreeRtos task from a high priority ISR? 
+  <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/140cde98/?limit=25#56a2">https://sourceforge.net/p/freertos/discussion/382005/thread/140cde98/?limit=25#56a2</a>
+  <hr />
+  Sent from sourceforge.net because you indicated interest in 
+  https://sourceforge.net/p/freertos/discussion/382005/ 
+  <a href="https://sourceforge.net/p/freertos/discussion/382005">https://sourceforge.net/p/freertos/discussion/382005</a>
+  To unsubscribe from further messages, please visit 
+  https://sourceforge.net/auth/subscriptions/ 
+  <a href="https://sourceforge.net/auth/subscriptions">https://sourceforge.net/auth/subscriptions</a>
+</blockquote>
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gutolaureano">gutolaureano</a> on May 31, 2017</div><div class="thread-post-content">Reopening the discussion:
+<h5>Is there an estimative of the longest critical session handled inside freertos functions? ( the longest period of time where a normal interrupt will be delayed to be served)</h5>
+My scenario:
+&#8211; STM32F103 (CM3) running at 72Mhz
+&#8211; My application only uses queues and soft timers
+&#8211; No calls to critical sessions in application code
+I have an interrupt which need to be served in an maximum of 200us, but, if some condition is met, this interrupt needs to send a message, although most of the times this will not happen.
+The message sending and its processing is not so critical, so the approach of making this interrupt a &#8220;high interrupt&#8221; and signaling and EXTI interrupt (where the message will be sent) would work, but I want to know if this is really needed (as I have other interrupts as Serial reception and etc. that also would be critical to serve with a maximum delay)
+Thank you
+P.S. for Allain:
+In Joe&#8217;s case is not possible to use any FreeRTOS API (like xSemaphoreGiveFromISR), because his interrupt have a highter priority and can preempt RTOS critical functions (which is used by FreeRTOS API), thats why he needs to split his interrupt in 2 parts, the first part with zero latency (is never delayed to be served, but can&#8217;t call any FreeRTOS API), and one where he calls API functions (and would be delayed by critical sessions)
+(regards from sis_embarcados 😉 )
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on May 31, 2017</div><div class="thread-post-content">I don&#8217;t have the data for FreeRTOS, numbers were only collected for 
+SafeRTOS, and it will depend on lots of factors (like compiler 
+optimisation level).  If you are only using queues and software timers 
+then I would guess the longest for you is going to be in either the 
+queue send or queue receive function so you could look at that &#8211; it uses 
+both critical sections (where required) and scheduler locking (for the 
+longer sections).  Interrupts are not disabled when the scheduler is locked.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gutolaureano">gutolaureano</a> on May 31, 2017</div><div class="thread-post-content">Ok, I will profile these critical sections in my application
+Thank you
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 31, 2017</div><div class="thread-post-content">One other method to do things like this is to appropriate a second interrupt vector that your high priority interrupt can manually trigger (maybe for some obscure device that you are not using), make that of low enough priority that it can use the FreeRTOS calls, and the high priority interrupt can be zero latency, and the lower priority interrupt can interact with the OS. I find that many processors have plenty of intterupt sources and normally with just a little bit of thought you can figure out how to trigger it (often there is a direct instruction to do so).
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gutolaureano">gutolaureano</a> on May 31, 2017</div><div class="thread-post-content">Exactly Richard, that&#8217;s the aproach that Joe and I mentioned in our replies, in our cases we could use one of the external input interrupts that are not linked to any pin, and trigger it inside the zero latency interrupt thru the int flag setting.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hs2sf">hs2sf</a> on May 31, 2017</div><div class="thread-post-content">I&#8217;ve measured interrupt response time for my application when finding the best compromise between power dissipation/performance ie. using the lowest possible sysclock.
+So with just a Cortex-M3 @ 3 MHz I got typical 16 us and worst case 80 us from assertion of the highest prio interrupt until (FreeRTOS covered) ISR was called and set a GPIO pin (followed by setting a notification for the corr. handler task).
+There are 3 more concurrent interrupt sources at lower prio with associated handler tasks and a main control task. Compiler optimization level is &#8216;-Os&#8217; (optimize for min. size).
+I&#8217;d guess that you&#8217;ll easily meet your deadline with 72 MHz sysclock.
+</div></div><div class="thread-post"><h3 class="thread-post-title">How to wake up a FreeRtos task from a high priority ISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/gutolaureano">gutolaureano</a> on May 31, 2017</div><div class="thread-post-content">Thank&#8217;s for your numbers, HS2 !
+I&#8217;ve just measured the maximum critical period in my system during ordinary execution and got no more than 10us, so I am assuming that will be enough execute it inside the &#8220;API call&#8221; priority range.
+Anyway, was a great exercise to understand all implications and workarounds, things were learned today 🙂
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

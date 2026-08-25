@@ -1,0 +1,295 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple USART interrupt problem - STM32F4 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2014/freertos_Multiple_USART_interrupt_problem_-_STM32F4_bd3fc6cbj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Multiple USART interrupt problem - STM32F4 - FreeRTOS" />
+<meta property="og:description" content="Multiple USART interrupt problem &#8211; STM32F4Posted by zmay on February 17, 2014FreeRTOS V7.6.0 STM32F4 IAR I am having two tasks. Task1 is simply showing welcome screen on LCD, Task2 waits for USART interrupt which gives semaphore from ISR. Problem here as appears is that USART interrupt is detected multiple times. Infinite loop ISR &#8211;&gt; Task2 &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2014/freertos_Multiple_USART_interrupt_problem_-_STM32F4_bd3fc6cbj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Multiple USART interrupt problem &#8211; STM32F4Posted by zmay on February 17, 2014FreeRTOS V7.6.0 STM32F4 IAR I am having two tasks. Task1 is simply showing welcome screen on LCD, Task2 waits for USART interrupt which gives semaphore from ISR. Problem here as appears is that USART interrupt is detected multiple times. Infinite loop ISR &#8211;&gt; Task2 [&hellip;]" />
+<meta name="twitter:title" content="Multiple USART interrupt problem - STM32F4 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202353' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202353' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202353' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202353' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143919' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2014%2Ffreertos_Multiple_USART_interrupt_problem_-_STM32F4_bd3fc6cbj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2014%2Ffreertos_Multiple_USART_interrupt_problem_-_STM32F4_bd3fc6cbj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143919">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/a00104.html" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/FAQ.html" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2014_freertos_support_forum_archive_index.html/">February 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Multiple USART interrupt problem &#8211; STM32F4</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zmay">zmay</a> on February 17, 2014</div><div class="thread-post-content"><strong>FreeRTOS V7.6.0
+STM32F4
+IAR</strong>
+I am having two tasks. Task1 is simply showing welcome screen on LCD, Task2 waits for USART interrupt which gives semaphore from ISR. Problem here as appears is that USART interrupt is detected multiple times. Infinite loop ISR &#8211;> Task2 &#8211;> ISR is created.
+<strong>USART handler</strong>
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">USART1<em>IRQHandler</span>(<span style="color: #333399; font-weight: bold">void</span>) {
+    USART</em>ITConfig(USART1, USART<em>IT</em>RXNE, DISABLE);
+    portBASE_TYPE xHigherPriorityTaskWoken;
+    xHigherPriorityTaskWoken <span style="color: #333333">=</span> pdFALSE;
+    xSemaphoreGiveFromISR( xUsartInterrupt, <span style="color: #333333">&amp;</span>xHigherPriorityTaskWoken );
+<pre><code>&lt;span style="color: #008800; font-weight: bold"&gt;if&lt;/span&gt;( xHigherPriorityTaskWoken &lt;span style="color: #333333"&gt;==&lt;/span&gt; pdTRUE ) {
+    portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+}
+</code></pre>
+}
+</pre></td></tr></table></div>
+<br />
+And the Task2:
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">Task2</span>(<span style="color: #333399; font-weight: bold">void</span> <span style="color: #333333">*</span>pvParameters) {
+<pre><code>&lt;span style="color: #008800; font-weight: bold"&gt;for&lt;/span&gt;(;;) {
+    xSemaphoreTake(xUsartInterrupt, portMAX_DELAY);
+    LCD_Clear(GREEN);
+    LCD_SetTextColor(BLACK);
+    LCD_SetBackColor(GREEN);
+    LCD_CharSize(&lt;span style="color: #0000DD; font-weight: bold"&gt;24&lt;/span&gt;);
+    LCD_StringLine(&lt;span style="color: #0000DD; font-weight: bold"&gt;60&lt;/span&gt;, &lt;span style="color: #0000DD; font-weight: bold"&gt;110&lt;/span&gt;, access);
+    LCD_StringLine(&lt;span style="color: #0000DD; font-weight: bold"&gt;56&lt;/span&gt;, &lt;span style="color: #0000DD; font-weight: bold"&gt;130&lt;/span&gt;, granted);
+    &lt;span style="color: #333399; font-weight: bold"&gt;long&lt;/span&gt; l;
+    &lt;span style="color: #008800; font-weight: bold"&gt;for&lt;/span&gt; (l &lt;span style="color: #333333"&gt;=&lt;/span&gt; &lt;span style="color: #0000DD; font-weight: bold"&gt;0&lt;/span&gt;; l &lt;span style="color: #333333"&gt;&amp;lt;&lt;/span&gt; &lt;span style="color: #0000DD; font-weight: bold"&gt;19999999&lt;/span&gt;; l&lt;span style="color: #333333"&gt;++&lt;/span&gt;)
+      ;
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+}
+</code></pre>
+}
+</pre></td></tr></table></div>
+<br />
+If i don&#8217;t disable usart interrupts in ISR then Task1 which runns at beginning simply freezes. Here are the priorities:<br />
+<strong>Task 1 &#8211; tskIDLE<em>PRIORITY + 1UL
+Task 2 &#8211; tskIDLE</em>PRIORITY + 2UL
+USART1 &#8211; NVIC<em>InitStructure.NVIC</em>IRQChannelPreemptionPriority = 12</strong>
+What am i doing wrong?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem &#8211; STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on February 18, 2014</div><div class="thread-post-content">[I like the way you have included source code in your post &#8211; very easy to read.  I <strong>really</strong> wish SourceForge would just format code between <code> tags automatically as well as you have done it in your html].
+Some comments:
+First, I'm not sure 100% that I understand exactly the problem, but do think from a first read that it is not a FreeRTOS problem as your code looks basically ok.  It is much more likely to be a hardware management problem (how and when interrupts are triggered, when and how to enable/disable interrupts etc. are all hardware specific and outside the scope of this forum).
+Where is the character actually read form the UART?  Your code does not show the character being removed from the UART's Rx buffer, which probably means that each time you leave the interrupt the interrupt will immediately get asserted again because there is still data waiting to be read.
+I would recommend replacing the for() loop null delay with a vTaskDelay() call because that will give it a definitive delay time, rather than a delay that will change depending on how fast the clock is and which other tasks are running in the mean time.  Also it will allow other tasks to run during the delay period.  One final reason - as soon as you turn optimisation on the whole delay loop will get optimised away because your variable 'l' is not declared volatile.
+Have you taken note of all the items on this page: http://www.freertos.org/RTOS-Cortex-M3-M4.html regarding interrupt priorities, especially the bits in bold red text that are specific to the STM32?  As you are using V7.6.0 ensuring configASSERT() is defined will help trap a lot of the pits that are easy to fall into.
+You don't need to test xHigherPriorityTaskWoken yourself, the test is included inside the portEND<em>SWITCHING</em>ISR() macro.
+Are you trying to write to the screen on each character that is received?  Writing to the screen will take mane thousands of times longer than the time taken to receive each character.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dumarjo">dumarjo</a> on February 18, 2014</div><div class="thread-post-content">Le 2014-02-18 04:53, Real Time Engineers ltd. a écrit :
+>
+<blockquote>
+  [I like the way you have included source code in your post - very easy 
+  to read. I <em>really</em> wish SourceForge would just format code between 
+  |tags automatically as well as you have done it in your html]|.
+  +1
+</blockquote>
+It's very boring the way code is displayed with sourceforge ml.
+Jonathan
+<hr />
+Ce courrier électronique ne contient aucun virus ou logiciel malveillant parce que la protection avast! Antivirus est active.
+http://www.avast.com
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zmay">zmay</a> on February 18, 2014</div><div class="thread-post-content">I used this link for code.
+<a href="http://hilite.me/">http://hilite.me/</a>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zmay">zmay</a> on February 19, 2014</div><div class="thread-post-content"><blockquote>
+  It is much more likely to be a hardware management problem (how and when interrupts are triggered, when and how to enable/disable interrupts etc. are all hardware specific and outside the scope of this forum).
+</blockquote>
+You already said it's outside the scope, but i guess i really don't get it. I have read all about interrupts on CM4 on FreeRTOS page.
+<blockquote>
+  Only FreeRTOS API functions that end in "FromISR" can be called from an interrupt service routine - and then only if the priority of the interrupt is less than or equal to that set by the configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY configuration constant.
+</blockquote>
+This is in my RTOS.config:
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#define configMAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY     ( configLIBRARY</em>MAX<em>SYSCALL</em>INTERRUPT<em>PRIORITY &lt;&lt; (8 - configPRIO</em>BITS) )</span>
+<span style="color: #557799">#define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY   5</span>
+<span style="color: #557799">#define configPRIO_BITS            4        </span><span style="color: #888888">/* 15 priority levels */</span><span style="color: #557799"></span>
+configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">5</span> <span style="color: #333333">&lt;&lt;</span> (<span style="color: #0000DD; font-weight: bold">8</span> <span style="color: #333333">-</span> <span style="color: #0000DD; font-weight: bold">4</span>) <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">80??</span>
+</pre></div>
+So what value should i use in my NVIC structure?
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">init<em>NVIC</em>USART1</span>() {
+  NVIC<em>InitTypeDef NVIC</em>InitStructure;
+  NVIC<em>InitStructure.NVIC</em>IRQChannel <span style="color: #333333">=</span> USART1<em>IRQn;
+  NVIC</em>InitStructure.NVIC<em>IRQChannelPreemptionPriority <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">??</span>;
+  NVIC</em>InitStructure.NVIC<em>IRQChannelSubPriority <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+  NVIC</em>InitStructure.NVIC<em>IRQChannelCmd <span style="color: #333333">=</span> ENABLE;
+  NVIC</em>Init(<span style="color: #333333">&amp;</span>NVIC<em>InitStructure);
+}
+</pre></div>
+<br />
+NVIC</em>PriorityGroupConfig( NVIC<em>PriorityGroup</em>4 ) is called in prvSetupHardware function. Is there any other config regarding interrupts i should be aware of?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on February 19, 2014</div><div class="thread-post-content">This seems to be the same as the other thread started today
+https://sourceforge.net/p/freertos/discussion/382005/thread/93ec609b/
+Take FreeRTOS out of the equation, does the interrupt work as expected then? I doubt it because it does not look like you are clearing the interrupt so it will just execute again and again.
+If you can verify it works as you want without using any FreeRTOS functions and without the FreeRTOS scheduler running then you can try the exact same code with the FreeRTOS scheduler working, and once you have verified that is working you can add back in the FreeRTOS API function and task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/guoguiwu">guoguiwu</a> on February 20, 2014</div><div class="thread-post-content">Maybe this answer will help you https://sourceforge.net/p/freertos/discussion/382005/thread/93ec609b/#9899
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zmay">zmay</a> on February 20, 2014</div><div class="thread-post-content">Looks like the problem was because i was calling vTaskDelay() at the end of the task which starts to execute after it gets semaphore from ISR. Without vTaskDelay() works OK. Now i have to solve why RFID tag number isn't read correctly.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zmay">zmay</a> on February 25, 2014</div><div class="thread-post-content">I dont manage to read RFID tag correctly. Any ideas why?
+Same code without FreeRTOS works. Problem when running with FreeRTOS is that 0x02, which is 1 byte start flag is never read. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zmay">zmay</a> on March 3, 2014</div><div class="thread-post-content">I am getting just some weird characters: '.', '@', ' '... which are repeating.
+FE, NE and ORE flags are always set in USART status register after reading. What could be wrong, what causes the noise in transmission. Even if i don't use API problem persists, exact same code works only without FreeRTOS.
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">NVIC_IRQChannelPreemptionPriority <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">12</span>; 
+<span style="color: #557799">#define configKERNEL<em>INTERRUPT</em>PRIORITY 255</span>
+<span style="color: #557799">#define configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY 159</span>
+</pre></div>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zmay">zmay</a> on April 19, 2014</div><div class="thread-post-content">I am stucked and i think this is somehow connected to FreeRTOS. In my ISR i now read only 1 character per interrupt request and save it to buffer. 
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #888888">//having only RX IRQs enabled</span>
+<span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">USART1<em>IRQHandler</span>(<span style="color: #333399; font-weight: bold">void</span>) {
+    sign <span style="color: #333333">=</span> USART</em>ReceiveData(USART1);
+<pre><code>&lt;span style="color: #008800; font-weight: bold"&gt;if&lt;/span&gt; (sign &lt;span style="color: #333333"&gt;==&lt;/span&gt; &lt;span style="color: #005588; font-weight: bold"&gt;0x03&lt;/span&gt;)
+    ETX &lt;span style="color: #333333"&gt;=&lt;/span&gt; &lt;span style="color: #0000DD; font-weight: bold"&gt;1&lt;/span&gt;;
+&lt;span style="color: #008800; font-weight: bold"&gt;if&lt;/span&gt; (&lt;span style="color: #333333"&gt;!&lt;/span&gt;ETX)
+    temp[k&lt;span style="color: #333333"&gt;++&lt;/span&gt;] &lt;span style="color: #333333"&gt;=&lt;/span&gt; sign;
+&lt;span style="color: #008800; font-weight: bold"&gt;if&lt;/span&gt; (sign &lt;span style="color: #333333"&gt;==&lt;/span&gt; &lt;span style="color: #005588; font-weight: bold"&gt;0x02&lt;/span&gt;) {
+    ETX &lt;span style="color: #333333"&gt;=&lt;/span&gt; &lt;span style="color: #0000DD; font-weight: bold"&gt;0&lt;/span&gt;;
+    k &lt;span style="color: #333333"&gt;=&lt;/span&gt; &lt;span style="color: #0000DD; font-weight: bold"&gt;0&lt;/span&gt;;
+}
+</code></pre>
+}
+</pre></td></tr></table></div>
+<br>
+But stil.. this characters are different (not right) of those i read without FreeRTOS. Does anyone have any idea what else could be the problem here? Priorities are set correctly, interrupt is triggered, everything is OK, only char read is wrong? Initialization code of USART is not changed, it is just taken from the program which works without FreeRTOS.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on April 20, 2014</div><div class="thread-post-content">What is the difference between the FreeRTOS case and the non FreeRTOS case? Is it because characters are missing, or that characters are completely different?
+If it is because characters are missing then try raising the priority of the interrupt. It is not using any FreeRTOS API functions so you can set its priority above configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY.
+If it is because characters are wrong then is the clock the same in the two cases. Maybe you need to change the baud rate setting? This is probably a statement of something that is obvious to you but I will say it anyway, sometimes things are too obvious to get seen.
+Is USART_ReceiveData() safe to call from an interrupt? In particular a FreeRTOS interrupt? Does it mess with interrupt settings itself, like enabling and disabling global interrupts?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zmay">zmay</a> on April 20, 2014</div><div class="thread-post-content">Characters are wrong. Now i made a single task which is reading UART all the time, result is same, so it has to be something with the clock. Difference between working program without FreeRTOS and this one is in system<em>stm32f4xx.c. But even if i change values which are different it doesen't work. Values which were changed are:
+SYSCLK and HCLK from 150 to 168MHz, HSE freq. from 25 to 8MHz, PLL</em>M from 25 to 8 and PLL_N from 300 to 336. Also tried to change baudrate, then i get different chars but still not the right ones. I must say that i am rookie in this things so any other suggestions are welcomed.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on April 20, 2014</div><div class="thread-post-content">So the addition of FreeRTOS was not the only change, but the hardware setup changed also :o)
+ST have a spread sheet in their library to assist in setting up clocks and baud rates. I think this has also been included in a more helpful way into their STM Cube software now. That should help you figure out how to generate the baud rate I think.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Multiple USART interrupt problem - STM32F4</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zmay">zmay</a> on April 22, 2014</div><div class="thread-post-content"><blockquote>
+  For STM32F4-Discovery you have to edit stm32f4xx.h and go to line 92 and change
+  <h1>define HSE<em>VALUE ((uint32</em>t)25000000) /*!&lt; Value of the External oscillator in Hz */</h1>
+  to
+  <h1>define HSE<em>VALUE ((uint32</em>t)8000000) /*!&lt; Value of the External oscillator in Hz */</h1>
+  25MHz oscillator is for STM32-EVAL board
+</blockquote>
+This was the problem, thanks for help.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/RTOS.html" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

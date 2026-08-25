@@ -1,0 +1,211 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How should xQueueSendFromISR and xQueueReceive be used? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_How_should_xQueueSendFromISR_and_xQueueReceive_be_used_86103680j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How should xQueueSendFromISR and xQueueReceive be used? - FreeRTOS" />
+<meta property="og:description" content="How should xQueueSendFromISR and xQueueReceive be used?Posted by adissida on September 15, 2015The example projects I have looked at, its simple. To be more shure and understand the xQueue I have read the manual for it and this video guide https://www.youtube.com/watch?v=8lIpI30Tj-g This is my code for setting up the interrupt handler: INTCregisterinterrupt((inthandler)&amp;trvCLIUARTISR, AVR32USART1IRQ, AVR32INTC_INT0); then &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2015/freertos_How_should_xQueueSendFromISR_and_xQueueReceive_be_used_86103680j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="How should xQueueSendFromISR and xQueueReceive be used?Posted by adissida on September 15, 2015The example projects I have looked at, its simple. To be more shure and understand the xQueue I have read the manual for it and this video guide https://www.youtube.com/watch?v=8lIpI30Tj-g This is my code for setting up the interrupt handler: INTCregisterinterrupt((inthandler)&amp;trvCLIUARTISR, AVR32USART1IRQ, AVR32INTC_INT0); then [&hellip;]" />
+<meta name="twitter:title" content="How should xQueueSendFromISR and xQueueReceive be used? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202560' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202560' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202560' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202560' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145409' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_How_should_xQueueSendFromISR_and_xQueueReceive_be_used_86103680j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2015%2Ffreertos_How_should_xQueueSendFromISR_and_xQueueReceive_be_used_86103680j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145409">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2015_freertos_support_forum_archive_index.html/">September 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">How should xQueueSendFromISR and xQueueReceive be used?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/adissida">adissida</a> on September 15, 2015</div><div class="thread-post-content">The example projects I have looked at, its simple. To be more shure and understand the xQueue I have read the manual for it and this video guide https://www.youtube.com/watch?v=8lIpI30Tj-g
+This is my code for setting up the interrupt handler:
+<hr />
+INTC<em>register</em>interrupt((int<em>handler)&amp;trvCLI</em>UART<em>ISR, AVR32</em>USART1<em>IRQ, AVR32</em>INTC_INT0);
+<hr />
+then from the example project the portENTER<em>SWITCHING</em>ISR is needed:
+<hr />
+__attribute((naked)) static void trvCLI<em>UART</em>ISR( void )
+{
+    portENTER<em>SWITCHING</em>ISR();
+<pre><code>trvCLI_UART_ISR_Recieve();
+portEXIT_SWITCHING_ISR();
+</code></pre>
+}
+<hr />
+and at last this function is called after entering switching ISR:
+<hr />
+__attribute((noinline)) static portBASE<em>TYPE trvCLI</em>UART<em>ISR</em>Recieve( void )
+{
+    /* Now we can declare the local variables. */
+    signed portCHAR         cChar   = 0;
+    portBASE_TYPE           xHigherPriorityTaskWoken = pdFALSE;
+    unsigned portLONG       ulStatus;
+    volatile avr32_usart_t  *usart = trvCLI_USART;
+<pre><code>/* What caused the interrupt? */
+ulStatus = usart-&gt;csr &amp; usart-&gt;imr;
+if (ulStatus &amp; AVR32_USART_CSR_RXRDY_MASK)
+{
+    /* The interrupt was caused by the receiver getting data. */
+    cChar = usart-&gt;rhr; //TODO
+    /* Because FreeRTOS is not supposed to run with nested interrupts, put all OS
+    calls in a critical section . */
+    portENTER_CRITICAL();
+        if (xQueueSendFromISR(xRxedChars, &amp;cChar, &amp;xHigherPriorityTaskWoken))
+        {
+            gpio_tgl_gpio_pin(trvLED_GPS);
+        }
+    portEXIT_CRITICAL();
+}
+usart-&gt;csr;
+/* The return value will be used by portEXIT_SWITCHING_ISR() to know if it
+should perform a vTaskSwitchContext(). */
+return ( xHigherPriorityTaskWoken );
+</code></pre>
+}
+<hr />
+I have a simple task, to watch the <strong>xRxedChars</strong> queue:
+<hr />
+void trvUART<em>CLI</em>RX( void *pvParameters )
+{
+    signed portCHAR     receivedChars   =   0;
+    uint8_t str[30];
+    ( void ) pvParameters;
+<pre><code>for ( ;; )
+{
+    if (xQueueReceive(xRxedChars, &amp;receivedChars, comRX_BLOCK_TIME))
+    {
+        sprintf( str,"%d",receivedChars );
+        trvCLI_WriteLine( &amp;str );
+    }
+}
+//vTaskDelete(NULL);
+</code></pre>
+}
+<hr />
+As soon as I enter something in the console, everything hangs. If I change the xQueueReceive to xQueueReceiveFromISR it doesent hangs but the value is never copied to receivedChars. 
+Using ATMEL UC3, FreeRTOS V8.2.2
+</div></div><div class="thread-post"><h3 class="thread-post-title">How should xQueueSendFromISR and xQueueReceive be used?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on September 15, 2015</div><div class="thread-post-content">From your previous post:
+<blockquote>
+   So it has something to do with usart->ier = AVR32<em>USART</em>IER<em>RXRDY</em>MASK
+   When I delete that line in the code above, it always works (two LEDs blinking)
+</blockquote>
+When you delete that line there won&#8217;t be any RX interrupt.
+Your ISR is indeed masking off bits that have not been enabled:
+~~~~~
+    /* What caused the interrupt? */
+    ulStatus = usart->csr &amp; usart->imr;
+~~~~~
+<blockquote>
+  Because FreeRTOS is not supposed to run with nested interrupts,
+  put all OS calls in a critical section
+         portENTER<em>CRITICAL();
+         if (xQueueSendFromISR(xRxedChars, &amp;cChar, &amp;xHigherPriorityTaskWoken))
+         portEXIT</em>CRITICAL();
+</blockquote>
+I don&#8217;t think the critical section is necessary. Interrupts are not enabled (by the global flag) until you enable them.
+And ask your self: will there be another ISR that will try to access your <code>xRxedChars</code>? That shouldn&#8217;t be.
+Note that if you expect lots of data (kilobytes), you better look at other methods like using PDC (DMA) channels.
+My guess is that taking away the critical sections will solve the problem.
+From <code>trvUART_CLI_RX()</code> you will call <code>xQueueReceive()</code> (without the FromISR), and <code>xQueueReceive()</code> will use critical sections when necessary.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

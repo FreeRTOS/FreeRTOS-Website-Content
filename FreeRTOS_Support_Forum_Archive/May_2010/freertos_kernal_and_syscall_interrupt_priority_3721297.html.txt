@@ -1,0 +1,146 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>kernal and syscall interrupt priority - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2010/freertos_kernal_and_syscall_interrupt_priority_3721297.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="kernal and syscall interrupt priority - FreeRTOS" />
+<meta property="og:description" content="kernal and syscall interrupt priorityPosted by sloren on May 26, 2010Hi, I have a problem with configKERNEL&#095;INTERRUPT&#095;PRIORITY and configMAX. I&#8217;m using port for Cortex-M3 architecture. I&#8217;m using following set of configuration parameters: &#035;define configKERNEL&#095;INTERRUPT&#095;PRIORITY 255 &#035;define configMAX&#095;SYSCALL&#095;INTERRUPT&#095;PRIORITY 191 /&#042; equivalent to 0xb0, or priority 11. &#042;/ which is the standard configuration of the kernel. I &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2010/freertos_kernal_and_syscall_interrupt_priority_3721297.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="kernal and syscall interrupt priorityPosted by sloren on May 26, 2010Hi, I have a problem with configKERNEL&#095;INTERRUPT&#095;PRIORITY and configMAX. I&#8217;m using port for Cortex-M3 architecture. I&#8217;m using following set of configuration parameters: &#035;define configKERNEL&#095;INTERRUPT&#095;PRIORITY 255 &#035;define configMAX&#095;SYSCALL&#095;INTERRUPT&#095;PRIORITY 191 /&#042; equivalent to 0xb0, or priority 11. &#042;/ which is the standard configuration of the kernel. I [&hellip;]" />
+<meta name="twitter:title" content="kernal and syscall interrupt priority - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201903' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201903' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201903' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201903' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139870' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2010%2Ffreertos_kernal_and_syscall_interrupt_priority_3721297.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2010%2Ffreertos_kernal_and_syscall_interrupt_priority_3721297.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139870">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2010_freertos_support_forum_archive_index.html/">May 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">kernal and syscall interrupt priority</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sloren">sloren</a> on May 26, 2010</div><div class="thread-post-content">Hi,  
+I have a problem with configKERNEL&#95;INTERRUPT&#95;PRIORITY and configMAX. I&#8217;m using port for Cortex-M3 architecture. I&#8217;m using following set of configuration parameters:  
+&#35;define configKERNEL&#95;INTERRUPT&#95;PRIORITY 255<br />
+&#35;define configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY 191 /&#42; equivalent to 0xb0, or priority 11. &#42;/  
+which is the standard configuration of the kernel. I have an interrupt that uses &#8220;fromISR&#8221; API calls and I have configured this interrupt to have priority of 12 &#40;0x0c&#41;. I found the kernel stucked in &#8216;list.c&#8217; where there is following comment note &#40;line: 134&#41;:  
+/&#42; &#42;&#42;&#42; NOTE &#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;<br />
+If you find your application is crashing here then likely causes are:<br />
+1&#41; Stack overflow &#8211;<br />
+&nbsp;&nbsp; see <a href="http://www.freertos.org/Stacks-and-stack-overflow-checking.html">http://www.freertos.org/Stacks-and-stack-overflow-checking.html</a><br />
+2&#41; Incorrect interrupt priority assignment, especially on Cortex M3<br />
+&nbsp;&nbsp; parts where numerically high priority values denote low actual<br />
+&nbsp;&nbsp; interrupt priories, which can seem counter intuitive.&nbsp; See<br />
+&nbsp;&nbsp; configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY on <a href="http://www.freertos.org/a00110.html">http://www.freertos.org/a00110.html</a><br />
+3&#41; Calling an API function from within a critical section or when<br />
+&nbsp;&nbsp; the scheduler is suspended.<br />
+4&#41; Using a queue or semaphore before it has been initialised or<br />
+&nbsp;&nbsp; before the scheduler has been started &#40;are interrupts firing<br />
+&nbsp;&nbsp; before vTaskStartScheduler&#40;&#41; has been called?&#41;.<br />
+See <a href="http://www.freertos.org/FAQHelp.html">http://www.freertos.org/FAQHelp.html</a> for more tips.<br />
+&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/  
+I have no kernel problems if I use that interrupt priority of 15 which is acutally equal to configKERNEL&#95;INTERRUPT&#95;PRIORITY in my case. As far as documentation concerned &#40;More Advanced -&gt; Customization&#41; it is possible to use interrupts that can interrupt kernel-related interrupts as long as priority of those preemptive interrupts are kept lower &#40;in Cortex-M3 arch higher&#41; than configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY. I did so in the first case but my application tends to crash anyway.<br />
+Has anybody had similar problem?  
+</div></div><div class="thread-post"><h3 class="thread-post-title">kernal and syscall interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 28, 2010</div><div class="thread-post-content">Also be very careful with the function that you use to set the interrupt priority.&nbsp; Some require the priority to be shifted up into the most significant bits, while others don&#8217;t.&nbsp; For example, if you are using a Stellaris Cortex-M3 then there will be three bits implemented, but these are to most significant three bits.&nbsp; To set a priority to 5 using the StellarisWare functions you would have to actually pass in &#40;5&lt;&lt;5&#41;, whereas using a CMSIS function you would just pass in &#40;5&#41;.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">kernal and syscall interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/sloren">sloren</a> on May 31, 2010</div><div class="thread-post-content">I&#8217;m using STM32 uC with ST drivers. I have checked if I set the interrupt priority ok in my application and everything seems to be OK. My question is: Is it possible to use interrupts priorities between configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY and configKERNEL&#95;INTERRUPT&#95;PRIORITY for interrupts calling FreeRTOS API &#40;as stated in documentation&#41; or it is just not safe? My application doesn&#8217;t crash immediately but after some time which is totally random. I know that it could be caused by some other &#8216;mistakes&#8217; but I have tripple checked and simplified my code just to be sure I don&#8217;t cross any of hints mentioned among those 4 points. When I look into the serial example of FreeRTOS distribution I find serial interrupt priority set at configKERNEL&#95;INTERRUPT&#95;PRIORITY level.
+</div></div><div class="thread-post"><h3 class="thread-post-title">kernal and syscall interrupt priority</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 31, 2010</div><div class="thread-post-content">Only API functions that have FromISR in their name can be called in an ISR, but these can be called in all interrupts that have a priority equal to or between the KERNEL&#95;INTERRUPT&#95;PRIORITY and MAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY constants.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

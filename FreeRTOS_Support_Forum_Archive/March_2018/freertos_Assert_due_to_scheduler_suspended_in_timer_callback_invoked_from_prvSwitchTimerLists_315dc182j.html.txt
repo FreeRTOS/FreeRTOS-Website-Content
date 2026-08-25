@@ -1,0 +1,169 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists() - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2018/freertos_Assert_due_to_scheduler_suspended_in_timer_callback_invoked_from_prvSwitchTimerLists_315dc182j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists() - FreeRTOS" />
+<meta property="og:description" content="Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists()Posted by dlm2112 on March 22, 2018I&#8217;m running FreeRTOS 8.2.3 (on a Xilinx Zynq), but have looked through code for 9.0.0 and 10.0.1, and the condition I&#8217;ll outline seems to exist in all of those versions. I&#8217;m pretty sure that it&#8217;s an issue with the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2018/freertos_Assert_due_to_scheduler_suspended_in_timer_callback_invoked_from_prvSwitchTimerLists_315dc182j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists()Posted by dlm2112 on March 22, 2018I&#8217;m running FreeRTOS 8.2.3 (on a Xilinx Zynq), but have looked through code for 9.0.0 and 10.0.1, and the condition I&#8217;ll outline seems to exist in all of those versions. I&#8217;m pretty sure that it&#8217;s an issue with the [&hellip;]" />
+<meta name="twitter:title" content="Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists() - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202916' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202916' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202916' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202916' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146987' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2018%2Ffreertos_Assert_due_to_scheduler_suspended_in_timer_callback_invoked_from_prvSwitchTimerLists_315dc182j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2018%2Ffreertos_Assert_due_to_scheduler_suspended_in_timer_callback_invoked_from_prvSwitchTimerLists_315dc182j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146987">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2018_freertos_support_forum_archive_index.html/">March 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists()</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dlm2112">dlm2112</a> on March 22, 2018</div><div class="thread-post-content">I&#8217;m running FreeRTOS 8.2.3 (on a Xilinx Zynq), but have looked through code for 9.0.0 and 10.0.1, and the condition I&#8217;ll outline seems to exist in all of those versions.
+I&#8217;m pretty sure that it&#8217;s an issue with the timer code (timer.c), but I can certainly be convinced otherwise if I&#8217;m doing something wrong!
+The general scenario is:
+1. Start a recurrent timer (10 ms interval with 100,000 ticks/per/sec in BSP). The timer callback implementation is relatively short, but does grab a mutex via calls to xSemaphoreTake().
+3. There is at least one other recurrent timer that runs with a longer interval (250 ms) and certainly longer durations than 10 ms. It has its own calls to other mutexes, also using xSemaphoreTake() (although I don&#8217;t think that matters).
+4.  The issue is an assert being raised from the 10 ms recurrent timer (only after about 12 hour of running) when calling xSemaphoreTake() as part of mutex locking. Specifically,  the assertion is from queue.c:1375:
+          configASSERT( !( ( xTaskGetSchedulerState() == taskSCHEDULER_SUSPENDED ) &amp;&amp; ( xTicksToWait != 0 ) ) );
+The portion that&#8217;s failing is the scheduler is suspended. 
+The call stack (from v 8.2.3) is:
+vApplicationAssert() portZynq7000.c:206
+xQueueGenericReceive() queue.c:1375
+<em>local timer callback code here&#8230;</em>
+prvSwitchTimerLists() timers.c:744
+prvSampleTimeNow() timers.c:540
+prvProcessTimerOrBlockTask() timers.c:457
+prvTimerTask() timers.c:437
+What I&#8217;m noticing is that the scheduler is stopped via vTaskSuspendAll() in prvProcessTimerOrBlockTask(), and is still suspended when my callback is invoked at timers.c:744. Ultimately, when my timer callback attempts to grab a mutex via xSemaphoreTake(), the assertion happens in xQueueGenericReceive() because the scheduler isn&#8217;t running.
+So, my questions are:
+1. Are there restrictions that I may be missing (e.g. don&#8217;t grab a mutex, or do anything with queues, from within a timer callback)?
+2. Is this a bug in the timer code, wherein the scheduler should (possibly?) be resumed before calling the callback from timers.c:744 and then suspending it again?
+FWIW, I&#8217;m able to get around this by changing the implementation of my (offending) timer to a task, but the questions remain.
+Thanks in advance for thoughts/insight!
+<ul>
+<li>dave</li>
+</ul>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 23, 2018</div><div class="thread-post-content">Apologies for the delay in replying &#8211; I never received an email notification of this post (because I allowed my email to become full, doh!).
+Do you specify a block time when you take the mutex?  There is a restriction in timer callbacks that you must never try and block.  That is primarily because all timer callbacks execute from the same task context.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dlm2112">dlm2112</a> on March 23, 2018</div><div class="thread-post-content">Hi Richard,
+Thanks for responding&#8230; I&#8217;ve been using FreeRTOS for a couple of years, now, and am generally finding it to work quite well. Thanks for the tool!
+To answer your question, yes, I specify a non-zero timeout when acquiring the mutex. I didn&#8217;t realize the restriction of non-zero timeouts on mutex locking in timers, and I see (by code inspection) how making it a zero-timeout would relieve the issue I&#8217;m seeing.
+Since I really do want the mutex in that portion of code and don&#8217;t want a zero timeout, I think the best solution for me is to change that timer into a task (which I&#8217;ve already done).
+Thanks for the clarification!
+<ul>
+<li>dave</li>
+</ul>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 23, 2018</div><div class="thread-post-content">Is it documented anywhere that timer callbacks are not supposed to block? I don&#8217;t see it.
+ Looking at the code, prvProcessTimerOrBlockTask carefully resumes the scheduler before calling prvProcessExpiredTimer so most of the time blocking is fine, it is only during the tick overflow processing in prvSampleTimeNow() to prvSwitchTimerLists() when the old list is drained before going to the new list that the issue can occur.
+ While long blocks can cause issues with one timer blocking another, there shouldn&#8217;t be a fundamental problem with a timer function blocking (it isn&#8217;t like the case of the IdleHook function blocking).
+ One big issue with this restriction is that this same restriction would seem to be imposed on fuunctions being used with the PendFromISR functionality, but one use of this would be that the responce to an interrupt might need to some processing that needs short blocks (like interrupt waiting I/O) which really shouldn&#8217;t be done inside an ISR.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 23, 2018</div><div class="thread-post-content">Has always been thus.  Last paragraph on this page: 
+https://www.freertos.org/RTOS-software-timer.html (and no doubt in the 
+book too).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on March 23, 2018</div><div class="thread-post-content">Ok, didn&#8217;t notice it there. Would have expected it in the API definition. Might be good to add a comment about that in the documentation for the timer callback function.
+I would also disagree that is it is &#8216;essential&#8217; to avoid blocking in them, yes, indescriminate blocking can cause issues, but replacing the blocking with a busy wait just to avoid the blocking causes more issues. Like in the example above, if a timer routine needs access to a shared resource and needs to grab a mutex to get it, grabbing the mutex with a 0 time block and busy waiting is apt to deadlock the system if the daemon has higher priority than the task that has the mutex (and at the minimum block the timer task). If the timer callback could block on the mutex, it would get prioruty inheritance and run right away, possibly finishing quickly, and then letting the timer callback contine.
+It really comes down to the latency requirements for your timers. If you can afford a bit of latency in your timers, you can do more in your timer callbacks and still meet those requirements, and this could include short blocking operations.
+If you really intend that blocing should be done in timers callbacks, I would more the resume all to after calling the timer callbacks so the trap will happen on ANY block, not just those on tick overflow, which is a rare occurance. I think the inconsistance here is the problem.
+I also do not quite understand why you need to suspend the scheduler here. I would think all the lists it is working on are &#8216;owned&#8217; by the timer task and thus changes would be synchronous with it, and thus not need to be protected.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Assert due to scheduler suspended in timer callback invoked from prvSwitchTimerLists()</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dlm2112">dlm2112</a> on April 4, 2018</div><div class="thread-post-content">Although I&#8217;m able to get around my &#8220;issue&#8221; by changing my timer to a task (which could arguably be the right thing to do anyway), I agree with Richard D that the inconsistency in behavior is what&#8217;s a tad troubling. From my particular example, the scheduler was resumed &#8220;most of the time&#8221; by the time my timer fired, and thus the mutex lock was grabbed as expected. Thus, everything worked fine. It wasn&#8217;t until some other condition occurred that drove the internal list re-arrangement, resulting in the assert from the semaphore code.
+As an enhancement, if there&#8217;s a chance that the scheduler can be re-enabled before invoking the timer callback (as noted in the original post), then that would be awesome. Of course, I&#8217;m not sure what additional issues that may ensue within the FreeRTOS base code as a result, though&#8230;.  It would also be up to the user to recognize that a blocked timer could affect all other timers, since they all run in the context of the Timer task; but users need to know that now anyway, since only one timer callback will ever fire at a time. So, whether one timer is blocked by another because the first one is doing some OS-level blocking operation, or whether it&#8217;s blocked because the first timer is simply doing &#8220;too much&#8221; is somewhat irrelevant.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

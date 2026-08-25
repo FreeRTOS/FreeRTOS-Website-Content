@@ -1,0 +1,173 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>_impure_ptr not setup when entering first task - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2013/freertos_impure_ptr_not_setup_when_entering_first_task_b771391dj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="_impure_ptr not setup when entering first task - FreeRTOS" />
+<meta property="og:description" content="_impure_ptr not setup when entering first taskPosted by beginend1 on October 4, 2013Did I missed something or impureptr only is initialized in vTaskSwitchContext(). This makes (on my SMT32f4 uC) that before first context switch REENT points at global imputedata variable instead of first task reent variable. Second: I think, that you should use REENT macro &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2013/freertos_impure_ptr_not_setup_when_entering_first_task_b771391dj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="_impure_ptr not setup when entering first taskPosted by beginend1 on October 4, 2013Did I missed something or impureptr only is initialized in vTaskSwitchContext(). This makes (on my SMT32f4 uC) that before first context switch REENT points at global imputedata variable instead of first task reent variable. Second: I think, that you should use REENT macro [&hellip;]" />
+<meta name="twitter:title" content="_impure_ptr not setup when entering first task - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202297' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202297' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202297' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202297' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144745' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2013%2Ffreertos_impure_ptr_not_setup_when_entering_first_task_b771391dj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2013%2Ffreertos_impure_ptr_not_setup_when_entering_first_task_b771391dj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144745">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2013_freertos_support_forum_archive_index.html/">October 2013 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">_impure_ptr not setup when entering first task</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/beginend1">beginend1</a> on October 4, 2013</div><div class="thread-post-content">Did I missed something or <em>impure</em>ptr  only is initialized in vTaskSwitchContext(). This makes (on my SMT32f4 uC) that before first context switch <em>REENT points at global impute</em>data variable instead of first task reent variable.
+Second: I think, that you should  use <em>REENT macro instead of _impure</em>ptr directly.
+FreeRTOS version 7.5.2
+</div></div><div class="thread-post"><h3 class="thread-post-title">_impure_ptr not setup when entering first task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 4, 2013</div><div class="thread-post-content"><blockquote>
+  Did I missed something or <em>impure</em>ptr only is initialized in vTaskSwitchContext().
+</blockquote>
+Hopefully you missed something, but like I say in the comments, I don&#8217;t use the newlib stuff myself so I am reliant on the people who requested its existence to let me know if anything is wrong.
+prvInitialiseTCBVariables() (in tasks.c) is called to initialise the task control block of a task when the task is created &#8211; not when the task is first switched in.  prvInitialiseTCBVariables() contains the following code which, I think, means each task has its own initialised impure_ptr.
+<pre>
+#if ( configUSE_NEWLIB_REENTRANT == 1 )
+{
+    /* Initialise this task's Newlib reent structure. */
+    _REENT_INIT_PTR( ( &( pxTCB->xNewLib_reent ) ) );
+}
+#endif /* configUSE_NEWLIB_REENTRANT */
+</pre>
+<blockquote>
+  Second: I think, that you should use <em>REENT macro instead of _impure</em>ptr directly
+</blockquote>
+So the line:
+<em>impure</em>ptr = &amp;( pxCurrentTCB->xNewLib_reent );
+should become?:
+<em>REENT = &amp;( pxCurrentTCB->xNewLib</em>reent );
+Is that right?  Will everything else still compile ok?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">_impure_ptr not setup when entering first task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/beginend1">beginend1</a> on October 4, 2013</div><div class="thread-post-content">I am no talking about allocation of <em>reent struct but initialization of _impure</em>ptr. Task switching properly changes <em>impure</em>ptr but first task doesn&#8217;t use the vTaskSwitchContext() but prvPortStartFirstTask() which is port specific, and this function does not touch <em>impure</em>ptr. I&#8217;ve looked at the code and there is no clean solution. The <em>impure</em>ptr can&#8217;t be initialized in prvPortStartFirstTask() becouse tskTCB is opaque there. The only solution came up is initialization of <em>impure</em>ptr just before call to prvPortStartFirstTask() and somehow in xTaskResumeAll() and/or in xTaskGenericCreate().
+</div></div><div class="thread-post"><h3 class="thread-post-title">_impure_ptr not setup when entering first task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 4, 2013</div><div class="thread-post-content">Ok, I understand now.  So it is just the first execution of the first task that the pointer is not configured, not the first execution of every task.
+When xPortStartScheduler() is called pxCurrentTCB already points to the task that will be started first, so I think the following code added before xPortStartScheduler() should do what you want.
+<pre>
+#if ( configUSE_NEWLIB_REENTRANT == 1 )
+{
+    /* Switch Newlib's _impure_ptr variable to point to the _reent
+    structure specific to the task that will run first. */
+    _impure_ptr = &( pxCurrentTCB->xNewLib_reent );
+}
+#endif /* configUSE_NEWLIB_REENTRANT */
+</pre>
+Do you agree?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">_impure_ptr not setup when entering first task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/beginend1">beginend1</a> on October 4, 2013</div><div class="thread-post-content">Yes, this code is needed but NOT BEFORE calling xPortStartScheduler(). Some code may want to do something before creating tasks and starting scheduler. If you switch <em>impure</em>ptr there you can mess up a lot of things (eg. stdin/out/err will be different, different errno variable, etc.). This must be done inside xPortStartScheduler(). I don&#8217;t know FreeRTOS source so good to  tell you if xPortStartScheduler() is the only place where _REEN should be guarded. Generally speaking, all places where pxCurrentTCB is changed and task is switched should follow _REEN synchronization with new task. My doubts are also places where you create/delete tasks when scheduler is suspended, this is the reason why I pointed out xTaskResumeAll() and xTaskGenericCreate().
+And at the end I think that
+<em>REENT = &amp;( pxCurrentTCB->xNewLib</em>reent );
+will be ok 😛
+</div></div><div class="thread-post"><h3 class="thread-post-title">_impure_ptr not setup when entering first task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 4, 2013</div><div class="thread-post-content">I understand your point, but I&#8217;m not sure I understand the danger of where I have placed the code.
+The sequence is as follows:
+1) Interrupts are disabled.
+2) The pointer is set to be correct for the first task.
+3) xPortStartScheduler() is called.
+4) The first task starts to run
+Interrupt are not enabled until the point that the first task start to run &#8211; and all the code executed in between steps 1 and 4 is FreeRTOS code.  There is no possibility of any application code running during this time, so no possibility of any inadvertent calls to newlib.
+I would be grateful if you could elaborate using this scenario so I can get a better understanding.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">_impure_ptr not setup when entering first task</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/beginend1">beginend1</a> on October 5, 2013</div><div class="thread-post-content">Ok, looked again and you are right. I was thinking about vTaskStartScheduler() instead of xPortStartScheduler(). Your solution should work.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

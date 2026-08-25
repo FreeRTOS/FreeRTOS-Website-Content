@@ -1,0 +1,224 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Context Switching In An ISR On Pic32MX Processor - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2014/freertos_Context_Switching_In_An_ISR_On_Pic32MX_Processor_5447b08cj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Context Switching In An ISR On Pic32MX Processor - FreeRTOS" />
+<meta property="og:description" content="Context Switching In An ISR On Pic32MX ProcessorPosted by jasonfromca on February 20, 2014Hello, My first post here! I&#8217;m enjoying getting to know FreeRTOS and how we can use it for our purpose, plus all the other neat things that go with it. Anyway, I&#8217;m trying to understand the idea of context switching in an &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2014/freertos_Context_Switching_In_An_ISR_On_Pic32MX_Processor_5447b08cj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Context Switching In An ISR On Pic32MX ProcessorPosted by jasonfromca on February 20, 2014Hello, My first post here! I&#8217;m enjoying getting to know FreeRTOS and how we can use it for our purpose, plus all the other neat things that go with it. Anyway, I&#8217;m trying to understand the idea of context switching in an [&hellip;]" />
+<meta name="twitter:title" content="Context Switching In An ISR On Pic32MX Processor - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202354' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202354' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202354' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202354' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143695' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2014%2Ffreertos_Context_Switching_In_An_ISR_On_Pic32MX_Processor_5447b08cj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2014%2Ffreertos_Context_Switching_In_An_ISR_On_Pic32MX_Processor_5447b08cj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143695">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2014_freertos_support_forum_archive_index.html/">February 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Context Switching In An ISR On Pic32MX Processor</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jasonfromca">jasonfromca</a> on February 20, 2014</div><div class="thread-post-content">Hello, 
+My first post here!
+I&#8217;m enjoying getting to know FreeRTOS and how we can use it for our purpose, plus all the other neat things that go with it.
+Anyway, I&#8217;m trying to understand the idea of context switching in an ISR on a Pic32MX processor running with FreeRTOS on top. 
+My colleges are under the impression that when a interrupt occurs, it ALWAYS finishes. And, that&#8217;s sort of how I think about it too: when the interrupt starts and code is being executed from within an ISR, all code completes without being interrupted by another ISR or even by any other function or anything else. 
+However, I&#8217;ve come to discover that this isn&#8217;t necessarily true in FreeRTOS. Or at least from what I have read.
+For example, let&#8217;s assume this is my ISR:
+~~~~~~~~~~~~~~~~~~~
+char externalBuffer[100]; //some external buffer that is somewhere else   
+void MyISRHandler()
+{
+    //Marker #1
+<pre><code>char tempBuffer[10];
+//Marker #2
+taskENTER_CRITICAL();
+//Marker #3
+for(int i=0; i &lt; 10; i++)
+{
+    tempBuffer[i] = externalBuffer[i];
+}
+//do something with tempBuffer here to make some
+//difference in the data.
+//Marker #4
+taskEXIT_CRITICAL();
+//Marker #5
+//update the external buffer with changes
+for(int i=0; i &lt; 10; i++)
+{
+    externalBuffer[i] = tempBuffer[i];
+}   
+</code></pre>
+}
+~~~~~~~~~~~~~~~~~~~
+Now, I agree this is a silly ISR example that doesn&#8217;t do much of anything. So please consider it more like pseudo-code for discussion purpose only.
+<strong>The Problem:</strong>
+What we had occurring, was that from within an ISR, a deeply nested function was eventually calling taskENTER<em>CRITICAL(). However in the psedo-code above, I&#8217;ve removed the function nesting and am just calling taskENTER</em>CRITICAL() directly from an ISR to make things simpler.
+Thefore, here&#8217;s what we were seeing:
+<ul>
+<li><strong>At &#8220;Marker #2&#8221;</strong>: As soon as taskENTER<em>CRITICAL() is called, it would succeed. Looking at what taskENTER</em>CRITICAL() does on the Pic32MX is that it disables interrupts. Ok, so interrupts are now disabled. Seems like no big deal. </li>
+<li><strong>At &#8220;Marker #3&#8221;</strong>: We could then say, copy from externalBuffer to tempBuffer. </li>
+<li><strong>At &#8220;Marger #4&#8221;</strong>: As soon as taskEXIT_CRITICAL() is called, <strong>BAM</strong> somehow magically MyISRHandler() starts at <strong>&#8220;Marker #1&#8221;</strong>. The tempBuffer then get&#8217;s pushed on the stack on re-entry to MyISRHandler(). The cycle starts all over again. </li>
+</ul>
+Eventually, we blow the stack from within the ISR. And, we NEVER get to the point where we reach Marker #5 from within the ISR. The code after Marker #5 is never called.
+So the question is? How is that possible? What is going on? 
+It would seem that what taskEXIT_CRITICAL() does is re-enable interrupts. And soon as interrupts are re-enabled, it would seem the interrupt MyISRHandler() get&#8217;s fired off again and NEVER reaches <strong>&#8220;Marker #5&#8221;</strong>. 
+In looking into this a bit more, I found the following from Richard himself:
+http://www.lpcware.com/content/forum/freertos-hang-up :
+<blockquote>
+  When are you using taskENTER<em>CRITICAL() and taskEXIT</em>CRITICAL()? It is not clear from your post if this is in the interrupt that is sending the data to the queue, or in the task that is receiving the data.
+  <strong>If its in the interrupt, then basically DON&#8217;T</strong>. First it would make no sense to do that because the interrupt priorities should be used to ensure things get processed in the right order. <strong>If you really must create a critical section then there is an interrupt safe way of doing it, and I can point you in the right direction for that.</strong>
+  If its in the task, then, presumably its after the call to xQueueReceive() has returned? API functions such as xQueueReceive() must not be called in a critical section (I think the above linked page will say that somewhere too.
+  Especially the bit about not calling API functions that don&#8217;t end in FromISR from an ISR. <strong>This is essential particularly for taskENTER<em>CRITICAL() and taskEXIT</em>CRITICAL() which should never be called from an ISR</strong>.
+</blockquote>
+I wish I knew what Richard means by &#8220;If you really must create a critical section then there is an interrupt safe way of doing it, and I can point you in the right direction for that.&#8221;? It goes to the question, why would you need a critical section in an interrupt handler in the first place?
+Ok, so Richard has made it clear: DO NOT use taskENTER<em>CRITICAL() or taskEXIT</em>CRITICAL() from an ISR.
+However, it&#8217;s still not clear to me HOW an interrupt can be essentially pre-empted or how a context switch can occur from within an ISR. Where is the magic that is pre-empting the interrupt? I&#8217;m guessing it has something to do with the assembly in Port.c? But then I read this:
+http://www.freertos.org/FAQISR.html :
+<blockquote>
+  Can a context switch occur within an ISR?
+  Yes. Each RTOS port provides a macro to request a context switch from within an ISR. The name of the macro is dependent on the port (for historic reasons). It will be either portYIELD<em>FROM</em>ISR() or portEND<em>SWITCHING</em>ISR. Refer to the documentation page for the port being used.
+  Every official port comes with a demo application that demonstrates context switching from an ISR. 
+</blockquote>
+That means context switching CAN occur within the ISR!
+So, it leaves me sort of confused. For one, is this true? Is it possible that a ISR may not always execute ALL of it&#8217;s code? I couldn&#8217;t convince myself that it was possible and I was not able to explain it to someone else either. So I must ask! 
+Traditionally, ISR&#8217;s are to be short, but they usually always fully execute all their code too. When an ISR is executing, nothing else is executing? Right?   
+Here&#8217;s another link that touches on this topic:
+http://www.freertos.org/FreeRTOS<em>Support</em>Forum<em>Archive/March</em>2011/freertos<em>Definition</em>of<em>Context</em>Switch<em>in</em>RTOS_4422518.html :
+<blockquote>
+  “When a RTOS is running and an interrupt arrives, which subsequently invokes a yeidlFromISR() function, does that constitute a &#8220;context switch&#8221; as per in the normal Time sharing desktop systems ?”
+  Calling portYIELD<em>FROM</em>ISR() from an interrupt context switches the context of the task that was interrupted, to the task that should run when the interrupt completes. That means, the interrupt interrupts one task, but potentially returns to another. The task that was interrupted will run again, but only when it is the highest priority ready state task. So yes, that is a context switch, but the context switch does not switch the interrupt context but the task context. I don&#8217;t know how that relates to your question about time sharing desktop systems though.
+</blockquote>
+Yes, but here we are essentially saying that this ISR handler is somehow associated or assigned to a task, which isn&#8217;t necessarily true. Like in the case when taskEXIT_CRITICAL() is called. Interrupts are re-enabled, and suddenly you are the top of the same ISR before the ISR has even completed? It&#8217;s like the interrupt itself was interrupted somehow. 
+But is that even possible? Or, how is that even possible? I&#8217;m having a hard time believing that somehow an interrupt was interrupted. 
+If someone can help explain what is going on that would be great or at least help to confirm what I see is truly what is occurring with taskEXIT_CRITICAL()?
+What is going on? I would truly appreciate the feedback or input from others!
+</div></div><div class="thread-post"><h3 class="thread-post-title">Context Switching In An ISR On Pic32MX Processor</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on February 20, 2014</div><div class="thread-post-content"><blockquote>
+  My colleges are under the impression that when a interrupt occurs, it ALWAYS finishes. 
+  And, that&#8217;s sort of how I think about it too: when the interrupt starts and code is being 
+  executed from within an ISR, all code completes without being interrupted by another ISR 
+  or even by any other function or anything else.
+</blockquote>
+Then your colleges are wrong :o)
+<blockquote>
+  However, I&#8217;ve come to discover that this isn&#8217;t necessarily true in FreeRTOS. Or at least 
+  from what I have read.
+</blockquote>
+Yes. Interrupts can nest. So one interrupt can itself be interrupted by higher priority interrupts. Although eventually all interrupts will complete. Read the configuration and usage section on http://www.freertos.org/port<em>PIC32</em>MIPS_MK4.html
+<blockquote>
+   taskENTER_CRITICAL();
+</blockquote>
+You must not call taskENTER<em>CRITICAL() from an interrupt. You can call the interrupt safe version, which is called port portSET</em>INTERRUPT<em>MASK</em>FROM<em>ISR() and portCLEAR</em>INTERRUPT_MASK(). Look at the implementation of xQueueGenericSendFromISR() in FreeRTOSSourcequeue.c for an example of how to use it.
+<blockquote>
+  Eventually, we blow the stack from within the ISR
+</blockquote>
+On the PIC32 the size of the interrupt stack is set in FreeRTOSConfig.h.
+<blockquote>
+  What is going on?
+</blockquote>
+Have you followed the instructions on writing ISRs that are on the same page link as above? You need an asm wrapper.
+<blockquote>
+  That means context switching CAN occur within the ISR!
+</blockquote>
+Different ports handle this in different ways, but in most ports the context switch happens at the end of the ISR. I think on the PIC32 the task context is saved on the way in. You can then nest as many interrupts as you like, and any nested interrupt can request a context switch, but the context switch does not happen until the nesting of interrupts has unwound. When FreeRTOS sees that interrupts are no longer nested, and that a context switch has been requested, it restored the context of a different task to that running when the first interrupt was taken.
+Don&#8217;t get confused by reading posts that relate to other FreeRTOS ports as how this is done is very much dependent on the features available on the chip (PIC32 in your case).
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

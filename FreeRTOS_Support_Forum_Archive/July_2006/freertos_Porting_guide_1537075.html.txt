@@ -1,0 +1,219 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Porting guide - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2006/freertos_Porting_guide_1537075.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Porting guide - FreeRTOS" />
+<meta property="og:description" content="Porting guidePosted by nobody on July 17, 2006I am currently using a Toshiba TCLS 900H processor with a custom built RTOS. Although this works well for the required application, I am about to move it to a M32/80 processor but the changes required are fairly complex as this was not written for portability. It did &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2006/freertos_Porting_guide_1537075.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Porting guidePosted by nobody on July 17, 2006I am currently using a Toshiba TCLS 900H processor with a custom built RTOS. Although this works well for the required application, I am about to move it to a M32/80 processor but the changes required are fairly complex as this was not written for portability. It did [&hellip;]" />
+<meta name="twitter:title" content="Porting guide - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201377' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201377' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201377' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201377' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139454' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2006%2Ffreertos_Porting_guide_1537075.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2006%2Ffreertos_Porting_guide_1537075.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139454">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2006_freertos_support_forum_archive_index.html/">July 2006 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Porting guide</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on July 17, 2006</div><div class="thread-post-content">I am currently using a Toshiba TCLS 900H processor with a custom built RTOS. Although this works well for the required application, I am about to move it to a M32/80 processor but the changes required are fairly complex as this was not written for portability.
+It did occur to me that the freertos provides all the portability features I require but is available in neither configurations.&nbsp; Is there a porting manual that would allow a fairly painless port to these processors.
+I have over 30 years programming experience so the software is not a problem and I am even willing to provide the ports back to freertos.&nbsp; I could do it by code inspection but it is ultimately quicker and less error prone if this documentation is available.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting guide</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 17, 2006</div><div class="thread-post-content">I suggest you start with the standard demo file flash.c.&nbsp; This simply flashes LED.&nbsp; To do this &#40;rather random ordering in this list&#33;&#41;:
+i&#41; Include FreeRTOS/demo/common/include in your project include path.
+ii&#41; Include the file FreeRTOS/demo/minimal/flash.c in your project.
+iii&#41; Find a main&#40;&#41; file that calls vStartLEDFlashTasks&#40;&#41;, use this as a basis.&nbsp; Comment out all lines other than those required to setup the hardare, the call to vStartLEDFlashTasks&#40;&#41; itself, and a call to vTaskStartScheduler&#40;&#41;.
+iv&#41; Include FreeRTOS/source/portable/memmang/heap&#95;1.c in your project &#40;as a minimum&#41;.
+v&#41; Include the three files from the FreeRTOS/source directory.&nbsp; You won&#8217;t need to co-routine file.&nbsp; These are the kernel files.
+vi&#41; Of coarse include the new port file in your build also.
+vi&#41; I suspect I&#8217;ve forgotten one or two things, but your linker warnings will let you know what.
+The first thing to do after getting it to compile is step into the function xPortStartScheduler&#40;&#41; and check that the context of the first task is restored correctly.&nbsp; This may take one or two attempts, but you should see the initial values you placed in the stack you created for the task popped into the registers one by one, then finally the program counter loaded and a jump made to the start of the flash tasks.&nbsp; 
+Once you have the first task executing the next thing to do is to step though a call to taskYIELD&#40;&#41; to ensure the reverse is true, that the context is saved as you expect, then restored once more as the next task starts to execute.
+Finally do the same for a preemptive tick.&nbsp; Just ensure that on entry and exit from the tick &#40;if preemptive is being used this is only&#41; that the context is saved and restored correctly.
+Hope this is more help that hindrance.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting guide</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 17, 2006</div><div class="thread-post-content">&#123;try again, posting problems&#125;
+&gt; It did occur to me that the freertos provides all the portability 
+&gt; features I require but is available in neither configurations.
+&gt; Is there a porting manual that would allow a fairly painless port to 
+&gt; these processors.
+There is a small amount of information on the FAQ.&nbsp; 
+http://www.freertos.org/FAQPort.html&#35;NewPorts
+The FAQ is a bit out of date and this particular answer is lacking somewhat.&nbsp; I have therefore elaborated at the end of this post.
+Can you provide a link to a datasheet or short form for the processor you are wanting to use?
+&gt; I have over 30 years programming experience so the software is not a 
+&gt; problem and I am even willing to provide the ports back to freertos.
+That would in fact be a condition of using FreeRTOS.org.&nbsp; There is no obligation to open source your application code &#40;ie. the code that uses FreeRTOS.org through the published API&#41;, but this is an obligation to provide modifications to the kernel itself which includes new ports.&nbsp; Providing the code could just be emailing it to me so I am aware of it and can use it to assist others should the need arise.
+&gt; I could do it by code inspection but it is ultimately quicker and 
+&gt; less error prone if this documentation is available.
+Below I have attempted to provide more information.&nbsp; Some of this is a repeat of the FAQ.
+1&#41; First make sure you understand the directory structure.&nbsp; See http://www.freertos.org/a00017.html.
+2&#41; Create a new directory to hold the new port files.&nbsp; To follow the convention described in the link just given this should take the form:&nbsp; FreeRTOS/Source/Portable/&#91;compiler name&#93;/&#91;processor name&#93;.&nbsp; If you are using a compiler that is already supported for a different processor then the only new directory that you should need to create is the bottom most with the name of the processor.
+3&#41; This new directory will require either two or three files, depending on the compiler used and to some extend the processor.
+You will always require a port.c and a portmacro.h file.&nbsp; If your compiler has a powerful inline assembler and the ability to produce &#8216;naked&#8217; functions &#40;i.e. with no compiler generated prologue or epilogue code&#41; then these are the only two files you require.
+Alternatively, if all the processor registers are automatically saved by the compiler generated prologue code then you may also get away with just these two files, but this is rare.
+Generally GCC is an example of a compiler where only two files are required, although this depends on the features built into GCC for your particular port to some degree.&nbsp; If you think only two files are required then copy the files port.c and portmacro.c from FreeRTOS/Source/portable/GCC/atmega323 into your newly created directory.
+If these conditions are not met then you will also require a small assembler file.&nbsp; One of the goals of FreeRTOS.org is to be as simple as possible and use as little assembler as possible, so this file should be straight forward.
+IAR is an example of a compiler that requires a separate assembler file.&nbsp; If you think a separate assembly file will be required then copy the files port.c, portmacro.h and portmacro.s79 from FreeRTOS/Source/portable/IAR/ATMega323 into your newly created directory.
+4&#41; The files you have copied into the new directory can be used as a skeleton for your new port.&nbsp; The bodies of the functions/macros they contain can be deleted to leave stubs that can be filled in.&nbsp; First take a look at portmacro.h.
+4.1&#41;&nbsp; portmacro.h
+Data Types
+&#45;&#8212;&#8212;&#8212;
+At the top of this file are a load of type definitions.&nbsp; Set these to be correct for your processor.&nbsp; I would guess that they can be left as is down to portSHORT, which you should set to a 16 bit data type.&nbsp; portBASE&#95;TYPE should be set to the natural data type for your architecture, and portSTACK&#95;TYPE to the &#40;unsigned&#41; size of a single item placed onto the stack.&nbsp; In the AVR code this is char as the AVR is only 8 bits.
+Definitions starting &#8216;config&#8217; will be defined in the FreeRTOSConfig.h file, which is part of the application code not the port.&nbsp; Needless to say unless you are using an 8bit processor with very inefficient 32bit handling, configUSE&#95;16&#95;BIT&#95;TICKS will be set to 0 which causes portTickType to be a 32 data type.
+Critical sections
+&#45;&#8212;&#8212;&#8212;&#8212;&#8212;-
+Next we come down to the critical section macros.&nbsp; There are two ways of implementing critical sections &#40;currently used&#41;.&nbsp; If you can guarantee that you can push and pop items onto the stack without screwing up your compiler generated code then you can simply push the interrupt status bits onto the stack and clear interrupts to enter critical, then pop the flags from the stack to exit.&nbsp; This way you automatically get nesting of critical sections.
+If you cannot mess with the stack pointer then you have to use a variable to store the critical section nesting depth.&nbsp; You can find examples of this method in other ports.&nbsp; Search for a variable called CriticalNesting in the source tree.
+The marcos to disable and enable interrupts are straight forward.
+Architecture specifics
+&#45;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+These must be set correctly for your architecture.
+portSTACK&#95;GROWTH must be either 1 or -1 for up or down growth respectively.
+portBYTE&#95;ALIGNMENT should be 1, 2, 3 or 4.&nbsp; For example an ARM requires 4 byte alignment so it is set to 4 for these processors.
+That&#8217;s about it for this file, but the file must be included as part of the build.&nbsp; To do this you need to edit the file FreeRTOS.org/Source/include/portable.h.&nbsp; Take a look at this file and it should be clear what to do.&nbsp; Basically each port has a unique definition to identify the port.&nbsp; This definition must be defined as part of your project, resulting in the correct portmacro.h file being included in the build.
+4.2 port.c &#40;and optionally port assembly file&#41;.
+Context saving order
+&#45;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+You need to decide how the context of your processor is going to be stored.&nbsp; That is, which order are the registers to be saved in.&nbsp; In the example suggested you will see portSAVE&#95;CONTEXT&#40;&#41; and portRESTORE&#95;CONTEXT&#40;&#41; macros.
+If your processor allows software interrupts then such interrupts can be used for manual context switching &#40;yielding&#41;.&nbsp; This means that both the tick interrupt and yields can be entered via an interrupt and the resultant stack frame will be identical &#40;see an x86 or ARM port for examples&#41;.&nbsp; You then need to save any registers that are not automatically saved by the processor when you enter an interrupt.&nbsp; This can be done in inline asm if your compiler can cope.&nbsp; Make sure the yield and tick interrupts are &#8216;naked&#8217;.&nbsp; You must save all the registers before any compiler generated code is executed.&nbsp; Also you must not use any registers in the save process that have not already be saved.
+If your processor does not permit software interrupts then tick interrupts will be entered via the interrupt mechanism of your processor, but yields will be entered as a standard function.&nbsp; For the yield you again have to use a naked function, with the inline assembly code used to save the context so that the saved stack frame looks exactly as if an interrupt had occurred.&nbsp; Remember to disable interrupts immediately after the original interrupt status has been saved as part of the context.&nbsp; You may need to save the critical section nesting depth as part of the context also.
+Once you have decided on how the context is to be saved you can start to implement the functions in port.c.
+pxPortInitialiseStack&#40;&#41;
+&#45;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+This function is straight forward.&nbsp; It simply sets up an initial stack for the task being created.&nbsp; The stack uses the save context save order as per the tick and yield code mentioned above.&nbsp; Note the order is as per the portSAVE/RESTORE&#95;CONTEXT&#40;&#41; macros.&nbsp; Loading known values into the &#8216;stacked&#8217; registers allows easy debugging when you are restoring the context for the first time.
+xPortStartScheduler&#40;&#41;
+&#45;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+This sets up a timer to generate the tick then starts the first task.&nbsp; How the first task is started is processor dependent.&nbsp; Basically restore the context then call an end of interrupt instruction, but of coarse it is never this simple ;-&#41;&nbsp; Each processor is done differently so check out the other ports for examples that match closely to your architecture.
+vPortYield&#40;&#41;
+&#45;&#8212;&#8212;&#8212;-
+Save the context, call vTaskSwitchContext&#40;&#41;, restore the context.&nbsp; The saving and restoring may require an assembly file as the function must be naked.
+This function is called when the application calles taskYIELD&#40;&#41;, which in turn calls portYIELD&#40;&#41;.
+vPortYieldFromTick&#40;&#41;
+&#45;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+This is called different things in different ports, but is basically the tick interrupt handler.&nbsp; Again may require an assembly file if you cannot have &#8216;naked&#8217; functions.&nbsp; 
+Simply, save context, call vTaskIncrementTick, call vTaskSwitchContext&#40;&#41;, clear interrupt &#40;don&#8217;t forget&#33;&#41;, then restore context.
+If you are also wanting a cooperative version &#40;not preemptive&#41; then this can be a standard interrupt function as generated by the compiler &#40;no need to save or restore context&#41;, and just call vTaskIncrementTick&#40;&#41; from within the handler.&nbsp; This is often an easier route to start debugging.
+prvSetupTimerInterrupt&#40;&#41;
+&#45;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+Very processor specific.
+5&#41; A simple application can now be created.&nbsp; You will require a FreeRTOSConfig.h file, of which there are plenty of examples in the download.&nbsp; Remember:
+i&#41; Use the definition that ensures your portmacro.h file gets included within portable.h.
+ii&#41; FreeRTOS/source/include must be in the include path.
+iii&#41; Ensure FreeRTOSConfig.h can be found in the include path.
+I suggest you start with the standard demo file flash.c.&nbsp; This simply flashes LED.&nbsp; To do this &#40;rather random ordering in this list&#33;&#41;:
+i&#41; Include FreeRTOS/demo/common/include in your project include path.
+ii&#41; Include the file FreeRTOS/demo/minimal/flash.c in your project.
+iii&#41; Find a main&#40;&#41; file that calls vStartLEDFlashTasks&#40;&#41;, use this as a basis.&nbsp; Comment out all lines other than those required to setup the hardare, the call to vStartLEDFlashTasks&#40;&#41; itself, and a call to vTaskStartScheduler&#40;&#41;.
+iv&#41; Include FreeRTOS/source/portable/memmang/heap&#95;1.c in your project &#40;as a minimum&#41;.
+v&#41; Include the three files from the FreeRTOS/source directory.&nbsp; You won&#8217;t need to co-routine file.&nbsp; These are the kernel files.
+vi&#41; Of coarse include the new port file in your build also.
+vi&#41; I suspect I&#8217;ve forgotten one or two things, but your linker warnings will let you know what.
+The first thing to do after getting it to compile is step into the function xPortStartScheduler&#40;&#41; and check that the context of the first task is restored correctly.&nbsp; This may take one or two attempts, but you should see the initial values you placed in the stack you created for the task popped into the registers one by one, then finally the program counter loaded and a jump made to the start of the flash tasks.&nbsp; 
+Once you have the first task executing the next thing to do is to step though a call to taskYIELD&#40;&#41; to ensure the reverse is true, that the context is saved as you expect, then restored once more as the next task starts to execute.
+Finally do the same for a preemptive tick.&nbsp; Just ensure that on entry and exit from the tick &#40;if preemptive is being used this is only&#41; that the context is saved and restored correctly.
+Hope this is more help that hindrance.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Porting guide</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cockcroftm">cockcroftm</a> on July 18, 2006</div><div class="thread-post-content">Many thanks for this info &#8211; I am well into creating the TLCS900 port utilising it.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

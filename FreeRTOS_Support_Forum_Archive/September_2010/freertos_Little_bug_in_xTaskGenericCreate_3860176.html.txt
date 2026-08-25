@@ -1,0 +1,218 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Little bug in xTaskGenericCreate() ? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2010/freertos_Little_bug_in_xTaskGenericCreate_3860176.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Little bug in xTaskGenericCreate() ? - FreeRTOS" />
+<meta property="og:description" content="Little bug in xTaskGenericCreate() ?Posted by ernie-i on September 21, 2010I use the LPC2xxx-gcc port with preemtive kernel and dynamic tasks. Sometimes I catched an invalid taskhandle inside the just created task. I think, this is caused by a tick-interrupt inside the critical section in xTaskGenericCreate&#040;&#041;. After the portEXIT&#095;CRITICAL&#040;&#041; the new task starts, but the &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2010/freertos_Little_bug_in_xTaskGenericCreate_3860176.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Little bug in xTaskGenericCreate() ?Posted by ernie-i on September 21, 2010I use the LPC2xxx-gcc port with preemtive kernel and dynamic tasks. Sometimes I catched an invalid taskhandle inside the just created task. I think, this is caused by a tick-interrupt inside the critical section in xTaskGenericCreate&#040;&#041;. After the portEXIT&#095;CRITICAL&#040;&#041; the new task starts, but the [&hellip;]" />
+<meta name="twitter:title" content="Little bug in xTaskGenericCreate() ? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201941' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201941' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201941' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201941' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139055' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2010%2Ffreertos_Little_bug_in_xTaskGenericCreate_3860176.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2010%2Ffreertos_Little_bug_in_xTaskGenericCreate_3860176.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139055">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2010_freertos_support_forum_archive_index.html/">September 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ernie-i">ernie-i</a> on September 21, 2010</div><div class="thread-post-content">I use the LPC2xxx-gcc port with preemtive kernel and dynamic tasks. Sometimes I catched an invalid taskhandle inside the just created task.<br />
+I think, this is caused by a tick-interrupt inside the critical section in xTaskGenericCreate&#40;&#41;. After the portEXIT&#95;CRITICAL&#40;&#41; the new task starts, but the handle &#40;&#42;pxCreatedTask&#41; will not be assigned until the calling task is running again.  
+Please, correct me if I am wrong.  
+signed portBASE&#95;TYPE xTaskGenericCreate&#40; pdTASK&#95;CODE pxTaskCode, const signed char &#42; const pcName, unsigned short usStackDepth, void &#42;pvParameters, unsigned portBASE&#95;TYPE uxPriority, xTaskHandle &#42;pxCreatedTask, portSTACK&#95;TYPE &#42;puxStackBuffer, const xMemoryRegion &#42; const xRegions &#41;<br />
+&#123;<br />
+…  
+if&#40; pxNewTCB &#33;= NULL &#41;<br />
+&#123;<br />
+…  
+/&#42; We are going to manipulate the task queues to add this task to a<br />
+ready list, so must make sure no interrupts occur. &#42;/<br />
+portENTER&#95;CRITICAL&#40;&#41;;<br />
+&#123;<br />
+uxCurrentNumberOfTasks++;<br />
+if&#40; uxCurrentNumberOfTasks == &#40; unsigned portBASE&#95;TYPE &#41; 1 &#41;<br />
+&#123;<br />
+…<br />
+&#125;<br />
+else<br />
+&#123;<br />
+/&#42; If the scheduler is not already running, make this task the<br />
+current task if it is the highest priority task to be created<br />
+so far. &#42;/<br />
+if&#40; xSchedulerRunning == pdFALSE &#41;<br />
+&#123;<br />
+if&#40; pxCurrentTCB-&gt;uxPriority &lt;= uxPriority &#41;<br />
+&#123;<br />
+pxCurrentTCB = pxNewTCB;<br />
+&#125;<br />
+&#125;<br />
+&#125;  
+…  
+prvAddTaskToReadyQueue&#40; pxNewTCB &#41;;  
+…<br />
+&#125;<br />
+portEXIT&#95;CRITICAL&#40;&#41;;<br />
+&#125;<br />
+else<br />
+&#123;<br />
+…<br />
+&#125;  
+if&#40; xReturn == pdPASS &#41;<br />
+&#123;<br />
+if&#40; &#40; void &#42; &#41; pxCreatedTask &#33;= NULL &#41;<br />
+&#123;<br />
+/&#42; Pass the TCB out &#8211; in an anonymous way.&nbsp; The calling function/<br />
+task can use this as a handle to delete the task later if<br />
+required.&#42;/<br />
+&#42;pxCreatedTask = &#40; xTaskHandle &#41; pxNewTCB;<br />
+&#125;  
+…<br />
+&#125;  
+return xReturn;<br />
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on September 21, 2010</div><div class="thread-post-content">First, you should NOT be getting tick interrupts inside of a critical section, this would be a major bug in the port. Critical sections should disable every interrupt that might interact with FreeRTOS, and the tic interrupt definitely counts for that.  
+If the problem is that between the portEXIT&#95;CRITICAL and the assigning to pxCreatedTask the created task referes to &#42;pxCreatedTask, that does look like a problem in FreeRTOS.  
+At first glance, maybe the returned value should be set before scheduling the task to run.  
+If you don&#8217;t want to change FreeRTOS, a couple of solutions come to mind,<br />
+1&#41; Place the create inside of a Critical Section by the calling task. Hopefully this doesn&#8217;t impact performance too bad, it does say you have interrupts down longer than you want.  
+2&#41; Place at the beginning of the created task, assign the handle with xTaskGetCurrentTaskHandle&#40;&#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 21, 2010</div><div class="thread-post-content">I&#8217;m not sure I am following this one.  
+First thing to say is I agree with richard&#95;damon that you should not get tick interrupts inside a critical section &#40;you are not perhaps using a simulator are you?&#41;.  
+Other than that, pxCreatedTask and pxNewTCB are both going to be either on the stack or in a register &#8211; and should therefore be part of the task context.&nbsp; If there is something going amiss there then it is in the context switch that the problem lies, and if there is a problem in the context switch then it will show up everywhere &#40;I would assume?&#41;.  
+Do you have stack overflow checking switched on?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ernie-i">ernie-i</a> on September 21, 2010</div><div class="thread-post-content">No, I don&#8217;t want to change FreeRTOS, it&#8217;s fantastic&#33; Many thanks to the developer&#33;  
+I&#8217;m not using a simulator, the stacks are fine.  
+I presume, the tick interrupt occurs &#40;and is pending&#41;&nbsp; within the critical section. Right AFTER portEXIT&#95;CRITICAL&#40;&#41; the tick interrupt runs and the scheduler starts the new task if it has a higher priority than the calling task. Meanwhile the assignment to &#42;pxCreatedTask is delayed, and the new task runs for some time without a proper taskhandle.  
+I can see this behavior with the debugger and I&#8217;m not sure that this intentionally.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ernie-i">ernie-i</a> on September 21, 2010</div><div class="thread-post-content">To clarify this: the problem is not the pxNewTCB which is part of the context, but the the handle whis is returned by xTaskCreate&#40;…, xTaskHandle &#42;pvCreatedTask&#41;;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 21, 2010</div><div class="thread-post-content">First &#8211; thanks for the kind words.  
+I understand better now the potential issue you are reporting &#8211; however I still don&#8217;t think it is an issue.  
+The handle to a task is just a pointer to the tasks TCB.&nbsp; It is optional as to whether you want this information passed out of the xTaskCreate&#40;&#41; function or not.&nbsp; You would want the handle if you were to do something later on, like delete the task, change its priority, suspend it, etc.  
+In the scenario you describe:  
+1&#41; Task A calls xTaskCreate&#40;&#41; to create Task B, and passes in a valid &#40;non NULL&#41; address for pxCreatedTask.<br />
+2&#41; During the task creation, in the critical section, a tick interrupt becomes due, but is held pending.<br />
+3&#41; As soon as the critical section is exited the tick interrupt executes and selects task B to run.&nbsp; The newly created task does not know its own task handle but can obtain it through the API call that richard&#95;damon pointed out.&nbsp; Normally it doesn&#8217;t need to know its own handle as it can refer to itself by using a NULL handle in API calls anyway &#40;that is normal practice&#41;.&nbsp; At this point pxCreatedTask is <strong>not</strong> assigned, but Task A is not running in any case so it does not matter.<br />
+4&#41; Task B leaves the Running state and the scheduler &#40;at some point in the future&#41; selects Task A to run again.&nbsp; Task A starts from the point it left off, so assigns the task handle to pxCreatedTask before it ever gets a change to actually use the value &#40;it happens before it leaves the xTaskCreateFunction&#41;.  
+In this scenario there should be no issues.&nbsp; However, if TaskA passed in the address of a global variable as pxCreatedTask, and Task B tried using the global variable, then there would be a problem &#8211; but as I said it would not be normal for a task to use its own handle, it should just use NULL as the handle if it wants to manipulate its own state or delete itself.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on September 21, 2010</div><div class="thread-post-content">Richard, while pxCreatedTask will be a local variable &#42;pxCreatedTask may well &#40;in fact I would say often&#41; point to a global. The newly created task could access that variable to attempt to gets its handle for some operations, and in this case it could get an incorrect value. The documentation sort of implies, but doesn&#8217;t really promise, the invariant that the location passed will hold the handle of the task for the life of the task &#40;assume the user doesn&#8217;t destroy the value himself&#41;, but the code really on makes this happen for the calling task without pointing out the limitation. There shouldn&#8217;t be a problem with assigning to the passed handle location before enabling the task, getting around the problem, and this makes the invariant what would be expected.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 21, 2010</div><div class="thread-post-content">I have moved the code:  
+<pre><code>if( ( void * ) pxCreatedTask != NULL )
+{
+    /* Pass the TCB out - in an anonymous way.  The calling function/
+    task can use this as a handle to delete the task later if
+    required.*/
+    *pxCreatedTask = ( xTaskHandle ) pxNewTCB;
+}
+</code></pre>
+to be inside the critical section &#8211; immediately above the line xReturn = pdPASS;&nbsp; This will then be in the next release, which is only a couple of weeks away.  
+This takes care of the global variable case, although the task being created still has the option of just using NULL in place of its task handle.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 21, 2010</div><div class="thread-post-content">Thanks for bringing that to my attention &#8211; by the way.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ernie-i">ernie-i</a> on September 21, 2010</div><div class="thread-post-content">Yes, this is exactly my problem: the new task used the global variable and crashed sometimes. Now I use xTaskGetCurrentTaskHandle&#40;&#41; and it works, but I think richard&#95;damon&#8217;s suggestion to move the assignment should be better.  
+Thanks a lot.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">Little bug in xTaskGenericCreate() ?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on September 21, 2010</div><div class="thread-post-content">Richard, just to point out that I don&#8217;t think that code needs to be inside the critical section, but could be outside of &#40;but before&#41; it, after all the location being modified shouldn&#8217;t be accessed by anyone else until after the end of the critical section or the code is incorrect anyways.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

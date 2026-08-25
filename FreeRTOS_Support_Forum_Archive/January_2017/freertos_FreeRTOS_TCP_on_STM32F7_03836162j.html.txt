@@ -1,0 +1,293 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS+TCP on STM32F7 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2017/freertos_FreeRTOS_TCP_on_STM32F7_03836162j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS+TCP on STM32F7 - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS+TCP on STM32F7Posted by dnil-daniel on January 22, 2017Greetings, I&#8217;ve evaluated the TCP stack from FreeRTOS+TCP version 160919 on the STM32F746 MCU together with FreeRTOS 9.0.0. Using the STM32F4 demo as a base, I&#8217;ve ported the driver layer to the STM32F7 MCU. This process wasn&#8217;t all that straight forward unfortunately, partly since it took some &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2017/freertos_FreeRTOS_TCP_on_STM32F7_03836162j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS+TCP on STM32F7Posted by dnil-daniel on January 22, 2017Greetings, I&#8217;ve evaluated the TCP stack from FreeRTOS+TCP version 160919 on the STM32F746 MCU together with FreeRTOS 9.0.0. Using the STM32F4 demo as a base, I&#8217;ve ported the driver layer to the STM32F7 MCU. This process wasn&#8217;t all that straight forward unfortunately, partly since it took some [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS+TCP on STM32F7 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202756' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202756' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202756' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202756' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146292' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2017%2Ffreertos_FreeRTOS_TCP_on_STM32F7_03836162j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2017%2Ffreertos_FreeRTOS_TCP_on_STM32F7_03836162j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146292">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2017_freertos_support_forum_archive_index.html/">January 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS+TCP on STM32F7</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnil-daniel">dnil-daniel</a> on January 22, 2017</div><div class="thread-post-content">Greetings,
+I&#8217;ve evaluated the TCP stack from FreeRTOS+TCP version 160919 on the STM32F746 MCU together with FreeRTOS 9.0.0. Using the STM32F4 demo as a base, I&#8217;ve ported the driver layer to the STM32F7 MCU. This process wasn&#8217;t all that straight forward unfortunately, partly since it took some time to understand how the ST supplied HAL ethernet driver layer had been altered in this F4 demo, and since I wanted to work on the F7 I could&#8217;t just use the FreeRTOS modifed F4 HAL drivers as is. I ended up modifying the glue layer between +TCP and HAL quite a bit in order not to require any HAL layer changed. At the end of this process I was stuck with a silly intermittent error which causes intermittent TX frame drops, as far as I can tell this is an F7 specific issue which seems to have hit other users as well. My findings are documented towards the end of this thread: https://community.st.com/thread/31587, conclusion is that there appears to be a race condition inside the HAL driver, so I ended up having to apply a small patch to ST HAL layer.
+With my HAL patch in place I have enabled the D-cache on the F7, this cache requires some fairly specific MPU setup to ensure cache coherency. Atmel has a nice presentation on this topic for Cortex-M7, even though it is a different MCU their reasoning behing the GMAC buffer coherency in this presentation holds true also for STM32F7 as far as I can tell: http://atmel.force.com/support/servlet/fileField?id=0BEG000000002X7. What it comes down to is setting up the linker control file and the MPU for a non-cachable memory area to store the MAC buffers. I&#8217;m using the BufferAllocation_1.c allocator, but haven&#8217;t spent the time for a true zero-copy scheme yet.
+To test the stack I ended up using the iperf client/server from this thread: https://sourceforge.net/p/freertos/discussion/382005/thread/211fa5fa/3f27/attachment/iperf<em>plus</em>tcp.zip. This iperf code integrates nicely, but I&#8217;m not convinced about the results yet, the throughput is very assymetrical as in this iperf output (192.168.2.142 is target, 192.168.2.26 is host)
+iperf -c 192.168.2.142 &#8211;dualtest -p 5001 -i 2 -n 128M
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+Client connecting to 192.168.2.142, TCP port 5001
+TCP window size:  144 KByte (default)
+[  5] local 192.168.2.26 port 42152 connected with 192.168.2.142 port 5001
+[  4] local 192.168.2.26 port 5001 connected with 192.168.2.142 port 59766
+[ ID] Interval       Transfer     Bandwidth
+[  5]  0.0- 2.0 sec  22.2 MBytes  93.3 Mbits/sec
+[  4]  0.0- 2.0 sec   161 KBytes   660 Kbits/sec
+[  5]  2.0- 4.0 sec  22.2 MBytes  93.3 Mbits/sec
+[  4]  2.0- 4.0 sec  71.3 KBytes   292 Kbits/sec
+[  4]  4.0- 6.0 sec  71.3 KBytes   292 Kbits/sec
+[  5]  4.0- 6.0 sec  22.2 MBytes  93.3 Mbits/sec
+[  5]  6.0- 8.0 sec  22.1 MBytes  92.8 Mbits/sec
+[  4]  6.0- 8.0 sec  71.3 KBytes   292 Kbits/sec
+[  5]  8.0-10.0 sec  22.1 MBytes  92.8 Mbits/sec
+[  4]  8.0-10.0 sec  71.3 KBytes   292 Kbits/sec
+[  5]  0.0-11.5 sec   128 MBytes  93.1 Mbits/sec
+[  4]  0.0-11.6 sec   502 KBytes   355 Kbits/sec
+While running these tests, there are no errors from the TCP stack. Reason why there seems to be so little data from the target to the host is since the call to FreeRTOS<em>Send() around line 363 inside vIPerfTCPWork() returns -pdFREERTOS</em>ERRNO_ENOSPC and the data to host is not actually sent. I&#8217;m not sure how this iperf server is intended to work and haven&#8217;t gone into details on this yet. But it seems to me that the TCP stack is very busy ACKing data on the socket in the direction towards to host and no resources are left to transmit data on the socket in the other direction. Maybe someone can shed some light on how the stack is intended to work in this scenario? Apart from that, the F7 is running at 192MHz, compiler is gcc 5.4 with newlib, ART and I+D caches enabled, STM32F7xx HAL drivers version 1.1.2.
+All in all, I think the integration of FreeRTOS+TCP is showing promise though the complexity of the intergration towards the platform layer (CMSIS and ST HAL) is quite complex at the moment.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP on STM32F7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on January 23, 2017</div><div class="thread-post-content">Hi Daniel,
+Thanks a lot for reporting all this. We also experienced that it is difficult to write a good Ethernet driver. Especially in combination with memory caching and zero-copy.
+Although it sounds very simple: send packets and pass received packets to the IP stack.
+I struggled with cached memory in combination with DMA. DMA has direct access to the physical memory, so before and after the DMA actions, forced flushing and refreshing has to be done.
+In case of the Xilinx +TCP demo, just like you, we decided to reserve <strong>uncached</strong> RAM, both for +TCP and +FAT.
+Indeed we made some changes to the Cube Ethernet driver <code>stm32f4xx_hal_eth.c</code>. Most of them were optimisations, but I forgot exactly the other changes. I will have a new look at that.
+There was one bug that went unnoticed in the networkInterface.c for STM32F4. The following mask was used
+~~~~
+    #define PHY<em>LINK</em>STATUS        ( ( uint16_t )0x2000 ) /* PHY link status interrupt mask */
+~~~~
+I was mislead by its name <code>PHY_LINK_STATUS</code> where in fact it is an interrupt bit.
+The driver shoul have tested bit-0 in stead, which is the live Link Status:
+~~~~
++    #define PHY<em>SR</em>LINK<em>STATUS       ( ( uint16</em>t )0x0001 ) /* The actual PHY link status <em>/
++    #define PHY_REG_10_PHY_SR        0x10 /</em> PHY status register Offset */
+<pre><code> /* Read the result of the auto-negotiation. */
+</code></pre>
+&#8211;    HAL<em>ETH</em>ReadPHYRegister( &amp;xETH, PHY<em>SR, &amp;ulRegValue);
+&#8211;    if( ( ulRegValue &amp; PHY</em>LINK<em>STATUS ) != 0 )
++    HAL</em>ETH<em>ReadPHYRegister( &amp;xETH, PHY</em>REG<em>10</em>PHY<em>SR, &amp;ulRegValue);
++    if( ( ulRegValue &amp; PHY</em>SR<em>LINK</em>STATUS ) != 0 )
+     {
+         ulPHYLinkStatus |= BMSR<em>LINK</em>STATUS;
+     }
+     else
+     {
+         ulPHYLinkStatus &amp;= ~( BMSR<em>LINK</em>STATUS );
+     }
+~~~~
+iperf : the option with the <code>-dualtest</code> wasn&#8217;t worked-out well enough, due to a lack of time.
+In a meanwhile I developed an iperf v3.0 server, which implements the reverse option (<code>--reverse</code>), among other things.
+~~~~
+    iperf3 -c 192.168.2.106 &#8211;port 5001 &#8211;bytes 10M  /* Normal way: client is sending. <em>/
+    iperf3 -c 192.168.2.106 &#8211;port 5001 &#8211;bytes 10M -R  /</em> reverse option: client is receiving. */
+~~~~
+So if you like, use the attached <code>iperf_task_v3_0c.c</code> source file and run <a href="https://iperf.fr/iperf-download.php">iperf3</a> on your host.
+As for transmission by +TCP : in the Zynq project, I found that zero-copy transmission is profitable, and it is worth to reserve at least 10 full-sized (1536-byte) DMA buffers.  Once all transmission buffers are full (that can happen on a 100 Mbit LAN), the driver will block and wait for a transmission-complete interrupt. This method can be found in the current &#8216;160919&#8217; release (see <code>FreeRTOS-Plus-TCPportableNetworkInterfaceZynqNetworkInterface.c</code>).
+<blockquote>
+   the integration towards the platform layer (CMSIS and ST HAL) is quite complex at the moment.
+</blockquote>
+Yes you are right, it is complex.
+I would (have) like(d) to separate all PHY stuff from the rest. This could have become a separate module.
+What is your next step?
+You could try-out iperf3, it&#8217;s going to show much better results, I&#8217;m sure 🙂
+You might consider uploading your driver to <a href="http://www.freertos.org/Contributing-files-to-FreeRTOS.html">here</a>, so other people can test and use it.
+If you like, you can send me your driver as it is now, and I&#8217;ll have a detailed look. You can attach it to a post, or if you want, send it directly to my email (h point tibosch at freertos point org).
+Thanks again.
+Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP on STM32F7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnil-daniel">dnil-daniel</a> on January 24, 2017</div><div class="thread-post-content">Hi,
+Thanks for the feedback and the updated iperf server code. I just found a little bit of time tonight to test the iperf3 server, but wasn&#8217;t successful yet. I&#8217;ll look in more detail what is going on, but here is what I see currently&#8230;
+On the host:
+iperf3 -c 192.168.2.142 &#8211;port 5001 &#8211;bytes 10M 
+Connecting to host 192.168.2.142, port 5001
+[  4] local 192.168.2.1 port 52668 connected to 192.168.2.142 port 5001
+[ ID] Interval           Transfer     Bandwidth       Retr  Cwnd
+[  4]   0.00-1.00   sec  1.33 MBytes  11.2 Mbits/sec    0   17.1 KBytes<br />
+[  4]   1.00-2.00   sec  1.25 MBytes  10.5 Mbits/sec    0   17.1 KBytes<br />
+[  4]   2.00-3.00   sec  1.28 MBytes  10.7 Mbits/sec    0   17.1 KBytes<br />
+[  4]   3.00-4.00   sec  1.25 MBytes  10.5 Mbits/sec    0   17.1 KBytes<br />
+[  4]   4.00-5.00   sec  1.28 MBytes  10.7 Mbits/sec    0   17.1 KBytes<br />
+[  4]   5.00-6.00   sec  1.25 MBytes  10.5 Mbits/sec    0   17.1 KBytes<br />
+[  4]   6.00-7.00   sec  1.28 MBytes  10.7 Mbits/sec    0   17.1 KBytes       
+<iperf stops here>
+On the device side:
+Info  ../src/iperfserver.c:846 vIPerfTask: created TCP server socket 0x20003d88 bind port 5001: 0 listen 0
+Info  ../src/iperfserver.c:861 vIPerfTask: created UDP server socket 0x20004830 bind port 5001: 0
+Info  ../system/src/freertos-tcp/portable/NetworkInterface/NetworkInterface.c:593 Network buffers: 19 lowest 19
+Info  ../system/src/freertos-tcp/FreeRTOS<em>DHCP.c:809 vDHCPProcess: offer c0a8028eip
+Info  ../system/src/freertos-tcp/FreeRTOS</em>DHCP.c:809 vDHCPProcess: offer c0a8028eip
+Info  ../src/tcpipsupport.c:130 vApplicationIPNetworkEventHook: event 0
+Info  ../src/tcpipsupport.c:189 IP Address: 192.168.2.142
+Info  ../src/tcpipsupport.c:192 Subnet Mask: 255.255.255.0
+Info  ../src/tcpipsupport.c:195 Gateway Address: 192.168.2.1
+Info  ../src/tcpipsupport.c:198 DNS Server Address: 192.168.2.1
+Info  ../system/src/freertos-tcp/portable/NetworkInterface/NetworkInterface.c:593 Network buffers: 18 lowest 18
+Info  ../src/iperfserver.c:235 vIPerfTask: Received a connection from 192.168.2.1:52667
+Info  ../src/iperfserver.c:488 TCP[ port 52667 ] recv[ 0 ] 37
+Info  ../src/iperfserver.c:523 Got Control Socket: rc -1: &#8216;oden.1485296058.471817.5d84ec1c6fa4d&#8217;
+Info  ../src/iperfserver.c:488 TCP[ port 52667 ] recv[ 1 ] 4
+Info  ../src/iperfserver.c:562 TCP skipcount 87 xRecvResult 4
+Info  ../src/iperfserver.c:488 TCP[ port 52667 ] recv[ 2 ] 87
+Info  ../src/iperfserver.c:578 Control string: {&#8220;tcp&#8221;:true,&#8221;omit&#8221;:0,&#8221;num&#8221;:10485760,&#8221;parallel&#8221;:1,&#8221;len&#8221;:131072,&#8221;client_version&#8221;:&#8221;3.1.5&#8243;}
+Info  ../src/iperfserver.c:235 vIPerfTask: Received a connection from 192.168.2.1:52668
+Info  ../src/iperfserver.c:488 TCP[ port 52668 ] recv[ 0 ] 37
+Info  ../src/iperfserver.c:527 Got expected client: rc 0: &#8216;oden.1485296058.471817.5d84ec1c6fa4d&#8217;
+Info  ../system/src/freertos-tcp/portable/NetworkInterface/NetworkInterface.c:593 Network buffers: 17 lowest 17
+Info  ../src/iperfserver.c:488 TCP[ port 52667 ] recv[ 3 ] 1
+Info  ../src/iperfserver.c:633 TCP[ port 52667 ] recv 1 bytes: 0x04
+Info  ../src/iperfserver.c:488 TCP[ port 52667 ] recv[ 4 ] 4
+Info  ../src/iperfserver.c:650 TCP skipcount 4294967260 xRecvResult 4
+Info  ../src/iperfserver.c:488 TCP[ port 52667 ] recv[ 5 ] 220
+Once this &#8220;skipcount 4294967260&#8221; shows up the test hangs. Depending on which host I test from, this either happens right away or as in the example above after a few seconds. I&#8217;ll look into this in more detail later this week. I modified the source slightly to remove some compiler warnings and to enable the &#8220;ipconfigIPERF_VERSION  3&#8221; define, attaching my copy as a reference.
+Plan now is to test the +TCP stack and the driver layer, so try to get something like iperf running. This will give me confidence in the stack and the integration to move over to application development.
+Thanks
+Daniel
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP on STM32F7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on January 25, 2017</div><div class="thread-post-content">Hi Daniel,
+I just used the following settings:
+~~~~
+<h1>define ipconfigIPERF_VERSION                   3</h1>
+<h1>define ipconfigIPERF<em>STACK</em>SIZE<em>IPERF</em>TASK     680</h1>
+<h1>define ipconfigIPERF<em>TX</em>BUFSIZE                ( 4 * ipconfigTCP_MSS )</h1>
+<h1>define ipconfigIPERF<em>TX</em>WINSIZE                ( 2 )</h1>
+<h1>define ipconfigIPERF<em>RX</em>BUFSIZE                ( 8 * ipconfigTCP_MSS )</h1>
+<h1>define ipconfigIPERF<em>RX</em>WINSIZE                ( 4 )</h1>
+~~~~
+and tested iperf3 on a smaller STM32F4
+It showed a good performance.
+The <code>BUFSIZE</code>/<code>WINSIZE</code> parameters determine the TCP buffer sizes and TCP windows size.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP on STM32F7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnil-daniel">dnil-daniel</a> on January 25, 2017</div><div class="thread-post-content">Hi,
+Thanks for the update. I&#8217;ve adjusted slightly and ended up with these settings
+<pre>
+#define ipconfigIPERF_VERSION                   3
+#define ipconfigIPERF_STACK_SIZE_IPERF_TASK     680
+#define ipconfigIPERF_TX_BUFSIZE                ( 6 * ipconfigTCP_MSS )
+#define ipconfigIPERF_TX_WINSIZE                ( 4 )
+#define ipconfigIPERF_RX_BUFSIZE                ( 16 * ipconfigTCP_MSS )
+#define ipconfigIPERF_RX_WINSIZE                ( 4 )
+</pre>
+I&#8217;m now getting consistent high transfer rates and stable performance based on the testing so far. Looks good at this point, so next phase will be to add my own application on top of this stack. Thanks for the support.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP on STM32F7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on May 12, 2017</div><div class="thread-post-content">Hi Sasha, I have a STM32F746 Discovery board now, so I can finally help testing.
+Would you mind sharing your +TCP driver for STM32F7xx?
+The same for Daniel Nilsson ( if you read this post ) or other people using the STM32F7 along with FreeRTOS+TCP.
+You can either attach your source code to a post or send it by email to &#8220;h [ point ] tibosch [ at ] freertos [ point ] org&#8221;. Thanks, Hein
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP on STM32F7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on May 22, 2017</div><div class="thread-post-content">Hi Daniel
+I would stay well clear of the HAL code, it is buggy as hell, and to figure out the problems you can spend more time than writing (and learning from scratch).
+regards
+glen
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP on STM32F7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on May 22, 2017</div><div class="thread-post-content">I don&#8217;t know all details about the HAL code. I read that in the HAL library some choices have been made that not everyone agrees upon.
+I did check and the SDMMC and ETH drivers of both the earlier ST standard library, as well as HAL. I must admit that those two drivers have gotten better through time. The latest SDMMC driver does support more types of memory cards.
+For both drivers, we&#8217;ve added support to make them interrupt-driven, and also we looked at how DMA works together with the caching of the STM32F7. We&#8217;ve added &#8216;Clean&#8217; ( flush ) and &#8216;Invalidate&#8217; statements.
+The SDMMC driver: for some small requests, DMA is not used, and in those cases underflow could occur. We optimised this by reading from the internal FIFO with a simple sequence of statements:
+<pre><code>/* Read data from SDIO Rx FIFO */
+tempbuff[0] = *( pulFIFO );
+tempbuff[1] = *( pulFIFO );
+tempbuff[2] = *( pulFIFO );
+tempbuff[3] = *( pulFIFO );
+tempbuff[4] = *( pulFIFO );
+tempbuff[5] = *( pulFIFO );
+tempbuff[6] = *( pulFIFO );
+tempbuff[7] = *( pulFIFO );
+</code></pre>
+These are small reads, much less than 512 bytes.
+Within a short time, I will post a new driver that should work for both STM32 F4 and F7
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP on STM32F7</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on June 4, 2017</div><div class="thread-post-content">Hi Daniel,
+The new +TCP and +FAT drivers for the STM32F7 are ready to be tested. I just posted then <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/8ddf9629/?limit=250">here.</a>
+They are zero-copy, interrupt driven, and aware of caching (D-cache).
+Please have a try and comment if you like.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

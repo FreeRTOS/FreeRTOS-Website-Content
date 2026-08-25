@@ -1,0 +1,195 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semaphore release in ISR using NIOS II - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/February_2011/freertos_Semaphore_release_in_ISR_using_NIOS_II_4287640.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Semaphore release in ISR using NIOS II - FreeRTOS" />
+<meta property="og:description" content="Semaphore release in ISR using NIOS IIPosted by danyup on February 13, 2011Hello to all, I&#8217;m working on measurements over FreeRTOS for a thesis in Computer Engineering. I&#8217;m using FreeRTOS over NIOS II processor in an Altera FPGA and a custom made board. Here is what i&#8217;m trying to verify: A task is blocked on &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/February_2011/freertos_Semaphore_release_in_ISR_using_NIOS_II_4287640.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Semaphore release in ISR using NIOS IIPosted by danyup on February 13, 2011Hello to all, I&#8217;m working on measurements over FreeRTOS for a thesis in Computer Engineering. I&#8217;m using FreeRTOS over NIOS II processor in an Altera FPGA and a custom made board. Here is what i&#8217;m trying to verify: A task is blocked on [&hellip;]" />
+<meta name="twitter:title" content="Semaphore release in ISR using NIOS II - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201968' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201968' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201968' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201968' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139506' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2011%2Ffreertos_Semaphore_release_in_ISR_using_NIOS_II_4287640.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FFebruary_2011%2Ffreertos_Semaphore_release_in_ISR_using_NIOS_II_4287640.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139506">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/February_2011_freertos_support_forum_archive_index.html/">February 2011 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Semaphore release in ISR using NIOS II</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/danyup">danyup</a> on February 13, 2011</div><div class="thread-post-content">Hello to all,<br />
+I&#8217;m working on measurements over FreeRTOS for a thesis in Computer Engineering. I&#8217;m using FreeRTOS over NIOS II processor in an Altera FPGA and a custom made board.<br />
+Here is what i&#8217;m trying to verify:<br />
+A task is blocked on a semaphore, released by an hardware interrupt that fires once every 650us. I want to see if the task keep the same period of the interrupt and what is the latency of using this method &#40;a task waiting for a semaphore&#41; for interrupt management.<br />
+When the Interrupt management task is executed alone everything is fine: i can see it starting once every 650 us. If I try it with other lower priority tasks I found that the task is launched once every 2ms, that is the RTOS tick period.<br />
+It seems to me that the context switch that should wake the interrupt management task doesn&#8217;t occur until the intervention of FreeRTOS kernel, instead of being forced by the semaphore release function and the macro portEND&#95;SWITCHING&#95;ISR.<br />
+Am I doing something wrong?<br />
+Thanks for your help.<br />
+Here&#8217;s my source code:  
+<pre><code>static void test_irq(void* context){
+portBASE_TYPE highPrioWoken = pdFALSE;
+IOWR(CONTATORE_AVALON_0_BASE, 6, 0);
+xSemaphoreGiveFromISR(semaphore, &amp;highPrioWoken);
+portEND_SWITCHING_ISR(highPrioWoken);
+}
+static portTASK_FUNCTION( vSporadicTask, pvParameters ){
+int i;
+for(i = 0; i&lt;NUMTEST; i++){
+xSemaphoreTake(semaphore, portMAX_DELAY);
+m_testBuffer[i] = alt_timestamp();
+}
+tst_put_open();
+tst_put_string("name", "SporadicTest");
+tst_put_int("numtest", NUMTEST);
+tst_put_int("numtask", NUMTASK);
+tst_put_ulong("TickFreq", alt_timestamp_freq());
+tst_put_ulongbuffer("data", m_testBuffer, NUMTEST);
+tst_put_close();
+vTaskSuspend(NULL);
+}
+static portTASK_FUNCTION( vDummyTask, pvParameters ){
+int m_dummyVar = 0;
+for(;;){
+m_dummyVar++;
+}
+}
+</code></pre>
+Functions starting with tst&#95;put&#95; are custom functions used to put the array containing the timestamps on standard output so that i can retrieve and analyse it. However they are called after the test is completed so they should not affect the correct behaviour of the task.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphore release in ISR using NIOS II</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on February 13, 2011</div><div class="thread-post-content">You don&#8217;t show the code for creating the tasks, but from your description, it sounds like vDummyTask and vSporadicTask are assigned to the same priority level, thus when the semaphore is given, vSporadicTask will not interrupt vDummyTask, but only be scheduled ready and take its turn at the next tick.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphore release in ISR using NIOS II</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/danyup">danyup</a> on February 13, 2011</div><div class="thread-post-content">Uh… sorry for the missing source… However the sporadic task has an higher priority than the dummy task. That&#8217;s why I can&#8217;t explain what&#8217;s happening…  
+void startSporadicTest&#40;&#41;&#123;<br />
+xTaskHandle handle=NULL;<br />
+int basePrio = tskIDLE&#95;PRIORITY+1;<br />
+vSemaphoreCreateBinary&#40;semaphore&#41;;<br />
+if&#40;semaphore &#33;= NULL&#41;&#123;<br />
+xSemaphoreTake&#40;semaphore, 0&#41;;<br />
+&#125;<br />
+createDummyTasks&#40;NUMTASK, basePrio&#41;;<br />
+alt&#95;ic&#95;isr&#95;register&#40;SYSID&#95;IRQ&#95;INTERRUPT&#95;CONTROLLER&#95;ID, CONTATORE&#95;AVALON&#95;0&#95;IRQ,test&#95;irq, NULL, NULL&#41;; //registering interrupt function<br />
+IOWR&#40;CONTATORE&#95;AVALON&#95;0&#95;BASE, 4, 1&#41;; //Enabling interrupt<br />
+m&#95;testBuffer = pvPortMalloc&#40; NUMTEST &#42; sizeof&#40;alt&#95;u32&#41; &#41;;<br />
+if&#40;&#33;m&#95;testBuffer&#41;&#123;<br />
+printf&#40;&#8221;Errore&#33;&#33; Impossibile creare il buffer m&#95;testBuffern&#8221;&#41;;<br />
+&#125;<br />
+xTaskCreate&#40;vSporadicTask, &#40;signed char &#42;&#41; &#8220;Test&#8221;, configMINIMAL&#95;STACK&#95;SIZE, NULL, basePrio+1, &amp;handle&#41;;<br />
+&#125;  
+void createDummyTasks&#40;int numtasks, int prio&#41;&#123;<br />
+int i;<br />
+xTaskHandle m&#95;handle=NULL;<br />
+for&#40;i = 0; i &lt; numtasks; i++&#41;&#123;<br />
+xTaskCreate&#40;vDummyTask, &#40;signed char &#42;&#41; &#8220;Dummy&#8221;, DUMMYSTACK, NULL, prio, &amp;m&#95;handle&#41;;<br />
+if&#40;&#33;m&#95;handle&#41;&#123;<br />
+printf&#40;&#8221;Errore&#33;&#33; Memoria insufficiente per il task %dn&#8221;, i&#41;; //That is out of memory<br />
+&#125;<br />
+&#125;<br />
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphore release in ISR using NIOS II</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/danyup">danyup</a> on February 13, 2011</div><div class="thread-post-content">I forgot the code tag… :&#40;<br />
+Why can&#8217;t I edit the post?<br />
+However thanks for your reply
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphore release in ISR using NIOS II</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on February 13, 2011</div><div class="thread-post-content">One thought, is configMAX&#95;PRIORITIES &#40;in FreeRTOSConfig.H&#41; at least 3? &#40;Since you have 3 priorities, 0, 1, 2&#41;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphore release in ISR using NIOS II</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/danyup">danyup</a> on February 16, 2011</div><div class="thread-post-content">Yes, it is… configMAX&#95;PRIORITIES is set to 5.<br />
+Is there someone else who tried this kind of test? Even with different platform?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Semaphore release in ISR using NIOS II</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on February 17, 2011</div><div class="thread-post-content">I will say that I have a somewhat similar structure in one of my projects, with a task that is woken up via a semaphore connected to a higher speed interrupt than the tick interrupt. and it runs fine. I will admit I don&#8217;t have the equivalent of your dummy task that is just wasting time.  
+My only suggestion would be &#40;if possible&#41; to trace with a debugger through the give and switch to see why the task isn&#8217;t starting.  
+The only thing I see that looks unusual to me is that the line m&#95;testbuffer = alt&#95;timestamp&#40;&#41;; seems to keep setting the same variable each time, I would expect it to be m&#95;testbuffer_ = alt&#95;timestamp&#40;&#41;; or something like that._
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

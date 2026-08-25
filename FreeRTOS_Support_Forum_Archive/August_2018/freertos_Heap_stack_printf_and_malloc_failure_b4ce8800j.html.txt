@@ -1,0 +1,242 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heap, stack, printf and malloc failure - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2018/freertos_Heap_stack_printf_and_malloc_failure_b4ce8800j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Heap, stack, printf and malloc failure - FreeRTOS" />
+<meta property="og:description" content="Heap, stack, printf and malloc failurePosted by zetter on August 15, 2018Sorry for the somewhat vague subject, but I&#8217;m not really sure where our problems generate from. Probably a lack of understanding of the way FreeRTOS allocates memory. We&#8217;re rewriting a project based on an Atxmega256 without any OS where we basically wrote everything ourselves &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2018/freertos_Heap_stack_printf_and_malloc_failure_b4ce8800j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Heap, stack, printf and malloc failurePosted by zetter on August 15, 2018Sorry for the somewhat vague subject, but I&#8217;m not really sure where our problems generate from. Probably a lack of understanding of the way FreeRTOS allocates memory. We&#8217;re rewriting a project based on an Atxmega256 without any OS where we basically wrote everything ourselves [&hellip;]" />
+<meta name="twitter:title" content="Heap, stack, printf and malloc failure - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202994' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202994' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202994' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202994' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147284' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2018%2Ffreertos_Heap_stack_printf_and_malloc_failure_b4ce8800j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2018%2Ffreertos_Heap_stack_printf_and_malloc_failure_b4ce8800j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147284">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2018_freertos_support_forum_archive_index.html/">August 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Heap, stack, printf and malloc failure</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zetter">zetter</a> on August 15, 2018</div><div class="thread-post-content">Sorry for the somewhat vague subject, but I&#8217;m not really sure where our problems generate from. Probably a lack of understanding of the way FreeRTOS allocates memory.
+We&#8217;re rewriting a project based on an Atxmega256 without any OS where we basically wrote everything ourselves to be based on FreeRTOS. We&#8217;re currently having some troubles with memory allocation. Every now and then the vApplicationMallocFailedHook is called, and we&#8217;re not really sure why, we should have alot of free memory. Maybe someone with a better understanding of FreeRTOS can shed som light on this.
+First of all, we&#8217;re running the code on an ATSAM4E16E . The project uses FreeRTOS 10 with FreeRTOS+TCP and FreeRTOS+FAT. The current code samples the internal thermometer from the ATSAM every 100 ms and writes the sample to a text-file on an SD-card. A parrallel task reads from the same file (implemented with a binary semaphore) and uploads the data to a server via Ethernet. A third task is running a small web server. We based the web server code on the sample code available with FreeRTOS+TCP but rewrote it to serve pages located in predefined strings instead of reading files from the flash. The idea is that the production code will also feature the web-server, and we don&#8217;t want to write html-files to an external flash memory in production. This of course leads to alot of strings defined in memory, but the pages served are very minimal compared to the amount of SRAM available.
+So, first of all, the ATSAM has 128 Kbytes of Embedded SRAM.  Since almost all code is run inside FreeRTOS tasks we&#8217;ve tried to alllocate as much memory as possible to the FreeRTOS heap. However, the linker complains that we&#8217;ve run out of ram during build if we set configTOTAL<em>HEAP</em>SIZE to more than 96&#215;1024 (96 kB). It doesn&#8217;t really ad up that the code outside the FreeRTOS tasks would require that much memory. Have we missed something? Shouldn&#8217;t we&#8217;ve be able to set it to close to 128&#215;1024?
+Also, we&#8217;ve assigned a total of 15 kB of stack stack (4xthe sum of all stack depth given to the tasks in xTaskCreate). But, when we poll xPortGetFreeHeapSize() it&#8217;s typically at 40 kB. Shouldnt it be around 80 kB? xPortGetMinimumEverFreeHeapSize() is often down to about 20 kB. Where&#8217;s all the heap going? Shouldnt the sum of all available stack be the maximum amount of memory consumed by the tasks? We&#8217;re using heap4.
+For the individual tasks, the usStackHighWaterMark shows reasonable values with quite low memory usage.
+So, to the real problem. Except for the desire to understand the memory allocation better we&#8217;re having some crashes. Every now and then the vApplicationMallocFailedHook is called. It seems to occur more often when the system is stressed (reload the web pages fast while doing alot of other stuff), but sometimes it will just occur after a while of normal operation. At first, the malloc failures were quite frequent, but we recently realized the IDLE task didn&#8217;t have time to run often enough and therefore didn&#8217;t have time to free memory from other tasks. We&#8217;ve since decreased the priority of almost all tasks to the lowest priority so that IDLE can run more. This decreased the problem but didn&#8217;t make it go away. If a task is running out of memory, shouldn&#8217;t the vApplicationStackOverflowHook be called for that task? The stack overflow detection is working and has been called every now and then during development when we&#8217;ve allocated to little stack to a task.
+Could the problems be related to printf and snprintf? We&#8217;ve implemented our own logger so we can call Logger<em>info(format, &#8230;.) and Logger</em>debug(format, &#8230;.) in the code. The calls are defined as a function that adds <strong>FUNCTION</strong>, <strong>FILE</strong> and <strong>LINE</strong> and RTC time to the debug string via vprintf. It&#8217;s used quite extensively in the code.
+The other suspect is snprintf which we use alot for building the HTML pages. The html pages are defined as strings, e.g. &#8220;<td>free heap</td><td>%d</td>&#8221; which is used in funtions to add html code with values from various parts of the system to a buffer with snprintf. The buffer is then streamed in chunks to the HTTP client via Ethernet.
+Have we misunderstood something in the way FreeRTOS handles memory?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Heap, stack, printf and malloc failure</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 15, 2018</div><div class="thread-post-content">Which heap memory implementation are you using for FreeRTOS?  heap<em>1.c 
+to heap</em>5.c are available in the download. 
+https://www.freertos.org/a00111.html
+Which buffer allocation scheme are you using for the TCP stack? 
+https://www.freertos.org/FreeRTOS-Plus/FreeRTOS<em>Plus</em>TCP/Embedded<em>Ethernet</em>Buffer_Management.html
+<blockquote>
+  However, the linker 
+  complains that we&#8217;ve run out of ram during build if we set 
+  configTOTAL<em>HEAP</em>SIZE to more than 96&#215;1024 (96 kB). 
+</blockquote>
+You can check the map file output by the compiler to see where the other 
+RAM is being allocated.
+<blockquote>
+  Also, we&#8217;ve assigned a total of 15 kB of stack stack (4xthe sum of all 
+  stack depth given to the tasks in xTaskCreate). But, when we poll 
+  xPortGetFreeHeapSize() it&#8217;s typically at 40 kB. Shouldnt it be around 80 
+  kB? xPortGetMinimumEverFreeHeapSize() is often down to about 20 kB. 
+  Where&#8217;s all the heap going? Shouldnt the sum of all available stack be 
+  the maximum amount of memory consumed by the tasks? We&#8217;re using heap4.
+</blockquote>
+Remember stacks are specified in words, not bytes, so if you set the 
+stack size to 1K when calling xTaskCreate() on a SAM you will get 4K 
+bytes of stack as the word size is 4 bytes.
+<blockquote>
+  So, to the real problem. Except for the desire to understand the memory 
+  allocation better we&#8217;re having some crashes. Every now and then the 
+  vApplicationMallocFailedHook is called. It seems to occur more often 
+  when the system is stressed (reload the web pages fast while doing alot 
+  of other stuff), but sometimes it will just occur after a while of 
+  normal operation. At first, the malloc failures were quite frequent, but 
+  we recently realized the IDLE task didn&#8217;t have time to run often enough 
+  and therefore didn&#8217;t have time to free memory from other tasks. We&#8217;ve 
+  since decreased the priority of almost all tasks to the lowest priority 
+  so that IDLE can run more. This decreased the problem but didn&#8217;t make it 
+  go away.
+</blockquote>
+In FreeRTOS V10 that should only make a difference if a task deletes 
+itself.  If a task deletes another task then the memory for the deleted 
+task will get freed immediately.  Do you have tasks deleting themselves?
+<blockquote>
+  Could the problems be related to printf and snprintf? We&#8217;ve implemented 
+  our own logger so we can call Logger<em>info(format, &#8230;.) and 
+  Logger</em>debug(format, &#8230;.) in the code. The calls are defined as a 
+  function that adds <em>FUNCTION</em>, <em>FILE</em> and <em>LINE</em> and RTC time to the 
+  debug string via vprintf. It&#8217;s used quite extensively in the code.
+</blockquote>
+Potentially.  Which printf() implementation are you using?  The one that 
+comes with Atmel studio?  You might find printf() calls malloc(), but if 
+you are using any heap allocation scheme other than heap_3.c you would 
+normally set the size of the heap allocated by the linker to 0 as it 
+isn&#8217;t used &#8211; hence something calling the standard C malloc internally 
+can be a problem.  In general, printf() like functions in GCC can use a 
+LOT of stack, but I don&#8217;t think they would normally use much heap.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Heap, stack, printf and malloc failure</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zetter">zetter</a> on August 15, 2018</div><div class="thread-post-content">Richard Barry, thanks for the quick response!
+<strong>Which heap memory implementation are you using for FreeRTOS? heap1.c  to heap5.c are available in the download.</strong>
+We&#8217;re using heap4.c.
+**Which buffer allocation scheme are you using for the TCP stack? **
+BufferAllocation<em>2.c. We haven&#8217;t really thought to much about the buffer allocation but rather used the same one as in the demo without looking closely at it. Now, reading about it, it states: &#8220;The TCP/IP stack will recover from a failed attempt to allocate   a network buffer, however, as the standard heap implementation is used such a failure will result in the malloc failed hook being called (if configUSE</em>MALLOC<em>FAILED</em>HOOK is set to 1 in FreeRTOSConfig.h).&#8221; That might be the issue. However, it can&#8217;t se why it would consume that much heap.
+<strong>Remember stacks are specified in words, not bytes, so if you set the 
+stack size to 1K when calling xTaskCreate() on a SAM you will get 4K 
+bytes of stack as the word size is 4 bytes.</strong>
+Yes, we multiply the stack size with sizeof(portSTACK_TYPE) when calculating the number of bytes allocated in total to all tasks. It ads up to 15 kB, so something else is consuming the heap.
+<strong>In FreeRTOS V10 that should only make a difference if a task deletes 
+itself. If a task deletes another task then the memory for the deleted 
+task will get freed immediately. Do you have tasks deleting themselves?</strong>
+Well, one task that inits the storage (FreeRTOS+FAT) deletes itself. We would prefer not running it in a task, but there were some parts of +FAT that required it related to locking. Otherwise the tasks run continously. I&#8217;m not sure about the FreeRTOS<em>TCP</em>server though. We have only modified the FreeRTOS<em>HTTP</em>server.c, which runs with the FreeRTOS<em>TCP</em>server. I guess that code might create stuff dynamically.
+<strong>Potentially. Which printf() implementation are you using? The one that 
+comes with Atmel studio? You might find printf() calls malloc(), but if 
+you are using any heap allocation scheme other than heap_3.c you would 
+normally set the size of the heap allocated by the linker to 0 as it 
+isn&#8217;t used &#8211; hence something calling the standard C malloc internally 
+can be a problem. In general, printf() like functions in GCC can use a 
+LOT of stack, but I don&#8217;t think they would normally use much heap.</strong>
+We&#8217;re not using Atmel Studio but rather our own makefile with the arm-none-eabi toolchain.
+Best regards,
+Fredrik
+</div></div><div class="thread-post"><h3 class="thread-post-title">Heap, stack, printf and malloc failure</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 15, 2018</div><div class="thread-post-content"><blockquote>
+<pre><code>"The TCP/IP stack will recover from a failed attempt to allocate a
+network buffer, however, as the standard heap implementation is used
+such a failure will result in the malloc failed hook being called
+(if configUSE_MALLOC_FAILED_HOOK is set to 1 in FreeRTOSConfig.h)."
+That might be the issue. However, it can't se why it would consume
+that much heap.
+</code></pre>
+</blockquote>
+Put a break point in the malloc failed hook then look a the callstack. 
+If it is just a network buffer that failed to allocated, perhaps because 
+there was a lot of network traffic at that time, then the hook can 
+safely return and the TCP protocol will do whatever is necessary.
+<blockquote>
+<pre><code>arm-none-eabi toolchain.
+</code></pre>
+</blockquote>
+You could use newlib nano then.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Heap, stack, printf and malloc failure</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zetter">zetter</a> on August 16, 2018</div><div class="thread-post-content">We don&#8217;t really have any debug setup yet, using printf-debugging so far. Is there any way to print the call stack in FreeRTOS? Even if it turns out to be the ethernet buffers, I still have a hard time understanding why they would consume that much heap. We have one open socket to the server where we upload data, and I guess the FreeRTOS<em>TCP</em>Server opens sockets on incomming requests.
+<strong>You could use newlib nano then.</strong>
+I think we&#8217;re allready using newlib (probably not nany, ARM stataes that the toolchain is based on newlib on the download pageI). There seems to be some varying opinions on wether this is a good idea or not to use newlib. In the end, some version of printf-stdarg.c seems to be recommended. Would you agree?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Heap, stack, printf and malloc failure</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 16, 2018</div><div class="thread-post-content">To see the stack you really need a debugger.
+A network could conceivably consume many packets if there was heavy 
+traffic, especially if there are lots of broadcast messages.  Make sure 
+you don&#8217;t have the network card in promiscuous mode &#8211; basically perform 
+as much filtering in the hardware, or at least before you need a buffer, 
+as possible.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Heap, stack, printf and malloc failure</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zetter">zetter</a> on August 16, 2018</div><div class="thread-post-content">Richard, ok, thanks for the great support!
+We have ipconfigNETWORK<em>MTU set to 1500 and ipconfigNUM</em>NETWORK<em>BUFFER</em>DESCRIPTORS set to 45 which I guess would make a total of ~66 kB buffer allocation possible. If that would happen, the heap would defenetely run out. Maybe we should decrease theese values significantly? I&#8217;m unsure about the hardware filtering. We&#8217;re using the gmac, gmac<em>raw, gmac</em>phy and ethernet<em>phy drivers from ASF 3.4. We&#8217;ve based our network</em>interface.c on the example found in the FreeRTOS+TCP demo for Atsam4E16E with some minor changes (If I remember correctly, as missing include). If filtering of packets isn&#8217;t working, and the buffers can sum up to ~66kB + some overhead, this would most lilkely cause issues since the test unit is connected to our office network with alot of traffic.
+Also, maybe we should switch to printf-stdarg.c from FreeRTOS+TCP just to avoid possible excessive heap usage.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Heap, stack, printf and malloc failure</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/zetter">zetter</a> on August 17, 2018</div><div class="thread-post-content">For Richard and anyone who might stumble upon similar problems in the future:
+We switched to printf-stdarg.c from FreeRTOS+TCP which drastically decreased stack usage for most tasks. Works well, even though it didn&#8217;t do much for heap usage.
+We analyzed the heap usage a little more, and as Richard suggested above, it seems to be related to network traffic. We therefore decreased the ipconfigNETWORK<em>MTU to 586 (lowest possible with DHCP) and ipconfigNUM</em>NETWORK<em>BUFFER</em>DESCRIPTORS to 10 (just a low number as suggested by the FreeRTOS example config page for low RAM usage). This freed up a bunch of heap during heavy network usage, and it looks like it has solved our problems.
+We&#8217;ll keep analysing the behavour and keep logging the findings here if the problem wasn&#8217;t solved by the above.
+Thanks again for the support.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Heap, stack, printf and malloc failure</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 17, 2018</div><div class="thread-post-content">Thanks for taking the time to report back.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

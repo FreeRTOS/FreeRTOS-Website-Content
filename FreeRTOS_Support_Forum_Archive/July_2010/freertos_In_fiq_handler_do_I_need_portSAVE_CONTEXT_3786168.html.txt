@@ -1,0 +1,157 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>In fiq_handler, do I need portSAVE_CONTEXT? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2010/freertos_In_fiq_handler_do_I_need_portSAVE_CONTEXT_3786168.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="In fiq_handler, do I need portSAVE_CONTEXT? - FreeRTOS" />
+<meta property="og:description" content="In fiq_handler, do I need portSAVE_CONTEXT?Posted by cynergizer on July 27, 2010Does my fiq&#095;handler need to call portSAVE&#095;CONTEXT&#040;&#041; and portRESTORE&#095;CONTEXT the way my vectored IRQ handlers do?&nbsp; For an FIQ handler, this sure seems like a lot of overhead. &#040;I have a demanding app where microseconds matter&#041;.&nbsp; I saw some references to portENTER&#095;FIQ&#040;&#041; and portEXIT&#095;FIQ&#040;&#041;, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2010/freertos_In_fiq_handler_do_I_need_portSAVE_CONTEXT_3786168.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="In fiq_handler, do I need portSAVE_CONTEXT?Posted by cynergizer on July 27, 2010Does my fiq&#095;handler need to call portSAVE&#095;CONTEXT&#040;&#041; and portRESTORE&#095;CONTEXT the way my vectored IRQ handlers do?&nbsp; For an FIQ handler, this sure seems like a lot of overhead. &#040;I have a demanding app where microseconds matter&#041;.&nbsp; I saw some references to portENTER&#095;FIQ&#040;&#041; and portEXIT&#095;FIQ&#040;&#041;, [&hellip;]" />
+<meta name="twitter:title" content="In fiq_handler, do I need portSAVE_CONTEXT? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201927' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201927' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201927' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201927' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138279' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2010%2Ffreertos_In_fiq_handler_do_I_need_portSAVE_CONTEXT_3786168.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2010%2Ffreertos_In_fiq_handler_do_I_need_portSAVE_CONTEXT_3786168.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138279">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2010_freertos_support_forum_archive_index.html/">July 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">In fiq_handler, do I need portSAVE_CONTEXT?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cynergizer">cynergizer</a> on July 27, 2010</div><div class="thread-post-content">Does my fiq&#95;handler need to call portSAVE&#95;CONTEXT&#40;&#41; and portRESTORE&#95;CONTEXT the way my vectored IRQ handlers do?&nbsp; For an FIQ handler, this sure seems like a lot of overhead. &#40;I have a demanding app where microseconds matter&#41;.&nbsp; I saw some references to portENTER&#95;FIQ&#40;&#41; and portEXIT&#95;FIQ&#40;&#41;, but it is not available in my port for the lpc2xxx on the Rowley compiler.&nbsp; Ultimately, if I rewrite my fiq handler in assembly using only the registers unique to the FIQ mode &#40;F7&#95;fiq to R14&#95;fiq&#41;, shouldn&#8217;t I be able to avoid a lot of this pushing and popping?
+</div></div><div class="thread-post"><h3 class="thread-post-title">In fiq_handler, do I need portSAVE_CONTEXT?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/williamdavy">williamdavy</a> on July 27, 2010</div><div class="thread-post-content">Hi Cynergyizer,  
+I am not 100% familiar with your platform/compiler but I can tell you that generally speaking you only need to save restore context if you are interacting with the Kernel in some way. If you call any of the queue functionality or anything else that could trigger a Task switch, then you need to save and restore the context at the beginning and end of your interrupt handlers.  
+Otherwise, as long as there is no chance of a task switch then you are free to write what interrupt handler you want. Indeed, for ports where there is interrupt nesting, typically, the RTOS reserves the lower half of the priorities for interrupts with xQueueSendFromISR and xQueueReceiveFromISR and the top half for half for v.fast interrupt handlers. Therefore, you need to ensure that all of the Kernel interrupts are masked off as well when you are writing your handler.  
+I hope that answers your question?  
+Regards,<br />
+&nbsp;&nbsp;&nbsp; William
+</div></div><div class="thread-post"><h3 class="thread-post-title">In fiq_handler, do I need portSAVE_CONTEXT?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cynergizer">cynergizer</a> on July 28, 2010</div><div class="thread-post-content">Hi William, this is helpful. Thank you.
+</div></div><div class="thread-post"><h3 class="thread-post-title">In fiq_handler, do I need portSAVE_CONTEXT?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cynergizer">cynergizer</a> on July 28, 2010</div><div class="thread-post-content">I have some interrupt handlers in which I do not need to trigger an RTOS context switch, but when I try commenting out portSAVE&#95;CONTEXT&#40;&#41;; and portRESTORE&#95;CONTEXT&#40;&#41;; below, my interrupts no longer work properly.&nbsp; I have verified that I have this identical problem for 2 different vectored interrupt types that have no RTOS interaction:&nbsp; external and timer1 &#40;on lpc2148&#41;.&nbsp; For both, they work perfectly provided I make these save and restore calls, but if I don&#8217;t the interrupt never gets cleared and repeatedly fires. Does anyone know why this might be?&nbsp; I had thought that perhaps the portSAVE&#95;CONTEXT call was introducing a needed timing delay, and tried replacing it with some code that produced equivalent timing delay to see if this would work just as well.&nbsp;&nbsp; Not so. Then I thought maybe it had something to do with the IRQ and FIQ bits in the CPSR, so I tried replacing the lines with portDISABLE&#95;INTERRUPTS&#40;&#41; and portENABLE&#95;INTERRUPTS.&nbsp; This didn&#8217;t work either.&nbsp; I realize that Rowley doesn&#8217;t support freeRTOS and conversely, there is not an freeRTOS port specific to Rowley &#40;I&#8217;m using the GNU port&#41;.&nbsp; Perhaps the problem lies in the differences between the GNU and Rowley compiler/Rowley startup code?&nbsp;&nbsp; &#40;You&#8217;ll notice that I&#8217;m not using the GNU interrupt attribute because I don&#8217;t think Rowley recommends it.&#41;&nbsp; Here&#8217;s the code:  
+static void vTimer1&#95;ISREntry&#40;void&#41; &#95;&#95;attribute&#95;&#95; &#40;&#40;naked&#41;&#41;;<br />
+static void vTimer1&#95;ISRHandler&#40;void&#41; &#95;&#95;attribute&#95;&#95; &#40;&#40;noinline&#41;&#41;;  
+static void vTimer1&#95;ISREntry&#40;void&#41;<br />
+&#123;<br />
+&nbsp; portSAVE&#95;CONTEXT&#40;&#41;;<br />
+&nbsp; vTimer1&#95;ISRHandler&#40;&#41;;<br />
+&nbsp; portRESTORE&#95;CONTEXT&#40;&#41;;<br />
+&#125;  
+static void vTimer1&#95;ISRHandler&#40;void&#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp; static const unsigned long CLEAR&#95;VIC&#95;INTERRUPT = 0;&nbsp;&nbsp;&nbsp;&nbsp;   
+&nbsp;&nbsp;&nbsp; toggleLed&#40;20&#41;;  
+&nbsp;&nbsp;&nbsp; // Clear all timer1 interrupts<br />
+&nbsp;&nbsp;&nbsp; T1&#95;IR = 0xFF;  
+&nbsp;&nbsp;&nbsp; // Clear interrupt in VIC<br />
+&nbsp;&nbsp;&nbsp; VIC&#95;VectAddr = CLEAR&#95;VIC&#95;INTERRUPT;<br />
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">In fiq_handler, do I need portSAVE_CONTEXT?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/williamdavy">williamdavy</a> on July 28, 2010</div><div class="thread-post-content">Okay. I will try to find some time tomorrow to have a look at the port layer files that you started from, I would like to know what those macros contain. Which port is it? LPC2168 GCC?  
+The portSAVE&#95;CONTEXT&#40;&#41; and restore will be allowing you to do work with the registers and the stack and then replacing anything you clobbered. Without those macros, you need to make sure that any registers that your C code clobbers, or any space you take up on the stack is reclaimed at the end of the interrupt entry function. The easiest way to do this is to look at the disassembly when you are debugging and follow the pre-amble through, ensuring that the before the &#8216;return from interrupt&#8217; assembly instruction is called, that all of the registers have identical/expected values in them. It could even be something as trivial as the PSW status bits aren&#8217;t the same.  
+Typically, you would push as many registers as you need to the stack, use the registers you have saved and then pop those registers back off the stack. I would have hoped that the compiler has some way of declaring interrupt handlers so that you don&#8217;t need to do this manually but it could be that FIQ handlers are intended to be hand-coded to make them as fast as possible, hence why you are not getting the protection.
+</div></div><div class="thread-post"><h3 class="thread-post-title">In fiq_handler, do I need portSAVE_CONTEXT?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cynergizer">cynergizer</a> on July 28, 2010</div><div class="thread-post-content">Hi William,<br />
+I think you&#8217;re right &#8211; it doesn&#8217;t look like the Rowley assembly in my project is doing the pushing and popping for me, and that the port save and restore makes it work since it does it for me.&nbsp; I am surprised as well, as I have never seen a vendor that didn&#8217;t do this.&nbsp; But I know that there are various assembly files that are included in the build depending on which Rowley project type I choose &#8211; I guess I chose the wrong type.&nbsp; I have this problem regardless of whether I use vectored IRQs or FIQs.&nbsp; I&#8217;ll try adding in code to push and pop the registers, and that should do the trick.&nbsp; By doing it myself, I&#8217;ll also be able to optimize them.&nbsp; I&#8217;m using the GCC port for ARM7&#95;LPC2000, V6.0.5 released mid-May 2010.&nbsp; Thanks again for your thoughtful response.
+</div></div><div class="thread-post"><h3 class="thread-post-title">In fiq_handler, do I need portSAVE_CONTEXT?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 28, 2010</div><div class="thread-post-content">Most compilers have some way to declare that a function is an ISR and needs to have the context saved based on this condition. Often this saves more context than a general subroutine, as the calling convention rules often declare some registers a &#8220;scrap&#8221; and if a caller needs them saved over the call it is their responsibility, not the subroutine, an interrupt routine must of course save all registers that it might use. In your case, you haven&#8217;t declared the function to be an ISR, but have declared it just the opposite, to be &#8220;naked&#8221; which means that the compiler will generate NO prologue/epilogue to save registers &#40;because we need to use the FreeRTOS macros to make sure they are done identically in all usages. If you then remove these saves, your ISR will clobber the registers it used.&nbsp;
+</div></div><div class="thread-post"><h3 class="thread-post-title">In fiq_handler, do I need portSAVE_CONTEXT?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cynergizer">cynergizer</a> on July 29, 2010</div><div class="thread-post-content">This makes sense.&nbsp; Thanks for your nice explanation Richard&#33;
+</div></div><div class="thread-post"><h3 class="thread-post-title">In fiq_handler, do I need portSAVE_CONTEXT?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cynergizer">cynergizer</a> on July 29, 2010</div><div class="thread-post-content">I&#8217;ve tested that my interrupts work just fine when I declare my interrupt handlers with<br />
+void ext1&#95;handler &#40;void&#41;&#95;&#95;attribute&#95;&#95;&#40;&#40;interrupt&#40;&#8221;IRQ&#8221;&#41;&#41;&#41;;<br />
+void fiq&#95;handler &#40;void&#41;&#95;&#95;attribute&#95;&#95;&#40;&#40;interrupt&#40;&#8221;FIQ&#8221;&#41;&#41;&#41;;<br />
+for IRQ and FIQ respectively.&nbsp; I also remove the calls to save and restore context.&nbsp; The compiler generates very fast push and pop assembly for me given these attributes.&nbsp; Nice to have options&#33;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

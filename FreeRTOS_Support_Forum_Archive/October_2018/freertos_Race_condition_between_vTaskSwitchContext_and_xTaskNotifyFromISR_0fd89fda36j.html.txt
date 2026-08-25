@@ -1,0 +1,434 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Race condition between vTaskSwitchContext and xTaskNotifyFromISR? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/October_2018/freertos_Race_condition_between_vTaskSwitchContext_and_xTaskNotifyFromISR_0fd89fda36j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Race condition between vTaskSwitchContext and xTaskNotifyFromISR? - FreeRTOS" />
+<meta property="og:description" content="Race condition between vTaskSwitchContext and xTaskNotifyFromISR?Posted by n1vg on October 9, 2018I&#8217;m running FreeRTOS 10.0.1 on a Kinetis MK22FN1M0AVLH12 (Cortex M4F core), specifically the MCUonEclipse port, with MCUXpresso and gcc. I&#8217;ve been chasing an intermittent crash for weeks and I&#8217;m finally narrowing in on it. I have a temporary fix that seems to be working &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/October_2018/freertos_Race_condition_between_vTaskSwitchContext_and_xTaskNotifyFromISR_0fd89fda36j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Race condition between vTaskSwitchContext and xTaskNotifyFromISR?Posted by n1vg on October 9, 2018I&#8217;m running FreeRTOS 10.0.1 on a Kinetis MK22FN1M0AVLH12 (Cortex M4F core), specifically the MCUonEclipse port, with MCUXpresso and gcc. I&#8217;ve been chasing an intermittent crash for weeks and I&#8217;m finally narrowing in on it. I have a temporary fix that seems to be working [&hellip;]" />
+<meta name="twitter:title" content="Race condition between vTaskSwitchContext and xTaskNotifyFromISR? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203018' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203018' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203018' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203018' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147374' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2018%2Ffreertos_Race_condition_between_vTaskSwitchContext_and_xTaskNotifyFromISR_0fd89fda36j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FOctober_2018%2Ffreertos_Race_condition_between_vTaskSwitchContext_and_xTaskNotifyFromISR_0fd89fda36j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147374">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/October_2018_freertos_support_forum_archive_index.html/">October 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on October 9, 2018</div><div class="thread-post-content">I&#8217;m running FreeRTOS 10.0.1 on a Kinetis MK22FN1M0AVLH12 (Cortex M4F core), specifically the MCUonEclipse port, with MCUXpresso and gcc.
+I&#8217;ve been chasing an intermittent crash for weeks and I&#8217;m finally narrowing in on it.  I have a temporary fix that seems to be working but I don&#8217;t see why it&#8217;d be necessary.  It&#8217;s been hard to track down until now because it&#8217;d usually take hours to crash.
+What&#8217;s happening is that vTaskSwitchContext is sometimes being interrupted by a flex timer peripheral IRQ which uses xTaskNotifyFromISR.   Normally this works fine, but if the interrupt happens at the wrong place in listGET<em>OWNER</em>OF<em>NEXT</em>ENTRY it ends up setting pxCurrentTCB to null and the system crashes &#8211; with the stack clobbered, which has been slowing down my debugging.  The SysTick and PendSV priorities are set to 15 (minimum), and the maximum API call priority is 5.  The timer IRQ is set to priority 7 at the moment. 
+To make the problem more apparent and speed up testing, I changed listGET<em>OWNER</em>OF<em>NEXT</em>ENTRY to include a delay (line continuation backslashes omitted for clarity):
+~~~
+<h1>define listGET<em>OWNER</em>OF<em>NEXT</em>ENTRY( pxTCB, pxList )</h1>
+{<br />
+List_t * const pxConstList = ( pxList );
+    /* Increment the index to the next item and return the item, ensuring */
+    /* we don&#8217;t return the marker used at the end of the list.  */
+    ( pxConstList )->pxIndex = ( pxConstList )->pxIndex->pxNext;
+    if( ( void * ) ( pxConstList )->pxIndex == ( void * ) &amp;( ( pxConstList )->xListEnd ) )
+    {
+        ( pxConstList )->pxIndex = ( pxConstList )->pxIndex->pxNext;
+    }
+    for (int ix = 2000; ix; ix&#8211;) {};
+    ( pxTCB ) = ( pxConstList )->pxIndex->pvOwner;
+}
+~~~
+This just stretches out the time between the adjacent lines of code by a very large amount, so instead of taking several hours to crash it does so in seconds.
+My fix for the moment is to globally disable interrupts in vTaskSwitchContext before taskSELECT<em>HIGHEST</em>PRIORITY_TASK:
+~~~
+        __asm (&#8220;CPSID  i&#8221;);
+        taskSELECT<em>HIGHEST</em>PRIORITY<em>TASK();
+        traceTASK</em>SWITCHED_IN();
+        __asm (&#8220;CPSIE  i&#8221;);
+~~~
+I&#8217;m assuming there must be something wrong with my configuration, or maybe an oversight in this particular port, but I don&#8217;t know the FreeRTOS internals well enough to know where that might be.  I&#8217;ve been through every resource I can find on Cortex M3/4 ports.
+Any ideas?
+Thanks!
+Scott
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 10, 2018</div><div class="thread-post-content">Thanks for providing this level of detail.  I can try and replicate your 
+scenario &#8211; with the additional delay included &#8211; but first a question 
+about vTaskSwitchContext() getting interrupted by that has a priority 
+lower than configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY as that should not happen.
+vTaskSwitchContext() is called from the PendSV handler, at the time of 
+writing it can be seen on line 455 here: 
+https://sourceforge.net/p/freertos/code/HEAD/tree/trunk/FreeRTOS/Source/portable/GCC/ARM<em>CM4F/port.c 
+  On lines 451 and 452 you can see that the basepri register is set to 
+configMAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY, which you said it 5, which should 
+then prevent the timer interrupt from executing if it has a priority of 
+7 (5 being a higher priority than 7 on Cortex-M).
+Would you agree with my description here?  If so, do you have 
+configASSERT() defined?  Are there any other interrupts executing that 
+might be the culprit?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on October 10, 2018</div><div class="thread-post-content">Hi Richard,
+Thanks for the quick reply.  My port.c looks different &#8211; I believe this one came from Erich Styger&#8217;s PEx components at mcuoneclipse.com originally.  I know this port has been modified to support Newlib&#8217;s malloc() for heap allocation, not sure what else might be different.  Here&#8217;s the vPortPendSVHandler:
+~~~
+<h1>if (configCOMPILER==configCOMPILER<em>ARM</em>GCC)</h1>
+<h1>if configGDB_HELPER</h1>
+/* prototypes to avoid compiler warnings */
+<strong>attribute</strong> ((naked)) void vPortPendSVHandler_native(void);
+<strong>attribute</strong> ((naked)) void PendSV_Handler_jumper(void);
+<strong>attribute</strong> ((naked)) void vPortPendSVHandler_native(void) {
+<h1>elif !MCUC1<em>CONFIG</em>PEX<em>SDK</em>USED /* the SDK expects different interrupt handler names */</h1>
+<strong>attribute</strong> ((naked)) void PendSV_Handler(void) {
+<h1>else</h1>
+<strong>attribute</strong> ((naked)) void vPortPendSVHandler(void) {
+<h1>endif</h1>
+<h1>if configCPU<em>FAMILY</em>IS<em>ARM</em>M4<em>M7(configCPU</em>FAMILY) /* Cortex M4 or M7*/</h1>
+  __asm volatile (
+    &#8221; mrs r0, psp                n&#8221;
+    &#8221; ldr  r3, pxCurrentTCBConst n&#8221; /* Get the location of the current TCB. */
+    &#8221; ldr  r2, [r3]              n&#8221;
+<h1>if configCPU<em>FAMILY</em>IS<em>ARM</em>FPU(configCPU_FAMILY)</h1>
+<pre><code>" tst r14, #0x10             n" /* Is the task using the FPU context?  If so, push high vfp registers. */
+" it eq                      n"
+" vstmdbeq r0!, {s16-s31}    n"
+" stmdb r0!, {r4-r11, r14}   n" /* save remaining core registers */
+</code></pre>
+<h1>else</h1>
+<pre><code>" stmdb r0!, {r4-r11}        n" /* Save the core registers. */
+</code></pre>
+<h1>endif</h1>
+<pre><code>" str r0, [r2]               n" /* Save the new top of stack into the first member of the TCB. */
+" stmdb sp!, {r3, r14}       n"
+" mov r0, %0                 n"
+" msr basepri, r0            n"
+" bl vTaskSwitchContext      n"
+" mov r0, #0                 n"
+" msr basepri, r0            n"
+" ldmia sp!, {r3, r14}       n"
+" ldr r1, [r3]               n" /* The first item in pxCurrentTCB is the task top of stack. */
+" ldr r0, [r1]               n"
+</code></pre>
+<h1>if configCPU<em>FAMILY</em>IS<em>ARM</em>FPU(configCPU_FAMILY)</h1>
+<pre><code>" ldmia r0!, {r4-r11, r14}   n" /* Pop the core registers */
+" tst r14, #0x10             n" /* Is the task using the FPU context?  If so, pop the high vfp registers too. */
+" it eq                      n"
+" vldmiaeq r0!, {s16-s31}    n"
+</code></pre>
+<h1>else</h1>
+<pre><code>" ldmia r0!, {r4-r11}        n" /* Pop the core registers. */
+</code></pre>
+<h1>endif</h1>
+<pre><code>" msr psp, r0                n"
+" bx r14                     n"
+"                            n"
+" .align 2                   n"
+"pxCurrentTCBConst: .word pxCurrentTCB  n"
+  ::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY)
+</code></pre>
+  );
+<h1>else /* Cortex M0+ */</h1>
+  __asm volatile (
+    &#8221; mrs r0, psp                n&#8221;
+    &#8221;                            n&#8221;
+    &#8221; ldr r3, pxCurrentTCBConst  n&#8221; /* Get the location of the current TCB. <em>/
+    &#8221; ldr r2, [r3]               n&#8221;
+    &#8221;                            n&#8221;
+    &#8221; sub r0, r0, #32            n&#8221; /</em> Make space for the remaining low registers. <em>/
+    &#8221; str r0, [r2]               n&#8221; /</em> Save the new top of stack. <em>/
+    &#8221; stmia r0!, {r4-r7}         n&#8221; /</em> Store the low registers that are not saved automatically. <em>/
+    &#8221; mov r4, r8                 n&#8221; /</em> Store the high registers. <em>/
+    &#8221; mov r5, r9                 n&#8221;
+    &#8221; mov r6, r10                n&#8221;
+    &#8221; mov r7, r11                n&#8221;
+    &#8221; stmia r0!, {r4-r7}         n&#8221;
+    &#8221;                            n&#8221;
+    &#8221; push {r3, r14}             n&#8221;
+    &#8221; cpsid i                    n&#8221;
+    &#8221; bl vTaskSwitchContext      n&#8221;
+    &#8221; cpsie i                    n&#8221;
+    &#8221; pop {r2, r3}               n&#8221; /</em> lr goes in r3. r2 now holds tcb pointer. <em>/
+    &#8221;                            n&#8221;
+    &#8221; ldr r1, [r2]               n&#8221;
+    &#8221; ldr r0, [r1]               n&#8221; /</em> The first item in pxCurrentTCB is the task top of stack. <em>/
+    &#8221; add r0, r0, #16            n&#8221; /</em> Move to the high registers. <em>/
+    &#8221; ldmia r0!, {r4-r7}         n&#8221; /</em> Pop the high registers. <em>/
+    &#8221; mov r8, r4                 n&#8221;
+    &#8221; mov r9, r5                 n&#8221;
+    &#8221; mov r10, r6                n&#8221;
+    &#8221; mov r11, r7                n&#8221;
+    &#8221;                            n&#8221;
+    &#8221; msr psp, r0                n&#8221; /</em> Remember the new top of stack for the task. <em>/
+    &#8221;                            n&#8221;
+    &#8221; sub r0, r0, #32            n&#8221; /</em> Go back for the low registers that are not automatically restored. <em>/
+    &#8221; ldmia r0!, {r4-r7}         n&#8221; /</em> Pop low registers.  */
+    &#8221;                            n&#8221;
+    &#8221; bx r3                      n&#8221;
+    &#8221;                            n&#8221;
+    &#8220;.align 2                    n&#8221;
+    &#8220;pxCurrentTCBConst: .word pxCurrentTCB&#8221;
+  );
+<h1>endif</h1>
+}
+~~~
+My ARM assembly language is really weak &#8211; what&#8217;s the %0 notation?  Looks like it assembled as #0x50, which is correct.  I&#8217;m assuming that must be an assembly-time substitution but I don&#8217;t know what it references.
+When I catch the race condition, BASEPRI is 0.  I&#8217;ve tried to step through the PendSV handler but the debugger seems determined to make sure I don&#8217;t get to see it happening &#8211; every time, it hangs before it gets to the msr BASEPRI, r0 instruction.  The gdb server sits there with high CPU utilization, whether I&#8217;m using an LPC-Link2 or a P&amp;E Cyclone ACP.
+I&#8217;ve attached a screenshot so you can see where it was at.  r0 is set to 0x50, so that&#8217;s right.  There are other interrupts enabled, but I&#8217;ve set all of the NVIC priority registers to values in the range of 0x50 to 0x80 whether the interrupt is implemented or not, just in case.  I once got the debugger to stop in vPortSwitchContext and saw BASEPRI set, but when it stepped over the stack check it came up 0 again.  It also stopped reading registers entirely right after that so it&#8217;s hard to say what was actually going on.
+This is where I&#8217;d normally insert a rant about the unreliability of NXP&#8217;s debugging tools, but I&#8217;ve got at least a partial workaround for the bug that&#8217;s been plauging this project for weeks, we just started shipping another new product today, and I had a really great first date last night, so I&#8217;m going to quit while I&#8217;m still in a good mood.
+I&#8217;ll see what I can find out from Erich about the origin of this port.c, and fuss with the debugger some more tomorrow.
+Thanks again,
+Scott
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 10, 2018</div><div class="thread-post-content"><blockquote>
+  Here&#8217;s the vPortPendSVHandler:
+</blockquote>
+<snip>
+Although different, the assembly instructions that set the basepri 
+register are still in place.
+<blockquote>
+  My ARM assembly language is really weak &#8211; what&#8217;s the %0 notation? Looks 
+  like it assembled as #0x50, which is correct. I&#8217;m assuming that must be 
+  an assembly-time substitution but I don&#8217;t know what it references.
+</blockquote>
+It is referencing the following constant:
+<blockquote>
+<pre><code>   ::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY)
+</code></pre>
+  When I catch the race condition, BASEPRI is 0. I&#8217;ve tried to step 
+  through the PendSV handler but the debugger seems determined to make 
+  sure I don&#8217;t get to see it happening &#8211; every time, it hangs before it 
+  gets to the msr BASEPRI, r0 instruction. The gdb server sits there with 
+  high CPU utilization, whether I&#8217;m using an LPC-Link2 or a P&amp;E Cyclone ACP.
+</blockquote>
+Do you set the debugger to step assembly instructions rather than C 
+instructions before stepping through?  As this is inline assembly you 
+would need to do that, then open the assembly window in the debugger and 
+step through the code there.
+That function should never be executing with basepri set to 0 &#8211; so that 
+is the curiosity here.  Is the function called from anywhere else other 
+than the function that starts the scheduler in the first place?  Are you 
+100% sure there are no other interrupts running?  Did you ensure 
+configASSERT() was defined &#8211; that should catch misconfigurations &#8211; 
+assuming that part of the code has not been changed.  You could try 
+running the official port to see if that has the same issues.
+<blockquote>
+  I&#8217;ve attached a screenshot so you can see where it was at. r0 is set to 
+  0x50, so that&#8217;s right. There are other interrupts enabled, but I&#8217;ve set 
+  all of the NVIC priority registers to values in the range of 0x50 to 
+  0x80 whether the interrupt is implemented or not, just in case. I once 
+  got the debugger to stop in vPortSwitchContext and saw BASEPRI set, but 
+  when it stepped over the stack check it came up 0 again. It also stopped 
+  reading registers entirely right after that so it&#8217;s hard to say what was 
+  actually going on.
+</blockquote>
+Maybe you are not seeing what you think you are seeing here.  Are you 
+100% sure the issue is occurring inside the tick interrupt?  Could the 
+issue actually be being caused elsewhere in the system, and only become 
+evident in the tick interrupt?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/xz8987f">xz8987f</a> on October 10, 2018</div><div class="thread-post-content">Richard, Scott,
+I&#8217;m going to check this one one my side too. That tick handler is a combination of multiple ports to support many architectures. I&#8217;ll check if I have missed anything.
+Erich
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on October 10, 2018</div><div class="thread-post-content">Yes, the debugger was set to instruction stepping mode.  And no, nothing else calls vTaskSwitchContext.  Here&#8217;s the sequence of functions from the instruction trace I captured during one crash:
+<blockquote>
+  vQueueWaitForMessageRestricted
+  prvProcessTimerOrBlockTask
+  xTaskResumeAll
+  vPortEnterCritical
+  xTaskResumeAll
+  vPortExitCritical
+  xTaskResumeAll
+  prvProcessTimerOrBlockTask
+  vPortYieldFromISR
+  vPortPendSVHandler
+  vTaskSwitchContext
+  xTaskGetTickCountFromISR
+  vPortValidateInterruptPriority
+  xTaskGetTickCountFromISR
+  vTaskSwitchContext
+  ftm0_irq
+  vTaskSwitchContext
+  (crashes because pxCurrentTCB is now null)
+</blockquote>
+configASSERT is defined.  I modified it yesterday to add a bkpt instruction to the infinite loop so it&#8217;d stop the debugger immediately, but it definitely works, and catches when I screw up interrupt priorities.
+<blockquote>
+  Are you 100% sure there are no other interrupts running? 
+</blockquote>
+There are 18 peripheral interrupts enabled, in addition to the core interrupts like SysTick and the fault handlers.  All of the unused vectors point to a halt function, and all of them, used or not, have priority levels set to be safe with FreeRTOS.  There may be other interrupts pending (if I pause the debugger there I get an EWM watchdog interrupt at least) but nothing that should be able to interrupt the kernel.  It was definitely the FTM IRQ that caused it in the trace above, and every trace I&#8217;ve caught, and the ISR also turns on an LED that gets turned off in a few ticks whenever it generates a task notification.  The LED was stuck on every time I checked during a lockup so the FTM ISR had definitely done a task notification very recently every time it locked up.
+<blockquote>
+  Are you 100% sure the issue is occurring inside the tick interrupt?
+</blockquote>
+Which tick interrupt are you talking about?  The FTM IRQ, or the SysTick that&#8217;s presumably kicking off the context switch that&#8217;s getting interrupted?  I am certain that it&#8217;s the FTM IRQ (but not necessarily <em>exclusively</em> that one) that&#8217;s interrupting the context switch.
+There are UART DMA and ADC DMA interrupts also firing more or less frequently depending on what&#8217;s going on (for WiFi data and audio samples) and each of those can wake up their respective tasks (FTM sends notifications to the main task) and I haven&#8217;t seen them cause this problem, but that could be because of their relative frequencies.  Also, the FTM ISR is processing data from a GPS receiver that&#8217;s aligned to the start of the GPS second.  The SysTick rate is an even 300 Hz and the clock oscillator is going to be off by some ppm relative to GPS, so presumably the start of the NMEA data (and the resulting task notifications) will be slowly slipping relative to the SysTick tick.  If there&#8217;s an opening for a race condition, a slow slip like that is the way to find it.  The WiFi DMA will be very bursty and dependent on traffic (I&#8217;ve had four browser clients running to crank up the traffic level) but much less consistent with timing, and the ADC DMA rate divides evenly into the SysTick rate, with both driven by the same clock, so it&#8217;s not likely to trigger a race condition.
+I&#8217;m going to work on the debugger today and see if I can get it to step through the PendSV code.
+Thanks,
+Scott
+Edit:  Now that I think about it, the GPS time slip shouldn&#8217;t be the issue.  The FTM overflow still fires at a consistent rate, it&#8217;s just the task notification that changes, and for testing I ignored the data entirely and had the notification happen every overflow and it still caused the lockup.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on October 11, 2018</div><div class="thread-post-content">Ok, digging through the instruction trace and I think I&#8217;ve got something.  You guys are going to have to help me understand why this is.
+I&#8217;ve got configGENERATE<em>RUN</em>TIME_STATS enabled, so vTaskSwitchContext() calls xTaskGetTickCountFromISR(), which looks like this:
+~~~
+    uxSavedInterruptStatus = portTICK<em>TYPE</em>SET<em>INTERRUPT</em>MASK<em>FROM</em>ISR();
+    {
+        xReturn = xTickCount;
+    }
+    portTICK<em>TYPE</em>CLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR( uxSavedInterruptStatus );
+~~~
+This is where it&#8217;s going off the rails &#8211; BASEPRI is being set to 0 by that last line.  Here are the macros:
+~~~
+<h1>define portTICK<em>TYPE</em>SET<em>INTERRUPT</em>MASK<em>FROM</em>ISR() portSET<em>INTERRUPT</em>MASK<em>FROM</em>ISR()</h1>
+<h1>define portTICK<em>TYPE</em>CLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR( x ) portCLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR( ( x ) )</h1>
+<h1>define portSET<em>INTERRUPT</em>MASK<em>FROM</em>ISR()     0;portSET<em>INTERRUPT</em>MASK()</h1>
+<h1>define portCLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR(x)  portCLEAR<em>INTERRUPT</em>MASK();(void)x</h1>
+~~~
+So for some reason portSET<em>INTERRUPT</em>MASK<em>FROM</em>ISR is defined to always return 0, and portCLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR just ignores the mask it&#8217;s given.
+This was clearly someone&#8217;s conscious decision.  I can&#8217;t tell what it was trying to accomplish, or if it was just something that was set for testing and overlooked.
+Richard, looks like the problem is not on your end.  Erich, do you know where this came from?
+Since I&#8217;m not using Processor Expert anymore I suppose I should probably move to the official current port.  My big hangup there is that I&#8217;m going to have to take another look at my heap usage.  I make sparing use of the heap in application code and I don&#8217;t like having two different heap mechanisms, so I&#8217;ve been using the Newlib malloc option that I don&#8217;t think is part of the standard release.  I&#8217;m going to have to go refresh my memory on heap options.
+Thanks,
+Scott
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 11, 2018</div><div class="thread-post-content">This is actually the standard behaviour &#8211; so in the mainline code, not 
+just Erich&#8217;s, although I&#8217;m not sure what the 
+portTICK<em>TYPE</em>CLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR() macro is and its 
+implementation does not appear to do anything other than call 
+portCLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR() (which is our macro).
+The critical sections used to st the interrupt mask back to the previous 
+mask value, but I was informed by architecture experts that that was not 
+necessary, and that internally the silicon would latch to the value of 
+the current interrupt anyway, so just setting to 0 was the most 
+efficient thing to do on exiting the critical section.  Have you tried 
+updating the portSET/CLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR() macros to actually 
+return the current basepri value rather than just hard code to return 0?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on October 11, 2018</div><div class="thread-post-content">portTICK<em>TYPE</em>CLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR() seems to be part of the mainline code too.  I just grabbed 10.1.1 yesterday.  Looks like the portTICK_TYPE wrappers are there to handle atomic or non-atomic tick reads depending on the port.  If it&#8217;s atomic, the macros do nothing.
+<blockquote>
+  and that internally the silicon would latch to the value of the current interrupt anyway
+</blockquote>
+Wouldn&#8217;t that still be a problem here?  If I understand it correctly, vTaskSwitchContext() is running from the PendSV interrupt, which is set to the lowest priority &#8211; in this case 15.  If the <em>interrupt</em> priority is what&#8217;s latched, then when the tick read critical section within vTaskSwitchContext() completes it&#8217;s effectively setting BASEPRI to 15 when it entered at 5, and now the FTM IRQ at priority 7 is able to interrupt what should be a critical section in taskSELECT<em>HIGHEST</em>PRIORITY_TASK().
+Next question:  Why would reads of tick type variables not be atomic on a Cortex M4?  I think maybe that&#8217;s where our problems start &#8211; here&#8217;s the mainline portmacro.h:
+~~~
+    /* 32-bit tick type on a 32-bit architecture, so reads of the tick count do
+    not need to be guarded with a critical section. */
+    #define portTICK_TYPE_IS_ATOMIC 1
+~~~
+That is <em>not</em> defined in Erich&#8217;s portmacro.h.  That might explain why this hasn&#8217;t been a problem for more people &#8211; to trigger this bug you have to have portTICK<em>TYPE</em>IS_ATOMIC=0 and have runtime statistics turned on.
+Setting portTICK<em>TYPE</em>IS_ATOMIC looks like it will let me remove my global interrupt mask, but not knowing the kernel better I&#8217;d worry that there might be other places where BASEPRI could get set wrong and it doesn&#8217;t feel like a solid fix to me.
+<blockquote>
+  Have you tried updating the portSET/CLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR() macros to actually return the current basepri value rather than just hard code to return 0?
+</blockquote>
+I&#8217;m not conversant enough in ARM/Thumb assembly to even read more than 70% of what&#8217;s there without a reference manual in front of me and I haven&#8217;t used gcc&#8217;s extended asm syntax before.  I&#8217;m sure I could get it but I&#8217;d feel better if someone who knows what they&#8217;re doing showed me the right way, so I don&#8217;t wind up chasing down side effects.  And if anyone knows a good, complete, concise reference/cheat sheet for the instruction set and assembly syntax, please let me know! 
+Thanks,
+Scott
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 11, 2018</div><div class="thread-post-content">So the scenario is like this:
+1) PendSV executes.
+2) Hardware sets priority in the NVIC to 15 (low priority used by 
+interrupt handler).
+3) PendSV software sets basepri to 5 before calling vTaskSwitchContext().
+4) vTaskSwitchContext() calls the stats function, which calls 
+portSET<em>INTERRUPT</em>MASK<em>FROM</em>ISR(), which also sets BasePri to 5 (which 
+it already was anyway).
+5) When portCLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR() is called software sets 
+BasePri to 0 (unmasks everything) BUT actually basepri used within the 
+hardware itself is the priority of the interrupt &#8211; which is 15 &#8211; and the 
+critical section has been broken.
+Makes sense.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on October 12, 2018</div><div class="thread-post-content">Yes, that&#8217;s my interpretation.  The lack of a portTICK<em>TYPE</em>IS_ATOMIC  setting seems to be an oversight in Erich&#8217;s port, but it ought to be a harmless one that just costs a few wasted cycles per context switch.
+I have a few different ways I can avoid this for now.  Setting it up so that it does retain the BASEPRI setting seems to me like the way to make it behave in the least-surprising fashion.
+If that&#8217;s not where the fix is made, then the big question is whether there&#8217;s anywhere else that this is going to pop up.
+The most surprising thing about this is that it apparently <em>wasn&#8217;t</em> a bug in my application code.  Usually the rule is that the longer you spend hunting a bug, the more likely it is to be something absolutely trivial that someone else is going to spot the first time they take a look over your shoulder.
+Now if SiLabs could just make their WiFi modules not randomly reboot, I could have a pretty solid product&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on October 12, 2018</div><div class="thread-post-content">Richard, do you need me to submit a bug report or anything?  I have what I need for now, I just want to make sure this doesn&#8217;t bite anyone else.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on October 12, 2018</div><div class="thread-post-content">I have it noted on the backlog, but probably best if you open a bug 
+ticket in SourceForge and point it to this thread so it doesn&#8217;t get lost 
+and others have visibility too &#8211; thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Race condition between vTaskSwitchContext and xTaskNotifyFromISR?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on October 12, 2018</div><div class="thread-post-content">Will do!
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

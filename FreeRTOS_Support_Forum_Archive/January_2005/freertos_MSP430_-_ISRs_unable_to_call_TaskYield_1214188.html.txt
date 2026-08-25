@@ -1,0 +1,158 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSP430 - ISRs unable to call TaskYield()? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2005/freertos_MSP430_-_ISRs_unable_to_call_TaskYield_1214188.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="MSP430 - ISRs unable to call TaskYield()? - FreeRTOS" />
+<meta property="og:description" content="MSP430 &#8211; ISRs unable to call TaskYield()?Posted by alunz on January 20, 2005G&#8217;day, The following is a lengthy-ish explanation of a problem encountered with a port to the MSP430F149.&nbsp; There seems to be a problem with an ISR calling TaskYield&#040;&#041; which causes other interrupts to be disabled.&nbsp; If anyone has encountered something like this would &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2005/freertos_MSP430_-_ISRs_unable_to_call_TaskYield_1214188.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="MSP430 &#8211; ISRs unable to call TaskYield()?Posted by alunz on January 20, 2005G&#8217;day, The following is a lengthy-ish explanation of a problem encountered with a port to the MSP430F149.&nbsp; There seems to be a problem with an ISR calling TaskYield&#040;&#041; which causes other interrupts to be disabled.&nbsp; If anyone has encountered something like this would [&hellip;]" />
+<meta name="twitter:title" content="MSP430 - ISRs unable to call TaskYield()? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201247' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201247' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201247' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201247' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139250' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2005%2Ffreertos_MSP430_-_ISRs_unable_to_call_TaskYield_1214188.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2005%2Ffreertos_MSP430_-_ISRs_unable_to_call_TaskYield_1214188.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139250">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2005_freertos_support_forum_archive_index.html/">January 2005 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">MSP430 &#8211; ISRs unable to call TaskYield()?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alunz">alunz</a> on January 20, 2005</div><div class="thread-post-content">G&#8217;day,
+The following is a lengthy-ish explanation of a problem encountered with a
+port to the MSP430F149.&nbsp; There seems to be a problem with an ISR calling
+TaskYield&#40;&#41; which causes other interrupts to be disabled.&nbsp; If anyone has
+encountered something like this would appreciate any pointers.
+Am attempting to port FreeRTOS onto the EasyWeb2 dev board from Olimex using
+the demo MSP430 port &#40;originally for the MSP430F449&#41; as a base.&nbsp; 
+The EasyWeb2 has only one LED but does have a 16&#215;2 LCD.&nbsp; Therefore, have
+modded the demo apps so that the LED flashing routines will toggle a char
+that is to be displayed &#40;there is a new task that periodically redraws the
+LCD every 50ms&#41;.&nbsp; The single main LED is used by the vErrorChecks&#40;&#41; routine
+to report on the status of the tasks.
+So far so good and the program seems to work.
+However there is a problem where vErrorChecks&#40;&#41; will report that there is a
+problem &#40;the LED flashes faster&#41; after the demo routine has been running for
+a while.&nbsp; Poking around in the code reveals that the problem is with
+ComTest.
+What is happening is that after a while the Tx ISR stops working.&nbsp; That is,
+characters are not being pulled from the xCharsForTx queue and then sent to
+the UART.
+Further poking around reveals that the problem goes away if the call to
+TaskYield&#40;&#41; within the vRxISR&#40;&#41; routine is commented out.
+Am a bit of a loss to immediately see why this is a problem, so would
+appreciate any pointers that people may have.
+Thanks for your time,
+aLUNZ
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430 &#8211; ISRs unable to call TaskYield()?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on January 20, 2005</div><div class="thread-post-content">I think the 149 and 449 are pretty well compatable regarding memory layout.&nbsp; Are you using the demo application exactly as downloaded &#8211; but for the addition of the extra task?
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430 &#8211; ISRs unable to call TaskYield()?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/alunz">alunz</a> on January 21, 2005</div><div class="thread-post-content">Thanks for the very prompt reply.&nbsp; It turned out that the problem as originally reported was caused by creating more threads/tasks than there was memory to support them.
+Trimming back the number of threads has mostly got things behaving as they should.&nbsp; Have only got one remaining problem &#40;with the polled queue test&#41; that needs to be investigated.&nbsp; That problem is proving to be very intractable and seems to be defying most physical laws &#40;including causality&#41;.&nbsp; May have to ask some more questions on that one if am unable to nut out what is going wrong there.
+For the record, the EasyWeb2 port is very much the original Demo port with changes to:
+&#45; setting up the hardware &#40;different ports for LED / LCD, different CLK, Timer ISR setup&#41;
+&#45; removing one of the LED tasks from Flash.c
+and of course the code to use the LCD to simulate LEDs.
+Again, thanks for the reply and thanks for FreeRTOS, it is proving to be fun and useful.
+aLUNZ
+</div></div><div class="thread-post"><h3 class="thread-post-title">MSP430 &#8211; ISRs unable to call TaskYield()?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on January 21, 2005</div><div class="thread-post-content">With the demo apps I basically just add tasks until all the memory is used.&nbsp; Perhaps I should make this a little clearer in the docs.
+The demo tasks are more for testing the kernel and are each written in isolation which is not memory efficient.&nbsp; I have just added a new section to the FreeRTOS.org WEB site about how applications can be written to use less RAM.&nbsp; You might like to take a look.
+Regards.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

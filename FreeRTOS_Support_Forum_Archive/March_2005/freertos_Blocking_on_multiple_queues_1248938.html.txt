@@ -1,0 +1,298 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blocking on multiple queues? - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2005/freertos_Blocking_on_multiple_queues_1248938.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Blocking on multiple queues? - FreeRTOS" />
+<meta property="og:description" content="Blocking on multiple queues?Posted by n1vg on March 15, 2005I&#8217;ve got a task that needs to wait for input on multiple queues.&nbsp; It&#8217;s not worth the extra RAM overhead to have multiple tasks, so I either set up a loop that checks each queue without blocking, and pauses for my maximum allowable latency time at &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2005/freertos_Blocking_on_multiple_queues_1248938.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Blocking on multiple queues?Posted by n1vg on March 15, 2005I&#8217;ve got a task that needs to wait for input on multiple queues.&nbsp; It&#8217;s not worth the extra RAM overhead to have multiple tasks, so I either set up a loop that checks each queue without blocking, and pauses for my maximum allowable latency time at [&hellip;]" />
+<meta name="twitter:title" content="Blocking on multiple queues? - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201259' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201259' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201259' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201259' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139235' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2005%2Ffreertos_Blocking_on_multiple_queues_1248938.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2005%2Ffreertos_Blocking_on_multiple_queues_1248938.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139235">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2005_freertos_support_forum_archive_index.html/">March 2005 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Blocking on multiple queues?</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on March 15, 2005</div><div class="thread-post-content">I&#8217;ve got a task that needs to wait for input on multiple queues.&nbsp; It&#8217;s not worth the extra RAM overhead to have multiple tasks, so I either set up a loop that checks each queue without blocking, and pauses for my maximum allowable latency time at the end, or I block for a fraction of that time at each queue.
+Input to these queues is infrequent, but it needs to be processed in a reasonable amount of time.&nbsp; The approach above works, but it does a lot more context switching that it would if it could just block on multiple queues simultaneously.
+Is there an easy way to do this that I&#8217;m missing?
+Thanks,
+Scott
+</div></div><div class="thread-post"><h3 class="thread-post-title">Blocking on multiple queues?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 15, 2005</div><div class="thread-post-content">Hi,
+How about:
+&#43; Use the same queue for all data.
+&#43; Any task/ISR that wants to post to the queue posts a structure that lets the receiver know from where the data originated &#40;or how to interpret the data&#41;.
+&#43; Block on the queue.
+For a simplistic example &#40;not necessarily optimal&#41;, if you want to receive data from COM0 and COM1, then rather than have two queues &#8211; one for each COM port &#8211; have both COM ports post to the same queue as follows:
+&#35;define COM0&#95;DATA 0
+&#35;define COM1&#95;DATA 1
+typedef struct
+&#123;
+&#95;&#95;&#95;&#95;portCHAR cDataID;
+&#95;&#95;&#95;&#95;portCHAR cData; // Could be a pointer to a more complex data item or buffer instead.
+&#125; xQueueItem;
+void vRxTask&#40; void &#42;pvParameters &#41;
+&#123;
+xQueueItem RxData;
+&#95;&#95;&#95;&#95;for&#40;;;&#41;
+&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;cQueueReceive&#40; xQueue, &#40; void &#42; &#41;&amp;RxData, portWAIT&#95;FOREVER &#41;;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;//RxData contains the data AND the source of the data.
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;switch&#40; RxData.cDataID &#41;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#123;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;case COM0&#95;DATA : ProcessCom0Data&#40;RxData.cData&#41;; break;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;case COM1&#95;DATA : ProcessCom1Data&#40;RxData.cData&#41;; break;
+&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#95;&#125;
+&#95;&#95;&#95;&#95;&#125;
+&#125;
+&#91;error checking/return values, etc not shown&#93;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Blocking on multiple queues?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/n1vg">n1vg</a> on March 15, 2005</div><div class="thread-post-content">Might be doable, but I&#8217;ll have to rethink my architecture.&nbsp; In this particular example, I&#8217;ve got queues serviced by a USART ISR, and queues serviced by a USB CDC task.
+The separate modules call a function to register with the handler task.&nbsp; Registered ports have a data structure with pointers to their TX and RX queues, plus other state information.
+My main concern with a shared queue would be overflow &#8211; if a port is slow or hung &#40;might be a network socket, for example&#41;, the queue would fill with data for the stalled port and the others would block.
+Do other RTOSes have mechanisms to deal with this, or is it just a matter of proper architecture in the user program?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Blocking on multiple queues?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 15, 2005</div><div class="thread-post-content">Blocking on multiple queues itself is vary rare &#40;feel free to correct me anybody &#8211; this is just my experience&#41;.&nbsp; I cannot think of a method of implementing it that would not take a lot of resource &#91;both processor and RAM&#93;, but this might be an interesting challenge for the future.&nbsp; I have an idea about a data structure that could sit between tasks and blocking lists&nbsp; dont know how this will pan out though.
+There may be other methods &#8211; event flags allow a single event to wake multiple tasks &#8211; you just want to do it in reverse.&nbsp; Berkley sockets have the select&#40;&#41; call also.
+Another, probably less elegant solution, would be to have an additional queue that was used to unblock the receiving task.&nbsp; A task that wanted to send data would post data to the usual queue first, then send a message on the new queue to wake the task and tell it which queue to poll to get the posted data.&nbsp; This is probably worse than my first solution, but may fit in with your architecture better.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Blocking on multiple queues?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/mikehibbett">mikehibbett</a> on March 16, 2005</div><div class="thread-post-content">I&#8217;m using threadx, and that doesn&#8217;t allow blocking on multiple queues. There is a useful feature of &#8216;event flags&#8217; &#8211; 32 bit arrays in which you can block on one or more event flags being set.
+We recently had exactly that problem with our design, and solved it by having a source id in the queued message. Seems to work fine.
+Mike.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Blocking on multiple queues?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on April 17, 2006</div><div class="thread-post-content">NOT TESTED, USE AT YOUR OWN RISK. 
+This function xDoubleQueueWait allows you to block on two queues, or more if you wish. &#40;I think two should be enough&#33;&#41;
+To use it, cut &amp; paste the patch in queue.c
+Richardbarry, please give your blessing.
+Ami
+/&#42;&#8212;&#8211; START xDoubleQueueWait &#8212;&#8212;&#42;/
+signed portBASE&#95;TYPE xDoubleQueueWait&#40;xQueueHandle pxQueue1, xQueueHandle pxQueue2, portTickType xTicksToWait &#41;
+&#123;
+signed portBASE&#95;TYPE xReturn = 0;
+xListItem&nbsp;&nbsp;&nbsp; LocalEventListItem1;
+xListItem&nbsp;&nbsp;&nbsp; LocalEventListItem2;
+xList&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LocalEventList;
+void&#42;&nbsp;&nbsp;&nbsp;&nbsp; pxOwner;
+&nbsp;&nbsp;&nbsp; /&#42; This function allows waiting for two queues until one of them unblock, 
+&nbsp;&nbsp;&nbsp; for example one for socket/message queue, one for serial i/o.
+&nbsp;&nbsp;&nbsp; it returns 0 &#40;none of them / timeout&#41;, 1 &#40;queue1&#41; or 2 &#40;queue2&#41; that can 
+&nbsp;&nbsp;&nbsp; be used in a switch block.
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; Design:
+&nbsp;&nbsp;&nbsp; I create a local event list to which the task is placed on so that the 
+&nbsp;&nbsp;&nbsp; EventListItem in TCB points to this local event list. &#40;using vTaskPlaceOnEventList&#41;
+&nbsp;&nbsp;&nbsp; For each queue, I insert a locally allocated event-list-item with owner set to 
+&nbsp;&nbsp;&nbsp; this task&#8217;s TCB.
+&nbsp;&nbsp;&nbsp; Then when an event arrives to either queue, the event will resume this task 
+&nbsp;&nbsp;&nbsp; by removing it from the local event list. 
+&nbsp;&nbsp;&nbsp; Afterward we can then safely remove the two event-list-items from the two queues.
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; This is made possible because xTaskRemoveFromEventList contains the following two lines:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pxUnblockedTCB = &#40; tskTCB &#42; &#41; listGET&#95;OWNER&#95;OF&#95;HEAD&#95;ENTRY&#40; pxEventList &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vListRemove&#40; &amp;&#40; pxUnblockedTCB-&gt;xEventListItem &#41; &#41;;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; So it removes the item from pxUnblockedTCB-&gt;EventListItem rather than 
+&nbsp;&nbsp;&nbsp; from the pxEventList-&gt;pxHead-&gt;pxNext.
+&nbsp;&nbsp;&nbsp; Normally the two should point to the same thing.
+&nbsp;&nbsp;&nbsp; However &#40;fortunately for this modification&#41;, the pxUnblockedTCB-&gt;xEventListItem is 
+&nbsp;&nbsp;&nbsp; contained in our local event-list &#40;actually dummy event list&#41;, and not in the
+&nbsp;&nbsp;&nbsp; event list that causes the Task to be removed. 
+&nbsp;&nbsp;&nbsp; This allows the task to subscribe to more than one event list by 
+&nbsp;&nbsp;&nbsp; allocating list items locally on stack
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; RichardBarry, please don&#8217;t change this nice loophole :-&#41;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; vListInitialise&#40;&amp;LocalEventList&#41;;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42;Make sure other tasks do not access the queue. &#42;/
+&nbsp;&nbsp;&nbsp; vTaskSuspendAll&#40;&#41;;
+&nbsp;&nbsp;&nbsp; /&#42; Make sure interrupts do not access the queue. &#42;/
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; prvLockQueue&#40; pxQueue1 &#41;;
+&nbsp;&nbsp;&nbsp; prvLockQueue&#40; pxQueue2 &#41;;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; if&#40;prvIsQueueEmpty&#40; pxQueue1 &#41; &amp;&amp; prvIsQueueEmpty&#40; pxQueue2 &#41;&#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; There are no messages in both queues, do we want to block or just
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; leave with nothing? &#42;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40; xTicksToWait &gt; &#40; portTickType &#41; 0 &#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vTaskPlaceOnEventList&#40; &amp;LocalEventList , xTicksToWait &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pxOwner = listGET&#95;OWNER&#95;OF&#95;HEAD&#95;ENTRY&#40; &#40; &amp;LocalEventList &#41; &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; listSET&#95;LIST&#95;ITEM&#95;OWNER&#40; &amp;LocalEventListItem1, pxOwner &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; listSET&#95;LIST&#95;ITEM&#95;OWNER&#40; &amp;LocalEventListItem2, pxOwner &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vListInsert&#40;&nbsp; &amp;&#40; pxQueue2-&gt;xTasksWaitingToReceive &#41;, &amp; LocalEventListItem1&nbsp; &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vListInsert&#40;&nbsp; &amp;&#40; pxQueue2-&gt;xTasksWaitingToReceive &#41;, &amp; LocalEventListItem2&nbsp; &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; taskENTER&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prvUnlockQueue&#40; pxQueue1 &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prvUnlockQueue&#40; pxQueue2 &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40; &#33;xTaskResumeAll&#40;&#41; &#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; taskYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vTaskSuspendAll&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prvLockQueue&#40; pxQueue1&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prvLockQueue&#40; pxQueue2&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; taskEXIT&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vListRemove&#40;&nbsp; &amp;LocalEventListItem1 &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vListRemove&#40;&nbsp; &amp;LocalEventListItem2 &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xReturn = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;prvIsQueueEmpty&#40; pxQueue1 &#41; &#33;= 0&#41; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xReturn = 1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;prvIsQueueEmpty&#40; pxQueue2 &#41; &#33;= 0&#41; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xReturn = 2;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xReturn = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;prvIsQueueEmpty&#40; pxQueue1 &#41; &#33;= 0&#41; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xReturn = 1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40;prvIsQueueEmpty&#40; pxQueue2 &#41; &#33;= 0&#41; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xReturn = 2;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42; We no longer require exclusive access to the queue. &#42;/
+&nbsp;&nbsp;&nbsp; /&#42; &#33;&#33; Here we must use binary OR, not logical OR since both queue must
+&nbsp;&nbsp;&nbsp; be unlocked &#42;/ 
+&nbsp;&nbsp;&nbsp; if&#40; prvUnlockQueue&#40; pxQueue1 &#41; | prvUnlockQueue&#40; pxQueue2 &#41; &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40; &#33;xTaskResumeAll&#40;&#41; &#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; taskYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xTaskResumeAll&#40;&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; return xReturn;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+</div></div><div class="thread-post"><h3 class="thread-post-title">Blocking on multiple queues?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/imajeff">imajeff</a> on April 18, 2006</div><div class="thread-post-content">I&#8217;ve never thought it important either to block one task on multiple queues, but I do wonder about being able to add multiple listeners to one queue.
+Basically, it is easy on the other end&#8230; multiple tasks can write to the same queue. I just sometimes want the ISR to only have to send an event to one queue, but have that effectively wake multiple tasks sequentially.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Blocking on multiple queues?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on April 18, 2006</div><div class="thread-post-content">Might be costly time wise, but if you want an ISR to wake all the tasks on a queue you can call xQueueSendFromISR&#40;&#41; repeatedly passing in false as the xTaskPreviouslyWoken parameter until the function also returns false.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Blocking on multiple queues?</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/nobody">nobody</a> on April 20, 2006</div><div class="thread-post-content">Case application for one task waiting for multiple queues: 
+Comm protocol task, with one queue from serial ISR and other queue from Application &#40;for posting requests&#41;. 
+I am interested to know how others address this design issue without resorting to this double-queue wait.
+Serial port data comes one byte at a time so it can&#8217;t be mixed up with app request. The other solution is polling the two queues which is either CPU intensive or slow &#40;depending on polling delay.&#41; It&#8217;s not healthy either for low power application &#40;battery operated&#41;, since we can&#8217;t put the system to low power while waiting.
+Another way I can imagine is two tasks waiting for each queue, but synchronizing the two process would be a nightmare.
+Any suggestions?
+For multiple tasks waiting for one queue I think it&#8217;s already handled by FreeRTOS, am I mistaken? 
+Although I don&#8217;t see much interest in doing so.
+Ami
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

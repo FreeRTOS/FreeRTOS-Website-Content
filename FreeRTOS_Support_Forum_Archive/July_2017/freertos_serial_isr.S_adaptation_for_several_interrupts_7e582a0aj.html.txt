@@ -1,0 +1,238 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>serial_isr.S adaptation for several interrupts - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2017/freertos_serial_isr.S_adaptation_for_several_interrupts_7e582a0aj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="serial_isr.S adaptation for several interrupts - FreeRTOS" />
+<meta property="og:description" content="serial_isr.S adaptation for several interruptsPosted by tronicals on July 17, 2017Hi all, It seems I have trouble with my InteruptWrappers interacting with FreeRTOS. I used the serial_isr.S file coming with the demo and extended it for more UARTinterrupts. It compiles fine, it works fine, but after 2 days running and receivig constantly serial data some &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2017/freertos_serial_isr.S_adaptation_for_several_interrupts_7e582a0aj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="serial_isr.S adaptation for several interruptsPosted by tronicals on July 17, 2017Hi all, It seems I have trouble with my InteruptWrappers interacting with FreeRTOS. I used the serial_isr.S file coming with the demo and extended it for more UARTinterrupts. It compiles fine, it works fine, but after 2 days running and receivig constantly serial data some [&hellip;]" />
+<meta name="twitter:title" content="serial_isr.S adaptation for several interrupts - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202840' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202840' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202840' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202840' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146597' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2017%2Ffreertos_serial_isr.S_adaptation_for_several_interrupts_7e582a0aj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2017%2Ffreertos_serial_isr.S_adaptation_for_several_interrupts_7e582a0aj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146597">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2017_freertos_support_forum_archive_index.html/">July 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">serial_isr.S adaptation for several interrupts</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tronicals">tronicals</a> on July 17, 2017</div><div class="thread-post-content">Hi all,
+It seems I have trouble with my InteruptWrappers interacting with FreeRTOS.
+I used the <strong>serial_isr.S</strong> file coming with the demo and extended it for more UARTinterrupts.
+It compiles fine, it works fine, but after 2 days running and receivig constantly serial data some interrupt are ignored. 
+I wonder if I made some errors in the <strong>serial_isr.S</strong> file, because I am not familiar with asm
+Should  :
+.set    nomips16
+.set    noreorder
+be repeated for each interrupt?
+Thanks iin advance
+~~~
+<h1>include &lt;p32xxxx.h></h1>
+<h1>include &lt;sys/asm.h></h1>
+<h1>include &#8220;ISR_Support.h&#8221;</h1>
+/<em>U1</em>/
+    .set    nomips16
+    .set    noreorder
+<pre><code>.extern vU1InterruptHandler
+.extern xISRStackTop
+.global vU1InterruptWrapper
+.set    noreorder
+.set    noat
+.ent    vU1InterruptWrapper
+</code></pre>
+vU1InterruptWrapper:
+<pre><code>portSAVE_CONTEXT
+jal vU1InterruptHandler
+nop
+portRESTORE_CONTEXT
+.end    vU1InterruptWrapper
+</code></pre>
+/<em>U2</em>/
+    .set    nomips16
+    .set    noreorder
+<pre><code>.extern vU2InterruptHandler
+.extern xISRStackTop
+.global vU2InterruptWrapper
+.set    noreorder
+.set    noat
+.ent    vU2InterruptWrapper
+</code></pre>
+vU2InterruptWrapper:
+<pre><code>portSAVE_CONTEXT
+jal vU2InterruptHandler
+nop
+portRESTORE_CONTEXT
+.end    vU2InterruptWrapper
+</code></pre>
+/<em>U3</em>/
+    .set    nomips16
+    .set    noreorder
+<pre><code>.extern vU3InterruptHandler
+.extern xISRStackTop
+.global vU3InterruptWrapper
+.set    noreorder
+.set    noat
+.ent    vU3InterruptWrapper
+</code></pre>
+vU3InterruptWrapper:
+<pre><code>portSAVE_CONTEXT
+jal vU3InterruptHandler
+nop
+portRESTORE_CONTEXT
+.end    vU3InterruptWrapper
+</code></pre>
+/<em>U4 &#8211; N.A</em>/
+/<em>U5</em>/
+    .set    nomips16
+    .set    noreorder
+<pre><code>.extern vU5InterruptHandler
+.extern xISRStackTop
+.global vU5InterruptWrapper
+.set    noreorder
+.set    noat
+.ent    vU5InterruptWrapper
+</code></pre>
+vU5InterruptWrapper:
+<pre><code>portSAVE_CONTEXT
+jal vU5InterruptHandler
+nop
+portRESTORE_CONTEXT
+.end    vU5InterruptWrapper
+</code></pre>
+/<em>U6</em>/
+    .set    nomips16
+    .set    noreorder
+<pre><code>.extern vU6InterruptHandler
+.extern xISRStackTop
+.global vU6InterruptWrapper
+.set    noreorder
+.set    noat
+.ent    vU6InterruptWrapper
+</code></pre>
+vU6InterruptWrapper:
+<pre><code>portSAVE_CONTEXT
+jal vU6InterruptHandler
+nop
+portRESTORE_CONTEXT
+.end    vU6InterruptWrapper
+</code></pre>
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">serial_isr.S adaptation for several interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 23, 2017</div><div class="thread-post-content">Sorry for the delay in your post showing &#8211; it went into moderation &#8211; 
+which it is not supposed to do.
+In future, please give some clues as to which FreeRTOS port you are 
+using.  In this case I can work it out because you show some source code.
+When you say the interrupt is ignored, can you be more specific.  Is it 
+that the interrupt is asserted in the hardware, but the wrapper never 
+executes, or that the wrapper executes and calls the handler, but 
+something in the handler is not working.
+If it is the hardware is not asserting the interrupt then you will need 
+to inspect the UART registers to see why that is, maybe it has got 
+itself into an error state.
+If the handler is being called but not behaving as you expect then 
+please post the handler code.
+Also, in general, do you have configASSERT() defined to ensure execution 
+stops if an assert fails?  Do you have stack overflow detection switched 
+on?  Are you 100% sure the priorities of the interrupts are at or below 
+configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY?
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

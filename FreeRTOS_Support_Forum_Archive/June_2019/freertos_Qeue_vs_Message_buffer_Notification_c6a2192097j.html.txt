@@ -1,0 +1,151 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qeue vs Message buffer + Notification - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/June_2019/freertos_Qeue_vs_Message_buffer_Notification_c6a2192097j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Qeue vs Message buffer + Notification - FreeRTOS" />
+<meta property="og:description" content="Qeue vs Message buffer + NotificationPosted by digaboy on June 6, 2019Hi I need some advice on a new design I&#8217;m working on. My design is based on 3 tasks and is mostly event based. Each tasks can be wake up by message (short fixe or long variable length) comming from multiple source (task or &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/June_2019/freertos_Qeue_vs_Message_buffer_Notification_c6a2192097j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta property="og:image" content="https://image.noelshack.com/fichiers/2019/23/5/1559890668-archi.png" />
+<meta property="og:image:secure_url" content="https://image.noelshack.com/fichiers/2019/23/5/1559890668-archi.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Qeue vs Message buffer + NotificationPosted by digaboy on June 6, 2019Hi I need some advice on a new design I&#8217;m working on. My design is based on 3 tasks and is mostly event based. Each tasks can be wake up by message (short fixe or long variable length) comming from multiple source (task or [&hellip;]" />
+<meta name="twitter:title" content="Qeue vs Message buffer + Notification - FreeRTOS" />
+<meta name="twitter:image" content="https://image.noelshack.com/fichiers/2019/23/5/1559890668-archi.png" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203133' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203133' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203133' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203133' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=147811' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2019%2Ffreertos_Qeue_vs_Message_buffer_Notification_c6a2192097j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJune_2019%2Ffreertos_Qeue_vs_Message_buffer_Notification_c6a2192097j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-147811">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/June_2019_freertos_support_forum_archive_index.html/">June 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Qeue vs Message buffer + Notification</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/digaboy">digaboy</a> on June 6, 2019</div><div class="thread-post-content">Hi
+I need some advice on a new design I&#8217;m working on. 
+My design is based on 3 tasks and is mostly event based. 
+Each tasks can be wake up by message (short fixe or long variable length) comming from multiple source (task or interrupt) but each message will be re read by only 1 task.
+My question is: what is the best and cleaniest solution to build the communication frame ? 
+Solution A: 1 queue buffer for each task to read in and data is a struct with message type and a pointer to data
+Solution B: 1 queue  buffer for each writer  (so either fix length or pointer type) and a queue set
+Solution C: 1 message buffer for each writer and each task is wake up by notification and will look into each message buffer. 
+From what I know, A is better than B. 
+So the question is A or C ? 
+Which one is the best and why ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Qeue vs Message buffer + Notification</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on June 6, 2019</div><div class="thread-post-content">My base design practice is A. My preference is that I design a task to handle something, and it will typically be blocked waiting for that something.
+A key point to see this is that generally the writter will know what task it want to send a given messge to (and in C it still needs to so it wakes up the right one), and so in A it uses that knowledge to put the message in the right queue. In C, it sort of throws that information out, and the task has to look around to find the work that was given it. You also have a problem that the reader needs to first peek at the message to see if it is something it can handle, or if it is for someone else, and there is no way to really handle a writer wanting to send a message to two different tasks, the second one will be hidden until the first is taken.
+The one reason I can see to have a queue/buffer per writter is if you need to process the messages wiith a priority based on writer. Queue are strictly either FIFO or LIFO (depending which end you add the new message), and can&#8217;t sort messages based on priority.
+Queue sets can be better if a task needs to handle multiple types of notification that would be inefficient trying to reshape into a single queue, If you had multiple identical readers, and were using them as a thread pool, (and processing was I/O bound, so the tasks did a lot of blocking in processing the message) then the Queue set could work, that way the writers wouldn&#8217;t need to figutre out which of the identical threads was ready to be woken.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Qeue vs Message buffer + Notification</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/digaboy">digaboy</a> on June 6, 2019</div><div class="thread-post-content">Tanks for the detail answer !
+My first impulse was also solution A and then I remenber about the notification and message buffer introduce in V10 and told myself that it could be a clean solution (because I usually have only one reader for a message)
+And so a combination of  multiple message buffer and task notification (or event) could solve the X writers / 1 reader scenario.
+But it&#8217;s only valid for a static design where all task are clearly identified. 
+<blockquote>
+  You also have a problem that the reader needs to first peek at the message to see if it is something it can handle, or if it is for someone else, and there is no way to really handle a writer wanting to send a message to two different tasks, the second one will be hidden until the first is taken.
+</blockquote>
+I&#8217;m not sure to properly understand this part, because for me a message buffer is for a  1 writer / 1 reader scenario. So there is no need to peek at the message because your know that this message is for you by design. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Qeue vs Message buffer + Notification</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richarddamon">richarddamon</a> on June 7, 2019</div><div class="thread-post-content">My description had the presumption that you have multiple tasks that you might want to be able to talk to. (since in case A, you have an &#8216;each task&#8217;). If tasks have just a single outbox, then either they can only ever talk to a single task, or you have the posibility of multiple tasks needing to check that outbox (or they need multiple out boxes, which sort of gets back to multiplication of A and C)
+Note that message buffers can have more than one reader or writer, it just needs to be only one AT A TIME, and there be someting like a mutex (maybe one for each end) that makes it so that there is only one task attempting to read or write the buffer at a time.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Qeue vs Message buffer + Notification</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/digaboy">digaboy</a> on June 7, 2019</div><div class="thread-post-content">My description wasn&#8217;t very clear so I draw a quick overview of my task and message between them
+<img src="https://image.noelshack.com/fichiers/2019/23/5/1559890668-archi.png" alt="" />
+(blue mail are short fixe message and green are variable length)
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

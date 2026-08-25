@@ -1,0 +1,438 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2018/freertos_FreeRTOS_TCP_How_to_use_the_FREERTOS_SO_REUSE_LISTEN_SOCKET_option_1b27cbd2j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET optionPosted by edeviser on March 19, 2018Hello, I am running FreeRTOS+TCP and I have some trouble on setting up my server. The server goes like this: ~~~ void socketTask(void * pvParameters) { // Create Listen Socket c-&gt;listensocket = FreeRTOSsocket(FREERTOSAFINET, FREERTOSSOCKSTREAM, FREERTOSIPPROTOTCP); if ( c-&gt;listensocket == FREERTOSINVALID_SOCKET) return -1; // &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2018/freertos_FreeRTOS_TCP_How_to_use_the_FREERTOS_SO_REUSE_LISTEN_SOCKET_option_1b27cbd2j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET optionPosted by edeviser on March 19, 2018Hello, I am running FreeRTOS+TCP and I have some trouble on setting up my server. The server goes like this: ~~~ void socketTask(void * pvParameters) { // Create Listen Socket c-&gt;listensocket = FreeRTOSsocket(FREERTOSAFINET, FREERTOSSOCKSTREAM, FREERTOSIPPROTOTCP); if ( c-&gt;listensocket == FREERTOSINVALID_SOCKET) return -1; // [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202914' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202914' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202914' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202914' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146981' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2018%2Ffreertos_FreeRTOS_TCP_How_to_use_the_FREERTOS_SO_REUSE_LISTEN_SOCKET_option_1b27cbd2j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2018%2Ffreertos_FreeRTOS_TCP_How_to_use_the_FREERTOS_SO_REUSE_LISTEN_SOCKET_option_1b27cbd2j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146981">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2018_freertos_support_forum_archive_index.html/">March 2018 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edeviser">edeviser</a> on March 19, 2018</div><div class="thread-post-content">Hello,
+I am running FreeRTOS+TCP and I have some trouble on setting up my server. The server goes like this:
+~~~
+void socketTask(void * pvParameters) {
+  // Create Listen Socket
+  c->listen<em>socket = FreeRTOS</em>socket(FREERTOS<em>AF</em>INET, FREERTOS<em>SOCK</em>STREAM, FREERTOS<em>IPPROTO</em>TCP);
+  if ( c->listen<em>socket == FREERTOS</em>INVALID_SOCKET)
+    return -1;
+  // Bind listen Socket
+  if (FreeRTOS<em>bind(c->listen</em>socket, &amp;c->listen<em>addr, sizeof(c->listen</em>addr)))
+    return -1;
+  // Set Timeout
+  setRxTimeout(c, portMAX<em>DELAY);
+  setTxTimeout(c, portMAX</em>DELAY);
+  // Set Reuse socket option
+  const BaseType<em>t reuseSocket = pdTRUE;
+  if (FreeRTOS</em>setsockopt(c->listen<em>socket, 0, FREERTOS</em>SO<em>REUSE</em>LISTEN<em>SOCKET,
+      &amp;reuseSocket, sizeof(reuseSocket)))
+    return -1;
+  c->remote</em>sock = c->listen_socket;  // Already the same
+for( ;; ) {
+    ret = FreeRTOS<em>listen(c->listen</em>socket, 1);
+    if (ret) {
+      DEBUG(&#8220;Error (%d) listen&#8230;n&#8221;, ret);
+      vTaskDelay(100);
+      continue;
+    }
+<pre><code> c-&gt;remote_sock = FreeRTOS_accept(c-&gt;listen_socket, &amp;c-&gt;remote_addr, &amp;l);
+if (c-&gt;remote_sock == NULL) {
+  DEBUG("Cannot Accept Error Code %dn", (int)c-&gt;remote_sock);
+  vTaskDelay(100);
+  continue;
+}
+/* Reading and Writing is done by some other service tasks */
+// Wait for disconnect
+SocketSet_t waitDisc = FreeRTOS_CreateSocketSet();
+FreeRTOS_FD_SET(c-&gt;remote_sock, waitDisc, eSELECT_EXCEPT);
+FreeRTOS_select(waitDisc, portMAX_DELAY);
+DEBUG("connection terminated to %lu.n", c-&gt;remote_addr.sin_addr);
+FreeRTOS_closesocket(c-&gt;remote_sock);
+taskYIELD();
+</code></pre>
+  }
+~~~
+To test my server I implemented a little client on my ubuntu host machine:
+~~~
+int main(int argc, char *argv[]) {
+    char recvBuff[1024];
+    struct sockaddr_in serv_addr; 
+<pre><code>if(argc != 4) {
+    printf("n Usage: %s &lt;ip of server&gt; &lt;port&gt; &lt;count&gt;n",argv[0]);
+    return 1;
+} 
+for (int i = 0; i &lt; atoi(argv[3]); i++) { 
+    int sockfd = 0, n = 0;
+    struct timeval  tv1, tv2;
+    memset(recvBuff, '0',sizeof(recvBuff));
+    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) &lt; 0)
+    {
+        printf("n Error : Could not create socket n");
+        return 1;
+    } 
+    memset(&amp;serv_addr, '0', sizeof(serv_addr)); 
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(atoi(argv[2])); 
+    if(inet_pton(AF_INET, argv[1], &amp;serv_addr.sin_addr)&lt;=0)
+    {
+        printf("n inet_pton error occuredn");
+        return 1;
+    } 
+    gettimeofday(&amp;tv1, NULL);
+    if( connect(sockfd, (struct sockaddr *)&amp;serv_addr, sizeof(serv_addr)) &lt; 0)
+    {
+       printf("n Error : Connect Failed n");
+       return 1;
+    } 
+     // Shutdown and close
+    if (shutdown(sockfd, SHUT_RDWR) != 0)
+      return -1;
+    if (close(sockfd) !=0)
+      return -1;
+    gettimeofday(&amp;tv2, NULL);
+    printf ("Total time = %f msn",
+         (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
+         (double) (tv2.tv_sec - tv1.tv_sec));
+}
+</code></pre>
+~~~
+Lets take a look to the output of the client started with count = 3
+~~~
+Total time = 0.000359
+Total time = 1.024391
+Total time = 1.020205
+~~~
+Well, the really first connection is pretty fast. The fallowing connections need more than a second. 🙁
+I next I Tested my client against a netcat server, which was launched by <code>nc -vkl localhost $PORT</code>. Lets take a look to that outout:
+~~~
+Total time = 0.000127
+Total time = 0.000049
+Total time = 0.000050
+~~~
+This is really awesome. Every connection is pretty fast. So I think there is an issue in my Server code above. In the wireshark log you can see, that there is a [RST, ACK] Message and an timeout of about 1000ms.
+Does anybody know how to solve this issue?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 23, 2018</div><div class="thread-post-content">Sorry you didn&#8217;t get a reply sooner, there were a couple of posts I missed due to email fumbling on my end.  I&#8217;ve not had a chance to read through your code in detail but wanted to quickly note there is an example of using this option in FreeRTOS-PlusdemocommonFreeRTOS<em>Plus</em>CLI_DemosTCPCommandConsole.c in the labs download.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 24, 2018</div><div class="thread-post-content">The client uses this code:
+~~~
+    if (shutdown(sockfd, SHUT_RDWR) != 0)
+        return -1;
+    if (close(sockfd) !=0)
+        return -1;
+~~~
+This looks like a gracious shutdown, but I think that it misses one important step: waiting for an acknowledgement of the shutdown.
+Could you call recv() on that socket until it returns an error code?
+~~~
+    int rc;
+    shutdown( sockfd, SHUT_RDWR );
+    for( ;; )
+    {
+        rc = recv( sockfd, recvBuff, sizeof( recvBuff ), 0 );
+        if( rc &lt; 0 )
+        {
+            break;
+        }
+    } 
+    close(sockfd);
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 24, 2018</div><div class="thread-post-content">There is a second bigger problem with your embedded code.
+You set the option <code>FREERTOS_SO_REUSE_LISTEN_SOCKET</code> for the server socket.
+Re-using  a socket means that the server socket wil turn into a connected socket.
+After closing it:
+~~~
+    FreeRTOS<em>closesocket(c->remote</em>sock);
+~~~
+you can not use it anymore: a new listing socket must be created.
+So you can either stop using <code>FREERTOS_SO_REUSE_LISTEN_SOCKET</code>, or you create a new socket after every connection.
+Re-using sockets is useful in two situations: when you have very litte RAM, or when a server socket will only accept 1 client.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edeviser">edeviser</a> on March 26, 2018</div><div class="thread-post-content">Hello Hein Tibosch, 
+thank you for your response. It sounds very plausible for me. I&#8217;m going to implement your suggestions tomorrow.
+But I have on more question. You said:
+<blockquote>
+  After closing it:
+<pre><code>FreeRTOS_closesocket(c-&gt;remote_sock);
+</code></pre>
+  you can not use it anymore: a new listing socket must be created.
+  So you can either stop using FREERTOS<em>SO</em>REUSE<em>LISTEN</em>SOCKET, or you create a new socket after every connection.
+  Re-using sockets is useful in two situations: when you have very litte RAM, or when a server socket will only accept 1 client.
+</blockquote>
+In fact I have little RAM and my socket server shall accept only one client at the moment. So I would like to use the FREERTOS<em>SO</em>REUSE<em>LISTEN</em>SOCKET option.
+In the <a href="https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/API/setsockopt.html">FreeRTOS documentation</a> it says:
+<blockquote>
+  At the end of the connection, the socket must be closed by calling FreeRTOS_closesocket(). After that a new socket can be created and bound to the same port.
+</blockquote>
+So does this mean if the client has disconnected from my socket server which uses the FREERTOS<em>SO</em>REUSE<em>LISTEN</em>SOCKET option , 
+A: the server must close the connection and the server must create a new socket for the next client?
+B: the server can just go on using the previous socket to reenter the listen mode for the next client?
+What is truth? A, B or A&amp;B?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on March 26, 2018</div><div class="thread-post-content"><blockquote>
+  So does this mean if the client has disconnected from my socket server which
+  uses the FREERTOS<em>SO</em>REUSE<em>LISTEN</em>SOCKET option,
+  A: the server must close the connection and the server must create a
+  new socket for the next client?
+</blockquote>
+Correct
+<blockquote>
+  B: the server can just go on using the previous socket to reenter the
+  listen mode for the next client?
+</blockquote>
+False
+Note the distinction between closing a TCP connection and closing a socket:
+Closing a connection is <strong>normally</strong> initiated by the TCP client. But if you want, a server can also decide to close the connection by calling <code>shutdown()</code>. The shutdown procedure takes a few ms (or up to a second on the Internet). You must wait for its result.
+A TCP application will notice that a connection was closed as soon as API&#8217;s return an error code not being equal to <code>EWOULDBLOCK</code> (== <code>EAGAIN</code>).
+Closing a socket means freeing the memory space used by the socket, and also freeing up a port number. If the connection is not closed before a socket is closed, you will see a non-gracious closure and possibly a hanging socket.
+Please have a look at <code>ipconfigTCP_HANG_PROTECTION</code>. When enabled, the +TCP socket will send an &#8220;Are You Alive message&#8221; to the other party every <code>ipconfigTCP_HANG_PROTECTION_TIME</code> seconds. This will avoid hanging sockets. It is worth using it.
+One last word about <code>FREERTOS_SO_REUSE_LISTEN_SOCKET</code>: reusing means that the same socket pointer is being used for both the listening socket as well as the connected socket.
+After the following statement:
+~~~
+    Socket_t xChildSocket = accept( xParentSocket, &amp;xAddress, &amp;xAddressSize );
+~~~
+<code>xChildSocket</code> will either be equal to:
+● <code>NULL</code> in case the function timed-out
+● <code>FREERTOS_INVALID_SOCKET</code> in case <code>xParentSocket</code> is invalid
+● <code>xParentSocket</code> in case a new connection was made
+So if the function succeeds, do not use <code>xParentSocket</code> any more, and do not close it because <code>xChildSocket == xParentSocket</code>.
+For non-REUSE sockets, <code>xParentSocket</code> will be used again and again as a parameter of <code>accept()</code>. In that case also you can put a limit on the maximum number of connected clients:
+~~~
+    /* Allow 1 simultaneous connection only: */
+    FreeRTOS_listen( xParentSocket, 1 );
+~~~
+I hope that this text is all clear.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edeviser">edeviser</a> on March 28, 2018</div><div class="thread-post-content">Hello Hein Tibosch,
+thank you for the detailed explanation. For me its all clear now. I fixed my implementation now on the client and the server side. I moved the<code>for</code> statement in the server to the very beginning. So the socket is being created and set up for every conenction.
+Furthermore I added the &#8216;read-loop wating for a netgative return value&#8217; to the client&#8217;s code between the <code>shutdown</code> and the <code>close</code>. Nevertheless the <code>recv</code> never returns with a negative value. I replaced the  &#8216;read-loop wating for a netgative return value&#8217; with a simple <code>usleepp(50000) //50ms</code>. Thus the duration (previous about one second) goes down to 50ms and there are no error frames in wireshark any more. So I think we are on the right way. The client must wait after doing a <code>shutdown</code> until the connection is really downed. After that the client can close the socket and can go on establishing a new connection. Waiting a constant amount of millliseconds is not a good workaround. 
+Maybe you have got an other idea to wait until the connection is down?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edeviser">edeviser</a> on April 24, 2018</div><div class="thread-post-content">Hello.
+I worked really hard at this problem, but it is still not solved. I think I respected all recommendations. Nevertheless the problem resists.
+I attached for you:
+* server code snippet
+* client code (compile with &#8216;gcc linuxClient.c&#8217; and run with &#8216;./a.out 192.168.42.1 3102 2&#8217;) 
+* client code (compile with &#8216;javac linuxClient.java&#8217;  and run with &#8216;java linuxClient.class&#8217;)
+* Screenshots of wireshark
+In the screenshot you can see very clearly, that there is an error frame and a retransmission which causes a delay of 1000ms. I would really like to avoid this delay!
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 24, 2018</div><div class="thread-post-content">Hi, when you want to show the traffic, please save the captured data in a compressed format and attach it to your post. That&#8217;s a lot easier than a screen-shot.
+I&#8217;m a bit puzzled by 2 things in the capture:
+<ol>
+<li>Why is there a RST packet?</li>
+<li>Why does it say &#8220;TCP port numbers reused&#8221;?</li>
+</ol>
+Did you implement a function for <code>ipconfigRAND32()</code> ? It must return a 32-bit random number.
+And if possible, every time after a reboot, it should start with a different random number. Maybe you can use the RND peripheral for this.
+This randomness is very important.
+In <code>linuxClient.c</code> you comment that : &#8220;Wait for shutdown does not work&#8221;
+What happens then? Does recv() ever return? With what value?
+When using Winsock this is easier: when the FIN status has been reached, <code>select()</code> will return a positive value for READ, while <code>recv()</code> returns <code>0</code>. That is a sign that the connection was shut down, and you can safely <code>close()</code> the socket.
+I&#8217;m less sure about the internals of Linux. I always call <code>select()</code> before calling <code>recv()</code>, so that <code>recv()</code> never has to block. When the socket has become invalid or the connection got closed, <code>select()</code>will return witth an error.
+Basically you wrote this client code:
+~~~
+    for (int counter = &#8211; conuter &lt; N; counter++) {
+        connect(sockfd, (struct sockaddr *)&amp;serv_addr, sizeof(serv_addr));
+        shutdown(sockfd, SHUT_RDWR);
+        close(sockfd);
+    }
+~~~
+What is the purpose of connecting to a TCP server without exchanging any data? Is this just a test?
+What happens if you <strong>do</strong> send/recv a bit of data?
+In the STM server program you wrote:
+~~~
+    while(FreeRTOS_recv(c->socket, buf, 1, 0) >= 0) {
+      vTaskDelay(5);
+    }
+~~~
+Officially you should check for <code>-EWOULDBLOCK</code> ( == <code>-EGAIN</code> ) :
+~~~
+    for( ;; )
+    {
+    int rc;
+<pre><code>    rc = FreeRTOS_recv(c-&gt;socket, buf, 1, 0);
+    if( ( rc &lt; 0 ) &amp;&amp; ( rc != -pdFREERTOS_ERRNO_EWOULDBLOCK ) )
+    {
+        break;
+    }
+    vTaskDelay(5);
+}
+</code></pre>
+~~~
+But as you socket is used in blocking mode, I do not think that <code>EWOULDBLOCK</code> will be returned.
+When I find time, I will start-up my STM32Fx and do the same tests.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 24, 2018</div><div class="thread-post-content">No need to answer the above questions: I&#8217;m running your code on my STM32Fx board and on Ubuntu.
+The first thing that I found is that a short (10 ms) delay between <code>shutdown()</code> and <code>close()</code> makes a big difference. I implemented this delay with <code>nanosleep()</code>.
+Now I will try to find out what happens if the delay is not present.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edeviser">edeviser</a> on April 24, 2018</div><div class="thread-post-content">Okay, that sound good. Here is my explanation for the error frames:
+Take a look to the screen shot attached. You can produce it by importing <code>flow.pcapng</code> of my first port. Then choose Statistics->Flowgraph and select &#8216;TCP Flows&#8217; as Flow type.
+A normal communication flow is marked by one color. You can see very clearly, that the first flow, (green) is being interrupted by a second flow (orange). This seems to be no problem for the server at 10.169.7.217 which is a simple server which used netcat (<code>nc -l</code>).
+But the server at 10.169.7.49 which is the stm32Server <strong>does</strong> have a problem withi this interruption which occures when the second flow (beige) starts ere the first flow (red) had been terminated by <code>fin,ack|ACK.</code>
+This could be caused by the reuse socket option which was used by the stm32server. The resuse socket option prevents the stm32server to handle the second flow ere the first flow is being terminated. Waiting about 10ms is enough for the stm32 to handle the last <code>fin,ack</code> and the <code>ACK</code>. 
+The netcat server can handle multiple connections at the same time. Thus it has no problem with this.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 24, 2018</div><div class="thread-post-content">The problem that you encountered is the following:
+The client connects to the server-socket, sends a shutdown and closes its socket. It think this is OK, the OS will handle the shutdown and postpone the actual freeing of the socket until the connection has really finished.
+Right after the connection, the client sends a SYN packet, while FreeRTOS+TCP has not yet created a new server-socket. And therefore it replies to the SYN packet with a RST packet.
+After a time-out of 3 seconds, the client will send a new SYN, which will be acknowledged. Wireshark warns that my STM32Fx takes the same port number ( TCP port numbers reused ). The warning may be ignored in this case.
+I tried a trick: I created a new server socket right after <code>accept()</code> succeeded. I also put it into listen mode.
+That helped: the client doesn&#8217;t have to wait again for the new server socket to be ready.
+When this is the normal TCP conversation:
+~~~
+Client SYN
+Server SYN + ACK
+Client ACK
+Client FIN
+Server FIN + ACK
+Client ACK
+~~~
+I observed the following if the client is too fast:
+~~~
+Client<em>1 SYN
+Server   SYN + ACK
+Client</em>1 ACK
+Client<em>1 FIN
+Client</em>2 SYN       // A SYN is sent for a new connection
+Server   RST       // Sorry, there is no server socket yet
+Server   FIN + ACK // to Client<em>1
+Client</em>1 ACK
+~~~
+The problem does not exist if you do not use the re-use option. Note that a server socket is not as expensive as a connected socket because it does not allocate TCP stream buffers.
+If you insist on using the re-use option I could think of creating a patch. I&#8217;m not yet happy about such a patch because it is a bit tricky.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 24, 2018</div><div class="thread-post-content"><blockquote>
+  The netcat server can handle multiple connections at the same
+  time. Thus it has no problem with this
+</blockquote>
+Of course FreeRTOS+TCP can also handle multiple connections at the same time if you omit the re-use option.
+The second parameter of <code>FreeRTOS_listen()</code> determines the maximum number of clients that are allowed at any moment.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 24, 2018</div><div class="thread-post-content">For you info: I attached a PCAP file in which the FreeRTOS+TCP server socket is permanent, the re-use option is not used. It recevies 1,000 TCP connections per second.
+If you use a permanent socket that allows for only 1 client, you will meet the same problem as with the re-use option: a second connect from Linux might come wjile the first connection isn&#8217;t closed yet.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edeviser">edeviser</a> on April 24, 2018</div><div class="thread-post-content">What is a &#8216;permanent socket&#8217;? Does it mean to use two sockets instead of using the reuse option and to limit the clients by passing a <code>1</code> to the <code>FreeRTOS_listen(...)</code> command?
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS+TCP: How to use the FREERTOS_SO_REUSE_LISTEN_SOCKET option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on April 24, 2018</div><div class="thread-post-content">Right!
+~~~
+    for (;;) {
+        Socket<em>t xSocket = FreeRTOS</em>accept( xServerSocket, &amp;remote<em>addr, &amp;l );
+        if (xSocket == FREERTOS</em>INVALID<em>SOCKET) {
+            continue;
+        }
+        for( ;; )
+        {
+            int rc = FreeRTOS</em>recv(xSocket, buf, 1, 0);
+            if( ( rc &lt; 0 ) &amp;&amp; ( rc != -pdFREERTOS<em>ERRNO</em>EWOULDBLOCK ) )
+            {
+                break;
+            }
+        }
+        FreeRTOS_closesocket(xSocket);
+    }
+~~~
+In the above example, <code>xServerSocket</code> continues to exist.
+But if you allow only 1 client :
+~~~
+    FreeRTOS_listen( xServerSocket, 1 )
+~~~
+you will still see the problem occurring. I&#8217;m afraid that you have to use at least <code>3</code>, although you only help one client at a time.
+Within Linux, after <code>close(socket)</code>, the kernel will take over the socket and make sure that it&#8217;s connection is closed (because <code>shutdown()</code> was called).
+While testing, I saw in a PCAP that at some point there were 3 concurrent connections: 2 were in a closing status, one was just starting.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

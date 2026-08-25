@@ -1,0 +1,279 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CM3 speed improvement proposal - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2010/freertos_CM3_speed_improvement_proposal_3582561.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="CM3 speed improvement proposal - FreeRTOS" />
+<meta property="og:description" content="CM3 speed improvement proposalPosted by artlip on March 7, 2010Hello, I want to propose improvements for a task switching and for a critical section code. The base concept is to change portYIELD, portENTER&#095;CRITICAL and portEXIT&#095;CRITICAL into macros which allows compiler to put it as inlined code. To achieve a full potential of the &#040;critical section&#041; &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2010/freertos_CM3_speed_improvement_proposal_3582561.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="CM3 speed improvement proposalPosted by artlip on March 7, 2010Hello, I want to propose improvements for a task switching and for a critical section code. The base concept is to change portYIELD, portENTER&#095;CRITICAL and portEXIT&#095;CRITICAL into macros which allows compiler to put it as inlined code. To achieve a full potential of the &#040;critical section&#041; [&hellip;]" />
+<meta name="twitter:title" content="CM3 speed improvement proposal - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201869' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201869' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201869' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201869' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140447' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2010%2Ffreertos_CM3_speed_improvement_proposal_3582561.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2010%2Ffreertos_CM3_speed_improvement_proposal_3582561.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140447">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2010_freertos_support_forum_archive_index.html/">March 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">CM3 speed improvement proposal</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/artlip">artlip</a> on March 7, 2010</div><div class="thread-post-content">Hello,  
+I want to propose improvements for a task switching and for a critical section code.  
+The base concept is to change portYIELD, portENTER&#95;CRITICAL and portEXIT&#95;CRITICAL into macros which allows compiler to put it as inlined code. To achieve a full potential of the &#40;critical section&#41; inlined code there is also required a small change in the interrupt masking code. A compiler should be allowed to &#8220;freely&#8221; choose register used for storing constant &#40;mask value&#41;. BTW&gt; this improvement part is the same like the improvement request &#40;2709048&#41; from Samuel Tardieu.<br />
+The downside of this solution is the increase of the OS code &#40;in case of tests described below it is 376 bytes&#41;. The exact size of increase depends on how many FreeRTOS functions &#40;with critical sections&#41; is used and does not depend on the number of API calls used in the application.  
+I made two tests to check if this code fix will give a real speedup gain. Tests was performed using original FreeRTOS 6.0.3, GCC 4.4.3, compiler optimization -Os, STM32F103 @ 72MHz.  
+1&#46; The first test was about speed of queue operations. There was configured 2 tasks with the same priority, queue with 1024 entries of 4 bytes long &#40;system tick period at 1ms&#41;.<br />
+The first task puts into queue as many entries as possible. When queue is full task executes delay for one tick.<br />
+The second task receives from queue as many entries as possible. When queue is empty task executes delay for one tick.<br />
+There was measured number of successfull xQueueSend and xQueueReceive operations during test period &#40;20s&#41;.  
+2&#46; The second test was about speed of a context switching. There was configured 2 tasks with the same priority, two binary semaphores &#8211; one of them intially acquired &#40;system tick period at 1ms&#41;.<br />
+The first task acquires semaphore number 1 then releases semaphore number 2. The second task acquires semaphore number 2 then releases semaphore number 1.<br />
+There was measured number of task loops during test period &#40;20s&#41;.  
+Results:<br />
+Test 1 &#8211; 5.8% improvement<br />
+Test 2 &#8211; 15.9% improvement  
+The first &#40;and obvious&#41; cause of this speedup is elimination of function calls and the second cause comes from the fact that Flash prefetch buffer is not disturbed.  
+The patches for portmacro.h and port.c:  
+&#8212; portmacro.h.orig&nbsp;&nbsp;&nbsp; 2010-02-19 14:23:46.000000000 +0100<br />
++++ portmacro.h 2010-03-07 20:33:22.057137332 +0100<br />
+@@ -93,53 +93,63 @@<br />
+&#35;define portBYTE&#95;ALIGNMENT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8<br />
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#42;/  
++&#35;define portNVIC&#95;INT&#95;CTRL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; volatile unsigned long &#42;&#41; 0xe000ed04 &#41;<br />
++&#35;define portNVIC&#95;PENDSVSET&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x10000000  
+/&#42; Scheduler utilities. &#42;/<br />
+-extern void vPortYieldFromISR&#40; void &#41;;<br />
++&#35;define vPortYieldFromISR&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp; do &#123; /&#42; Set a PendSV to request a context switch. &#42;/&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;&#40;portNVIC&#95;INT&#95;CTRL&#41; = portNVIC&#95;PENDSVSET;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp; &#125; while &#40;0&#41;  
+&#35;define portYIELD&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vPortYieldFromISR&#40;&#41;  
+-&#35;define portEND&#95;SWITCHING&#95;ISR&#40; xSwitchRequired &#41; if&#40; xSwitchRequired &#41; vPortYieldFromISR&#40;&#41;<br />
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#42;/  
+/&#42; Critical section management. &#42;/  
++/&#42;<br />
+&#43; &#42; Set basepri to requested value. Lets compiler to choose clobbered register.<br />
+&#43; &#42;/<br />
++static inline void portSetBasePri&#40;uint32&#95;t value&#41;<br />
++&#123;<br />
++&nbsp;&nbsp; &#95;&#95;asm volatile &#40;&#8221;msr basepri, %0&#8243; : : &#8220;r&#8221; &#40;value&#41; &#41;;<br />
++&#125;<br />
++<br />
+/&#42;<br />
+&#45; &#42; Set basepri to portMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY without effecting other<br />
+&#45; &#42; registers.&nbsp; r0 is clobbered.<br />
+&#43; &#42; Set basepri to portMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY &#8211; disable RTOS interrupts.<br />
+&nbsp; &#42;/<br />
+-&#35;define portSET&#95;INTERRUPT&#95;MASK&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&#8211;&nbsp;&nbsp; &#95;&#95;asm volatile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&#8211;&nbsp;&nbsp; &#40;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#8221;&nbsp;&nbsp; mov r0, %0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n&#8221; <br />
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#8221;&nbsp;&nbsp; msr basepri, r0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n&#8221; <br />
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::&#8221;i&#8221;&#40;configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY&#41;:&#8221;r0&#8243;&nbsp;&nbsp;&nbsp;   
+<h2>&#8211;&nbsp;&nbsp; &#41;</h2>
++&#35;define portSET&#95;INTERRUPT&#95;MASK&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portSetBasePri&#40;configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY&#41;<br />
++<br />
+/&#42;<br />
+&#45; &#42; Set basepri back to 0 without effective other registers.<br />
+&#45; &#42; r0 is clobbered.<br />
+&#43; &#42; Set basepri back to 0 &#8211; enable RTOS interrupts.<br />
+&nbsp; &#42;/<br />
+-&#35;define portCLEAR&#95;INTERRUPT&#95;MASK&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&#8211;&nbsp;&nbsp; &#95;&#95;asm volatile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&#8211;&nbsp;&nbsp; &#40;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#8221;&nbsp;&nbsp; mov r0, &#35;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n&#8221; <br />
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#8221;&nbsp;&nbsp; msr basepri, r0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n&#8221; <br />
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :::&#8221;r0&#8243;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&#8211;&nbsp;&nbsp; &#41;<br />
++&#35;define portCLEAR&#95;INTERRUPT&#95;MASK&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp; portSetBasePri&#40;0&#41;  
+&#35;define portSET&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0;portSET&#95;INTERRUPT&#95;MASK&#40;&#41;<br />
+-&#35;define portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;x&#41;&nbsp;&nbsp; portCLEAR&#95;INTERRUPT&#95;MASK&#40;&#41;;&#40;void&#41;x<br />
++&#35;define portCLEAR&#95;INTERRUPT&#95;MASK&#95;FROM&#95;ISR&#40;x&#41;&nbsp;&nbsp; portCLEAR&#95;INTERRUPT&#95;MASK&#40;&#41;<br />
++<br />
++extern volatile unsigned portBASE&#95;TYPE uxCriticalNesting;  
++&#35;define portDISABLE&#95;INTERRUPTS&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portSET&#95;INTERRUPT&#95;MASK&#40;&#41;<br />
++&#35;define portENABLE&#95;INTERRUPTS&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portCLEAR&#95;INTERRUPT&#95;MASK&#40;&#41;  
+-extern void vPortEnterCritical&#40; void &#41;;<br />
+-extern void vPortExitCritical&#40; void &#41;;<br />
++&#35;define portENTER&#95;CRITICAL&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp; do &#123;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portDISABLE&#95;INTERRUPTS&#40;&#41;;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uxCriticalNesting++;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp; &#125; while &#40;0&#41;<br />
++<br />
++&#35;define portEXIT&#95;CRITICAL&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp; do &#123;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uxCriticalNesting-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40; uxCriticalNesting == 0 &#41;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portENABLE&#95;INTERRUPTS&#40;&#41;;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
++&nbsp;&nbsp; &#125; while &#40;0&#41;  
+-&#35;define portDISABLE&#95;INTERRUPTS&#40;&#41;&nbsp;&nbsp; portSET&#95;INTERRUPT&#95;MASK&#40;&#41;<br />
+-&#35;define portENABLE&#95;INTERRUPTS&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portCLEAR&#95;INTERRUPT&#95;MASK&#40;&#41;<br />
+-&#35;define portENTER&#95;CRITICAL&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vPortEnterCritical&#40;&#41;<br />
+-&#35;define portEXIT&#95;CRITICAL&#40;&#41;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vPortExitCritical&#40;&#41;<br />
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#42;/  
+/&#42; Task function macros as described on the FreeRTOS.org WEB site. &#42;/  
+&#8212; port.c.orig 2010-02-19 14:23:46.000000000 +0100<br />
++++ port.c&nbsp; 2010-03-07 20:23:23.197147006 +0100<br />
+@@ -69,12 +69,10 @@<br />
+/&#42; Constants required to manipulate the NVIC. &#42;/<br />
+&#35;define portNVIC&#95;SYSTICK&#95;CTRL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; volatile unsigned long &#42;&#41; 0xe000e010 &#41;<br />
+&#35;define portNVIC&#95;SYSTICK&#95;LOAD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; volatile unsigned long &#42;&#41; 0xe000e014 &#41;<br />
+-&#35;define portNVIC&#95;INT&#95;CTRL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; volatile unsigned long &#42;&#41; 0xe000ed04 &#41;<br />
+&#35;define portNVIC&#95;SYSPRI2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; volatile unsigned long &#42;&#41; 0xe000ed20 &#41;<br />
+&#35;define portNVIC&#95;SYSTICK&#95;CLK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00000004<br />
+&#35;define portNVIC&#95;SYSTICK&#95;INT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00000002<br />
+&#35;define portNVIC&#95;SYSTICK&#95;ENABLE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00000001<br />
+-&#35;define portNVIC&#95;PENDSVSET&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x10000000<br />
+&#35;define portNVIC&#95;PENDSV&#95;PRI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; &#40; unsigned long &#41; configKERNEL&#95;INTERRUPT&#95;PRIORITY &#41; &lt;&lt; 16 &#41;<br />
+&#35;define portNVIC&#95;SYSTICK&#95;PRI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; &#40; unsigned long &#41; configKERNEL&#95;INTERRUPT&#95;PRIORITY &#41; &lt;&lt; 24 &#41;  
+@@ -87,7 +85,7 @@  
+/&#42; Each task maintains its own interrupt status in the critical nesting<br />
+variable. &#42;/<br />
+-static unsigned portBASE&#95;TYPE uxCriticalNesting = 0xaaaaaaaa;<br />
++volatile unsigned portBASE&#95;TYPE uxCriticalNesting = 0xaaaaaaaa;  
+/&#42;<br />
+&nbsp; &#42; Setup the timer to generate the tick interrupts.<br />
+@@ -191,30 +189,6 @@<br />
+&#125;<br />
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#42;/  
+-void vPortYieldFromISR&#40; void &#41;<br />
+-&#123;<br />
+&#8211;&nbsp;&nbsp; /&#42; Set a PendSV to request a context switch. &#42;/<br />
+&#8211;&nbsp;&nbsp; &#42;&#40;portNVIC&#95;INT&#95;CTRL&#41; = portNVIC&#95;PENDSVSET;<br />
+-&#125;  
+<h2>-/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#42;/</h2>
+-void vPortEnterCritical&#40; void &#41;<br />
+-&#123;<br />
+&#8211;&nbsp;&nbsp; portDISABLE&#95;INTERRUPTS&#40;&#41;;<br />
+&#8211;&nbsp;&nbsp; uxCriticalNesting++;<br />
+-&#125;  
+<h2>-/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#42;/</h2>
+-void vPortExitCritical&#40; void &#41;<br />
+-&#123;<br />
+&#8211;&nbsp;&nbsp; uxCriticalNesting-;<br />
+&#8211;&nbsp;&nbsp; if&#40; uxCriticalNesting == 0 &#41;<br />
+&#8211;&nbsp;&nbsp; &#123;<br />
+&#8211;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portENABLE&#95;INTERRUPTS&#40;&#41;;<br />
+&#8211;&nbsp;&nbsp; &#125;<br />
+-&#125;  
+<h2>-/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#42;/</h2>
+void xPortPendSVHandler&#40; void &#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp; /&#42; This is a naked function. &#42;/  
+<h2>Regards,</h2>
+Artur Lipowski
+</div></div><div class="thread-post"><h3 class="thread-post-title">CM3 speed improvement proposal</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on March 7, 2010</div><div class="thread-post-content">It would be good to include an option to either inline or not inline, maybe that could be part of FreeRTOSConfig.h? But I don&#8217;t think inline is actually part of the official C language until C99.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CM3 speed improvement proposal</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/artlip">artlip</a> on March 8, 2010</div><div class="thread-post-content">Are you asking for making configurable the &#8220;static inline void portSetBasePri&#8221;?<br />
+I don&#8217;t know the official policy for C standard used in the FreeRTOS. I&#8217;d rather assume that CM3 is so new CPU that any compiler for it should support inline without problems. Of course my assumption can be wrong and in such case there can be used a plain &#95;&#95;asm instead &#40;with fix from Samuel Tardieu&#41; and no configuration is necessary in such case.  
+Of course offering more choices is a good idea, but I MHO making the whole fix configurable is a little better idea. This will allow to make choice between code size and speed.  
+Regards,
+</div></div><div class="thread-post"><h3 class="thread-post-title">CM3 speed improvement proposal</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on March 8, 2010</div><div class="thread-post-content">These code size Vs execution speed trade offs are always a matter of opinion and circumstance.&nbsp; I agree making it configurable would be the best thing, although compilers will often inline short functions in any case once the optimiser is switched on.  
+With regards to the use of the inline keyword &#8211; I don&#8217;t have a problem with it as long as it is only in the portable layer, so will only get compiled with a single compiler that can be tested.&nbsp; Older versions of FreeRTOS had an inline used in tasks.h that caused no end of problems on the low end compilers.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CM3 speed improvement proposal</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/artlip">artlip</a> on March 9, 2010</div><div class="thread-post-content">There is created the new feature request <a href="https://sourceforge.net/tracker/?func=detail&amp;aid=2966871&amp;group_id=111543&amp;atid=659636">https://sourceforge.net/tracker/?func=detail&amp;aid=2966871&amp;group&#95;id=111543&amp;atid=659636</a> 2966871 with patches discussed in this thread.<br />
+Patches are modified to make inlining optional through configCM3&#95;PORT&#95;USE&#95;INLINE macro.  
+Regards,
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

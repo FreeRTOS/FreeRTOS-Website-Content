@@ -1,0 +1,172 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLINT vs mtime in FreeRTOS RISC-V port - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2019/freertos_CLINT_vs_mtime_in_FreeRTOS_RISC-V_port_2e8d6a0c4fj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="CLINT vs mtime in FreeRTOS RISC-V port - FreeRTOS" />
+<meta property="og:description" content="CLINT vs mtime in FreeRTOS RISC-V portPosted by kj-lin on August 27, 2019Hi, We are porting an RISC-V platfrom for Amazon FreeRTOS Qualification Program but get the mtime porting issue. In FreeRTOS RISC-V port, the default implementation about mtime in &#8220;port.c&#8221; and &#8220;portASM.S&#8221; files can only be used if there is a CLINT by specifying &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2019/freertos_CLINT_vs_mtime_in_FreeRTOS_RISC-V_port_2e8d6a0c4fj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="CLINT vs mtime in FreeRTOS RISC-V portPosted by kj-lin on August 27, 2019Hi, We are porting an RISC-V platfrom for Amazon FreeRTOS Qualification Program but get the mtime porting issue. In FreeRTOS RISC-V port, the default implementation about mtime in &#8220;port.c&#8221; and &#8220;portASM.S&#8221; files can only be used if there is a CLINT by specifying [&hellip;]" />
+<meta name="twitter:title" content="CLINT vs mtime in FreeRTOS RISC-V port - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203160' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203160' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203160' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203160' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138214' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2019%2Ffreertos_CLINT_vs_mtime_in_FreeRTOS_RISC-V_port_2e8d6a0c4fj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2019%2Ffreertos_CLINT_vs_mtime_in_FreeRTOS_RISC-V_port_2e8d6a0c4fj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138214">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2019_freertos_support_forum_archive_index.html/">August 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">CLINT vs mtime in FreeRTOS RISC-V port</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kj-lin">kj-lin</a> on August 27, 2019</div><div class="thread-post-content">Hi,
+We are porting an RISC-V platfrom for Amazon FreeRTOS Qualification Program but get the mtime porting issue.
+In FreeRTOS RISC-V port, the default implementation about mtime in &#8220;port.c&#8221; and &#8220;portASM.S&#8221; files can only be used if there is a CLINT by specifying &#8220;configCLINT<em>BASE</em>ADDRESS&#8221; and &#8220;portasmHAS_CLINT&#8221;.
+It includes setup mtime to generate the tick interrupts, enable mtime interrupt in xPortStartScheduler() and handle mtime interrupt.
+However, the default implementation is based on Sifive&#8217;s CLINT memory-mapped control registers specification, which makes the porting not generic enough.
+How can we port a RISC-V core without modifying generic &#8220;port.c&#8221; and &#8220;portASM.S&#8221; files,
+if the core uses the &#8220;mie.mtie&#8221; and generates mcause=0x8000[]0007 mtime interrupt but has a different CLINT memory-mapped control registers layout from SiFive?
+</div></div><div class="thread-post"><h3 class="thread-post-title">CLINT vs mtime in FreeRTOS RISC-V port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 27, 2019</div><div class="thread-post-content">The RISC-V port is quite new so this is good information as I didn&#8217;t
+realise the CLINT was not a standard interface.  At this time your only
+option would be to configure the port as if it didn&#8217;t have a CLINT then
+follow the instructions for when configCLINT<em>BASE</em>ADDRESS is 0.  We can
+then work together to see what would be necessary to support your port
+too.  If it is just a matter of having registers at different offsets,
+or even bits in registers in different places, it may be possible to use
+the port specific extensions header files in some way &#8211; on the other
+hand if the CLINT is completely different in functionality we would have
+to re-think (also re-thing what CLINT actually means).
+If you are happy to provide more information here, such as links to data
+sheets, etc. then please post links to the information we will need.  If
+you prefer at this time to keep this development offline then you can
+contact me directly using r dot barry <em>at</em> freertos <em>dot</em> org.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CLINT vs mtime in FreeRTOS RISC-V port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kj-lin">kj-lin</a> on August 28, 2019</div><div class="thread-post-content">Hi Richard,
+Thanks for the reply.
+I got the &#8220;CLINT&#8221; is a name used at Sifive to cover local interrupts that do not pass through the PLIC,
+including software interrupts, timer interrupts and any additional local interrupts made visible in the mip/mie CSRs bits 16 and above.
+But it is NOT a standard keyowrd/interface in RISC-V specifiecation.
+Our core doesn&#8217;t have the &#8220;CLINT&#8221; based registers design, but it provides 64-bit memory-mapped registers for mtime and mtimecmp.
+And the mtime interrupt will only be taken if interrupt is enabled and the MTIE bit is set in the mie register.
+Our machine timer control registers map are :
+Offset address:
+0x00      : mtime
+0x08      : mtimecmp (hart 0)
+0x10      : mtimecmp (hart 1)
+&#8230;       : &#8230;
+0x08+8*N  : mtimecmp (hart N)
+Actually, the &#8220;mtime&#8221; and &#8220;mtimecmp&#8221; are standard registers defined in RISC-V Privileged specification and request to be exposed as 64-bit memory-mapped registers.
+Perphas we should consider to replace &#8220;configCLINT<em>BASE</em>ADDRESS&#8221; with &#8220;configMTIME<em>ADDRESS&#8221; and &#8220;configMTIMECMP</em>ADDRESS&#8221; definition in FreeRTOSConfig.h.
+It seems that we can have the porting more generic if the two definitions are used for timer setup and tick interrupt handler implemation in FreeRTOS RISC-V port.
+Currently, the option for me is to set configCLINT<em>BASE</em>ADDRESS and portasmHAS<em>CLINT to both 0 to bypass the default implemation about mtime, including mtime interrupt pending.
+However, it is a pity that i can NOT leverage the code of vPortSetupTimerInterrupt() and &#8216;test</em>if<em>mtimer&#8217; in freertos</em>risc<em>v</em>trap_handler.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CLINT vs mtime in FreeRTOS RISC-V port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 28, 2019</div><div class="thread-post-content">Your suggestion seems to be a reasonable approach.  The &#8216;live copy&#8217; (not
+yet checked in) of the RISC-V port has some minor updates to support
+multiple HARTs (the current code assumes only one HART).  That may also
+suffer from the same assumptions so once that has been checked in I will
+look at removing the dependency between the mtimer and CLINT.  It would
+be great at that time if you could validate any updates made work for
+you.  In the mean time it would be helpful if you could create an
+example of an update that would work for you that we could then use as a
+reference/merge.
+</div></div><div class="thread-post"><h3 class="thread-post-title">CLINT vs mtime in FreeRTOS RISC-V port</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kj-lin">kj-lin</a> on August 29, 2019</div><div class="thread-post-content">To make the smallest modifications, I just simply replace configCLINT<em>BASE</em>ADDRESS wth configMTIME<em>BASE</em>ADDRESS and configMTIMECMP<em>BASE</em>ADDRESS defined in FreeRTOSConfig.h file, and also replace  portasmHAS<em>CLINT with portasmHAS</em>MTIME defined in freertos<em>risc</em>v<em>chip</em>specific_extensions.h file.
+The default timer/tick handling in port.c and portASM.S files are implemented based on the definitions.
+The examples are as attached.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

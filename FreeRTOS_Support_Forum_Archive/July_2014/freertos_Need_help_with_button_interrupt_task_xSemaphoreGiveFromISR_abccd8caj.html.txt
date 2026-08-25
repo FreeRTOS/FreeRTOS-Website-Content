@@ -1,0 +1,234 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Need help with &quot;button&quot; interrupt task (xSemaphoreGiveFromISR) - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2014/freertos_Need_help_with_button_interrupt_task_xSemaphoreGiveFromISR_abccd8caj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Need help with &quot;button&quot; interrupt task (xSemaphoreGiveFromISR) - FreeRTOS" />
+<meta property="og:description" content="Need help with &#8220;button&#8221; interrupt task (xSemaphoreGiveFromISR)Posted by re-play on July 30, 2014Hello again, I thought it&#8217;s better to create a new topic for this case. I&#8217;m a FreeRTOS newbie, currently studying interrupt generation in FreeRTOS. So far I&#8217;ve managed to write and successfully run my basic non-RTOS example of using the USER button on &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2014/freertos_Need_help_with_button_interrupt_task_xSemaphoreGiveFromISR_abccd8caj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Need help with &#8220;button&#8221; interrupt task (xSemaphoreGiveFromISR)Posted by re-play on July 30, 2014Hello again, I thought it&#8217;s better to create a new topic for this case. I&#8217;m a FreeRTOS newbie, currently studying interrupt generation in FreeRTOS. So far I&#8217;ve managed to write and successfully run my basic non-RTOS example of using the USER button on [&hellip;]" />
+<meta name="twitter:title" content="Need help with &quot;button&quot; interrupt task (xSemaphoreGiveFromISR) - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202415' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202415' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202415' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202415' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=143888' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2014%2Ffreertos_Need_help_with_button_interrupt_task_xSemaphoreGiveFromISR_abccd8caj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2014%2Ffreertos_Need_help_with_button_interrupt_task_xSemaphoreGiveFromISR_abccd8caj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-143888">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2014_freertos_support_forum_archive_index.html/">July 2014 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Need help with &#8220;button&#8221; interrupt task (xSemaphoreGiveFromISR)</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/re-play">re-play</a> on July 30, 2014</div><div class="thread-post-content">Hello again,
+I thought it&#8217;s better to create a new topic for this case. I&#8217;m a FreeRTOS newbie, currently studying interrupt generation in FreeRTOS. So far I&#8217;ve managed to write and successfully run my basic non-RTOS example of using the USER button on my STM32 ARM Cortex board as an external interrupt using the libraries to configure it (EXTI line and NVIC). Now I want to make a next step and move to FreeRTOS environment, obviously using a semaphore mechanism (xSemaphoreGiveFromISR). 
+My goal is to create a simple FreeRTOS project with 3 tasks &#8211; 2 of them for flashing a single LED (one for blue and another for a green one) at different frequency while the 3rd task should be waken by the ISR (that processes GPIO interrupts originating from the push button) and should do some simple job, like turning both LEDs off when the button is pressed. So far I&#8217;ve managed to create and run the first two tasks (flashing both LEDS at different speed, using no semaphores) so now I need to add the third &#8211; &#8220;user button&#8221; task and obviously the binary semaphore for signal the task from interrupt and also to synchronise the task with interrupt. I&#8217;m just not sure how to do it correctly. I&#8217;m also not sure about the priority of the button interrupt task &#8211; should it be higher than the priority of my first two tasks or not?
+Now, I don&#8217;t expect you to write any code for me, but if someone can just point me in the right direction how to start to add this button interrupt task I would be very grateful. Could be just in few sentences, kind of step-by-step plan. Something like: first you need to add button initialization (GPIO, RCC), you also need to create a binary semaphore to synch. the task with interrupt, then create a button task, check your configMAX<em>LIBRARY</em>SYSCALL<em>INTERRUPT</em>PRIORITY settings etc. Hope I&#8217;m not asking too much.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need help with &#8220;button&#8221; interrupt task (xSemaphoreGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/re-play">re-play</a> on August 1, 2014</div><div class="thread-post-content">UPDATE: Before using a button for generating GPIO interrupt I decided to try another, easier way &#8211; using software generated interrupts. For that purpose I modified &#8220;EXAMPLE 12&#8221; (Using a Binary Semaphore to Synchronize a Task with an Interrupt) code from R.Barry&#8217;s RTOS Practical Guide book. In short, it&#8217;s a simple example with 2 tasks (vPeriodTask and vHandlerTask) and 1 interrupt handler. vPeriodTask is supposed to generate (SW) interrupt every 1500 ms while vHandlerTask is used for synchronizing the task with SW interrupt using binary semaphore and has higher priority. Interrupt handler waits for interrupt, then &#8220;gives&#8221; the semaphore to unlock the high priority task (vHandlerTask) and switch to it.
+However, my code doesn&#8217;t work as I expected. Judging by my testing with breakpoint, vInterruptHandler obviously never gets called so there is no switching to high priority task. What happens is the following: 
+1.) tasks and semaphore get created and schedular gets running 
+2.) vHandlerTask &#8220;takes&#8221; semaphore and prints &#8220;Handler task ->> Processing event&#8221; and turns on the LED. This is ok.
+3.) Next, schedular switches to vPeriodicTask that waits for delay and then prints &#8220;About to generate SW interrupt&#8230;&#8221;. Then it generates SW interrupt and at that point the program freezes. Generated SW interrupt should wake up interrupt handler (that should then switch to vHandlerTask once again) but it does not.  
+My code (parts):
+TASKS: 
+/*************************************************************************/
+void vPeriodicTask(void * parameter){
+  for(;;){
+    {
+    vTaskDelay(1500);
+        printf( &#8220;About to generate SW interrupt&#8230;.rnrn&#8221; );
+    EXTI<em>GenerateSWInterrupt(EXTI</em>Line0);
+    printf( &#8220;&#8230;Interrupt was generated&#8230;rn&#8221; );
+    }
+  }
+}
+/************************************************************************************/
+static void vHandlerTask( void * pvParameters )
+{
+    for( ;; )
+    {
+// Use the semaphore to wait for an event. 
+        if (xSemaphoreTake( SemaphoreTask, portMAX<em>DELAY ) == pdTRUE)
+        {
+/* To get here the event must have occurred. Process the event. */
+            GPIO</em>WriteBit(GPIOC,GPIO<em>Pin</em>9,Bit_SET);    // turn on LED
+            printf( &#8220;Handler task ->> Processing event.rn&#8221; );
+        }
+    }
+}
+/************************************************************************************/
+void vInterruptHandler(void)
+{
+      if(EXTI<em>GetITStatus(EXTI</em>Line0) != RESET)     // when interrupt &#8230;
+      {
+          portBASE<em>TYPE xHigherPriorityTaskWoken = pdFALSE;
+          xSemaphoreGiveFromISR(SemaphoreTask, &amp;xHigherPriorityTaskWoken);
+          if (xHigherPriorityTaskWoken != pdFALSE)
+          {
+                portEND</em>SWITCHING<em>ISR(xHigherPriorityTaskWoken);
+          }
+      }
+      // Clear the EXTI line 0 pending bit
+      EXTI</em>ClearITPendingBit(EXTI_Line0);
+}
+/************************************************************************************/
+MAIN:
+int main(void) {
+  LEDInit();
+  EXTI0_Config();
+  vSemaphoreCreateBinary(SemaphoreTask);
+  if( SemaphoreTask != NULL )
+  {
+/* The handler task is created with a high priority to ensure it runs immediately after the interrupt exits. <em>/
+      xTaskCreate( vHandlerTask, &#8220;H&#8221;, configMINIMAL_STACK_SIZE</em>1, NULL, 3, NULL );
+      xTaskCreate( vPeriodicTask, &#8220;P&#8221;, configMINIMAL<em>STACK</em>SIZE*1, NULL , 1, NULL );
+          vTaskStartScheduler();
+  }
+  for(;;);
+  return 0;
+}
+/************************************************************************************/
+I&#8217;m not sure what I&#8217;m doing wrong. I&#8217;m not even sure it is FreeRTOS issue after all. Any suggestion on this? 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need help with &#8220;button&#8221; interrupt task (xSemaphoreGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on August 1, 2014</div><div class="thread-post-content">If the interrupt is never being entered then I would agree &#8211; it does not sound like FreeRTOS is causing the problem.  I would recommend getting the interrupt to work with a very simply loop in main(), before creating any tasks or starting the scheduler.
+I presume the interrupt requires some hardware configuration in order for it to work configuration &#8211; and presumably that is done in the EXTI0<em>Config(); function.  Have you looked in that function to see what it does?  I imagine it will as a minimum enable the interrupt.  Is that the same function you were using before?  Next the EXTI</em>GenerateSWInterrupt() function &#8211; have a look in that to see what it is doing.  I suspect it will just be writing to one of the processors Set Pending registers.
+When you say the code freezes, what is it actually doing?  If you stop on the debugger where are you?  If you are in a default interrupt handler, rather than the EXTI0 handler, then maybe it is the wrong interrupt that is being raised in the &#8216;generate&#8217; function, or that the handler for the interrupt is in the incorrect vector (did you install the handler in the vector table?).
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need help with &#8220;button&#8221; interrupt task (xSemaphoreGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/re-play">re-play</a> on August 4, 2014</div><div class="thread-post-content">Thanks for your answer. Yes, EXTI0_Config() function simply initializes GPIO and RCC clock, configures EXT0 line and enables EXT0 interrupt (via NVIC configuration). I&#8217;ve been using it before in my non-RTOS examples.  
+To test if SW generated interrupt (EXTI_GenerateSWInterrupt() ) really works as it should I modified my interrupt handler part into this: 
+<hr />
+void EXTI0<em>1</em>IRQHandler(void)
+{
+  if(EXTI<em>GetITStatus(EXTI</em>Line0) != RESET)     // when interrupt &#8230;
+  {
+      static uint32<em>t last=0;
+        if(last)<br />
+        {
+            last=0;
+            GPIO</em>WriteBit(GPIOC,GPIO<em>Pin</em>9,Bit<em>SET);
+            GPIO</em>WriteBit(GPIOC,GPIO<em>Pin</em>8,Bit<em>RESET);
+        }
+        else
+        {
+            last=1;
+            GPIO</em>WriteBit(GPIOC,GPIO<em>Pin</em>9,Bit<em>RESET);
+            GPIO</em>WriteBit(GPIOC,GPIO<em>Pin</em>8,Bit<em>SET);
+        }
+    // Clear the EXTI line 0 pending bit
+    EXTI</em>ClearITPendingBit(EXTI_Line0);
+  }
+<h2>}</h2>
+Obviously this interrupt handler doesn&#8217;t work by RTOS mechanism anymore but rather as simple polling action. As the result, I got blinking LEDS (1 at time) every 1500 ms, just like it&#8217;s supposed to be according to my new interrupt handler. On my console window I could read the following events:
+Handler task ->> Processing event.
+About to generate SW interrupt&#8230;.
+&#8230;Interrupt was generated&#8230;
+About to generate SW interrupt&#8230;.
+&#8230;Interrupt was generated&#8230;
+&#8230;
+Therefore I can conclude that SW generated interrupt works just fine. As for the two tasks, the schedular starts with Handler task (higher priority) which takes semaphore for the first time and then switches to the Period task which then keeps running and never switches back to Handler task (because it has no more free semaphores to take). The interrupt being raised in the &#8216;generate&#8217; function is obviously correct.
+This is just an update. Now I&#8217;ll be back to my original code trying to figure out what part of my &#8220;original&#8221; interrupt handler code is problematic and what exactly happens when the program runs. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need help with &#8220;button&#8221; interrupt task (xSemaphoreGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on August 4, 2014</div><div class="thread-post-content">How is the console text output? If it is using semihosting then it can mess up the RTOS interrupts. Try the RTOS version again with semihosting turned off in the project options.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need help with &#8220;button&#8221; interrupt task (xSemaphoreGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/re-play">re-play</a> on August 4, 2014</div><div class="thread-post-content">Hello again. Yes I&#8217;m using semihosting console but this doesn&#8217;t seem to be issue, at least not in my case. Actually I just find the problem &#8211; it was the interrupt handler function <strong>name</strong>! As soon as I changed the name from void vInterruptHandler(void) to <strong>void EXTI0<em>1</em>IRQHandler(void)</strong> it started to work as it should. Now the text sequence in console during program run is the following:
+(Periodic task:) About to generate SW interrupt&#8230;.
+Handler task ->> Processing event!!
+(Periodic task:) &#8230;Interrupt was generated&#8230;
+Which is just how it should be. It was silly from me that I didn&#8217;t think of this issue before&#8230; What confused me was different handler interrupt name in that example I mentioned &#8211; but that was obviously because of of using different Cortex family I guess. Thanks for your answers anyway. Now I can finally move on my original idea &#8211; to use <strong>user button</strong> to generate interrupt.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need help with &#8220;button&#8221; interrupt task (xSemaphoreGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on August 4, 2014</div><div class="thread-post-content">The name has to match the name in the interrupt vector table. If you call the function a different name then you will have to edit the vector table to so the names match. You will probably find the name in the vector table is EXTI0<em>1</em>IRQHandler, but the provided implementation of EXTI0<em>1</em>IRQHandler is declared weak, so it is replaced by your definition in the application code.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Need help with &#8220;button&#8221; interrupt task (xSemaphoreGiveFromISR)</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/re-play">re-play</a> on August 5, 2014</div><div class="thread-post-content">Yes, you are totally right. Anyway just to let you know, I&#8217;ve also managed to modify my code to use user button for generating interrupts (instead of SW generated interrupts from periodic task), which was my original goal. Thanks again for your help and useful info, everyone.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

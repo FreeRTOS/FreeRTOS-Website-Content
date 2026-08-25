@@ -1,0 +1,286 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thread safe memory allocation - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/August_2019/freertos_Thread_safe_memory_allocation_ee6e69d6eaj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Thread safe memory allocation - FreeRTOS" />
+<meta property="og:description" content="Thread safe memory allocationPosted by parmi on August 9, 2019I&#8217;m using C ++ with FreeRTOS 10.0.1, so I use the operators new, delete, new[], delete[], new MyClass(), vectors, new string(), string concatenation (which internally can cause a reallocation of the memory used by the string). But I suspect that all these operations are not thread &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/August_2019/freertos_Thread_safe_memory_allocation_ee6e69d6eaj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Thread safe memory allocationPosted by parmi on August 9, 2019I&#8217;m using C ++ with FreeRTOS 10.0.1, so I use the operators new, delete, new[], delete[], new MyClass(), vectors, new string(), string concatenation (which internally can cause a reallocation of the memory used by the string). But I suspect that all these operations are not thread [&hellip;]" />
+<meta name="twitter:title" content="Thread safe memory allocation - FreeRTOS" />
+<meta name="twitter:image" content="https://sourceforge.net/p/freertos/discussion/382005/thread/ee6e69d6ea/9039/attachment/Toolchain.JPG" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579203165' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579203165' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579203165' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579203165' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=138183' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2019%2Ffreertos_Thread_safe_memory_allocation_ee6e69d6eaj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FAugust_2019%2Ffreertos_Thread_safe_memory_allocation_ee6e69d6eaj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-138183">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/August_2019_freertos_support_forum_archive_index.html/">August 2019 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Thread safe memory allocation</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on August 9, 2019</div><div class="thread-post-content">I&#8217;m using C ++ with FreeRTOS 10.0.1, so I use the operators new, delete, new[], delete[], new MyClass(), vectors, new string(), string concatenation (which internally can cause a reallocation of the memory used by the string).
+But I suspect that all these operations are not thread safe, can anyone confirm me?
+If my suspicions are true, can I make these operations thread safe? for example by overriding &#8220;malloc (&#8230;)&#8221; and &#8220;free (&#8230;)&#8221;.
+~~~
+void *malloc(size_t size)
+{
+    return (pvPortMalloc(size));
+}
+void free(void *ptr)
+{
+    vPortFree(ptr);
+}
+~~~
+I read a lot of discussions about it, but I still preferred to open this discussion.
+I also discovered &#8220;configUSE_NEWLIB_REENTRANT&#8221;, what is it? it can be useful?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 9, 2019</div><div class="thread-post-content">By default, new/delete are often not thread safe in a FreeRTOS app because the basic malloc and free are not thread safe.
+Some embedded libraries have hooks that can be defined to make these functions thread safe. For example, newlib, if it was compiled properly, will use the functions __malloc<em>lock() and __malloc</em>unlock() to allow you to protect the library from re-entrancy. I often define them with a call to vTaskSuspendAll() / vTaskResumeAll() to provide that protection.
+You also may be able to replace them with alternate functions that do what you want. The one issue here is you need to dig into the library, as sometimes malloc/free are just thin wrappers around something deeper internally, and parts of the library may just call those internals, so THOSE are what willl need to be replaced.
+If you are only worried about fixing new/delete, then you can over ride the implementation of those to use a thread safe allocator, (be sure to get new[] and delete{} too), but this will not fix usage of malloc and free.
+configUSE<em>NEWLIB</em>REENTRANT is a flag that creates a structure for every thread that contains a bunch of internal state used by some functions in newlib, depending on some library options, this can be fairly small or quite big (as it can contain the File IO Buffers). Programs designed for small systems often don&#8217;t use the parts that need that structure on a per-task basis, as they don&#8217;t use that functionality. If you do use it, you need to define that to 1 to get the needed thread safety, or manually protect those parts of the library from reentrancy.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on August 9, 2019</div><div class="thread-post-content">Thank you so much for the answer Richard!
+So I understand that &#8220;configUSE<em>NEWLIB</em>REENTRANT&#8221; would not solve my problem.
+I&#8217;m thinking about overriding the operator new, delete, new[] and delete[].
+~~~
+void* operator new( size<em>t size )
+{
+    if (xTaskGetSchedulerState() == taskSCHEDULER</em>NOT_STARTED)
+    {
+        //what should I do???????
+    }
+    return pvPortMalloc( size );
+}
+void* operator new[]( size_t size )
+{
+    return pvPortMalloc(size);
+}
+void operator delete( void * ptr )
+{
+    vPortFree ( ptr );
+}
+void operator delete[]( void * ptr )
+{
+    vPortFree ( ptr );
+}
+~~~
+But I&#8217;m not sure this is the best solution.
+For example, the &#8220;string&#8221; class can allocate memory dynamically when concatenating a string.
+~~~
+string my_string = string (&#8220;Hello&#8221;);
+/* a memory allocation can be performed internally, which operator uses the &#8220;string&#8221; class? &#8220;new&#8221; or &#8220;malloc(&#8230;)&#8221;? */
+my_string + = &#8220;world!&#8221;
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 10, 2019</div><div class="thread-post-content">OVerriding operatior new/delete that way will replace them, but only for things that use new/delete. string probably does, but I am not sure it is promised by the standard.
+The better option in my mind is defining the functions
+~~~
+__malloc<em>lock() and __malloc</em>unlock()
+~~~
+if your implementation uses them (a quick check is to see if they appear in the linker map without you defining them), if it does then the proper definition will make the whole memory allocation system thread safe with no need to worry about if there is something getting arround the protections.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on August 13, 2019</div><div class="thread-post-content">Parminder you did not say what toolchain and what C runtime library you are using. The above discussion is appropriate if you are using newlib.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on August 19, 2019</div><div class="thread-post-content">I tried to define the <strong>malloc_lock</strong> and <strong>malloc_unlock</strong> functions, but the linker gives me an error.
+<strong>main.cpp</strong>
+~~~
+extern &#8220;C&#8221; void __malloc_lock(struct _reent *REENT)
+{
+    vPortEnterCritical();
+}
+extern &#8220;C&#8221; void __malloc_unlock(struct _reent *REENT)
+{
+    vPortExitCritical();
+}
+~~~
+Linking error:
+~~~
+1>Linking ../MyProject/&#8230;
+1>c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/7.2.0/../../../../arm-eabi/lib/thumb/cortex<em>m4libc</em>nano.a(lib_a-mlock.o): In function <code>__malloc_lock':
+1&gt;q:gnunewlib-nanogcc-arm-none-eabi-6-2017-q2-updatesrcnewlibnewliblibcstdlibmlock.c(53): error : multiple definition of</code>__malloc_lock&#8217;
+1>VisualGDB/Debug/main.o:C:visual_gdb_workspaceMyProjectMyProject/main.cpp:130: first defined here
+1>collect2.exe : error : ld returned 1 exit status
+~~~
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 19, 2019</div><div class="thread-post-content">That sounds like your newlib was somehow build wrong or you system isn&#8217;t compatible with a right definition as the definitions in mlock are supposed to be weak, so are ok to be overriden by your copy. That probably needs to be taken up with the supplyer of your tools for the processor.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on August 19, 2019</div><div class="thread-post-content">While it should not be necessary, with gcc you can override the non-weak 
+implementations using the linker &#8220;wrap&#8221; option.
+See example in code here (though different functions are wrapped):
+http://www.nadler.com/embedded/newlibAndFreeRTOS.html
+What processor and toolchain are you using?
+On 8/19/2019 6:55 AM, Richard Damon wrote:
+<blockquote>
+  <h2>That sounds like your newlib was somehow build wrong or you system isn&#8217;t compatible with a right definition as the definitions in mlock are supposed to be weak, so are ok to be overriden by your copy. That probably needs to be taken up with the supplyer of your tools for the processor.</h2>
+  <h2><a href="https://sourceforge.net/p/freertos/discussion/382005/thread/ee6e69d6ea/?limit=25#f888">Thread safe memory allocation</a></h2>
+  Sent from sourceforge.net because you indicated interest in <a href="https://sourceforge.net/p/freertos/discussion/382005/">https://sourceforge.net/p/freertos/discussion/382005/</a>
+  To unsubscribe from further messages, please visit <a href="https://sourceforge.net/auth/subscriptions/">https://sourceforge.net/auth/subscriptions/</a>
+</blockquote>
+&#8212; 
+Dave Nadler, USA East Coast voice (978) 263-0097 Skype
+  Dave.Nadler1
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/aggarg-aws">aggarg-aws</a> on August 19, 2019</div><div class="thread-post-content">I cloned the newlib source and I do not see lock and unlock functions as weak in mlock.c:
+~~~
+void
+__malloc_lock (ptr)
+     struct _reent *ptr;
+{
+<h1>ifndef <strong>SINGLE_THREAD</strong></h1>
+  <strong>lock<em>acquire</em>recursive (</strong>malloc<em>recursive</em>mutex);
+<h1>endif</h1>
+}
+void
+__malloc_unlock (ptr)
+     struct _reent *ptr;
+{
+<h1>ifndef <strong>SINGLE_THREAD</strong></h1>
+  <strong>lock<em>release</em>recursive (</strong>malloc<em>recursive</em>mutex);
+<h1>endif</h1>
+}
+~~~
+I may be looking in incorrect place though. 
+However, as Dave suggested, you can use GCC wrap feature. Pass the following flags to GCC:
+~~~
+-Wl,&#8211;wrap=<strong>malloc_lock
+-Wl,&#8211;wrap=</strong>malloc_unlock
+~~~
+And then implement the following functions: 
+~~~
+void __wrap___malloc_lock(struct _reent *r)
+{
+    vTaskSuspendAll();
+}
+void __wrap___malloc_unlock(struct _reent *r)
+{
+    xTaskResumeAll();
+}
+~~~
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 20, 2019</div><div class="thread-post-content">Looking closer at my projects, yes <strong>malloc_lock/</strong>malloc_unlock is not weak, but is generally in a library file, and linkers will generally allow the overriding of entries in a library with a entry in an object file, at long as no other symbol in that module in the library is needed. For some reason you are getting a fatal link error for doing this.
+Also, I would not use vPortEnter/ExitCritical for this purpose, as that will disable interrrupts for a time that is too long for me. I use VTaskSuspend/ResumeAll for this to just stop the scheduler. You could also use a mutex to only block other tasks that need to use malloc (but watch out for the sequencing of creating the mutex with using malloc/free.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on August 20, 2019</div><div class="thread-post-content">I would not use vPortEnter/ExitCritical  either, except in the STM case where the buffoons used malloc inside an ISR&#8230; That&#8217;s why vPortEnter/ExitCritical vs.  VTaskSuspend/ResumeAll  is conditionally compiled in my code grrrrr&#8230;.   ;-(
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 20, 2019</div><div class="thread-post-content">But you can&#8217;t call vPortEnterCritical inside an ISR, so it doesn&#8217;t solve the problem. (Now, I don&#8217;t use the STM code that uses malloc inside and ISR, I find a lot of the STM application support code desearving of replacement)
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on August 20, 2019</div><div class="thread-post-content">thank you all for your help.
+I solved the problem, in my code (main.cpp) I had only overridden the function &#8216;malloc<em>lock(&#8230;)&#8217;, I had forgotten to override the function &#8216;malloc</em>unlock(&#8230;)&#8217;, and then for some reason the linker gave me that error.
+When I overridden both the function the problem was solved, the functions are called correctly every time I do a &#8220;new&#8221;, &#8220;delete&#8221;, &#8220;new[]&#8221;, &#8220;delete[]&#8221;, &#8220;malloc(&#8230;)&#8221;, &#8220;free (&#8230;) &#8220;, concatenate a long string, push back into a vector.
+Also now I&#8217;m using &#8220;vTaskSuspendAll()&#8221; and &#8220;xTaskResumeAll()&#8221; instead of &#8220;vPortEnterCritical()&#8221;, &#8220;vPortExitCritical()&#8221;.
+<strong>main.cpp</strong>
+~~~
+extern &#8220;C&#8221; void __malloc_lock(struct _reent *REENT)
+{<br />
+    vTaskSuspendAll();
+}
+extern &#8220;C&#8221; void __malloc_unlock(struct _reent *REENT)
+{
+    xTaskResumeAll();
+}
+~~~
+Another request, can I replace &#8220;<strong>malloc(&#8230;)</strong>&#8221; with &#8220;<strong>pvPortMalloc (&#8230;)</strong>&#8221; and &#8220;<strong>free(&#8230;)</strong>&#8221; with &#8220;<strong>vPortFree(&#8230;)</strong>&#8220;?
+I&#8217;m developing with <strong>VisualStudio 2019</strong> with <strong>VisualGDB 5.4</strong> on a <strong>SMT32F429ZI</strong>
+p.s. attached is the image of the toolchain I am using
+<img src="https://sourceforge.net/p/freertos/discussion/382005/thread/ee6e69d6ea/9039/attachment/Toolchain.JPG" alt="" />
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 20, 2019</div><div class="thread-post-content">If you define just one of the functions then the linker does still need the module from the library and then does have the duplicate  symbol for the one you did define, and get the error.
+You could in a similar manner redefine nalloc and free, but you will run into a couple of problems:
+1) newlib itself doesn&#8217;t call malloc and free, but instead something like __malloc<em>r() and __free</em>r()
+2) FreeRTOS doesn&#8217;t provide an equivalent to remalloc() because it doesn&#8217;t need it, but the standard library does, so it isn&#8217;t a complete memory solution.
+Because of this, I tend to just use a modified version of heap3, that just translate calls to pvProtMalloc to calls to malloc, and adds the heap exhausted test
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/parmi">parmi</a> on August 20, 2019</div><div class="thread-post-content">OK thanks, now I understand everything.
+Where can I find this modified version of heap3? It is reliable?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on August 20, 2019</div><div class="thread-post-content">I just made my own, starting with heap3.c, add the malloc<em>lock() and malloc</em>unlock() functions, and remove the calls to vTaskSuspendAll() and vTaskResumeAll() (since malloc/free will call them in lock/unlock).
+</div></div><div class="thread-post"><h3 class="thread-post-title">Thread safe memory allocation</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dnadler">dnadler</a> on August 21, 2019</div><div class="thread-post-content">Parminder, there&#8217;s a complete heap_useNewlib.c here:
+http://www.nadler.com/embedded/newlibAndFreeRTOS.html
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

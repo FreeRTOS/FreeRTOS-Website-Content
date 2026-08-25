@@ -1,0 +1,624 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STM32 Bootloader loading FreeRTOS problems - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2012/freertos_STM32_Bootloader_loading_FreeRTOS_problems_5407814.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="STM32 Bootloader loading FreeRTOS problems - FreeRTOS" />
+<meta property="og:description" content="STM32 Bootloader loading FreeRTOS problemsPosted by dibosco on July 5, 2012Folks, I have a bootloader for the STM32 working on a program that is run-to-complete. Another node in this project runs FreeRTOS and although&nbsp; it seems I can load the image using the bootloader, it just gets stuck in the SVC&#095;Handler when I try and &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2012/freertos_STM32_Bootloader_loading_FreeRTOS_problems_5407814.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="STM32 Bootloader loading FreeRTOS problemsPosted by dibosco on July 5, 2012Folks, I have a bootloader for the STM32 working on a program that is run-to-complete. Another node in this project runs FreeRTOS and although&nbsp; it seems I can load the image using the bootloader, it just gets stuck in the SVC&#095;Handler when I try and [&hellip;]" />
+<meta name="twitter:title" content="STM32 Bootloader loading FreeRTOS problems - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202144' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202144' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202144' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202144' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144123' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2012%2Ffreertos_STM32_Bootloader_loading_FreeRTOS_problems_5407814.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2012%2Ffreertos_STM32_Bootloader_loading_FreeRTOS_problems_5407814.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144123">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2012_freertos_support_forum_archive_index.html/">July 2012 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 5, 2012</div><div class="thread-post-content">Folks,  
+I have a bootloader for the STM32 working on a program that is run-to-complete. Another node in this project runs FreeRTOS and although&nbsp; it seems I can load the image using the bootloader, it just gets stuck in the SVC&#95;Handler when I try and run it.   
+If I try and run FreeRTOS at 0x8003000 &#40;which is where the bootloader sticks FreeRTOS rather than 0x8000000&#41; it also doesn&#8217;t run.   
+With my run-to-complete program I was simply able to recompile to be at 0x8003000 and it ran fine. Is the something else I have to do when recompiling for FreeRTOS to run further up in memory please?   
+Thanks&#33;  
+Rob
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on July 5, 2012</div><div class="thread-post-content">FreeRTOS needs three handlers to be installed in the Cortex vector table. When you jump from your bootloader code to the FreeRTOS code, are you remapping the vector table to where ever you have it in your memory map &#40;probably at 0x8003000 as it is normally at 0x00000000&#41;.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 5, 2012</div><div class="thread-post-content">Hi Dave,  
+I am, indeed, remapping the vector table as follows:  
+void JumpToNormalApplication&#40;void&#41;<br />
+&#123;  
+&nbsp;&nbsp;&nbsp; volatile unsigned long JumpAddress;  
+&nbsp;&nbsp;&nbsp; SCB&#95;VTOR = &#40;unsigned long&#41;0x8003000;<br />
+&nbsp;&nbsp;&nbsp; JumpAddress = &#42;&#40;volatile unsigned long&#42;&#41; &#40;0x8003000 + 4&#41;;<br />
+&nbsp;&nbsp;&nbsp; Jump&#95;To&#95;Application = &#40;pFunction&#41; JumpAddress;<br />
+&nbsp;&nbsp;&nbsp; Jump&#95;To&#95;Application&#40;&#41;;<br />
+&nbsp;&nbsp;&nbsp;<br />
+&#125;  
+This is exactly how I do it with the bootloader that works fine with my run-to-complete program that runs on a different&nbsp; pieice of hardware but still with an almost identical STM32 &#40;the one that works is a 64k part, the FreeRTOS one a 128k part&#41;.&nbsp; I am wondering whether there&#8217;s something extra that is needed with FreeRTOS I&#8217;m not aware of.   
+Thanks for the help.  
+Rob
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 5, 2012</div><div class="thread-post-content">It is not something I have direct experience of, but this topic comes up from time to time.&nbsp; I recommend entering &#8220;bootloader&#8221; as a search term into the archive to see what turns up.  
+<a href="http://www.freertos.org/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">http://www.freertos.org/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html</a>  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 6, 2012</div><div class="thread-post-content">Having ploughed through those I can see a lot of no-solves, one or two aha moments without actually explaining what it was and some talking about interrupts being left over from the bootloader being serviced when FreeRTOS starts. I only have one interrupt enabled in the bootloader and that is the UART. There are definitely no interrupts pending before I hit the OS.  
+When I tyy and run the version of FreeRTOS that is compiled to start at 0x8003000 I get stuck here:  
+void vPortStartFirstTask&#40; void &#41;<br />
+&#123;<br />
+&#95;&#95;asm volatile&#40;<br />
+&#8221; ldr r0, =0xE000ED08 n&#8221; /&#42; Use the NVIC offset register to locate the stack. &#42;/<br />
+&#8221; ldr r0,&nbsp; n&#8221;<br />
+&#8221; ldr r0,&nbsp; n&#8221;<br />
+&#8221; msr msp, r0 n&#8221; /&#42; Set the msp back to the start of the stack. &#42;/<br />
+&#8221; svc 0 n&#8221; /&#42; System call to start first task. &#42;/<br />
+&#41;;<br />
+&#125;  
+It&#8217;s the last line:   
+svc 0  
+That jumps off to address 0x00020E which has this to keep jumping back to itself.  
+E7FE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b 0x0800020E  
+I suspect that&nbsp; maybe there&#8217;s something hardcoded in FreeRTOS that is jumping to where it thinks the vector table should be? If that&#8217;s the case, it&#8217;s probably nothing to do with the bootloader but somethign else in FreeRTOS needs changing when remapped?   
+svc seems to be something to do with supervisor mode. I must confess I don&#8217;t understamd what supervisor mode is.   
+Thanks again. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 6, 2012</div><div class="thread-post-content">&#8221; msr msp, r0           n&#8221; /* Set the msp back to the start of the stack. <em>/
+    &#8221; svc 0                 n&#8221; /</em> System call to start first task. */
+It looks like you are using quite an old version of FreeRTOS.&nbsp; The code sequence should be:  
+<pre><code>" msr msp, r0           n" /* Set the msp back to the start of the stack. */
+"cpsie                              n"
+" svc 0                 n" /* System call to start first task. */
+</code></pre>
+The extra line is only required if interrupts are in the wrong state when the function is called &#8211; which would not normally happen with a standard reboot power up sequence, but in your case could well happen when you come through the boot loader.  
+<blockquote>
+  0x00020E
+</blockquote>
+This address looks like it is in your bootloader code, if the application code is starting at 0x8003000.&nbsp; As it is just jumping to itself it sounds like it is a default handler for something, but which handler?  
+If it is a hard fault handler, then the additional cpsie instruction as above will fix that, but even then it still seems to be using the boot loaders vector table.  
+If it is the SVC handler, and it is the boot loaders SVC handler, then it looks like the vector table is not remapped as you expect.  
+If it is the SVC handler, but a default SVC handler for the application, then it looks like the FreeRTOS interrupt handler has not been installed into the applications vector table.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 6, 2012</div><div class="thread-post-content">The thing is, this is not the bootloader version that I have found this problem with. This is just normal FreeRTOS &#8211; no bootloader involved right now &#8211; with the start of code remapped in the linker to start from 0x8003000. I am having a go, not using the bootloader to try and suss out whether it&#8217;s something to do with the bootloader or the remapping of FreeRTOS.&nbsp; The fact that is is falling over when I do this, suggests to my simple mind that with FreeRTOS, there&#8217;s more to do than simply change the start of code inn the linker to the new address from 0x8000000.   
+I can do this with my run-to-complete program on the other STM32 based bit of hardware in the project.  
+That address should read 0x0800020E, not 0x00020E &#8211; sorry about that.   
+The port is around two years old by the way.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 6, 2012</div><div class="thread-post-content">Ok, I didn&#8217;t realise that.  
+When a Cortex-M boots it expects to find the vector table at address 0.&nbsp; The first thing in the vector table is the address of its stack and the second the address of the program entry point.&nbsp; In your current experiment, without the bootloader, presumably you only have one vector table and you are not remapping it, so the second entry in the vector table should point somewhere above 0x8003000.  
+From previous posts, it looks like the entry point is being hit correctly, because you are getting as far as vPortStartFirstTask&#40;&#41;.&nbsp; When the SVC instruction is hit, you say it then starts executing a handler at 0x0800020E, so it also appears to be the case that it is running a handler in the correct address range too &#8211; so the vector table at address 0 is causing a jump to an address above 0x8003000.&nbsp; All good so far.&nbsp; Do I have this right now?  
+So what happens then is the mystery.  
+Have you determined the function that is actually being executed when it is branching to itself?&nbsp; It is definitely not the FreeRTOS SVC call handler, so again it is either a default handler for the SVC call &#40;in which case the FreeRTOS handler is not installed in the vector table correctly&#41; or it is a fault handler.&nbsp; I think we need to determine which it is, and the map file produced by the linker should be able to tell you &#40;if not just breaking in the debugger and attempting to look at the source code view&#41;.  
+How are you installing the FreeRTOS interrupt vectors into the vector table?&nbsp; There are two methods that can be used, either by modifying the vector table directly, or by mapping the FreeRTOS interrupts to their CMSIS equivalents if you are using a CMSIS compliant vector table.  
+Can you post the vector table?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 6, 2012</div><div class="thread-post-content">I hope what is below is what you&#8217;re after in regards the vector table.   
+All I am doing to normal FreeRTOS is going into the xml file that descibes the processor and changing the memory map for flash to start at 0x8003000 and change its length accordingly. I would stress that if I do this for a normal run-to-compete program then everything works fine, both as a standalone program and with the bootloader.   
+If I look into memory at address zero with the debugger it has:  
+0x200001A4<br />
+0x080001F1  
+I would have thought all addresses should be above 0x8003000 as that is where everything has been shifted to as a base address.   
+<pre><code>.vectors        0x08003000      0x130
+                0x08003000                __vectors_start__ = .
+ *(.vectors .vectors.*)
+ .vectors       0x08003000      0x130 THUMB Flash Debug/STM32F10x_Startup.o
+                0x08003000                _vectors
+                0x08003130                __vectors_end__ = (__vectors_start__ + SIZEOF (.vectors))
+                0x08003130                __vectors_load_end__ = __vectors_end__
+                0x00000001                . = ASSERT (((__vectors_end__ &gt;= __FLASH_segment_start__) &amp;&amp; (__vectors_end__ &lt;= (__FLASH_segment_start__ + 0x1d000))), error: .vectors is too large to fit in FLASH memory segment)
+                0x08003130                __init_load_start__ = ALIGN (__vectors_end__, 0x4)
+.init           0x08003130      0x202
+                0x08003130                __init_start__ = .
+ *(.init .init.*)
+ .init          0x08003130      0x108 THUMB Flash Debug/thumb_crt0.o
+                0x08003130                _start
+                0x080031b2                exit
+ .init          0x08003238       0xfa THUMB Flash Debug/STM32F10x_Startup.o
+                0x08003238                reset_handler
+                0x0800323a                NMIException
+                0x0800323c                HardFaultException
+                0x0800323e                MemManageException
+                0x08003240                BusFaultException
+                0x08003242                UsageFaultException
+                0x08003244                SVCHandler
+                0x08003246                DebugMonitor
+                0x08003248                PendSV
+                0x0800324a                SysTickHandler
+                0x0800324c                WWDG_IRQHandler
+                0x0800324e                PVD_IRQHandler
+                0x08003250                TAMPER_IRQHandler
+                0x08003252                RTC_IRQHandler
+                0x08003254                FLASH_IRQHandler
+                0x08003256                RCC_IRQHandler
+                0x08003258                EXTI0_IRQHandler
+                0x0800325a                EXTI1_IRQHandler
+                0x0800325c                EXTI2_IRQHandler
+                0x0800325e                EXTI3_IRQHandler
+                0x08003260                EXTI4_IRQHandler
+                0x08003262                DMAChannel1_IRQHandler
+                0x08003264                DMAChannel2_IRQHandler
+                0x08003268                DMAChannel4_IRQHandler
+                0x0800326c                DMAChannel6_IRQHandler
+                0x08003270                ADC_IRQHandler
+                0x08003272                USB_HP_CAN_TX_IRQHandler
+                0x08003276                CAN_RX1_IRQHandler
+                0x08003278                CAN_SCE_IRQHandler
+                0x0800327a                EXTI9_5_IRQHandler
+                0x0800327c                TIM1_BRK_IRQHandler
+                0x0800327e                TIM1_UP_IRQHandler
+                0x08003280                TIM1_TRG_COM_IRQHandler
+                0x08003282                TIM1_CC_IRQHandler
+                0x08003284                TIM2_IRQHandler
+                0x08003286                TIM3_IRQHandler
+                0x08003288                TIM4_IRQHandler
+                0x0800328a                I2C1_EV_IRQHandler
+                0x0800328c                I2C1_ER_IRQHandler
+                0x0800328e                I2C2_EV_IRQHandler
+                0x08003290                I2C2_ER_IRQHandler
+                0x08003292                SPI1_IRQHandler
+                0x08003294                SPI2_IRQHandler
+                0x0800329a                USART3_IRQHandler
+                0x0800329c                EXTI15_10_IRQHandler
+                0x0800329e                RTCAlarm_IRQHandler
+                0x080032a0                USBWakeUp_IRQHandler
+                0x080032a2                TIM8_BRK_IRQHandler
+                0x080032a4                TIM8_UP_IRQHandler
+                0x080032a6                TIM8_TRG_COM_IRQHandler
+                0x080032a8                TIM8_CC_IRQHandler
+                0x080032aa                ADC3_IRQHandler
+                0x080032ac                FSMC_IRQHandler
+                0x080032ae                SDIO_IRQHandler
+                0x080032b0                TIM5_IRQHandler
+                0x080032b2                SPI3_IRQHandler
+                0x080032b4                UART4_IRQHandler
+                0x080032b6                UART5_IRQHandler
+                0x080032b8                TIM6_IRQHandler
+                0x080032ba                TIM7_IRQHandler
+                0x080032bc                DMA2_Channel1_IRQHandler
+                0x080032be                DMA2_Channel2_IRQHandler
+                0x080032c0                DMA2_Channel3_IRQHandler
+                0x080032c2                DMA2_Channel4_5_IRQHandler
+                0x080032c4                __WFI
+                0x080032c8                __WFE
+                0x080032cc                __SEV
+                0x080032d0                __ISB
+                0x080032d6                __DSB
+                0x080032dc                __DMB
+                0x080032e2                __SVC
+                0x080032e6                __MRS_CONTROL
+                0x080032ec                __MSR_CONTROL
+                0x080032f6                __MRS_PSP
+                0x080032fc                __MSR_PSP
+                0x08003302                __MRS_MSP
+                0x08003308                __MSR_MSP
+                0x0800330e                __SETPRIMASK
+                0x08003312                __RESETPRIMASK
+                0x08003316                __SETFAULTMASK
+                0x0800331a                __RESETFAULTMASK
+                0x0800331e                __BASEPRICONFIG
+                0x08003324                __GetBASEPRI
+                0x0800332a                __REV_HalfWord
+                0x0800332e                __REV_Word
+                0x08003332                __init_end__ = (__init_start__ + SIZEOF (.init))
+                0x08003332                __init_load_end__ = __init_end__
+                0x00000001                . = ASSERT (((__init_end__ &gt;= __FLASH_segment_start__) &amp;&amp; (__init_end__ &lt;= (__FLASH_segment_start__ + 0x1d000))), error: .init is too large to fit in FLASH memory segment)
+                0x08003334                __text_load_start__ = ALIGN (__init_end__, 0x4)
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 6, 2012</div><div class="thread-post-content">I&#8217;m not sure how the linker will behave if you tell it there is no flash at address 0, because the CPU is hard coded to load the stack address from that address when it boots.  
+<blockquote>
+  If I look into memory at address zero with the debugger it has:  
+</blockquote>
+0x200001A4<br />
+0x080001F1
+0x200001A4 is presumably a RAM address.&nbsp; Address 0 would be expected to hold a RAM address because it is the stack address.&nbsp; Either the linker is still putting the RAM address at address zero, even though you have told it there is no memory there, because the linker knows it has to.&nbsp; Or, the value you are seeing there is just left over from the last time you ran an application from address zero because the flash memory has not been overwritten or cleared.&nbsp;   
+Are you still remapping the vector table using the CPU vector base register?&nbsp; It is difficult to see how because it would have to boot through the vector before the code that remapped the vector could be set &#8211; unless you have a debugger macro that is doing that before the CPU is taken out of reset.  
+In any case, the vector table you have posted does not show the FreeRTOS interrupt handler having been installed.&nbsp; Looking just at the SVC handler, I would expect to see a function named vPortSVCHandler&#40;&#41; being installed, but what is actually installed is SVCHandler&#40;&#41;.&nbsp; That might be ok, if you are &#35;define&#8217;ing one name to the other and SVCHandler&#40;&#41; is declared as a weak symbol, but otherwise it is an error.  
+If you find the address of SVCHandler in the map file you will probably find it is the address you end up at branching to yourself when you execute the SVC instruction.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 6, 2012</div><div class="thread-post-content">As far as I know I&#8217;m not telling the processor there&#8217;s no flash at address zero. I am not doing any sort of manual remapping at all. The linker is doing it all. I am sure that the issue is not there because with a run-to-complete program, this method works beautifully. I&#8217;m probably misunderstanding what you&#8217;re saying though.   
+I have found this in the map file:  
+<pre><code> .text.vPortSVCHandler
+                0x08003394       0x20 THUMB Flash Debug/port.o
+                0x08003394                vPortSVCHandler
+</code></pre>
+Which to me looks fine as it&#8217;s above 0x8003000.   
+As far as I understand, you can map the start of code to be anywhere in the legitimate flash region and the linker just takes care of it. My suspicion is that something in FreeRTOS does some hard coding to point at an area below my new start address. I would stress that this is only a suspicion and I could be talking through my backside&#33; :~&#41;   
+I would also stress that if this technique didn&#8217;t work for a run-to-complete program I would think it&#8217;s a problem with my methodology.   
+Does that make sense or am I talking nonsense?   
+I am aware that this is taking your valuable time and I am quite happy to pay you to help fix this with some off-line help and then post the solution when we have fixed it. Thanks again. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 6, 2012</div><div class="thread-post-content"><blockquote>
+  As far as I know I&#8217;m not telling the processor there&#8217;s no flash at address zero.
+</blockquote>
+Previously you said:  
+<blockquote>
+  All I am doing to normal FreeRTOS is going into the xml file that descibes the processor and changing the memory map for flash to start at 0x8003000 and change its length accordingly
+</blockquote>
+Presumably it used to start at address 0x8000000, and then again presumably that memory region is mirrored at address 0 when you boot &#40;you would have to look at the memory map for the device you are using in its reference manual&#41;.  
+<blockquote>
+  I have found this in the map file:<br />
+  .text.vPortSVCHandler<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x08003394&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x20 THUMB Flash Debug/port.o<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x08003394&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vPortSVCHandler  
+</blockquote>
+Which confirms my suspicion that the vector table is not populated with the FreeRTOS interrupt handlers, because is shows that vPortSVCHandler and SVCHandler are not &#35;defined to be the same thing.&nbsp; SVCHandler is the function that is in the vector table, and it shouldn&#8217;t be.  
+<blockquote>
+  My suspicion is that something in FreeRTOS does some hard coding to point at an area below my new start address.
+</blockquote>
+You can be assured that is not the case.  
+<blockquote>
+  I would also stress that if this technique didn&#8217;t work for a run-to-complete program I would think it&#8217;s a problem with my methodology. 
+</blockquote>
+Is the run to complete code executing an SVC instruction that has its own bespoke handler though?  
+<blockquote>
+  I am aware that this is taking your valuable time and I am quite happy to pay you to help fix this with some off-line help and then post the solution when we have fixed it. 
+</blockquote>
+Thanks for the offer &#8211; but I prefer to keep these threads online so people with the same problems in the future can hopefully get prompts to sort their own issues without having to start their own threads.&nbsp; I think these support forums, over time &#40;and this one has been here a long time&#33;&#41; are an invaluable developer resource.&nbsp; We all struggle with these low level issue from time to time.  
+Could you please post the code that actually sets up the vector table &#8211; that is the source code rather than the linker output?&nbsp; It will be defined in one of the start up files, which could be either a C file or an asm file.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 6, 2012</div><div class="thread-post-content"><blockquote>
+  Presumably it used to start at address 0x8000000, and then again presumably that memory region is mirrored at address 0 when you boot &#40;you would have to look at the memory map for the device you are using in its reference manual&#41;.
+</blockquote>
+Ah, yes. I didn&#8217;t understand about the mirroring at address zero.  
+<blockquote>
+  Is the run to complete code executing an SVC instruction that has its own bespoke handler though?
+</blockquote>
+No, I have never come across an SVC instruction before this investigation.   
+I assume this source code is what you&#8217;re after for setting up the vector table &#40;this looks quite like a standard Crossworks file to me&#41;:  
+<blockquote>
+  &#95;vectors:<br />
+  &nbsp; .word &#95;&#95;stack&#95;end&#95;&#95;<br />
+  &#35;ifdef STARTUP&#95;FROM&#95;RESET<br />
+  &nbsp; .word reset&#95;handler<br />
+  &#35;else<br />
+  &nbsp; .word reset&#95;wait<br />
+  &#35;endif /&#42; STARTUP&#95;FROM&#95;RESET &#42;/<br />
+  &nbsp; .word NMIException<br />
+  &nbsp; .word HardFaultException<br />
+  &nbsp; .word MemManageException<br />
+  &nbsp; .word BusFaultException<br />
+  &nbsp; .word UsageFaultException<br />
+  &nbsp; .word 0 // Reserved<br />
+  &nbsp; .word 0 // Reserved<br />
+  &nbsp; .word 0 // Reserved<br />
+  &nbsp; .word 0 // Reserved<br />
+  &nbsp; .word vPortSVCHandler<br />
+  &nbsp; .word DebugMonitor<br />
+  &nbsp; .word 0 // Reserved<br />
+  &nbsp; .word xPortPendSVHandler<br />
+  &nbsp; .word xPortSysTickHandler<br />
+  &nbsp; .word WWDG&#95;IRQHandler<br />
+  &nbsp; .word PVD&#95;IRQHandler<br />
+  &nbsp; .word TAMPER&#95;IRQHandler<br />
+  &nbsp; .word RTC&#95;IRQHandler<br />
+  &nbsp; .word FLASH&#95;IRQHandler<br />
+  &nbsp; .word RCC&#95;IRQHandler<br />
+  &nbsp; .word EXTI0&#95;IRQHandler<br />
+  &nbsp; .word EXTI1&#95;IRQHandler<br />
+  &nbsp; .word EXTI2&#95;IRQHandler<br />
+  &nbsp; .word EXTI3&#95;IRQHandler<br />
+  &nbsp; .word EXTI4&#95;IRQHandler<br />
+  &nbsp; .word DMAChannel1&#95;IRQHandler<br />
+  &nbsp; .word DMAChannel2&#95;IRQHandler<br />
+  &nbsp; .word DMAChannel3&#95;IRQHandler<br />
+  &nbsp; .word DMAChannel4&#95;IRQHandler<br />
+  &nbsp; .word DMAChannel5&#95;IRQHandler<br />
+  &nbsp; .word DMAChannel6&#95;IRQHandler<br />
+  &nbsp; .word DMAChannel7&#95;IRQHandler<br />
+  &nbsp; .word ADC&#95;IRQHandler<br />
+  &nbsp; .word USB&#95;HP&#95;CAN&#95;TX&#95;IRQHandler<br />
+  &nbsp; .word USB&#95;LP&#95;CAN&#95;RX0&#95;IRQHandler<br />
+  &nbsp; .word CAN&#95;RX1&#95;IRQHandler<br />
+  &nbsp; .word CAN&#95;SCE&#95;IRQHandler<br />
+  &nbsp; .word EXTI9&#95;5&#95;IRQHandler<br />
+  &nbsp; .word TIM1&#95;BRK&#95;IRQHandler<br />
+  &nbsp; .word TIM1&#95;UP&#95;IRQHandler<br />
+  &nbsp; .word TIM1&#95;TRG&#95;COM&#95;IRQHandler<br />
+  &nbsp; .word TIM1&#95;CC&#95;IRQHandler<br />
+  &nbsp; .word TIM2&#95;IRQHandler<br />
+  &nbsp; .word TIM3&#95;IRQHandler<br />
+  &nbsp; .word TIM4&#95;IRQHandler&nbsp;<br />
+  &nbsp; .word I2C1&#95;EV&#95;IRQHandler<br />
+  &nbsp; .word I2C1&#95;ER&#95;IRQHandler<br />
+  &nbsp; .word I2C2&#95;EV&#95;IRQHandler<br />
+  &nbsp; .word I2C2&#95;ER&#95;IRQHandler<br />
+  &nbsp; .word SPI1&#95;IRQHandler<br />
+  &nbsp; .word SPI2&#95;IRQHandler<br />
+  &nbsp; .word USART1&#95;IRQHandler<br />
+  &nbsp; .word USART2&#95;IRQHandler<br />
+  &nbsp; .word USART3&#95;IRQHandler<br />
+  &nbsp; .word EXTI15&#95;10&#95;IRQHandler<br />
+  &nbsp; .word RTCAlarm&#95;IRQHandler<br />
+  &nbsp; .word USBWakeUp&#95;IRQHandler<br />
+  &nbsp; .word TIM8&#95;BRK&#95;IRQHandler<br />
+  &nbsp; .word TIM8&#95;UP&#95;IRQHandler<br />
+  &nbsp; .word TIM8&#95;TRG&#95;COM&#95;IRQHandler<br />
+  &nbsp; .word TIM8&#95;CC&#95;IRQHandler<br />
+  &nbsp; .word ADC3&#95;IRQHandler<br />
+  &nbsp; .word FSMC&#95;IRQHandler<br />
+  &nbsp; .word SDIO&#95;IRQHandler<br />
+  &nbsp; .word TIM5&#95;IRQHandler<br />
+  &nbsp; .word SPI3&#95;IRQHandler<br />
+  &nbsp; .word UART4&#95;IRQHandler<br />
+  &nbsp; .word UART5&#95;IRQHandler<br />
+  &nbsp; .word TIM6&#95;IRQHandler<br />
+  &nbsp; .word TIM7&#95;IRQHandler<br />
+  &nbsp; .word DMA2&#95;Channel1&#95;IRQHandler<br />
+  &nbsp; .word DMA2&#95;Channel2&#95;IRQHandler<br />
+  &nbsp; .word DMA2&#95;Channel3&#95;IRQHandler<br />
+  &nbsp; .word DMA2&#95;Channel4&#95;5&#95;IRQHandler  
+</blockquote>
+&nbsp; .section .init, &#8220;ax&#8221;<br />
+&nbsp; .thumb&#95;func  
+&nbsp; reset&#95;handler:<br />
+&#35;ifndef &#95;&#95;FLASH&#95;BUILD<br />
+&nbsp; /&#42; If this is a RAM build, configure vector table offset register to point<br />
+&nbsp;&nbsp;&nbsp;&nbsp; to the RAM vector table. &#42;/<br />
+&nbsp; ldr r0, =0xE000ED08<br />
+&nbsp; ldr r1, =&#95;vectors<br />
+&nbsp; str r1,<br />
+&#35;endif<br />
+&nbsp; b &#95;start  
+DEFAULT&#95;ISR&#95;HANDLER NMIException<br />
+DEFAULT&#95;ISR&#95;HANDLER HardFaultException<br />
+DEFAULT&#95;ISR&#95;HANDLER MemManageException<br />
+DEFAULT&#95;ISR&#95;HANDLER BusFaultException<br />
+DEFAULT&#95;ISR&#95;HANDLER UsageFaultException<br />
+DEFAULT&#95;ISR&#95;HANDLER SVCHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DebugMonitor&nbsp;<br />
+DEFAULT&#95;ISR&#95;HANDLER PendSV<br />
+DEFAULT&#95;ISR&#95;HANDLER SysTickHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER WWDG&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER PVD&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TAMPER&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER RTC&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER FLASH&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER RCC&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER EXTI0&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER EXTI1&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER EXTI2&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER EXTI3&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER EXTI4&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMAChannel1&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMAChannel2&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMAChannel3&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMAChannel4&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMAChannel5&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMAChannel6&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMAChannel7&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER ADC&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER USB&#95;HP&#95;CAN&#95;TX&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER USB&#95;LP&#95;CAN&#95;RX0&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER CAN&#95;RX1&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER CAN&#95;SCE&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER EXTI9&#95;5&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM1&#95;BRK&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM1&#95;UP&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM1&#95;TRG&#95;COM&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM1&#95;CC&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM2&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM3&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM4&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER I2C1&#95;EV&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER I2C1&#95;ER&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER I2C2&#95;EV&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER I2C2&#95;ER&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER SPI1&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER SPI2&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER USART1&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER USART2&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER USART3&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER EXTI15&#95;10&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER RTCAlarm&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER USBWakeUp&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM8&#95;BRK&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM8&#95;UP&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM8&#95;TRG&#95;COM&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM8&#95;CC&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER ADC3&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER FSMC&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER SDIO&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM5&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER SPI3&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER UART4&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER UART5&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM6&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER TIM7&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMA2&#95;Channel1&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMA2&#95;Channel2&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMA2&#95;Channel3&#95;IRQHandler<br />
+DEFAULT&#95;ISR&#95;HANDLER DMA2&#95;Channel4&#95;5&#95;IRQHandler
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 6, 2012</div><div class="thread-post-content">Hmm.&nbsp; That is curious.&nbsp; The correct vectors do seem to be being installed, but the linker output from your previous post would seem to show the wrong vectors actually in the table.  
+Could you zip up your entire project &#40;all source files, and project files&#41; in a way that allows me to build it easily &#40;don&#8217;t use any absolute paths to source files or include files&#41; and send it to me?&nbsp; You can send it to r dot barry at freertos.org.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 6, 2012</div><div class="thread-post-content">I have not yet managed to program the board, but I have found that the code in post 9 is not what I thought it was.&nbsp; It is not the vector table at all.&nbsp; It seems the correct handler is being installed.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 6, 2012</div><div class="thread-post-content">Ok &#8211; running your code, now.  
+When the svc instruction is executed it jumps to address 0x8000100, which according to the map file is not in your program.&nbsp; Trying to execute instructions from that address results in a branch to 0x800018E, which then just branches to itself.&nbsp; Note that 0x800018E is not in the intended defined memory range either.&nbsp; Just to prove the point, I erased all the flash, and tried running it again and, sure enough now it just branches wildly off the planet as far as the CPU is concerned.  
+I think your problems start with the way you have attempted to move the program, and I believe the correct thing to do is leave the memory map file alone, and edit the section placement file &#40;having first made a local copy in your project&#41;.  
+Look up flash&#95;placement in the Rowley help system.&nbsp; I believe the thing to do is use the project properties section placement macros to move the start of the .text section to 0x8003000.&nbsp; Having said that, I have before just manually edited one.&nbsp; Below is an example &#40;not correct for your application&#41; I created some time ago to generate extra sections for specific placement when using the MPU.&nbsp; &#91;note the privileged&#95;functions sections I added in, and defined its size, there is also a start parameter you can use I think&#41;.  
+<pre><code>&lt;!DOCTYPE Linker_Placement_File&gt;
+&lt;Root name="FLASH Section Placement"&gt;
+  &lt;MemorySegment name="FLASH"&gt;
+    &lt;ProgramSection load="Yes" inputsections="*(.vectors .vectors.*)" name=".vectors"/&gt;
+    &lt;ProgramSection alignment="4" size="16K - 0x100" load="Yes" inputsections="*(privileged_functions)" name="privileged_functions"/&gt;
+    &lt;ProgramSection alignment="4" load="Yes" inputsections="*(.init .init.*)" name=".init"/&gt;
+    &lt;ProgramSection alignment="4" load="Yes" inputsections="*(.text .text.* .glue_7t .glue_7 .gnu.linkonce.t.* .gcc_except_table)" name=".text"/&gt;
+    &lt;ProgramSection alignment="4" load="Yes" inputsections="KEEP (*(SORT(.dtors.*))) KEEP (*(.dtors))" name=".dtors"/&gt;
+    &lt;ProgramSection alignment="4" load="Yes" inputsections="KEEP (*(SORT(.ctors.*))) KEEP (*(.ctors))" name=".ctors"/&gt;
+    &lt;ProgramSection alignment="4" load="Yes" inputsections="*(.rodata .rodata.* .gnu.linkonce.r.*)" name=".rodata"/&gt;
+    &lt;ProgramSection alignment="4" load="Yes" runin=".data_run" inputsections="*(.data .data.* .gnu.linkonce.d.*)" name=".data"/&gt;
+    &lt;ProgramSection alignment="4" load="Yes" runin=".fast_run" inputsections="*(.fast .fast.*)" name=".fast"/&gt;
+  &lt;/MemorySegment&gt;
+  &lt;MemorySegment name="SRAM"&gt;
+    &lt;ProgramSection alignment="4" size="256" alignment="256" load="No" inputsections="*(privileged_data)" name="privileged_data"/&gt;
+    &lt;ProgramSection name=".vectors_ram" size="" alignment="0x100" load="No"/&gt;    
+    &lt;ProgramSection alignment="4" load="No" name=".data_run"/&gt;
+    &lt;ProgramSection alignment="4" load="No" inputsections="*(.bss .bss.* .gnu.linkonce.b.*) *(COMMON)" name=".bss"/&gt;
+    &lt;ProgramSection alignment="4" load="No" inputsections="*(.non_init .non_init.*)" name=".non_init"/&gt;
+    &lt;ProgramSection alignment="4" size="__HEAPSIZE__" load="No" name=".heap"/&gt;
+    &lt;ProgramSection alignment="4" size="__STACKSIZE__" load="No" name=".stack"/&gt;    
+    &lt;ProgramSection alignment="4" load="No" name=".fast_run"/&gt;
+  &lt;/MemorySegment&gt;
+&lt;/Root&gt;
+</code></pre>
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 7, 2012</div><div class="thread-post-content">Hi Richard,  
+I really don&#8217;t think that is the answer I&#8217;m afraid. I&#8217;ve tried changing it and it makes no difference. I went back to an email I had from Michael at Rowley, describing what I&#8217;d done when I initially had issues with by run-to-complete program with the bootloader. He said:  
+You can use the section placement macro &#8220;FLASH&#95;START=0x08003000&#8243; and this will have the same effect as the memory map change. So Michael was essentially saying said that my way is one method of doing it, the other is FLASH&#95;START=0x08003000  
+I have searched high and wide and I cannot find anywhere that describes how to use FLASH&#95;START=0x08003000. I&#8217;ve found places that say do this:  
+&lt;MemorySegment name=&#8221;FLASH&#8221; start=&#8221;0x8003000&#8243; size=&#8221;0x1D000&#8243; /&gt;  
+In the flash&#95;placement.xml file, but that does nothing.   
+I&#8217;ve written to Rowley for clarification, but this:  
+<a href="https://my.st.com/public/STe2ecommunities/mcu/Lists/cortex_mx_stm32/Flat.aspx?RootFolder=https%3a%2f%2fmy.st.com%2fpublic%2fSTe2ecommunities%2fmcu%2fLists%2fcortex_mx_stm32%2fSTM32F207IG%20w%20STM3220G%20eval%20bootloading%20issue&amp;FolderCTID=0x01200200770978C69A1141439FE559EB459D7580009C4E14902C3CDE46A77F0FFD06506F5B&amp;currentviews=575">https://my.st.com/public/STe2ecommunities/mcu/Lists/cortex&#95;mx&#95;stm32/Flat.aspx?RootFolder=https%3a%2f%2fmy.st.com%2fpublic%2fSTe2ecommunities%2fmcu%2fLists%2fcortex&#95;mx&#95;stm32%2fSTM32F207IG%20w%20STM3220G%20eval%20bootloading%20issue&amp;FolderCTID=0x01200200770978C69A1141439FE559EB459D7580009C4E14902C3CDE46A77F0FFD06506F5B&amp;currentviews=575</a>  
+To me indicates I am doing the right thing. Hopefully, Michael will be able to shed some light on it.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 7, 2012</div><div class="thread-post-content">It seems Michael is making the same suggestion as me &#8211; to use the placement macros.&nbsp; Have you actually tried it though?  
+I just went back to the original, unmodified FreeRTOS demo &#40;as downloaded in the official FreeRTOS zip file&#41;, then copied the section placement file into the project file &#40;as per my post above&#41; and made a single edit to move the start of the flash, as:  
+<pre><code>&lt;ProgramSection alignment="4" load="Yes" name=".text"  start="0x8003000"/&gt;
+</code></pre>
+compiled and downloaded &#8211; and it appears to do exactly what you want.&nbsp; main&#40;&#41; is above &#8220;0x8003000&#8221;, and calling SVC jumps to the correct SVC handler, which is also above &#8220;0x8003000&#8221;, the kernel starts and the tasks seem to be running.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 7, 2012</div><div class="thread-post-content">Slight correction &#8211; I didn&#8217;t move the start of the flash, I moved the start of the .text section.&nbsp; The .vectors section is still at zero.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 7, 2012</div><div class="thread-post-content">That does, indeed, load and execute from 0x8003000, thanks. The bootloader now seems to be corrupting something, so is not working. That&#8221;ll be a bug in my code I imagine. I&#8217;ll report back once it&#8217;s going. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 7, 2012</div><div class="thread-post-content">Actually, that&#8217;s not right. Although the C code seems to start later that 0x8003000, all the assembler initialisation starts below there. That&#8217;s why it was crashing once I tried the bootloader.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 7, 2012</div><div class="thread-post-content">What I did was get your experimental case working &#8211; when all that was done was move the .text section up to leave a gap for your boot loader.&nbsp; Now it is back to the start of the thread, which was originally about getting a boot loader to work.  
+Moving the .text section has left the .vectors where it was, so the CPU is booting normally from 0x00 and the vector table is telling it to run code that starts at 0x8003000.&nbsp; Now you have to have a second copy of the vector table for the application, and remap the vector table the CPU is used &#40;using the vector base register&#41;.&nbsp; You can do that by either having the vector table in the flash image starting at 0x8003000, or copy the vector table to RAM.&nbsp; That is over to you …  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 7, 2012</div><div class="thread-post-content">Would you email me that project back please? -The one you now have going I mean because I simply cannot get it going. I guess I am missing a step out or something; this is driving me absolutely nuts.&nbsp;   
+Thanks again. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 7, 2012</div><div class="thread-post-content">I have been playing endlessly today and the only way I can get the vectors to live at 0x8003000 is to change the ST&#95;STM32F103RB&#95;MemoryMap.xml with the line&nbsp; &lt;MemorySegment size=&#8221;0x1D000&#8243; access=&#8221;ReadOnly&#8221; name=&#8221;FLASH&#8221; start=&#8221;0x08003000&#8243;/&gt;  
+I have tried a million different things now and nothing else will do it. I can get your method to shift the &#42;code&#42; start to 0x08003000, but it does not change the vectors. The only thing that shifts the vectors is my method, but once it gets to the   
+svc 0  
+Instruction it leaps off to somewhere before 0x8003000.  
+What on earth am I missing here? What do I not understand? What does this svc instruction &#42;do&#42; and who do non-FreeRTOS programs work just fine?   
+I must confess I just do not understand what this means:  
+<blockquote>
+  Moving the .text section has left the .vectors where it was, so the CPU is booting normally from 0x00 and the vector table is telling it to run code that starts at 0x8003000. Now you have to have a second copy of the vector table for the application, and remap the vector table the CPU is used &#40;using the vector base register&#41;. 
+</blockquote>
+I&#8217;m on the verge of throwing the computer out of the window and/or having an embolism here.
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 7, 2012</div><div class="thread-post-content"><blockquote>
+  I must confess I just do not understand what this means:  
+</blockquote>
+Moving the .text section has left the .vectors where it was, so the CPU is booting normally from 0x00 and the vector table is telling it to run code that starts at 0x8003000. Now you have to have a second copy of the vector table for the application, and remap the vector table the CPU is used &#40;using the vector base register&#41;.   
+Knowing these things, I have to say, is a prerequisite for writing a boot loader.&nbsp; If you look at the section placement file, and the map file, you will see the vector table is in a section called .vectors that heads up the entire program.&nbsp; Your application code then sits in the .text section.  
+The SVC instruction is a software interrupt.&nbsp; It causes the CPU to act just like a hardware interrupt or exception has been accepted, and branch to an address stored in the exception table.&nbsp; Again, this is really detailed information that is required to write a boot loader.  
+If you have a boot loader running, and the &#40;non-FreeRTOS&#41; application it is loading and running from 0x8003000 is using interrupts, and the interrupts it is using are different to those used by your bootloader, then the same bootloader should work for an application that uses FreeRTOS.  
+As per my previous posts &#8211; the first thing the CM3 is going to do when it comes out of reset is load its stack and execution start point from address zero &#40;or whatever memory is mapped to address 0 by whatever configuration methods there are&#41;.&nbsp; There is nothing you can do about that &#8211; you must have these values, and any other interrupt vectors used by the boot loader in a vector table that starts at a logical address 0.  
+If you want to load another program than has a separate vector table, like a FreeRTOS application, or in fact any application, then you need to have another vector table loaded too &#8211; and set the vector base address to point to the right one at the right time &#40;the bootloader one when the bootloader is running, and the application one when the application is running&#41;.&nbsp; How you do that is up to you.&nbsp; A very common way of doing it is to copy the hard coded vector table from the flash image into RAM, where you can then simply write in the handler addresses as part of your start up code.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 7, 2012</div><div class="thread-post-content">First of all I want to say, I really appreciate your patience with me, so thank you ever so much for that. I appreciate I have gaps in my knowledge and I am doing my best to fill these gaps. :~&#41;  
+I totally understand what you are saying about having to have two vector tables, this completely makes sense. However, if I use my method of remapping everything &#40;which works with the run-to-complete program&#41;, this does not work with FreeRTOS. I can see in the map file that &#42;everything&#42; starts at 0x8003000, including all the vectors.   
+Now, one thing I have just stumbled across is this line in the prvSetupHardware&#40;&#41; routine:  
+<blockquote>
+  /&#42; Set the Vector Table base address at 0x08000000. &#42;/<br />
+  NVIC&#95;SetVectorTable&#40; NVIC&#95;VectTab&#95;FLASH, 0x0 &#41;;
+</blockquote>
+Now, is this not hardcoding the Vector table away from 0x8003000 and therefore screwing things up when the svc instruction is called?   
+Thanks again.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on July 7, 2012</div><div class="thread-post-content">Yes &#8211; that makes sense, and that will definitely mess you up &#8211; but it is also outside the FreeRTOS kernel code &#40;i.e. it is in the demo app code&#41;.&nbsp;   
+It looks like an STM32 driver library function and should not be needed anyway.&nbsp; I suspect it originated from a demo that copied vectors to RAM and then remapped the vector table, them when the code was executed from Flash the line was adjusted rather than removed.&nbsp; You should definitely remove it.  
+Regards.  
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 8, 2012</div><div class="thread-post-content">That was a red herring. Makes no difference at all.   
+I am now suspecting there&#8217;s something else amiss because I went back to my run-to-complete program starting at 8003000, so I could look at the SCB registers and try to make sense of it. After erasing all flash, that&nbsp; jumped off into the middle of nowhere. If I then first program from 8000000, don&#8217;t erase and then program from 8003000 it works again without jumping into the middle of nowhere.&nbsp; So, now I&#8217;m even further away from having things working and understanding what&#8217;s going on.   
+That line:  
+NVIC&#95;SetVectorTable&#40; NVIC&#95;VectTab&#95;FLASH, 0x0 &#41;;  
+Is in the demo you sent too.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">STM32 Bootloader loading FreeRTOS problems</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dibosco">dibosco</a> on July 8, 2012</div><div class="thread-post-content">Well, I think it was all down to the flash not being locked after the self programming was finished. I finally tracked it down after having a friend sit with me and we went through FreeRTOS vs run-to-complete versions line -by-line.&nbsp; What seemed to happen was for some reason the vector table, even though it was being programmed correctly, was getting corrupted somehow once the last line had come in over RS485. Locking the flash seems to have solved it.   
+Thanks again for your patience in deal with such a dullard. 
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

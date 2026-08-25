@@ -1,0 +1,220 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loss of Interrupts - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/July_2017/freertos_Loss_of_Interrupts_e32cb165j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Loss of Interrupts - FreeRTOS" />
+<meta property="og:description" content="Loss of InterruptsPosted by dave&#8212;w on July 24, 2017Hi, I&#8217;m stuck trying to figure out why I&#8217;m losing bytes with a UART ISR. I send and receive packets of data and rarely I&#8217;m missing a byte on the receive side. (CRC causes the message to fail.) This happens on 2 different Microchip PICs, PIC32MX460F512L and &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/July_2017/freertos_Loss_of_Interrupts_e32cb165j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Loss of InterruptsPosted by dave&#8212;w on July 24, 2017Hi, I&#8217;m stuck trying to figure out why I&#8217;m losing bytes with a UART ISR. I send and receive packets of data and rarely I&#8217;m missing a byte on the receive side. (CRC causes the message to fail.) This happens on 2 different Microchip PICs, PIC32MX460F512L and [&hellip;]" />
+<meta name="twitter:title" content="Loss of Interrupts - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202843' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202843' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202843' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202843' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146613' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2017%2Ffreertos_Loss_of_Interrupts_e32cb165j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJuly_2017%2Ffreertos_Loss_of_Interrupts_e32cb165j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146613">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/July_2017_freertos_support_forum_archive_index.html/">July 2017 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Loss of Interrupts</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dave---w">dave&#8212;w</a> on July 24, 2017</div><div class="thread-post-content">Hi,
+I&#8217;m stuck trying to figure out why I&#8217;m losing bytes with a UART ISR.  I send and receive packets of data and rarely I&#8217;m missing a byte on the receive side.  (CRC causes the message to fail.)  This happens on 2 different Microchip PICs, PIC32MX460F512L and PIC32MX470F512L.  I&#8217;ve gone through the PIC documenation inside and out and haven&#8217;t found any problems there.  So just to be sure, I want to ask about FreeRTOS (v8.1.2).
+I&#8217;ve inserted the following code into port_asm.s:
+~~~
+    .extern U2InterruptWrapper
+////////////////////////////////////////////////////////////////////////////////
+//
+// UART interrupt service routine
+//
+////////////////////////////////////////////////////////////////////////////////
+.set    nomips16
+.set    noreorder
+.ent    U2InterruptWrapper
+// interrupt entry point
+U2InterruptWrapper:
+<pre><code>// save the current task context
+portSAVE_CONTEXT
+// call the C function to handle the interrupt
+jal U2InterruptHandler
+nop
+// restore the context of the next task to execute
+portRESTORE_CONTEXT
+</code></pre>
+  .end  U2InterruptWrapper
+~~~
+My priority is 3, which I believe is the highest priority in the system.  My PICs have 8 byte FIFOs and I&#8217;m using 115,200 BAUD which is about 83 usec per byte.  With a 12.5 nsec clock time in the PIC, there should be plenty of time to read all the bytes from the FIFO.
+Is there something I&#8217;m missing that might cause this to lose bytes?
+Thanks for the new sets of eyes.
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">Loss of Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 24, 2017</div><div class="thread-post-content">Can&#8217;t tell from the code you posted.  Please show the U2InterruptHandler 
+code too.
+I remember there was some discussion on the PIC32 UART interrupts some 
+years back.  As I recall (?) it resulted from a change in the way 
+interrupts were handled between different PIC32 part numbers.  You mind 
+find something in the forum on this.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Loss of Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dave---w">dave&#8212;w</a> on July 24, 2017</div><div class="thread-post-content">Here is the receive side&#8230;
+~~~
+void
+U2InterruptHandler(
+    void)
+{
+    U8 c;
+    static BaseType_t YieldRequired;
+<pre><code>// look for receive interrupt
+if(IFS1bits.U2RXIF)
+{
+    // look for more receive data
+    while(U2STAbits.URXDA)
+    {
+        c = U2RXREG;
+        *RxBufEnd = c;
+        if(++RxBufEnd == (RxBuffer + BUF_SIZE))
+            RxBufEnd = RxBuffer;
+        // for every FS, increment the semaphore
+        if(c == FS)
+            // increment the task semaphore
+            xSemaphoreGiveFromISR(UartRxSemaphore, &amp;YieldRequired);
+        if(U2STAbits.OERR)
+            // clear overrun errors
+            U2STAbits.OERR = FALSE;
+    }
+    // clear the receive interrupt flag
+    IFS1bits.U2RXIF = FALSE;
+}
+... &lt;transmit side&gt;
+</code></pre>
+}
+~~~
+I will search the archives.  Thanks for the advice.
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">Loss of Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on July 24, 2017</div><div class="thread-post-content">Double check where the interrupt is being cleared &#8211; I think on some 
+devices it needs to be first in the ISR, and on others last.  Perhaps 
+look at the drivers provided by Microchip for the device you are using 
+as a reference.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Loss of Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dave---w">dave&#8212;w</a> on July 24, 2017</div><div class="thread-post-content">Yes, thanks.  Been there, done that.  I conform to the Microchip usage.
+BTW, I forgot the end of the ISR function I posted above.  After the transmit side at the end of the function is:
+~~~
+<pre><code>// context switch if necessary
+portEND_SWITCHING_ISR(YieldRequired);
+</code></pre>
+~~~
+I never fully understood what this is doing.  I just followed the FreeRTOS examples.  The only place this is used is on the RX side when passing the (counting) semaphore from the ISR to the task.  Does this make sense?
+Thanks again.
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">Loss of Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dave---w">dave&#8212;w</a> on July 28, 2017</div><div class="thread-post-content">I&#8217;m still having no luck tracking this down.  I looked at the ISR vector table and everything appears to be normal with one thing I don&#8217;t understand.  The CS0 interrupt vector is set to vPortYieldISR.  I have no idea what that is, and I mentioned above that I didn&#8217;t know what the portEND<em>SWITCHING</em>ISR(YiedlRequired); code does.  I would guess these 2 are related, but I don&#8217;t know.
+Is this a required part of the ISR processing?  (See post above.)
+Thanks,
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">Loss of Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 28, 2017</div><div class="thread-post-content">portEND<em>SWITCHING</em>ISR() performs or schedules a task switch if needed (based on the YieldRequired parameter). If an ISR does not use this at the end, then if it woke up a task tthat is now the highest priority, it won&#8217;t start to execute until something else cause a task switch (like possibly the time tick). 
+One some processors, this is performed by software triggering a lowest priority interrupt which forces the scheduler to run.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Loss of Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dave---w">dave&#8212;w</a> on July 28, 2017</div><div class="thread-post-content">Hi Richard,
+Sorry for being dense&#8230;  I&#8217;m guessing that when I do the GiveFromISR that the YieldRequired variable is loaded inside that routine.  Then before I exit the ISR, the portEND<em>SWITCHING</em>ISR decides from the contents of YieldRequired whether or not to task switch.
+But also, looking the the reference manual, I see a different function portYIELD<em>FROM</em>ISR().
+Basically, I&#8217;m just looking for confirmation I&#8217;ve implemented this right and that is not the reason for missing interrupts.
+Thanks!
+Dave
+</div></div><div class="thread-post"><h3 class="thread-post-title">Loss of Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on July 28, 2017</div><div class="thread-post-content">The various &#8216;FromISR&#8217; rooutines will set the value of the flag true if they wake up a higher priority task, and thus need to signal you to trigger a scheduler activation.
+As to the way you use the variable, from what I have seen, different ports define the mechanism in different ways. (I suspect in part based on how old they are), and some have slightly different rules for how to use these functions. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Loss of Interrupts</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dave---w">dave&#8212;w</a> on July 29, 2017</div><div class="thread-post-content">Thanks for the guidelines.
+Dave
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

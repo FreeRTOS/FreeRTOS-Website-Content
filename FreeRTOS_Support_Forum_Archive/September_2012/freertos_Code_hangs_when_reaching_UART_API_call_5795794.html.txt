@@ -1,0 +1,505 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code hangs when reaching UART API call - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2012/freertos_Code_hangs_when_reaching_UART_API_call_5795794.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Code hangs when reaching UART API call - FreeRTOS" />
+<meta property="og:description" content="Code hangs when reaching UART API callPosted by cphus on September 19, 2012Hello freeRTOS, This is my first experience ever with an RTOS. I managed to build a custom freeRTOS project for this board The MCU is LPC1768 and the version of freeRTOS I use is 7.1.1. Compiler is from CodeSourcery Lite &#040;arm-none-eabi-gcc v4.5.2&#041; I &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2012/freertos_Code_hangs_when_reaching_UART_API_call_5795794.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Code hangs when reaching UART API callPosted by cphus on September 19, 2012Hello freeRTOS, This is my first experience ever with an RTOS. I managed to build a custom freeRTOS project for this board The MCU is LPC1768 and the version of freeRTOS I use is 7.1.1. Compiler is from CodeSourcery Lite &#040;arm-none-eabi-gcc v4.5.2&#041; I [&hellip;]" />
+<meta name="twitter:title" content="Code hangs when reaching UART API call - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202172' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202172' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202172' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202172' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=144917' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2012%2Ffreertos_Code_hangs_when_reaching_UART_API_call_5795794.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2012%2Ffreertos_Code_hangs_when_reaching_UART_API_call_5795794.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-144917">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2012_freertos_support_forum_archive_index.html/">September 2012 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Code hangs when reaching UART API call</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cphus">cphus</a> on September 19, 2012</div><div class="thread-post-content">Hello freeRTOS,  
+This is my first experience ever with an RTOS. I managed to build a custom freeRTOS project for <a href="http://www.wayengineer.com/index.php?main_page=product_info&amp;cPath=50_67&amp;products_id=122">this board</a><br />
+The MCU is LPC1768 and the version of freeRTOS I use is 7.1.1. Compiler is from CodeSourcery Lite &#40;arm-none-eabi-gcc v4.5.2&#41;  
+I modified a blinking example that succesively blinks four led&#8217;s to blink another four in another task at an another rate just to see that the task switching mechanism works.<br />
+Then I tried to output something on UART in one of the tasks but the code hangs and the LED&#8217;s don&#8217;t blink anymore.<br />
+I must state that the code for UART is from another example for this particular board that works: I tested it with minicom &#8211; so nothing is wrong with the driver..  
+Next, I&#8217;ll reproduce the code from main.c. Note at the end of function vHB1 the calls for initializing the UART 0 and sending a string on it. I have intentionately put it at the end to see that the led&#8217;s blink in the order 0-1-2-3-2-1 and then hang.  
+<pre><code>/* ---- Include Files ---------------------------------------------------- */
+#include "stdio.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "serial.h"
+/* ----------------------------------------------------------------------- */
+#define     HEARBEAT_PRIORITY       ( tskIDLE_PRIORITY + 1 )
+#define     HEARTBEAT_STACK_SIZE    configMINIMAL_STACK_SIZE
+#define LED_0 ( 1UL &lt;&lt; 0UL )
+#define LED_1 ( 1UL &lt;&lt; 1UL )
+#define LED_2 ( 1UL &lt;&lt; 2UL )
+#define LED_3 ( 1UL &lt;&lt; 3UL )
+#define LED_4 ( 1UL &lt;&lt; 4UL )
+#define LED_5 ( 1UL &lt;&lt; 5UL )
+#define LED_6 ( 1UL &lt;&lt; 6UL )
+#define LED_7 ( 1UL &lt;&lt; 7UL )
+static unsigned long gLed[] = { LED_0, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6, LED_7 };
+/***************************************************************************
+*
+*   Initialize the GPIO pin that the LED is connected to.
+*
+***************************************************************************/
+static void LED_Init( void )
+{
+    LPC_GPIO2-&gt;FIODIR = LED_0 | LED_1 | LED_2 | LED_3 | LED_4 | LED_5 | LED_6 | LED_7;
+    LPC_GPIO2-&gt;FIOCLR = LED_0 | LED_1 | LED_2 | LED_3 | LED_4 | LED_5 | LED_6 | LED_7;
+}
+/***************************************************************************
+*
+*   Turns the LED on or off. On the robovero, driving the pin low turns the
+*   LED on.
+*
+***************************************************************************/
+static void SetLED( unsigned led, unsigned value )
+{
+    if( value )
+        LPC_GPIO2-&gt;FIOSET = gLed[led];
+    else
+        LPC_GPIO2-&gt;FIOCLR = gLed[led];
+}
+/***************************************************************************
+*
+*   Initializes the chip.
+*
+***************************************************************************/
+static void InitHardware( void )
+{
+    /* Disable peripherals power. */
+    LPC_SC-&gt;PCONP = 0;
+    /* Enable GPIO power. */
+    LPC_SC-&gt;PCONP = PCONP_PCGPIO;
+    /* Disable TPIU. */
+    LPC_PINCON-&gt;PINSEL10 = 0;
+    if ( LPC_SC-&gt;PLL0STAT &amp; ( 1 &lt;&lt; 25 ) )
+    {
+        /* Enable PLL, disconnected. */
+        LPC_SC-&gt;PLL0CON = 1;
+        LPC_SC-&gt;PLL0FEED = PLLFEED_FEED1;
+        LPC_SC-&gt;PLL0FEED = PLLFEED_FEED2;
+    }
+    /* Disable PLL, disconnected. */
+    LPC_SC-&gt;PLL0CON = 0;
+    LPC_SC-&gt;PLL0FEED = PLLFEED_FEED1;
+    LPC_SC-&gt;PLL0FEED = PLLFEED_FEED2;
+    /* Enable main OSC. */
+    LPC_SC-&gt;SCS |= 0x20;
+    while( !( LPC_SC-&gt;SCS &amp; 0x40 ) );
+    /* select main OSC, 12MHz, as the PLL clock source. */
+    LPC_SC-&gt;CLKSRCSEL = 0x1;
+    LPC_SC-&gt;PLL0CFG = 0x20031;
+    LPC_SC-&gt;PLL0FEED = PLLFEED_FEED1;
+    LPC_SC-&gt;PLL0FEED = PLLFEED_FEED2;
+    /* Enable PLL, disconnected. */
+    LPC_SC-&gt;PLL0CON = 1;
+    LPC_SC-&gt;PLL0FEED = PLLFEED_FEED1;
+    LPC_SC-&gt;PLL0FEED = PLLFEED_FEED2;
+    /* Set clock divider. */
+    LPC_SC-&gt;CCLKCFG = 0x03;
+    /* Configure flash accelerator. */
+    LPC_SC-&gt;FLASHCFG = 0x403a;
+    /* Check lock bit status. */
+    while( ( ( LPC_SC-&gt;PLL0STAT &amp; ( 1 &lt;&lt; 26 ) ) == 0 ) );
+    /* Enable and connect. */
+    LPC_SC-&gt;PLL0CON = 3;
+    LPC_SC-&gt;PLL0FEED = PLLFEED_FEED1;
+    LPC_SC-&gt;PLL0FEED = PLLFEED_FEED2;
+    while( ( ( LPC_SC-&gt;PLL0STAT &amp; ( 1 &lt;&lt; 25 ) ) == 0 ) );
+    /* Configure the clock for the USB. */
+    if( LPC_SC-&gt;PLL1STAT &amp; ( 1 &lt;&lt; 9 ) )
+    {
+        /* Enable PLL, disconnected. */
+        LPC_SC-&gt;PLL1CON = 1;
+        LPC_SC-&gt;PLL1FEED = PLLFEED_FEED1;
+        LPC_SC-&gt;PLL1FEED = PLLFEED_FEED2;
+    }
+    /* Disable PLL, disconnected. */
+    LPC_SC-&gt;PLL1CON = 0;
+    LPC_SC-&gt;PLL1FEED = PLLFEED_FEED1;
+    LPC_SC-&gt;PLL1FEED = PLLFEED_FEED2;
+    LPC_SC-&gt;PLL1CFG = 0x23;
+    LPC_SC-&gt;PLL1FEED = PLLFEED_FEED1;
+    LPC_SC-&gt;PLL1FEED = PLLFEED_FEED2;
+    /* Enable PLL, disconnected. */
+    LPC_SC-&gt;PLL1CON = 1;
+    LPC_SC-&gt;PLL1FEED = PLLFEED_FEED1;
+    LPC_SC-&gt;PLL1FEED = PLLFEED_FEED2;
+    while( ( ( LPC_SC-&gt;PLL1STAT &amp; ( 1 &lt;&lt; 10 ) ) == 0 ) );
+    /* Enable and connect. */
+    LPC_SC-&gt;PLL1CON = 3;
+    LPC_SC-&gt;PLL1FEED = PLLFEED_FEED1;
+    LPC_SC-&gt;PLL1FEED = PLLFEED_FEED2;
+    while( ( ( LPC_SC-&gt;PLL1STAT &amp; ( 1 &lt;&lt; 9 ) ) == 0 ) );
+    /*  Setup the peripheral bus to be the same as the PLL output (64 MHz). */
+    LPC_SC-&gt;PCLKSEL0 = 0x05555555;
+}
+void vHB1( void * pvParameters )
+{
+    unsigned int    led[] = { 0, 1, 2, 3, 2, 1 };
+    unsigned int    led_idx = 0;
+    /* Setup the LED */
+    LED_Init();
+    for(;;)
+    {
+        SetLED(led[led_idx], 1);
+        vTaskDelay( 100 / portTICK_RATE_MS );
+        SetLED(led[led_idx], 0);
+        vTaskDelay( 100 / portTICK_RATE_MS );
+        SetLED(led[led_idx], 1);
+        vTaskDelay( 100 / portTICK_RATE_MS );
+        SetLED(led[led_idx], 0);
+        vTaskDelay( 700 / portTICK_RATE_MS );
+        led_idx++;
+        if( led_idx &gt;=6 )
+        {
+            led_idx = 0;
+            SER_init(0);
+            SER_putString(0, "vHB2...nr");
+        }
+    }
+}
+void vHB2( void * pvParameters )
+{
+    unsigned int    led[] = { 7, 6, 5, 4, 5, 6 };
+    unsigned int    led_idx = 0;
+    /* Setup the LED */
+    LED_Init();
+    for(;;)
+    {
+        SetLED(led[led_idx], 1);
+        vTaskDelay( 60 / portTICK_RATE_MS );
+        SetLED(led[led_idx], 0);
+        vTaskDelay( 60 / portTICK_RATE_MS );
+        SetLED(led[led_idx], 1);
+        vTaskDelay( 60 / portTICK_RATE_MS );
+        SetLED(led[led_idx], 0);
+        vTaskDelay( 420 / portTICK_RATE_MS );
+        led_idx++;
+        if( led_idx &gt;=6 )
+        {
+            led_idx = 0;
+        }
+    }
+}
+/***************************************************************************
+*
+*   main
+*
+***************************************************************************/
+int main( void )
+{
+    InitHardware();
+    xTaskCreate( vHB1,      // Task Function
+                 "Heartbeat1",          // Task Name
+                 HEARTBEAT_STACK_SIZE,  // Stack Size
+                 NULL,                  // Parameters
+                 HEARBEAT_PRIORITY,     // Task Priority
+                 NULL );                // Place to store task handle
+    xTaskCreate( vHB2,      // Task Function
+                 "Heartbeat2",          // Task Name
+                 HEARTBEAT_STACK_SIZE,  // Stack Size
+                 NULL,                  // Parameters
+                 HEARBEAT_PRIORITY,     // Task Priority
+                 NULL );                // Place to store task handle
+    vTaskStartScheduler();
+     /* Will only get here if there was insufficient memory to create the idle
+     * task.  The idle task is created within vTaskStartScheduler().
+     */
+    for( ;; )
+        ;
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Code hangs when reaching UART API call</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 19, 2012</div><div class="thread-post-content">If it works without the UART, and not with the UART, then it seems likely the issue lies either with your UART functions, or with the interaction between the FreeRTOS API and the UART, or between FreeRTOS and the UART interrupt priorities.&nbsp; You can read about correct API usage here: <a href="http://www.freertos.org/FAQHelp.html">http://www.freertos.org/FAQHelp.html</a> and correct interrupt set up here: <a href="http://www.freertos.org/RTOS-Cortex-M3-M4.html">http://www.freertos.org/RTOS-Cortex-M3-M4.html</a>  
+There is also an LPC1768 example with functioning UART drivers here: <a href="http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_IO/Demo_Applications/LPCXpresso_LPC1769/NXP_LPC1769_Demo_Description.shtml">http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_IO/Demo_Applications/LPCXpresso_LPC1769/NXP_LPC1769_Demo_Description.shtml</a>  
+I can&#8217;t comment on your hardware setup, other than to say it seems overly verbose when NXP provide library calls that will do the set up for you.  
+Do you have stack overflow detection on?  
+Where is the processor executing when the LEDs stop blinking?  
+Why are you calling the serial init function more than once?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Code hangs when reaching UART API call</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cphus">cphus</a> on September 19, 2012</div><div class="thread-post-content">Thanks for replying,  
+<strong>Do you have stack overflow detection on?</strong><br />
+&#45; I activated the stack overflow detection and wrote this handler which should blink an LED if overflow occured but it doesn&#8217;t. I also increased the stack size parameter and it doesn&#8217;t seem to help   
+<pre><code>void vApplicationStackOverflowHook(void * pvParameters)
+{
+    LED_Init();
+    while(1)
+    {
+        SetLED(7,1);
+        vTaskDelay(250/portTICK_RATE_MS);
+        SetLED(7,0);
+        vTaskDelay(250/portTICK_RATE_MS);
+    }
+}
+</code></pre>
+<strong>Where is the processor executing when the LEDs stop blinking?</strong><br />
+&#45; I don&#8217;t know. The board has a USB J-link SWD debugger but I couldn&#8217;t make it work…   
+<strong>Why are you calling the serial init function more than once?</strong><br />
+&#45; I know that the initialization should be done before the task&#8217;s loop but if I do so the code seems not to execute at all since no LED&#8217;s light up. So, putting it where it is now it&#8217;s just a way of checking that the code executes well until it reaches the UART initialization function.  
+<blockquote>
+  If it works without the UART, and not with the UART, then it seems likely the issue lies either with your UART functions
+</blockquote>
+The code for UART is a minimalistic one taken from an example with an SD card for my particular board. It works very well when I load that example &#8211; I can create/edit/delete files on the SD card by sending commands via UART0. I reproduce here the relevant part of that driver:  
+<pre><code>#include "LPC17xx.h"                             /* LPC17xx definitions    */
+#include "serial.h"
+/*----------------------------------------------------------------------------
+  Initialize UART pins, Baudrate
+ *----------------------------------------------------------------------------*/
+void SER_init (int uart) {
+  LPC_UART_TypeDef *pUart;
+  if (uart == 0) {                               /* UART0 */
+    LPC_PINCON-&gt;PINSEL0 |= (1 &lt;&lt; 4);             /* Pin P0.2 used as TXD0 (Com0) */
+    LPC_PINCON-&gt;PINSEL0 |= (1 &lt;&lt; 6);             /* Pin P0.3 used as RXD0 (Com0) */
+    pUart = (LPC_UART_TypeDef *)LPC_UART0;
+  } else {                                       /* UART1 */
+    LPC_PINCON-&gt;PINSEL4 |= (2 &lt;&lt; 0);             /* Pin P2.0 used as TXD1 (Com1) */
+    LPC_PINCON-&gt;PINSEL4 |= (2 &lt;&lt; 2);             /* Pin P2.1 used as RXD1 (Com1) */
+    pUart = (LPC_UART_TypeDef *)LPC_UART1;
+  }
+  pUart-&gt;LCR    = 0x83;                          /* 8 bits, no Parity, 1 Stop bit  */
+  pUart-&gt;DLL    = 9;                             /* 115200 Baud Rate @ 25.0 MHZ PCLK */
+  pUart-&gt;FDR    = 0x21;                          /* FR 1,507, DIVADDVAL = 1, MULVAL = 2 */
+  pUart-&gt;DLM    = 0;                             /* High divisor latch = 0         */
+  pUart-&gt;LCR    = 0x03;                          /* DLAB = 0                       */
+}
+/*----------------------------------------------------------------------------
+  Write character to Serial Port
+ *----------------------------------------------------------------------------*/
+int SER_putChar (int uart, int c) {
+  LPC_UART_TypeDef *pUart;
+  pUart = (uart == 0) ? (LPC_UART_TypeDef *)LPC_UART0 : (LPC_UART_TypeDef *)LPC_UART1;
+  while (!(pUart-&gt;LSR &amp; 0x20));
+  return (pUart-&gt;THR = c);
+}
+void SER_putString (int uart, unsigned char *s) {
+  while (*s != 0) {
+   SER_putChar(uart, *s++);
+  }
+}
+</code></pre>
+I checked the FreeRTOS&#95;plus&#95;IO UART driver for lpc17xx but for the moment it seems more simple to me to try making the minimalistic UART driver I already use work.   
+</div></div><div class="thread-post"><h3 class="thread-post-title">Code hangs when reaching UART API call</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 19, 2012</div><div class="thread-post-content"><blockquote>
+  I activated the stack overflow detection and wrote this handler which should blink an LED if overflow occured but it doesn&#8217;t.
+</blockquote>
+The stack overflow hook is called from a context switch &#8211; in an interrupt &#8211; so you cannot call blocking FreeRTOS API functions.&nbsp; Your stack overflow hook will probably just crash.  
+<blockquote>
+  I don&#8217;t know. The board has a USB J-link SWD debugger but I couldn&#8217;t make it work…
+</blockquote>
+I recommend getting it to work before going any further.&nbsp; Otherwise you are just left guessing.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Code hangs when reaching UART API call</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cphus">cphus</a> on September 29, 2012</div><div class="thread-post-content">I managed to configure the debugger to run with CodeBlocks. For the code I gave above the code hanged in HardFault&#95;Handler. But nevermind this code.  
+I loaded the lpc17xx&#95;uart driver and dependencies into the project and wrote a little task making use of the functions the driver provides. So now I have 2 tasks blipping two rows of led&#8217;s and one which should send some message on UART0.<br />
+I provide here the UART task.  
+<pre><code>void vUARTtask(void * pvPatameters)
+{
+    LPC_UART0_TypeDef UART0;
+    LPC_UART_TypeDef * UART = (LPC_UART_TypeDef *) &amp;UART0;
+    UART_CFG_Type uart0_configuration = {
+        115200,
+        UART_PARITY_NONE,
+        UART_DATABIT_8,
+        UART_STOPBIT_1
+        };
+    char buf[]="I'm in the UART task!";
+    UART_Init(UART, &amp;uart0_configuration );
+    while(1)
+        {
+            UART_Send(UART, buf, sizeof(buf), NONE_BLOCKING );
+            vTaskDelay(500/portTICK_RATE_MS);
+        }
+}
+</code></pre>
+I create it in main like this &#40;priority the same with other tasks&#41;:  
+<pre><code> xTaskCreate( vUARTtask,
+                 "UART0",
+                 1000,
+                 NULL,
+                 UART_PRIORITY,
+                 NULL );
+</code></pre>
+I can clearly follow&nbsp; the code with the debugger until it reaches the char by char sending piece of code. Everything seems to be fine, I even checked the characters it sends and they&#8217;re correct. However I see nothing in minicom.   
+As far as I can tell it shouldn&#8217;t be but is there somehing wrong with the code? 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Code hangs when reaching UART API call</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on September 29, 2012</div><div class="thread-post-content">There is nothing obviously wrong with the code.   
+What does the NON&#95;BLOCKING mean in the UART&#95;Send&#40;&#41; call?  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Code hangs when reaching UART API call</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cphus">cphus</a> on September 29, 2012</div><div class="thread-post-content"><blockquote>
+  When using UART in BLOCKING mode, a time-out condition is used via defined symbol UART&#95;BLOCKING&#95;TIMEOUT.
+</blockquote>
+The difference between BLOCKING and NONE&#95;BLOCKING is that in NONE&#95;BLOCKING mode if the &#8220;tx register&#8221; does not empty withing some time the transmitter continues with the next character while in BLOCKING mode it stays there until the register empties. This is for avoiding infinite loops i guess.   
+But I tried both of them and in either of the cases i cannot see anything in minicom.  
+Anyway, thanks for helping. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Code hangs when reaching UART API call</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cphus">cphus</a> on October 6, 2012</div><div class="thread-post-content">I found a LPC7xx CMSIS UART example and it seems to work. Well, no quite. I can see junk in minicom &#40;baud and other settings are like in the code&#33;&#41;.  
+Here is the task code, just for reference:   
+<pre><code>void vUARTtask(void * pvPatameters)
+{
+    LPC_UART_TypeDef *UARTx = (LPC_UART_TypeDef *) LPC_UART0;
+    /* UART Configuration structure variable */
+    UART_CFG_Type UARTConfigStruct;
+    /* UART FIFO configuration Struct variable */
+    UART_FIFO_CFG_Type UARTFIFOConfigStruct;
+    /* Pin configuration for UART0 */
+    PINSEL_CFG_Type PinCfg;
+    /*
+     * Initialize UART0 pin connect (Port 0, pins 2 and 3)
+     */
+    PinCfg.Funcnum = 1;
+    PinCfg.OpenDrain = 0;
+    PinCfg.Pinmode = 0;
+    PinCfg.Pinnum = 2;
+    PinCfg.Portnum = 0;
+    PINSEL_ConfigPin(&amp;PinCfg);
+    PinCfg.Pinnum = 3;
+    PINSEL_ConfigPin(&amp;PinCfg);
+    /* Initialize UART Configuration parameter structure to default state:
+     * Baudrate = 9600bps
+     * 8 data bit
+     * 1 Stop bit
+     * None parity
+     */
+    UART_ConfigStructInit(&amp;UARTConfigStruct);
+    /* Set Baudrate to 115200 */
+    UARTConfigStruct.Baud_rate = 115200;
+    /* Initialize UART0 peripheral with given to corresponding parameter */
+    UART_Init(UARTx, &amp;UARTConfigStruct);
+    /* Initialize FIFOConfigStruct to default state:
+     *              - FIFO_DMAMode = DISABLE
+     *              - FIFO_Level = UART_FIFO_TRGLEV0
+     *              - FIFO_ResetRxBuf = ENABLE
+     *              - FIFO_ResetTxBuf = ENABLE
+     *              - FIFO_State = ENABLE
+     */
+    UART_FIFOConfigStructInit(&amp;UARTFIFOConfigStruct);
+    /* Initialize FIFO for UART0 peripheral */
+    UART_FIFOConfig(UARTx, &amp;UARTFIFOConfigStruct);
+    /*  Enable UART Transmit */
+    UART_TxCmd(UARTx, ENABLE);
+    char string[]="Hello, says freeRTOS!";
+    while(1)
+    {
+        UART_Send(UARTx, (uint8_t *)string, strlen(string), BLOCKING);
+        SetLED(7,1);
+        vTaskDelay(500/portTICK_RATE_MS);
+        SetLED(7,0);
+        vTaskDelay(500/portTICK_RATE_MS);
+    }
+}
+</code></pre>
+It seems that there is more stuff to configure than I previously thought.  
+I know it&#8217;s more like related to the CMSIS than to freeRTOS but do you have a clue why this would happen?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Code hangs when reaching UART API call</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on October 7, 2012</div><div class="thread-post-content">Didn&#8217;t you say it was working when you were not using the RTOS, but now you are saying it was not configured?  
+Well, again, there is nothing obviously wrong.&nbsp; If the data coming out of the UART is garbled then baud rate is the most likely cause.&nbsp; Have a look at the library function where it calculates the baud rate settings.&nbsp; Most likely it will be using the speed of the clock signal to either the processor or the UART &#40;or both&#41; in the calculation, and if it is using an incorrect speed, then the baud rate calculation will also be incorrect.  
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Code hangs when reaching UART API call</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/cphus">cphus</a> on October 7, 2012</div><div class="thread-post-content">There are 4 scenarios here.<br />
+1&#46; I did use a firmware without RTOS with a custom serial library and it worked<br />
+2&#46; I used freeRTOS togheter with that custom serial library and the execution ended in HardFault&#95;Handler<br />
+3&#46; I used freeRTOS with Cortex-M3 CMSIS serial library &#40;namely lpc17xx&#95;uart&#41; but i did not have any example so I did not well configured the UART. In this case I did not see anything in the computer serial monitor.<br />
+4&#46; I found an example of how to use the CMSIS and now I see stuff coming but it&#8217;s junk.  
+Starting from what you said about the clock calculation I searched through the code and indeed that is the problem. The thing is, my code had an hardware initialization function &#40;given somewhere in the comments above&#41; which changes registers related to clock and other stuff, messing up everything. The CMSIS routines should &#40;in my opinion&#41; derive the clock by reading the appropriate registers.   
+Anyway it works now.<br />
+Thanks Mr. Barry  
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

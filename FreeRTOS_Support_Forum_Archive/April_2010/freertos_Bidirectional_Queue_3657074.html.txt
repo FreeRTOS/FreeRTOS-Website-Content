@@ -1,0 +1,143 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bidirectional Queue - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/April_2010/freertos_Bidirectional_Queue_3657074.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Bidirectional Queue - FreeRTOS" />
+<meta property="og:description" content="Bidirectional QueuePosted by ruben_saz on April 2, 2010Hi there. I&#8217;m doing some code now to interface with I2C devices using freeRTOS. As the I2C communications are half duplex, I was wondering if I could safely use a single queue for incoming and outgoing data. That means, using the same queue to communicate with the ISR &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/April_2010/freertos_Bidirectional_Queue_3657074.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Bidirectional QueuePosted by ruben_saz on April 2, 2010Hi there. I&#8217;m doing some code now to interface with I2C devices using freeRTOS. As the I2C communications are half duplex, I was wondering if I could safely use a single queue for incoming and outgoing data. That means, using the same queue to communicate with the ISR [&hellip;]" />
+<meta name="twitter:title" content="Bidirectional Queue - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201882' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201882' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201882' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201882' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=139839' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2010%2Ffreertos_Bidirectional_Queue_3657074.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FApril_2010%2Ffreertos_Bidirectional_Queue_3657074.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-139839">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/April_2010_freertos_support_forum_archive_index.html/">April 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Bidirectional Queue</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ruben_saz">ruben_saz</a> on April 2, 2010</div><div class="thread-post-content">Hi there.  
+I&#8217;m doing some code now to interface with I2C devices using freeRTOS. As the I2C communications are half duplex, I was wondering if I could safely use a single queue for incoming and outgoing data. That means, using the same queue to communicate with the ISR when transmitting and receiving.  
+Hope someone can help me.  
+Best wishes ;&#41;
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bidirectional Queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/edwards3">edwards3</a> on April 2, 2010</div><div class="thread-post-content">Queues are very flexible and can have any number of readers and any number of writers. Your only problem is going to be coordinating your multiple readers and writers. If a task wrote to a queue and then read from the queue they would just read out what they had just written.  
+You could use two queues? One in each direction if you have enough resources.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bidirectional Queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on April 2, 2010</div><div class="thread-post-content">While I won&#8217;t say you can&#8217;t use one queue, it may make things more difficult, as you will need to do something to make the task that is taking data from the I2C input not grab the date being sent out. &#40;And then it consumes all the data that has come in before sending data back out&#41;.  
+While the bus itself may be half duplex, making it a single queue says you will need to keep the concept of half duplex all the way to the program terminal task. I suspect that in most cases, the whole reason you are using a queue there at all, and not just a mailbox with a data ready flag, is that you want to allow for the data coming in to have the option of getting a bit ahead of the consuming task, and/or let what ever is producing data be able to get ahead of the actual bus. At this point the half-duplex assumption is no longer valid, and the standard model of an input and output queue is suggested.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Bidirectional Queue</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/ruben_saz">ruben_saz</a> on April 3, 2010</div><div class="thread-post-content">Well richard, I&#8217;ve implemented a I2C routine that handles reading or writing a block of N bytes of data, it has the following prototype:  
+<pre><code>unsigned int iI2CDriverTransaction( xI2CHandle xI2CResources, unsigned int iDevAddress, unsigned int iMemAddress, unsigned int iBusDirection, unsigned int iBytesToTransfer, void * pvDataBuffer )
+</code></pre>
+I don&#8217;t know if that&#8217;s what you mean with the mailbox. This function basically takes a mutex, writes data to a structure &#40;which is used by a Finite State Machine running on the I2C ISR&#41;, and generates a interrupt which causes a FSM to start working. Then the function&#40;task&#41; blocks and waits for a message from the ISR on what I called a &#8221;Control Queue&#8221;. This message contains a code indicating what happened inside the FSM. When the message arrives from the ISR, the function gives back the mutex and&nbsp; returns with the code received from the control Queue. If data was successfully read or written this function returns E&#95;SUCCESS, other codes are also provided, for example E&#95;ERROR&#95;NACK indicates that master did not received ACK from the given slave address.  
+What I&#8217;m trying to do now is to implement a layer of compatibility that allows me to use the MPFS&#40;microchip file system&#41; that is used in the TCP/IP stack and other application notes from Microchip. The TCP/IP stack I&#8217;m using includes files for SPI and I2C interface with eeprom memories. In the i2ceeprom.c file I find functions like this:  
+<pre><code>static unsigned char getcI2C( void )
+{
+    I2C2CONbits.RCEN = 1; // enable master for 1 byte reception
+    while(I2C2CONbits.RCEN);      // wait until byte received
+    return I2C2RCV;        // return with read byte
+}
+</code></pre>
+Here for example, I&#8217;m looking for a way to replace this with a function that uses the Rtos to do something usefull instead of just checking the RCEN bit &#40;with the bus at 400 Khz this may be too much wasted time&#41;. As we intend to receive only a byte at a time, a large queue doesn&#8217;t makes sense. But for TX a large queue would be, in theory OK. I&#8217;m still wondering how to do this and I thought that I could use a single queue for TX and RX, so the question.  
+Well, those are some random thoughts, of what I&#8217;m trying to do. If anyone has worked with anything similar or know about a embedded filesystem for use in small eeprom or flash memories, or have some comments, it would be cool. Meanwhile I&#8217;ll be checking in detail the MPFS implementation.  
+Thank you guys, have a nice day&#33;
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

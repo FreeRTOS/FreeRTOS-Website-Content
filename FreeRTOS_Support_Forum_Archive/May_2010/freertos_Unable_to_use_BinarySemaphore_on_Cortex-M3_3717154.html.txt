@@ -1,0 +1,288 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unable to use BinarySemaphore on Cortex-M3 - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2010/freertos_Unable_to_use_BinarySemaphore_on_Cortex-M3_3717154.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Unable to use BinarySemaphore on Cortex-M3 - FreeRTOS" />
+<meta property="og:description" content="Unable to use BinarySemaphore on Cortex-M3Posted by rgrover1 on May 21, 2010I am working with FreeRTOS6.0.4 using GCC on a Cortex-M3. I would like to implement a driver for the UART peripheral using interrupts. I have created a binary semaphore to synchronize between the ISR and the task calling Uart&#095;GetChar&#040;&#041;. The interrupt handler gets called, &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2010/freertos_Unable_to_use_BinarySemaphore_on_Cortex-M3_3717154.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Unable to use BinarySemaphore on Cortex-M3Posted by rgrover1 on May 21, 2010I am working with FreeRTOS6.0.4 using GCC on a Cortex-M3. I would like to implement a driver for the UART peripheral using interrupts. I have created a binary semaphore to synchronize between the ISR and the task calling Uart&#095;GetChar&#040;&#041;. The interrupt handler gets called, [&hellip;]" />
+<meta name="twitter:title" content="Unable to use BinarySemaphore on Cortex-M3 - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201902' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201902' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201902' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201902' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=141538' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2010%2Ffreertos_Unable_to_use_BinarySemaphore_on_Cortex-M3_3717154.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2010%2Ffreertos_Unable_to_use_BinarySemaphore_on_Cortex-M3_3717154.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-141538">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2010_freertos_support_forum_archive_index.html/">May 2010 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Unable to use BinarySemaphore on Cortex-M3</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgrover1">rgrover1</a> on May 21, 2010</div><div class="thread-post-content">I am working with FreeRTOS6.0.4 using GCC on a Cortex-M3.  
+I would like to implement a driver for the UART peripheral using interrupts.<br />
+I have created a binary semaphore to synchronize between the ISR and the task calling Uart&#95;GetChar&#40;&#41;. The interrupt handler gets called, but it is unable to wakeup the task waiting on the binary semaphore. :-&#40;  
+I started with the standard port for CORTEX&#95;CM3 and simply linked the PendSV&#95;Handler and SVC&#95;Handler to the appropriate functions in the port. Everything else seemed to be working thus far.  
+The following is the code I&#8217;m using:  
+uint8&#95;t<br />
+UART&#95;GetChar&#40;volatile Uart &#42;pUart&#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp; /&#42; wait indefinitely for data to arrive &#42;/<br />
+&nbsp;&nbsp;&nbsp; while &#40;&#40;pUart-&gt;UART&#95;SR &amp; UART&#95;SR&#95;RXRDY&#41; == 0&#41; &#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xSemaphoreTake&#40;xBinarySemaphore, portMAX&#95;DELAY&#41;;<br />
+&nbsp;&nbsp;&nbsp; &#125;  
+&nbsp;&nbsp;&nbsp; return &#40;pUart-&gt;UART&#95;RHR&#41;;<br />
+&#125;  
+void<br />
+UART0&#95;IrqHandler&#40;void&#41;<br />
+&#123;<br />
+&nbsp;&nbsp;&nbsp; portBASE&#95;TYPE xHigherPriorityTaskWoken;  
+&nbsp;&nbsp;&nbsp; xHigherPriorityTaskWoken = pdFALSE;  
+&nbsp;&nbsp;&nbsp; /&#42; unblock a task waiting for data to arrive at UART0. &#42;/<br />
+&nbsp;&nbsp;&nbsp; xSemaphoreGiveFromISR&#40;xBinarySemaphore, &amp;xHigherPriorityTaskWoken&#41;;<br />
+&nbsp;&nbsp;&nbsp; if &#40;xHigherPriorityTaskWoken == pdTRUE&#41; &#123;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42; If the priority of the unblocked task is higher than the<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42; currently running task &#8211; force a context switch to ensure<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42; that the interrupt returns directly to the unblocked<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42; &#40;higher priority&#41; task-i.e. the task waiting for the data.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portYIELD&#40;&#41;;<br />
+&nbsp;&nbsp;&nbsp; &#125;<br />
+&#125;  
+I have verified that my interrupt handler gets called &#40;using an LED&#41;.  
+Through debugging printfs, I have discovered that the IRQ is called only once &#40;even though I&#8217;m generating multiple events&#41; and the task is blocked within the call to xTaskResumeAll&#40;&#41; &#40;at line 944 in queue.c&#41;:  
+vTaskPlaceOnEventList&#40; &amp;&#40; pxQueue-&gt;xTasksWaitingToReceive &#41;, xTicksToWait &#41;;<br />
+prvUnlockQueue&#40; pxQueue &#41;;<br />
+if&#40; &#33;xTaskResumeAll&#40;&#41; &#41;<br />
+&#123;<br />
+portYIELD&#95;WITHIN&#95;API&#40;&#41;;<br />
+&#125;  
+Could someone please help?  
+Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Unable to use BinarySemaphore on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/davedoors">davedoors</a> on May 21, 2010</div><div class="thread-post-content">What priority is the UART interrupt running at? Is it at or below whatever you have configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY. And remember that a lower interrupt priority means a higher number &#40;priority 5 is lower than priority 4&#41;. Are you sure that you have passed the priority into the function used to set the interrupt priority correctly as some want the number shifted and others don&#8217;t.  
+One other thing, you don&#8217;t mention that you installed the SysTick interrupt, which is another one FreeRTOS uses.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Unable to use BinarySemaphore on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgrover1">rgrover1</a> on May 21, 2010</div><div class="thread-post-content">I have not set the priority for the UART interrupt. According to the microcontroller&#8217;s datasheet, the uart interrupt would be running priority 0. Oops. This means that it is running at a priority higher than configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY while still attempting to use a FreeRTOS API. Perhaps that could explain why my program isn&#8217;t working.   
+I fail to understand why an interrupt executing at a high priority would fail to Give&#40;&#41; to a binary semaphore. All it would need to do is to set the semaphore as being available and setup a pending SV exception to be triggered upon return. Why would this run into trouble because of the priority especially since nothing else in the system is competing with this sequence?  
+By the way, I forgot to mention that I have also setup the SysTick interrupt handler to be the one provided by the port.  
+I will try to set a reasonable priority for the UART interrupt and report back. Thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Unable to use BinarySemaphore on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on May 21, 2010</div><div class="thread-post-content">The issue with I high priority interrupt accessing FreeRTOS structures is that they may not be in a stable condition, and accessing them may corrupt their state. FreeRTOS may &#40;depending on the port&#41; only block interrupts below a given priority when modifying critical resources, in order to not impact the latency of those higher priority interrupts that don&#8217;t need to interact with FreeRTOS.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Unable to use BinarySemaphore on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgrover1">rgrover1</a> on May 22, 2010</div><div class="thread-post-content">Hello again,  
+I tried setting the priority of the UART interrupt to configMAX&#95;SYSCALL&#95;INTERRUPT&#95;PRIORITY-see the Configure&#40;&#41; function included below,-but that still doesn&#8217;t help. I have added code in my UART0 ISR to toggle an LED, but the LED gets set only once. The task waiting in GetChar doesn&#8217;t make progress.  
+Please help.  
+<pre><code>#if defined(__FREERTOS__) &amp;&amp; defined(UART_USES_INTERRUPTS)
+/* The following pair of counting semaphores (one per UART) allow
+ * tasks to block waiting for interrupt events. */
+static xSemaphoreHandle xBinarySemaphore[2];
+#endif /* defined(__FREERTOS__) &amp;&amp; defined(UART_USES_INTERRUPTS) */
+/**
+ * brief Configures an UART peripheral with the specified
+ * parameters. The UART is configured for 8-bit I/O (with no parity)
+ * using interrupts.
+ *
+ * param uart      The UART's configuration base memory address; as
+ *                  defined in board/at91sam3s4/AT91SAM3S4.h.
+ *
+ * param baud      Baudrate at which the UART should operate (in Hz).
+ */
+void
+UART_Configure(Uart *pUart, uint32_t baud)
+{
+    const Pin pins[] = {PINS_UART0, PINS_UART1};
+    /*
+     * For the AT91SAM3S4 micro-controller, there can only be two
+     * possile UARTs. Given the UART's base address as a parameter, it
+     * is possible to deduce some of the required initial state.
+     */
+    if (pUart == UART0) {
+#if defined(__FREERTOS__) &amp;&amp; defined(UART_USES_INTERRUPTS)
+        /* IRQ must be enabled before configuring the UART registers */
+        NVIC_EnableIRQ(UART0_IRQn);
+        NVIC_SetPriority(UART0_IRQn, configMAX_SYSCALL_INTERRUPT_PRIORITY);
+        vSemaphoreCreateBinary(xBinarySemaphore[0]);
+#endif /* defined(__FREERTOS__) &amp;&amp; defined(UART_USES_INTERRUPTS) */
+        /* Configure the use of the UART pins */
+        PIO_Configure(&amp;pins[0], 1);
+        /* Configure PMC to enable the UART0 peripheral */
+        PMC-&gt;PMC_PCER0 = 1 &lt;&lt; ID_UART0;
+    } else if (pUart == UART1) {
+#if defined(__FREERTOS__) &amp;&amp; defined(UART_USES_INTERRUPTS)
+        /* IRQ must be enabled before configuring the UART registers */
+        NVIC_EnableIRQ(UART1_IRQn);
+        NVIC_SetPriority(UART1_IRQn, configMAX_SYSCALL_INTERRUPT_PRIORITY);
+        vSemaphoreCreateBinary(xBinarySemaphore[1]);
+#endif /* defined(__FREERTOS__) &amp;&amp; defined(UART_USES_INTERRUPTS) */
+        /* Configure the use of the UART pins */
+        PIO_Configure(&amp;pins[1], 1);
+        /* Configure PMC to enable the UART1 peripheral */
+        PMC-&gt;PMC_PCER0 = 1 &lt;&lt; ID_UART1;
+    } else {
+        /* NOTE: We should never be here!! */
+        /* XXX: add a LOG_ERR message here! */
+        return;
+    }
+    /* Reset and disable receiver &amp; transmitter */
+    pUart-&gt;UART_CR = UART_CR_RSTRX | UART_CR_RSTTX
+                   | UART_CR_RXDIS | UART_CR_TXDIS;
+    /* Configure mode */
+    pUart-&gt;UART_MR =  UART_MR_PAR_NONE;
+    /* Configure baudrate */
+    /* Asynchronous, no oversampling */
+    pUart-&gt;UART_BRGR = (BOARD_MCK / 16) / baud;
+    /* Disable PDC channel */
+    pUart-&gt;UART_PTCR = UART_PTCR_RXTDIS | UART_PTCR_TXTDIS;
+    /* Enable receiver and transmitter */
+    pUart-&gt;UART_CR = UART_CR_RXEN | UART_CR_TXEN;
+#if defined(__FREERTOS__) &amp;&amp; defined(UART_USES_INTERRUPTS)
+    pUart-&gt;UART_IER = UART_IER_RXRDY;
+#endif /* defined(__FREERTOS__) &amp;&amp; defined(UART_USES_INTERRUPTS) */
+}
+#if defined(__FREERTOS__) &amp;&amp; defined(UART_USES_INTERRUPTS)
+/*
+ * Interrupt Handlers for UART.
+ */
+void
+UART0_IrqHandler(void)
+{
+    portBASE_TYPE xHigherPriorityTaskWoken;
+    xHigherPriorityTaskWoken = pdFALSE;
+    LED_Toggle(0);
+    /* unblock a task waiting for data to arrive at UART0. */
+    xSemaphoreGiveFromISR(xBinarySemaphore[0], &amp;xHigherPriorityTaskWoken);
+    /*
+     * If the priority of the unblocked task is higher than the
+     * currently running task - force a context switch to ensure
+     * that the interrupt returns directly to the unblocked
+     * (higher priority) task--i.e. the task waiting for the data.
+     */
+    portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+}
+/**
+ * brief Input a character from the UART line.
+ *
+ * note This function is synchronous
+ * return character received.
+ */
+uint8_t
+UART_GetChar(volatile Uart *pUart)
+{
+    /* wait indefinitely for data to arrive */
+    while ((pUart-&gt;UART_SR &amp; UART_SR_RXRDY) == 0) {
+            xSemaphoreTake(xBinarySemaphore[0], portMAX_DELAY);
+    }
+    return (pUart-&gt;UART_RHR);
+}
+</code></pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Unable to use BinarySemaphore on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgrover1">rgrover1</a> on May 22, 2010</div><div class="thread-post-content">I apologize for that confusing 
+<pre><code>...
+</code></pre>
+block I included in the previous post. I hope you able to make sense of it if you begin reading from UART&#95;Configure&#40;&#41;. Thanks again.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Unable to use BinarySemaphore on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgrover1">rgrover1</a> on May 24, 2010</div><div class="thread-post-content">I have discovered that calling xQueueCreate &#40;or vCreateBinarySemaphore&#41; blows away my interrupt handler on the Cortex-CM3.  
+My initialization routine sets up the UART0 interrupt hander to go at configKERNEL&#95;INTERRUPT&#95;PRIORITY. Inside the ISR, I am toggling an LED plus reading UART0-&gt;UART&#95;RHR to clear the status register. With this setup, every time I press a key in the console window, my LED toggles.  
+But when I add a xQueueCreate&#40;&#41; to this mix, the LED doesn&#8217;t toggle with key presses. I am not using the queue for anything and yet my ISR fails to go.  
+What am I missing? Please help.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Unable to use BinarySemaphore on Cortex-M3</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rgrover1">rgrover1</a> on May 24, 2010</div><div class="thread-post-content">I hadn&#8217;t paid attention to the following in the FAQ:  
+<blockquote>
+  Many API functions cannot be called prior to the scheduler being started. It is best to restrict such usage to the creation of the tasks, queues and semaphores that will be used once the scheduler activity has commenced.
+</blockquote>
+I have moved all my usage of Queues to after the scheduler is started; and now things appear to be working normally. I am able to use a queue to synchronize between an ISR and a task.   
+Thanks.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

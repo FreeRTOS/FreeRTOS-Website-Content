@@ -1,0 +1,746 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATMega644 port working - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/May_2008/freertos_ATMega644_port_working_2047551.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="ATMega644 port working - FreeRTOS" />
+<meta property="og:description" content="ATMega644 port workingPosted by jmr1972 on May 22, 2008Hi folks, I&#8217;ve been working on a project using an ATMega640, WinAVR and FreeRTOS for the past few months. I made the following changes to port.c to enable Timer 1 as my OS tick. I&#8217;ve also modified the serial port driver to enable the serial ports on &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/May_2008/freertos_ATMega644_port_working_2047551.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="ATMega644 port workingPosted by jmr1972 on May 22, 2008Hi folks, I&#8217;ve been working on a project using an ATMega640, WinAVR and FreeRTOS for the past few months. I made the following changes to port.c to enable Timer 1 as my OS tick. I&#8217;ve also modified the serial port driver to enable the serial ports on [&hellip;]" />
+<meta name="twitter:title" content="ATMega644 port working - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579201616' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579201616' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579201616' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579201616' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=140981' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2008%2Ffreertos_ATMega644_port_working_2047551.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMay_2008%2Ffreertos_ATMega644_port_working_2047551.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-140981">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/May_2008_freertos_support_forum_archive_index.html/">May 2008 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">ATMega644 port working</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmr1972">jmr1972</a> on May 22, 2008</div><div class="thread-post-content">Hi folks,
+I&#8217;ve been working on a project using an ATMega640, WinAVR and FreeRTOS for the past few months.
+I made the following changes to port.c to enable Timer 1 as my OS tick.
+I&#8217;ve also modified the serial port driver to enable the serial ports on this processor. I&#8217;ve tried to make it generic but since so far the ATMega640 is the only processor I&#8217;ve used it with I don&#8217;t know if it&#8217;ll work on anything else&#8230; Use at your own risk&#8230;
+Hope this proves useful to someone out there.
+JM
+in port.c:
+&#45;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+/&#42; Hardware constants for timer 1. &#42;/
+&#35;define portCLEAR&#95;COUNTER&#95;ON&#95;MATCH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; unsigned portCHAR &#41; 0x08 &#41;
+&#35;define portPRESCALE&#95;64&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; unsigned portCHAR &#41; 0x03 &#41;
+&#35;define portCLOCK&#95;PRESCALER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#40; &#40; unsigned portLONG &#41; 64 &#41;
+&#35;define portCOMPARE&#95;MATCH&#95;A&#95;INTERRUPT&#95;ENABLE&nbsp;&nbsp;&nbsp; &#40; &#40; unsigned portCHAR &#41; 0x02 &#41;
+/&#42;
+ &#42; Setup timer 1 compare match A to generate a tick interrupt.
+ &#42;/
+static void prvSetupTimerInterrupt&#40; void &#41;
+&#123;
+unsigned portLONG ulCompareMatch;
+unsigned portCHAR ucHighByte, ucLowByte;
+&nbsp;&nbsp;&nbsp; /&#42; Using 16bit timer 1 to generate the tick.&nbsp; Correct fuses must be
+&nbsp;&nbsp;&nbsp; selected for the configCPU&#95;CLOCK&#95;HZ clock. &#42;/
+&nbsp;&nbsp;&nbsp; ulCompareMatch = configCPU&#95;CLOCK&#95;HZ / portCLOCK&#95;PRESCALER;
+&nbsp;&nbsp;&nbsp; /&#42; calculates the RTOS tick rate based on the timer&#8217;s tick rate. &#42;/
+&nbsp;&nbsp;&nbsp; ulCompareMatch /= configTICK&#95;RATE&#95;HZ;
+&nbsp;&nbsp;&nbsp; /&#42; Adjust for correct value. &#42;/
+&nbsp;&nbsp;&nbsp; ulCompareMatch -= &#40; unsigned portLONG &#41; 1;
+&nbsp;&nbsp;&nbsp; //ulCompareMatch = &#40;unsigned portLONG&#41; 8639;
+&nbsp;&nbsp;&nbsp; /&#42; Setup compare match value for compare match A.&nbsp; Interrupts are disabled 
+&nbsp;&nbsp;&nbsp; before this is called so we need not worry here. &#42;/
+&nbsp;&nbsp;&nbsp; ucLowByte = &#40; unsigned portCHAR &#41; &#40; ulCompareMatch &amp; &#40; unsigned portLONG &#41; 0xff &#41;;
+&nbsp;&nbsp;&nbsp; ulCompareMatch &gt;&gt;= 8;
+&nbsp;&nbsp;&nbsp; ucHighByte = &#40; unsigned portCHAR &#41; &#40; ulCompareMatch &amp; &#40; unsigned portLONG &#41; 0xff &#41;;
+&nbsp;&nbsp;&nbsp; OCR1AH = ucHighByte;
+&nbsp;&nbsp;&nbsp; OCR1AL = ucLowByte;
+&nbsp;&nbsp;&nbsp; /&#42; Setup clock source and compare match behaviour. &#42;/
+&nbsp;&nbsp;&nbsp; ucLowByte = portCLEAR&#95;COUNTER&#95;ON&#95;MATCH | portPRESCALE&#95;64;
+&nbsp;&nbsp;&nbsp; TCCR1B = ucLowByte;
+&nbsp;&nbsp;&nbsp; /&#42; Enable the interrupt &#8211; this is okay as interrupt are currently globally
+&nbsp;&nbsp;&nbsp; disabled. &#42;/
+&nbsp;&nbsp;&nbsp; ucLowByte = TIMSK1;
+&nbsp;&nbsp;&nbsp; ucLowByte |= portCOMPARE&#95;MATCH&#95;A&#95;INTERRUPT&#95;ENABLE;
+&nbsp;&nbsp;&nbsp; TIMSK1 = ucLowByte;
+&#125;
+&#45;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+/&#42;
+ &#42; serial.h
+ &#42; Description:
+ &#42; serial port driver for the ATMega640
+ &#42;/
+&#35;ifndef SERIAL&#95;COMMS&#95;H
+&#35;define SERIAL&#95;COMMS&#95;H
+typedef enum
+&#123; 
+&nbsp;&nbsp;&nbsp; serCOM1, 
+&nbsp;&nbsp;&nbsp; serCOM2, 
+&nbsp;&nbsp;&nbsp; serCOM3, 
+&nbsp;&nbsp;&nbsp; serCOM4,
+&nbsp;&nbsp;&nbsp; serCOMPortInvalid
+&#125; eCOMPort;
+typedef enum 
+&#123; 
+&nbsp;&nbsp;&nbsp; serNO&#95;PARITY, 
+&nbsp;&nbsp;&nbsp; serODD&#95;PARITY, 
+&nbsp;&nbsp;&nbsp; serEVEN&#95;PARITY, 
+&nbsp;&nbsp;&nbsp; serMARK&#95;PARITY, 
+&nbsp;&nbsp;&nbsp; serSPACE&#95;PARITY 
+&#125; eParity;
+typedef enum 
+&#123; 
+&nbsp;&nbsp;&nbsp; serSTOP&#95;1, 
+&nbsp;&nbsp;&nbsp; serSTOP&#95;2 
+&#125; eStopBits;
+typedef enum 
+&#123; 
+&nbsp;&nbsp;&nbsp; serBITS&#95;5, 
+&nbsp;&nbsp;&nbsp; serBITS&#95;6, 
+&nbsp;&nbsp;&nbsp; serBITS&#95;7, 
+&nbsp;&nbsp;&nbsp; serBITS&#95;8,
+&nbsp;&nbsp;&nbsp; serBITS&#95;9
+&#125; eDataBits;
+typedef enum 
+&#123; 
+&nbsp;&nbsp;&nbsp; ser50,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser75,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser110,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser134,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser150,&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser200,
+&nbsp;&nbsp;&nbsp; ser300,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser600,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser1200,&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser1800,&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser2400,&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser4800,
+&nbsp;&nbsp;&nbsp; ser9600,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser19200,&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser38400,&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser57600,&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; ser115200
+&#125; eBaud;
+extern eCOMPort xSerialPortInit&#40; eCOMPort ePort, eBaud eWantedBaud, eParity eWantedParity, eDataBits eWantedDataBits, eStopBits eWantedStopBits, unsigned portBASE&#95;TYPE uxBufferLength &#41;;
+extern signed portBASE&#95;TYPE xSerialPutString&#40; eCOMPort ePort, const portCHAR &#42; pcString, portTickType xBlockTime &#41;;
+extern signed portBASE&#95;TYPE xSerialGetChar&#40; eCOMPort ePort, portCHAR &#42;pcRxedChar, portTickType xBlockTime &#41;;
+extern signed portBASE&#95;TYPE xSerialPutChar&#40; eCOMPort ePort, portCHAR cOutChar, portTickType xBlockTime &#41;;
+extern unsigned portBASE&#95;TYPE ubSerialIsActive&#40;eCOMPort ePort&#41;;
+extern void vSerialClose&#40; eCOMPort xPort &#41;;
+&#35;endif
+/&#42;
+ &#42; serial.c
+ &#42; Description:
+ &#42; This is a quad serial port driver for ATMega644.
+ &#42; It gives a common interface to open/close serial ports.
+ &#42; $Log: serial.c,v $
+ &#42; Revision 1.7&nbsp; 2008-05-09 14:23:27+01&nbsp; jmr
+ &#42; Fixed a memory leak in the serial port driver where allocated memory for the queues wasn&#8217;t freed but the pointers to the queues nulled. This meant that if a task opened the same port twice it didn&#8217;t get the same queue again&#8230;.
+ &#42; The driver now simply will not reallocate a queue when the port is reopened.
+ &#42;
+ &#42;/
+&#35;include &lt;stdlib.h&gt;
+&#35;include &lt;avr/interrupt.h&gt;
+&#35;include &lt;avr/pgmspace.h&gt;
+&#35;include &quot;FreeRTOSConfig.h&quot;
+&#35;include &quot;FreeRTOS.h&quot;
+&#35;include &quot;queue.h&quot;
+&#35;include &quot;task.h&quot;
+&#35;include &quot;serial.h&quot;
+&#35;define serialMAX&#95;NUM&#95;PORTS 4
+&#35;define serialBAUD&#95;DIV&#95;CONSTANT 16
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+static void prvInterruptOn&#40;eCOMPort ePort&#41;;
+static void prvInterruptOff&#40;eCOMPort ePort&#41;;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+/&#42; declare some useful constants &#42;/
+static unsigned portSHORT usBaudRateDivisors&#91;&#93; PROGMEM =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/50 -1,&nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp; 50
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/75 -1,&nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp; 75
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/110 -1,&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; 110
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/134 -1,&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; 134
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/150 -1,&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; 150
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/200 -1,&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; 200
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/300 -1,&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; 300
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/600 -1,&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp; 600
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/1200 -1,&nbsp; //&nbsp;&nbsp; 1200
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/1800 -1,&nbsp; //&nbsp;&nbsp; 1800
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/2400 -1,&nbsp; //&nbsp;&nbsp; 2400
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/4800 -1,&nbsp; //&nbsp;&nbsp; 4800
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/9600 -1,&nbsp; //&nbsp;&nbsp; 9600
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/19200 -1, //&nbsp; 19200
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/38400 -1, //&nbsp; 38400
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/57600 -1, //&nbsp; 57600
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configCPU&#95;CLOCK&#95;HZ/serialBAUD&#95;DIV&#95;CONSTANT/115200 -1 // 115200
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;;
+static unsigned portCHAR ucParityBits&#91;&#93; PROGMEM = &#123; 0x00, /&#42; No parity &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x30, /&#42; Odd parity &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x20, /&#42; Even parity &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00, /&#42; Mark parity &#40;not supported&#41; &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00&nbsp; /&#42; Space parity &#40;not supported&#41; &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;;
+static unsigned portCHAR ucDataBits&#91;&#93; PROGMEM = &#123;&nbsp;&nbsp;&nbsp;&nbsp; 0x00, /&#42; 5 data bits &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x02, /&#42; 6 data bits &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x04, /&#42; 7 data bits &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x06, /&#42; 8 data bits &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x06&nbsp; /&#42; 9 data bits &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;;
+/&#42; The Rx And Tx queues used for the serial communications &#42;/
+static xQueueHandle xRxedChars&#91;serialMAX&#95;NUM&#95;PORTS&#93;; 
+static xQueueHandle xCharsForTx&#91;serialMAX&#95;NUM&#95;PORTS&#93;;
+/&#42; Serial port initialisation &#42;/
+eCOMPort xSerialPortInit&#40; eCOMPort ePort, eBaud eWantedBaud, eParity eWantedParity, eDataBits eWantedDataBits, eStopBits eWantedStopBits, unsigned portBASE&#95;TYPE uxQueueLength &#41;
+&#123;
+unsigned portSHORT usBaudRateCounter;
+unsigned portCHAR ucByte;
+&nbsp;&nbsp;&nbsp; /&#42; Verify that the desired port number is supported &#42;/
+&nbsp;&nbsp;&nbsp; switch&#40; ePort &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp; case serCOM1:
+&nbsp;&nbsp;&nbsp; &#35;if serialMAX&#95;NUM&#95;PORTS &gt; 1
+&nbsp;&nbsp;&nbsp; case serCOM2:
+&nbsp;&nbsp;&nbsp; &#35;endif
+&nbsp;&nbsp;&nbsp; &#35;if serialMAX&#95;NUM&#95;PORTS &gt; 2
+&nbsp;&nbsp;&nbsp; case serCOM3:
+&nbsp;&nbsp;&nbsp; &#35;endif
+&nbsp;&nbsp;&nbsp; &#35;if serialMAX&#95;NUM&#95;PORTS &gt; 3
+&nbsp;&nbsp;&nbsp; case serCOM4:
+&nbsp;&nbsp;&nbsp; &#35;endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; default:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return serCOMPortInvalid;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; /&#42; Modifying the serial port registers needs to have all interrupts disabled &#42;/
+&nbsp;&nbsp;&nbsp; portENTER&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Create the queues used by the com test task if they weren&#8217;t created by a previous call to SerialPortInit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40; xRxedChars&#91;ePort&#93; == NULL&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xRxedChars&#91;ePort&#93; = xQueueCreate&#40; uxQueueLength, &#40; unsigned portBASE&#95;TYPE &#41; sizeof&#40; signed portCHAR &#41; &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&#40; xCharsForTx&#91;ePort&#93; == NULL&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xCharsForTx&#91;ePort&#93; = xQueueCreate&#40; uxQueueLength, &#40; unsigned portBASE&#95;TYPE &#41; sizeof&#40; signed portCHAR &#41; &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Calculate the baud rate register value from the equation in the
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data sheet. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //usBaudRateCounter = &#40; configCPU&#95;CLOCK&#95;HZ / &#40; serialBAUD&#95;DIV&#95;CONSTANT &#42; ulWantedBaud &#41; &#41; &#8211; &#40; unsigned portSHORT &#41; 1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; usBaudRateCounter = pgm&#95;read&#95;word&#40;&amp;usBaudRateDivisors&#91;eWantedBaud&#93;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch&#40; ePort&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case serCOM1:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Set Parity, data and stop bits &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= pgm&#95;read&#95;byte&#40;&amp;ucParityBits&#91;eWantedParity&#93;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= pgm&#95;read&#95;byte&#40;&amp;ucDataBits&#91;eWantedDataBits&#93;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= eWantedStopBits? &#95;BV&#40;USBS0&#41;: 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR0C = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Set the baud rate. &#42;/&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = &#40; unsigned portCHAR &#41; &#40; usBaudRateCounter &amp; &#40; unsigned portSHORT &#41; 0xff &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UBRR0L = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; usBaudRateCounter &gt;&gt;= &#40; unsigned portSHORT &#41; 8;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = &#40; unsigned portCHAR &#41; &#40; usBaudRateCounter &amp; &#40; unsigned portSHORT &#41; 0x0f &#41;;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UBRR0H = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Enable the Rx interrupt.&nbsp; The Tx interrupt will get enabled
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; later. Also enable the Rx and Tx. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR0B = &#40; &#95;BV&#40;RXCIE0&#41; | &#95;BV&#40;RXEN0&#41; | &#95;BV&#40;TXEN0&#41; |&#40;&#40;eWantedDataBits==serBITS&#95;9&#41;?&#95;BV&#40;UCSZ02&#41;:0&#41;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case serCOM2:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Set Parity, data and stop bits &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= pgm&#95;read&#95;byte&#40;&amp;ucParityBits&#91;eWantedParity&#93;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= pgm&#95;read&#95;byte&#40;&amp;ucDataBits&#91;eWantedDataBits&#93;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= eWantedStopBits? &#95;BV&#40;USBS0&#41;: 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR1C = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Set the baud rate. &#42;/&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = &#40; unsigned portCHAR &#41; &#40; usBaudRateCounter &amp; &#40; unsigned portSHORT &#41; 0xff &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UBRR1L = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; usBaudRateCounter &gt;&gt;= &#40; unsigned portSHORT &#41; 8;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = &#40; unsigned portCHAR &#41; &#40; usBaudRateCounter &amp; &#40; unsigned portSHORT &#41; 0x0f &#41;;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UBRR1H = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Enable the Rx interrupt.&nbsp; The Tx interrupt will get enabled
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; later. Also enable the Rx and Tx. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR1B = &#40; &#95;BV&#40;RXCIE1&#41; | &#95;BV&#40;RXEN1&#41; | &#95;BV&#40;TXEN1&#41; |&#40;&#40;eWantedDataBits==serBITS&#95;9&#41;?&#95;BV&#40;UCSZ12&#41;:0&#41; &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case serCOM3:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Set Parity, data and stop bits &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= pgm&#95;read&#95;byte&#40;&amp;ucParityBits&#91;eWantedParity&#93;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= pgm&#95;read&#95;byte&#40;&amp;ucDataBits&#91;eWantedDataBits&#93;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= eWantedStopBits? &#95;BV&#40;USBS0&#41;: 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR2C = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Set the baud rate. &#42;/&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = &#40; unsigned portCHAR &#41; &#40; usBaudRateCounter &amp; &#40; unsigned portSHORT &#41; 0xff &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UBRR2L = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; usBaudRateCounter &gt;&gt;= &#40; unsigned portSHORT &#41; 8;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = &#40; unsigned portCHAR &#41; &#40; usBaudRateCounter &amp; &#40; unsigned portSHORT &#41; 0x0f &#41;;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UBRR2H = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Enable the Rx interrupt.&nbsp; The Tx interrupt will get enabled
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; later. Also enable the Rx and Tx. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR2B = &#40; &#95;BV&#40;RXCIE2&#41; | &#95;BV&#40;RXEN2&#41; | &#95;BV&#40;TXEN2&#41; |&#40;&#40;eWantedDataBits==serBITS&#95;9&#41;?&#95;BV&#40;UCSZ22&#41;:0&#41; &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case serCOM4:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Set Parity, data and stop bits &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= pgm&#95;read&#95;byte&#40;&amp;ucParityBits&#91;eWantedParity&#93;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= pgm&#95;read&#95;byte&#40;&amp;ucDataBits&#91;eWantedDataBits&#93;&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= eWantedStopBits? &#95;BV&#40;USBS0&#41;: 0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR3C = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Set the baud rate. &#42;/&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = &#40; unsigned portCHAR &#41; &#40; usBaudRateCounter &amp; &#40; unsigned portSHORT &#41; 0xff &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UBRR3L = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; usBaudRateCounter &gt;&gt;= &#40; unsigned portSHORT &#41; 8;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = &#40; unsigned portCHAR &#41; &#40; usBaudRateCounter &amp; &#40; unsigned portSHORT &#41; 0x0f &#41;;&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UBRR3H = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Enable the Rx interrupt.&nbsp; The Tx interrupt will get enabled
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; later. Also enable the Rx and Tx. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR3B = &#40; &#95;BV&#40;RXCIE3&#41; | &#95;BV&#40;RXEN3&#41; | &#95;BV&#40;TXEN3&#41; |&#40;&#40;eWantedDataBits==serBITS&#95;9&#41;?&#95;BV&#40;UCSZ32&#41;:0&#41; &#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; default:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; portEXIT&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42; Unlike other ports, this serial code does not return a pointer to a port structure
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; but returns the number of the port opened if successful. Otherwise it returns eCOMPortInvalid.
+&nbsp;&nbsp;&nbsp; &#42;/
+&nbsp;&nbsp;&nbsp; return ePort;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+/&#42; Get a character from the serial port &#42;/
+signed portBASE&#95;TYPE xSerialGetChar&#40; eCOMPort ePort, portCHAR &#42;pcRxedChar, portTickType xBlockTime &#41;
+&#123;
+&nbsp;&nbsp;&nbsp; if&#40; xRxedChars&#91;ePort&#93; == NULL &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return pdFAIL;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; /&#42; Get the next character from the buffer.&nbsp; Return false if no characters
+&nbsp;&nbsp;&nbsp; are available, or arrive before xBlockTime expires. &#42;/
+&nbsp;&nbsp;&nbsp; if&#40; xQueueReceive&#40; xRxedChars&#91;ePort&#93;, pcRxedChar, xBlockTime &#41; &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return pdPASS;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return pdFAIL;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+/&#42; Write a character to the serial port &#42;/
+signed portBASE&#95;TYPE xSerialPutChar&#40; eCOMPort ePort,portCHAR cOutChar, portTickType xBlockTime &#41;
+&#123;
+&nbsp;&nbsp;&nbsp; /&#42; ensure the queue has been initialised &#42;/
+&nbsp;&nbsp;&nbsp; if&#40; xCharsForTx&#91;ePort&#93; == NULL &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return pdFAIL;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; /&#42; Return false if after the block time there is no room on the Tx queue. &#42;/
+&nbsp;&nbsp;&nbsp; if&#40; xQueueSend&#40; xCharsForTx&#91;ePort&#93;, &amp;cOutChar, xBlockTime &#41; &#33;= pdPASS &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return pdFAIL;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; prvInterruptOn&#40;ePort&#41;;
+&nbsp;&nbsp;&nbsp; return pdPASS;
+&#125;
+/&#42; write a NULL terminated string to the serial port &#42;/
+signed portBASE&#95;TYPE xSerialPutString&#40; eCOMPort ePort, const portCHAR &#42; pcString, portTickType xBlockTime &#41;
+&#123;
+signed portBASE&#95;TYPE retVal = pdPASS;
+&nbsp;&nbsp;&nbsp; while&#40;&#42;pcString &amp;&amp; &#40;retVal == pdPASS&#41; &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; retVal = xSerialPutChar&#40; ePort, &#42;pcString++, xBlockTime&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; return retVal;
+&#125;
+unsigned portBASE&#95;TYPE ubSerialIsActive&#40;eCOMPort ePort&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; if&#40;&nbsp; uxQueueMessagesWaiting&#40;xRxedChars&#91;ePort&#93;&#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ||uxQueueMessagesWaiting&#40;xCharsForTx&#91;ePort&#93;&#41; &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return pdTRUE;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return pdFALSE;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+/&#42; Close the serial port &#42;/
+void vSerialClose&#40; eCOMPort ePort &#41;
+&#123;
+unsigned portCHAR ucByte;
+&nbsp;&nbsp;&nbsp; /&#42; Turn off the interrupt.&nbsp; We may also want to delete the queues and/or
+&nbsp;&nbsp;&nbsp; re-install the original ISR. &#42;/
+&nbsp;&nbsp;&nbsp; portENTER&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; turn off the Tx interrupt &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prvInterruptOff&#40;ePort&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; now turn off the Rx interrupt &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch&#40; ePort &#41;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case serCOM1:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR0B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte &amp;= ~&#95;BV&#40;RXCIE0&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR0B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case serCOM2:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR1B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte &amp;= ~&#95;BV&#40;RXCIE1&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR1B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case serCOM3:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR2B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte &amp;= ~&#95;BV&#40;RXCIE2&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR2B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case serCOM4:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR3B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte &amp;= ~&#95;BV&#40;RXCIE3&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR3B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; default:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; invalidate the queue handle &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //xRxedChars&#91;ePort&#93; = NULL; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //xCharsForTx&#91;ePort&#93; = NULL;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Don&#8217;t do the above two lines as this leads to memory leakage on the massive scale&#33;&#33;&#33;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; portEXIT&#95;CRITICAL&#40;&#41;;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+/&#42; Turn the transmit interrupt ON &#42;/
+static void prvInterruptOn&#40;eCOMPort ePort&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; unsigned portCHAR ucByte;
+&nbsp;&nbsp;&nbsp; switch&#40; ePort &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp; case serCOM1:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR0B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= &#95;BV&#40;UDRIE0&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR0B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; case serCOM2:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR1B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= &#95;BV&#40;UDRIE0&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR1B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; case serCOM3:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR2B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= &#95;BV&#40;UDRIE0&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR2B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; case serCOM4:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR3B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte |= &#95;BV&#40;UDRIE0&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR3B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; default:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+/&#42; Turn the transmit interrupt OFF &#42;/
+static void prvInterruptOff&#40;eCOMPort ePort&#41;
+&#123;
+&nbsp;&nbsp;&nbsp; unsigned portCHAR ucByte;
+&nbsp;&nbsp;&nbsp; switch&#40; ePort &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp; case serCOM1:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR0B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte &amp;= ~&#95;BV&#40;UDRIE0&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR0B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; case serCOM2:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR1B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte &amp;= ~&#95;BV&#40;UDRIE0&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR1B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; case serCOM3:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR2B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte &amp;= ~&#95;BV&#40;UDRIE0&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR2B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; case serCOM4:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte = UCSR3B;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ucByte &amp;= ~&#95;BV&#40;UDRIE0&#41;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UCSR3B = ucByte;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; default:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;
+ &#42; Interrupt handlers below
+ &#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+/&#42;
+ &#42; serial port 1 Rx and Tx interrupt handlers
+ &#42;/
+ISR&#40; USART0&#95;RX&#95;vect &#41;
+&#123;
+portCHAR cChar;
+portBASE&#95;TYPE bResVal;
+&nbsp;&nbsp;&nbsp; /&#42; Get the character and post it on the queue of Rxed characters.
+&nbsp;&nbsp;&nbsp; If the post causes a task to wake force a context switch as the woken task
+&nbsp;&nbsp;&nbsp; may have a higher priority than the task we have interrupted. &#42;/
+&nbsp;&nbsp;&nbsp; cChar = UDR0;
+&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; portENTER&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp; bResVal = xQueueSendFromISR&#40; xRxedChars&#91;0&#93;, &amp;cChar, pdFALSE &#41;;
+&nbsp;&nbsp;&nbsp; portEXIT&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp; if&#40; bResVal == pdTRUE &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; taskYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+ISR&#40; USART0&#95;UDRE&#95;vect &#41;
+&#123;
+portCHAR cChar;
+signed portCHAR cTaskWoken;
+portBASE&#95;TYPE bResVal;
+&nbsp;&nbsp;&nbsp; portENTER&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp; bResVal = xQueueReceiveFromISR&#40; xCharsForTx&#91;0&#93;, &amp;cChar, &amp;cTaskWoken &#41;;
+&nbsp;&nbsp;&nbsp; portEXIT&#95;CRITICAL&#40;&#41;;
+&nbsp;&nbsp;&nbsp; if&#40;&nbsp; bResVal == pdTRUE &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Send the next character queued for Tx. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UDR0 = cChar;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Queue empty, nothing to send. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prvInterruptOff&#40;serCOM1&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;
+ &#42; serial port 2 Rx and Tx interrupt handlers
+ &#42;/
+ISR&#40; USART1&#95;RX&#95;vect &#41;
+&#123;
+portCHAR cChar;
+&nbsp;&nbsp;&nbsp; /&#42; Get the character and post it on the queue of Rxed characters.
+&nbsp;&nbsp;&nbsp; If the post causes a task to wake force a context switch as the woken task
+&nbsp;&nbsp;&nbsp; may have a higher priority than the task we have interrupted. &#42;/
+&nbsp;&nbsp;&nbsp; cChar = UDR1;
+&nbsp;&nbsp;&nbsp; if&#40; xQueueSendFromISR&#40; xRxedChars&#91;1&#93;, &amp;cChar, pdFALSE &#41; &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; taskYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+ISR&#40; USART1&#95;UDRE&#95;vect &#41;
+&#123;
+portCHAR cChar;
+signed portCHAR cTaskWoken;
+&nbsp;&nbsp;&nbsp; if&#40; xQueueReceiveFromISR&#40; xCharsForTx&#91;1&#93;, &amp;cChar, &amp;cTaskWoken &#41; == pdTRUE &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Send the next character queued for Tx. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UDR1 = cChar;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Queue empty, nothing to send. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prvInterruptOff&#40;serCOM2&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;
+ &#42; serial port 3 Rx and Tx interrupt handlers
+ &#42;/
+ISR&#40; USART2&#95;RX&#95;vect &#41;
+&#123;
+portCHAR cChar;
+&nbsp;&nbsp;&nbsp; /&#42; Get the character and post it on the queue of Rxed characters.
+&nbsp;&nbsp;&nbsp; If the post causes a task to wake force a context switch as the woken task
+&nbsp;&nbsp;&nbsp; may have a higher priority than the task we have interrupted. &#42;/
+&nbsp;&nbsp;&nbsp; cChar = UDR2;
+&nbsp;&nbsp;&nbsp; if&#40; xQueueSendFromISR&#40; xRxedChars&#91;2&#93;, &amp;cChar, pdFALSE &#41; &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; taskYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+ISR&#40; USART2&#95;UDRE&#95;vect &#41;
+&#123;
+portCHAR cChar;
+signed portCHAR cTaskWoken;
+&nbsp;&nbsp;&nbsp; if&#40; xQueueReceiveFromISR&#40; xCharsForTx&#91;2&#93;, &amp;cChar, &amp;cTaskWoken &#41; == pdTRUE &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Send the next character queued for Tx. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UDR2 = cChar;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Queue empty, nothing to send. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prvInterruptOff&#40;serCOM3&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;
+ &#42; serial port 4 Rx and Tx interrupt handlers
+ &#42;/
+ISR&#40; USART3&#95;RX&#95;vect &#41;
+&#123;
+portCHAR cChar;
+&nbsp;&nbsp;&nbsp; /&#42; Get the character and post it on the queue of Rxed characters.
+&nbsp;&nbsp;&nbsp; If the post causes a task to wake force a context switch as the woken task
+&nbsp;&nbsp;&nbsp; may have a higher priority than the task we have interrupted. &#42;/
+&nbsp;&nbsp;&nbsp; cChar = UDR3;
+&nbsp;&nbsp;&nbsp; if&#40; xQueueSendFromISR&#40; xRxedChars&#91;3&#93;, &amp;cChar, pdFALSE &#41; &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; taskYIELD&#40;&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+/&#42;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;&#42;/
+ISR&#40; USART3&#95;UDRE&#95;vect &#41;
+&#123;
+portCHAR cChar;
+signed portCHAR cTaskWoken;
+&nbsp;&nbsp;&nbsp; if&#40; xQueueReceiveFromISR&#40; xCharsForTx&#91;3&#93;, &amp;cChar, &amp;cTaskWoken &#41; == pdTRUE &#41;
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Send the next character queued for Tx. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UDR3 = cChar;
+&nbsp;&nbsp;&nbsp; &#125;
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp; &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&#42; Queue empty, nothing to send. &#42;/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prvInterruptOff&#40;serCOM4&#41;;
+&nbsp;&nbsp;&nbsp; &#125;
+&#125;
+</div></div><div class="thread-post"><h3 class="thread-post-title">ATMega644 port working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 23, 2008</div><div class="thread-post-content">Thanks for taking the time to post this up.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ATMega644 port working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hooverphonique">hooverphonique</a> on May 23, 2008</div><div class="thread-post-content">nice.. i have hacked a single usart version for the ATMega2560 myself..
+One thing, though.. i think you should write UBBRH &#42;before&#42; writing UBBRL, since writing UBBRL triggers an update of the baud rate prescaler, whereas writing UBBRH does not..
+This mistake is present in the ATMega323 port as well, by the way&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">ATMega644 port working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmr1972">jmr1972</a> on May 23, 2008</div><div class="thread-post-content">I&#8217;ll have to check this one out as this code hasn&#8217;t been a problem for the past few months that it has been running.
+Granted I only have 3 baudrates that I&#8217;ve tested &#40;4800, 9600 and 115200&#41; but you never know.
+I seem to remember trying the datasheet way and not getting what I expected. Then again it could have been from other bug sources so&#8230; If I get a few minutes I&#8217;ll swap the lines around and check.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ATMega644 port working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hooverphonique">hooverphonique</a> on May 29, 2008</div><div class="thread-post-content">I am using your port mostly as is on an ATMega2560 @ 14.7MHz.
+When receiving data on USART0 at 115200 baud, the received bytes, but the first one, are wrong. if i transmit manually, all bytes are ok. this is not just an issue about missed bytes, since the received bit patterns were never transmitted, so somehow, bytes transmitted closely spaced, are not received correctly &#40;only the first one after a timeout&#41;. what is strange is, switching to USART1 makes it all work.. i was thinking of something like interrupt priorities, but that couldn&#8217;t cause bytes to be received that were never sent&#8230;
+there&#8217;s only the receiver task running..
+any ideas?
+</div></div><div class="thread-post"><h3 class="thread-post-title">ATMega644 port working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richardbarry">richardbarry</a> on May 29, 2008</div><div class="thread-post-content">Is this thread of any help:
+https://sourceforge.net/forum/forum.php?thread&#95;id=2052807&#038;forum&#95;id=382005
+</div></div><div class="thread-post"><h3 class="thread-post-title">ATMega644 port working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hooverphonique">hooverphonique</a> on May 29, 2008</div><div class="thread-post-content">not really.. i know that i shouldn&#8217;t post a byte at a time to the queue in the optimal solution, but the hardware has no fifo or dma, so&#8230; anyway, so far, i&#8217;m only doing testing, and it&#8217;s really strange that it works for usart1, but not for usart0&#8230;
+also, shouldn&#8217;t the xQueueSendFromISR&#8217;s above use the version with pointers for argument 3? i didn&#8217;t discover that here at first, but it doesn&#8217;t seem to make any difference on application behavior..
+regards&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">ATMega644 port working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmr1972">jmr1972</a> on May 30, 2008</div><div class="thread-post-content">Are you using the code I posted to start this thread?
+Unfortunately I can&#8217;t check the 115200 on USART0 as on my board this is connected to a device that only works at 19200.
+It does seem strange indeed that it works for USART1 but not USART0. You might want to try swapping the initialisation order of UBBR0L and UBBR0H if you&#8217;re the code of this thread.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ATMega644 port working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hooverphonique">hooverphonique</a> on May 30, 2008</div><div class="thread-post-content">i am using your serial.c with slight modifications &#40;init UBRRH before UBRRL, made the USART&#95;RX&#95;vect routines look the same &#40;usart0 was different&#41;, changed some register bit names to the correct usart number,&nbsp; updated the xQueueSendFromISR calls to be FreeRTOS 5 compatible, etc&#41;.
+i&#8217;ve made sure, that the code in serial.c is similar for all 4 USART&#8217;s, so unless i missed something, that&#8217;s not it&#8230;
+if this was a baud rate problem, the characters sent manually from a simple terminal proggy would arrive wrong, so this is not the issue..
+regards&#8230;
+</div></div><div class="thread-post"><h3 class="thread-post-title">ATMega644 port working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/jmr1972">jmr1972</a> on May 30, 2008</div><div class="thread-post-content">Actually looking at my code a bit more, there are a few blushes I could have saved myself.
+I think I was tinkering with getting things working on my board at the time and forgot to update the &quot;driver&quot; once I got things to work for me. Note to self: don&#8217;t forget to update the rest of your driver before moving onto the next task.
+As for your issue this is very puzzling. If with exactly the same code it works on USART1 but not USART0 I would start questioning the MCU itself.
+I suppose you have tried setting a breakpoint in the ISR to check that this got fired as soon as transmission was started.
+I might be able to do a wire mod to my PCB and swap USART0 and USART1 to check the behaviour there&#8230; However looking at the data-sheet I don&#8217;t think that this would help you as it seems that even though the 640 is the smaller flash size version of the 2560 they have different errata&#8230;
+Did you try a minimal set of code to send to the Atmel support guys? They are quite helpful, providing you&#8217;ve minimised the code.
+What I&#8217;d do is replace the calls to FreeRTOS API by a simple write to a byte array and see if the USART0 still looses the first byte of data. If not then there&#8217;s a bad interaction with FreeRTOS.
+</div></div><div class="thread-post"><h3 class="thread-post-title">ATMega644 port working</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/hooverphonique">hooverphonique</a> on June 2, 2008</div><div class="thread-post-content">JMR,
+I think you misunderstood me, or i expressed myself poorly.
+I am &#42;not&#42; missing the first byte on any USART, but on USART0, the byte &#42;after&#42; the first one is somehow scrambled when the bytes are closely spaced. If I transmit manually using a terminal program &#40;typing one character at a time&#41;, bytes get received correctly. this led me to believe it was task switching related, but it can&#8217;t be, since it works for USART1 and the tick timer uses a higher priority ISR than both USARTs. Also, the baud rate has to be correct, since i can receive correct characters.
+cheers.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

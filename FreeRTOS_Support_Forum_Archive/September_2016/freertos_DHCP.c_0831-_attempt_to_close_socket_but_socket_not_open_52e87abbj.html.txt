@@ -1,0 +1,199 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DHCP.c 0831- attempt to close socket but socket not open - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/September_2016/freertos_DHCP.c_0831-_attempt_to_close_socket_but_socket_not_open_52e87abbj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="DHCP.c 0831- attempt to close socket but socket not open - FreeRTOS" />
+<meta property="og:description" content="DHCP.c 0831- attempt to close socket but socket not openPosted by glenenglish on September 5, 2016Found this one when I patched in the new +TCP 0831 and associated DHCP changes. an easy one to find. in vDHCPProcess state == eWaitingSendFirstDiscover If xApplicationDHCPHook returns at eDHCPPhase==eDHCPPhasePreDiscover which sets xGivingUp==true Down the bottom of vDHCPProcess xGivingUp is &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/September_2016/freertos_DHCP.c_0831-_attempt_to_close_socket_but_socket_not_open_52e87abbj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="DHCP.c 0831- attempt to close socket but socket not openPosted by glenenglish on September 5, 2016Found this one when I patched in the new +TCP 0831 and associated DHCP changes. an easy one to find. in vDHCPProcess state == eWaitingSendFirstDiscover If xApplicationDHCPHook returns at eDHCPPhase==eDHCPPhasePreDiscover which sets xGivingUp==true Down the bottom of vDHCPProcess xGivingUp is [&hellip;]" />
+<meta name="twitter:title" content="DHCP.c 0831- attempt to close socket but socket not open - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202700' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202700' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202700' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202700' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=146068' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2016%2Ffreertos_DHCP.c_0831-_attempt_to_close_socket_but_socket_not_open_52e87abbj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FSeptember_2016%2Ffreertos_DHCP.c_0831-_attempt_to_close_socket_but_socket_not_open_52e87abbj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-146068">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/September_2016_freertos_support_forum_archive_index.html/">September 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">DHCP.c 0831- attempt to close socket but socket  not open</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on September 5, 2016</div><div class="thread-post-content">Found this one when I patched in the new +TCP 0831
+and associated DHCP changes. an easy one to find.
+in vDHCPProcess state == eWaitingSendFirstDiscover
+If xApplicationDHCPHook returns <edhcpusedefault> at eDHCPPhase==eDHCPPhasePreDiscover
+which sets xGivingUp==true
+Down the bottom of vDHCPProcess 
+xGivingUp is checked and if true, then the socket is closed.
+BUT !!!!
+prvInitialiseDHCP(); was never called, because of the initial eDHCPUseDefault return from  the hook
+so the socket never gets born.
+Until I have a good look at the best way to deal with this (maybe change code path )
+really needs an assert if there is an attept to close a open socket.
+I have put in 
+        /* hack by GLEN <em>/
+        /</em> only close socket if it was opened&#8230; */
+        if (xDHCPData.xDHCPSocket!=NULL) {
+            vSocketClose( xDHCPData.xDHCPSocket );
+            xDHCPData.xDHCPSocket = NULL;
+        }
+-glen      
+.
+</div></div><div class="thread-post"><h3 class="thread-post-title">DHCP.c 0831- attempt to close socket but socket  not open</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/kerub">kerub</a> on September 6, 2016</div><div class="thread-post-content">I think the problem is somewhere else.
+The function vSocketClose do nothing if the socket is equal NULL
+<pre><code>if( ( xSocket == NULL ) || ( xSocket == FREERTOS_INVALID_SOCKET ) )
+{
+    xResult = 0;
+}.
+</code></pre>
+The socket xDHCPData.xDHCPSocket is set first to NULL after first attempt to close the socket.
+The problem is the stucture xDHCPData  has no defined values at the start of the system.
+static DHCPData_t xDHCPData;
+So it does&#8217;t guarantiee that xDHCPData.xDHCPSocket  is NULL before first use.
+In a static analysis of the code it would be reported as an error.
+Andrzej
+</div></div><div class="thread-post"><h3 class="thread-post-title">DHCP.c 0831- attempt to close socket but socket  not open</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/richard_damon">richard_damon</a> on September 6, 2016</div><div class="thread-post-content">Point of information. xDHCPData above is declared as a static variable, so the C language defines that it will be zero initialized at startup, so pointer members should be NULL. (If it was declared in block scope with auto duration, then yes, it doesn&#8217;t get initialized, but file/global scoped variables are supposed to be zero initialized if not otherwise initiaized).
+There are some embeded enviroments where this doesn&#8217;t happen, but those are non-conforming to the standard.
+</div></div><div class="thread-post"><h3 class="thread-post-title">DHCP.c 0831- attempt to close socket but socket  not open</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on September 8, 2016</div><div class="thread-post-content">Glen, thanks, you are totally right. We will change it.
+Andrzej points out that it doesn&#8217;t matter because NULL may be closed.  Indeed the public API <code>FreeRTOS_closesocket()</code> has this check:
+~~~~
+    if( ( xSocket == NULL ) || ( xSocket == FREERTOS<em>INVALID</em>SOCKET ) )
+    {
+        xResult = 0;
+    }
+~~~~
+However, we recently made <a href="https://sourceforge.net/p/freertos/discussion/382005/thread/5850be38/?limit=25#ae98">a change</a> in <code>FreeRTOS_DHCP.c</code> to use <code>vSocketClose()</code>.  That&#8217;s the internal version of <code>FreeRTOS_closesocket()</code>.  The internal version does not check for <code>NULL</code> or <code>FREERTOS_INVALID_SOCKET</code> (<code>~0U</code>).
+I agree with Richard Damon that the <code>xDHCPData</code> will be zero&#8217;d after start-up, but if <code>FreeRTOS_socket()</code> fails, the socket pointer could become <code>FREERTOS_INVALID_SOCKET</code>.
+The function <code>prvCreateDHCPSocket()</code> still has an assert:
+<pre><code>configASSERT( ( xDHCPData.xDHCPSocket != FREERTOS_INVALID_SOCKET ) );
+</code></pre>
+that we better clean up now.
+Please find attached a new version of <code>FreeRTOS_dhcp.c</code> without the <code>configASSERT()</code>.
+</div></div><div class="thread-post"><h3 class="thread-post-title">DHCP.c 0831- attempt to close socket but socket  not open</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/heinbali01">heinbali01</a> on September 9, 2016</div><div class="thread-post-content">A note about the new <code>FreeRTOS_DHCP.c</code> in the previous post: you need the latest Labs release to be able to compile it.  In fact the current 160908 release already contains the above <code>FreeRTOS_DHCP.c</code>.
+The naming of the DHCP-hook and some enums have changed since the earlier 160112 release. The essence is still the same though.
+See <a href="http://www.FreeRTOS.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/TCP_IP_Configuration.html#ipconfigUSE_DHCP_HOOK">here</a> for a detailed description.
+The DHCP-hook define has changed:
+<pre><code>s/ipconfigDHCP_USES_USER_HOOK/ipconfigUSE_DHCP_HOOK/
+</code></pre>
+When the old define is still in seen, an #error will be issued.
+Some types and values have changed:
+<pre><code>s/eDHCPCallbackQuestion_t/eDHCPCallbackPhase_t/
+s/eDHCPCallbackAnswer_t/eDHCPCallbackAnswer_t/
+s/eDHCPOffer/eDHCPPhasePreDiscover/
+s/eDHCPRequest/eDHCPPhasePreRequest/
+s/eQuestion/ePhase/
+</code></pre>
+And finally the hook has changed:
+<pre><code>BaseType_t xApplicationDHCPUserHook( eDHCPCallbackQuestion_t eQuestion,
+    uint32_t ulIPAddress, uint32_t ulNetMask );
+eDHCPCallbackAnswer_t xApplicationDHCPHook( eDHCPCallbackPhase_t eDHCPPhase,
+    uint32_t ulIPAddress );
+</code></pre>
+The parameter <code>ulNetMask</code> was dropped. It can be retrieved by calling <code>FreeRTOS_GetAddressConfiguration()</code>.
+Sorry for this inconvenience.  In the 160112 release, the DHCP hook was still a new experimental feature.  It worked OK but the naming was not very clear.
+We think that it will be more clear now to new users what the hook does and how it works.
+</div></div><div class="thread-post"><h3 class="thread-post-title">DHCP.c 0831- attempt to close socket but socket  not open</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/glenenglish">glenenglish</a> on September 10, 2016</div><div class="thread-post-content">Hi Hein , Andrzej and Richard
+thanks for all the responses and work you have done.
+I have not found any other problems with 0831 to date.   I will download 0908 tomorrow and patch that in. ( I just copy over and do an SVN DIFF) . 0831 is now in a live system&#8230;running abt 900 pps and 80% utilization of the F4 in DSP&#8230;
+I have some fixes for the TFTP server  from 0831 latest so I will post that in the forum  as some input that tomorrow.  I have the tftp server working, loading data into external flash,when booting my xilinx fpga&#8230;The tricky bit was that my spi flash shared the spi with the ethernet 🙂 &#8230;..solid as a rock. 
+best regards
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

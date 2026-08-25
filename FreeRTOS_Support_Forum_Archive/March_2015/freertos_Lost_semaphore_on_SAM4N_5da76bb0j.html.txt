@@ -1,0 +1,277 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lost semaphore on SAM4N - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/March_2015/freertos_Lost_semaphore_on_SAM4N_5da76bb0j.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Lost semaphore on SAM4N - FreeRTOS" />
+<meta property="og:description" content="Lost semaphore on SAM4N Posted by tomwbarclay on March 19, 2015Hi, I need ideas on how to further investigate a suspected FreeRTOS failure. Problem is that a semaphore is fired from an ISR but is not caught by the background thread. Code snippet follows // init the control block rblk = reg_block; success = TRUE; &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/March_2015/freertos_Lost_semaphore_on_SAM4N_5da76bb0j.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Lost semaphore on SAM4N Posted by tomwbarclay on March 19, 2015Hi, I need ideas on how to further investigate a suspected FreeRTOS failure. Problem is that a semaphore is fired from an ISR but is not caught by the background thread. Code snippet follows // init the control block rblk = reg_block; success = TRUE; [&hellip;]" />
+<meta name="twitter:title" content="Lost semaphore on SAM4N - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202498' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202498' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202498' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202498' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145284' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2015%2Ffreertos_Lost_semaphore_on_SAM4N_5da76bb0j.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FMarch_2015%2Ffreertos_Lost_semaphore_on_SAM4N_5da76bb0j.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145284">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/March_2015_freertos_support_forum_archive_index.html/">March 2015 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">Lost semaphore on SAM4N </h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on March 19, 2015</div><div class="thread-post-content">Hi, I need ideas on how to further investigate a suspected FreeRTOS failure. Problem is that a semaphore is fired from an ISR but is not caught by the background thread.  Code snippet follows
+<pre><code>// init the control block
+rblk    = reg_block;
+success = TRUE;
+state   = CMX7164_SEQ_INT0;
+#ifdef DEBUG_SDR_THRU_CBUS
+debug_blip_debug_line(DEBUG_LINE5);
+#endif
+// set the SPI and CMX7164 interrupt call back routines
+spi_io_set_interrupt_callback_function(sdr_cbus_wr_thru_txfr_callback);
+cmx7164_set_interrupt_callback_function(sdr_cbus_interrupt_callback);
+timer_io_set_hw_alarm_time(SDR_CBUS_TIMER_CHANNEL, tout_us, sdr_io_cbus_wr_timeout);
+// create a software interrupt as if the SPI txfr has happened
+// this will start the entire sequence
+NVIC-&gt;STIR = SPI_IRQn;
+// wait till the program sequence completed event arrives
+event_wait(txfr_cbus_wr_event);
+#ifdef DEBUG_SDR_THRU_CBUS
+debug_blip_debug_line(DEBUG_LINE6);
+#endif
+// reset the Timer,  SPI and CMX7164 interrupt call back routines
+timer_io_clear_hw_alarm(SDR_CBUS_TIMER_CHANNEL);
+spi_io_set_interrupt_callback_function(NULL);
+cmx7164_set_interrupt_callback_function(NULL);
+</code></pre>
+Code enters at the top &#8230; sets up some interrupt callbacks, kicks off the interrupt processes
+with the NVIC-> command . (Interrupt processes take from 150 to 500us) then waits on semaphore from final interrupt process (event_wait &#8230; my FreeRTOS wrapper for xSemaphoreTake.) 
+Mostly this works&#8230; the interrupt driven state machine does its thing and once its finished it fires the semaphore which is caught by the event wait so the thread can continue and exit the routine. 
+I can break the execution just before the ISR throws the semaphore and then I can view the semaphore state in FreeRTOS viewer. This shows its value is 0 (not yet thrown) and it has a task waiting on it. Just as you would expect.
+When it goes wrong the hardware timeout timer actions first. This fires the semaphore but when I look at FreeRTOS Viewer it shows that there is NO waiting task.  MMMM!!!
+To verify this I added the debug_blip&#8230; lines. These toggle io pins so I can capture real events on my analyzer.
+When good the entry toggle (DEBUG5) is first, The ISR completed toggle (not shown here) is next and the exit toggle (DEBUG6) is next. No timeout toggle shows &#8230; all as anticipated. 
+When it goes wrong the entry toggle is first, the ISR completion toggle is next, followed by a long delay to the timer timeout toggle.  No exit toggle is seen. 
+My conclusion (so far) is that either
+a) The thread never executes the event<em>wait() &#8230; but I can see all the ISR traffic on my analyser so         I know that it must have executed the line before (NVIC->).
+b)event</em>wait() (wrapped xSemaphoreTake) somehow lost my request.
+c)Another process was executed in between the NVIC-> line and the event_wait() line
+The processor is a SAM4N @ 100MHz. I am using Atmel Studio6.2.  I am running about 20 to 50 transactions a second and the fault occurs between 1 and 30 seconds of execution time.
+Also another independent thread stops at the same point in time &#8230; I can see no connection between them. Plus all of the other threads, as far as I can see, run unperturbed, so the whole RTOS has not crashed or gone crazy.
+FYI .. setting configUSE<em>PORT</em>OPTIMISED<em>TASK</em>SELECTION in ConfigFreeRTOS.h fails to compile cleanly.
+Any suggestions welcomed &#8230; I am running out of ideas   
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 19, 2015</div><div class="thread-post-content">Have you set the priority of the interrupts so they are at or below the priority specified by configMAX<em>SYSCALL</em>INTERRUPT_PRIORITY (which means a number the same or *higher* than the priority specified by that constant)?  See http://www.freertos.org/RTOS-Cortex-M3-M4.html &#8211; your description would be a classic symptom of this being wrong.
+Which version of FreeRTOS are you using (relevant to the next question)?
+Do you have <a href="http://www.freertos.org/a00110.html#configASSERT">configASSERT()</a> defined?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on March 20, 2015</div><div class="thread-post-content">Hi&#8230; I have gathered all the interrupt priority settings into a single conf header file to make sure that I don&#8217;t break the Cortex-M rules and I can see at a glance the relative priorities &#8230; see snippet below
+<pre>
+// FreeRTOSConfig.h sets this value to
+// #define configLIBRARY<em>MAX</em>SYSCALL<em>INTERRUPT</em>PRIORITY 10
+// UART interrupts
+<h1>define SERIAL<em>UART</em>INTERRUPT_PRIORITY      11</h1>
+// USART
+<h1>define SERIAL<em>USART</em>INTERRUPT_PRIORITY     12</h1>
+// SPI interrupts
+<h1>define SPI<em>INTERRUPT</em>PRIORITY              10</h1>
+// USART-SPI interrupts
+<h1>define USART<em>SPI</em>INTERRUPT_PRIORITY        13</h1>
+// ADC interrupt priorities
+<h1>define ADC<em>INTERRUPT</em>PRIORITY              14</h1>
+// PIOs
+<h1>define PIOA<em>INTERRUPT</em>PRIORITY             13</h1>
+<h1>define PIOB<em>INTERRUPT</em>PRIORITY             13</h1>
+<h1>define PIOC<em>INTERRUPT</em>PRIORITY             13</h1>
+// TC 
+<h1>define TIMER<em>COUNTER</em>INTERRUPT_PRIORITY    12</h1>
+// TWI
+<h1>define TWI<em>INTERRUPT</em>PRIORITY              15</h1>
+//RTT
+<h1>define RTT<em>INTERRUPT</em>PRIORITY              14</h1>
+<pre>
+The FreeRTOS version is 7.3.0 (as supported by Atmel  ASF 3.19.0)
+Following is code snippet from FreeRTOSConfig.h
+<pre>
+/* Normal assert() semantics without relying on the provision of an assert.h
+header file. */
+#define configASSERT( x ) if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); for( ;; ) __asm volatile( "NOP" ); }
+</pre>
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 20, 2015</div><div class="thread-post-content">The priorities you list do look ok - assuming they are actually being 
+set in the code.  To double check I would recommend dropping the latest 
+FreeRTOS files (v8.2.0 files from the FreeRTOS/source directory, and in 
+particular the FreeRTOS/source/portable/gcc/ARM_CM3 directory) into your 
+project as V7.3.0 does not contain the asserts that will catch an 
+interrupt priority assignment issue.
+You should be able to simply overwrite your old FreeRTOS files with the 
+new ones and still end up with a compiling project - but naturally do 
+take a backup of your existing project before doing so.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on March 20, 2015</div><div class="thread-post-content">Thanks for info ... will install latest RTOS... though it'll take me a little bit of time.
+FYI ...
+I replaced the event-wait code with a classic pre-RTOS wait on boolean to be set by interrupt. That works fine ... > 1 hour run time and so far no failures..
+If nothing else it weighs in the same direction as the other evidence. 
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on March 21, 2015</div><div class="thread-post-content">Have now ported application to FreeRTOS 8.2.0.  After a few naming niggles I hit the the following line of code after starting the scheduler.
+<pre>
+configASSERT( ( portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK ) </pre>
+in function 
+<pre> void vPortEnterCritical( void )
+</pre>
+The comment is that this is caused by using a non FromISR method in an interrupt routine. So far I cant find it.
+Can there be  another explanation ?
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 21, 2015</div><div class="thread-post-content">When you are stopped on that line, have a look at the call stack in the 
+debugger to see what is calling the taskENTER_CRTICAL() macro, and where 
+it is being called from.  Even if this is not the root cause of your 
+issue it would be best to fix it.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on March 23, 2015</div><div class="thread-post-content">The code stops on the first call to xQueueReceive() function on the highest priority task. It stops there immediately after the startScheduler. I have checked the FreeRTOSConfig .h file against the one in the SAM4S demo program (the most alike processor in the 8.2.0 demo pack) and can see no important difference. The error suggest that the call to xQueueReceive() is being made from an interrupt routine without the use of the FromISR  but that is not the case. Its in the for(;;) loop of a task. 
+Any help gratefully received.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 23, 2015</div><div class="thread-post-content">Can you please post a screen shot that has both the call stack and 
+system registers visible in the debugger window when the error occurs so 
+we can take a look - thanks.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on March 23, 2015</div><div class="thread-post-content">Hi, attached is PDF with screen dumps of what I believe are the relevant windows.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 23, 2015</div><div class="thread-post-content">The memory window shows the highest priority bit of the VECTACTIVE bits 
+in the Interrupt Control and State Register being set (that is the '1' 
+of the '41') - which would seem to indicate you are in an interrupt.
+The call stack goes back as far as ulPortSetInterruptMask() - but what 
+called that?
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on March 23, 2015</div><div class="thread-post-content">Hi,  more grist to the mill ... In the search for an answer I have compared the FreeRTOS8.2.0 demo program SAM4S and found that the definition for configCPU<em>CLOCK</em>HZ was different so I modified my FreeRTOSConfig.h file to match. See snippet below ...
+<pre>
+// modified to match SAM4S demo on FreeRTOS8.2.0
+extern uint32_t SystemCoreClock;
+// set the RTOS version as rev8 and above changed names, refs etc etc 
+#define configFreeRTOSversion           8
+#define configUSE_PREEMPTION            1
+#define configUSE_IDLE_HOOK             1
+#define configUSE_TICK_HOOK             0
+// modified to match SAM4S demo on FreeRTOS8.2.0
+//#define configCPU_CLOCK_HZ                ( sysclk_get_cpu_hz() )
+#define configCPU_CLOCK_HZ              (SystemCoreClock )
+</pre>
+Apart from getting multiple warnings as below 
+<pre>
+Warning 1   redundant redeclaration of 'SystemCoreClock' [-Wredundant-decls]    C:localworkspaceSAM4NSAM4N_SDRsrcconfigFreeRTOSConfig.h   69  17  SAM4N_SDR
+</pre>
+The code compiles OK. (I don't get these warning in the demo project, and as far as I can see the project compiler warning flags are identical.) 
+The main point is that when I execute the code it behaves completely differently ... not sure how such a simple change could cause this. Anyway ....
+I am now getting a halt when a non ISR call to wait on a Q is made from a an ISR callback function. Just as one would expect. 
+I have also removed all the <pre>portENTER<em>CRITICAL/portEXIT</em>CRITICAL</pre> 
+statements from my ISRs after reading that they should not be placed there as it causes
+ISR nesting. (FYI ... Its been OK from FreeRTOS 5 to 7.3.0) Perhaps you could confirm this is correct.
+ will report back after I chase down the isues I have outlind bove.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on March 23, 2015</div><div class="thread-post-content">Was SystemCoreClock ever being set to a sensible value?
+Critical sections in interrupt should use
+portSET<em>INTERRUPT</em>MASK<em>FROM</em>ISR()
+and
+portCLEAR<em>INTERRUPT</em>MASK<em>FROM</em>ISR()
+Search for these macros in /FreeRTOS/source/queue.c to see how they are 
+used.
+Regards.
+</div></div><div class="thread-post"><h3 class="thread-post-title">Lost semaphore on SAM4N </h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/tomwbarclay">tomwbarclay</a> on March 23, 2015</div><div class="thread-post-content">Hi, I have no idea what the SystemCoreClock was being set to ... I have gone past that stage .
+I have however pulled out all the 'illegal' cases where non ISR calls were being made in ISR situations. 
+I have also completed the port of FreeRTOS8.2.0 from 7.3.0. I still have a few annoying warnings about redeclaring the port.c methods 
+</pre>xPortPendSVHandler, xPortSysTickHandler, vPortSVCHandler ,/pre> 
+but it all seem to hang together. 
+Now back to the original issue ... lost semaphore..
+I have run with the code patched with the Boolean code to check its all still functional, then I have replaced the patch with the original semaphore wait and send code.  Now it seems to work OK. I have only run it for 10 minutes but looks like its fixed. Before it used to crash somewhere between 1 sec and 1 minute.
+The use of configAssert in the low level scheduler functions seem pretty powerful, especially when used with the call stack view. It pulled out all the funnies in couple of hours of editing and testing. 
+Thanks for your all your help.
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

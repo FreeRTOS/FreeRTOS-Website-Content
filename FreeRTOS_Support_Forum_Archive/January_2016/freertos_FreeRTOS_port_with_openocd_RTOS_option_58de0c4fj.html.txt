@@ -1,0 +1,428 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeRTOS port with openocd RTOS option - FreeRTOS</title>
+<link rel="canonical" href="/FreeRTOS_Support_Forum_Archive/January_2016/freertos_FreeRTOS_port_with_openocd_RTOS_option_58de0c4fj.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="FreeRTOS port with openocd RTOS option - FreeRTOS" />
+<meta property="og:description" content="FreeRTOS port with openocd RTOS optionPosted by dumarjo on January 13, 2016HI, We have worked with openOCD team to get the RTOS option of openOCD working with FreeRTOS for cortex-M MCU. We need to apply some modifications to get this work when FPU and/OR MPU is used. The standard cortex-M3 or M4 is working properly &hellip;" />
+<meta property="og:url" content="/FreeRTOS_Support_Forum_Archive/January_2016/freertos_FreeRTOS_port_with_openocd_RTOS_option_58de0c4fj.html" />
+<meta property="og:site_name" content="FreeRTOS" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="FreeRTOS port with openocd RTOS optionPosted by dumarjo on January 13, 2016HI, We have worked with openOCD team to get the RTOS option of openOCD working with FreeRTOS for cortex-M MCU. We need to apply some modifications to get this work when FPU and/OR MPU is used. The standard cortex-M3 or M4 is working properly [&hellip;]" />
+<meta name="twitter:title" content="FreeRTOS port with openocd RTOS option - FreeRTOS" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Feed" href="/feed/" />
+<link rel="alternate" type="application/rss+xml" title="FreeRTOS &raquo; Comments Feed" href="/comments/feed/" />
+<link rel='stylesheet' id='freertos-css'  href='/wp-content/themes/freertos/css/freertos.css?ver=1579202591' type='text/css' media='all' />
+<link rel='stylesheet' id='new-styles-css'  href='/wp-content/themes/freertos/css/new-styles.css?ver=1579202591' type='text/css' media='all' />
+<link rel='stylesheet' id='subheader-dropdown-css'  href='/wp-content/themes/freertos/css/subheader-dropdown.css?ver=1579202591' type='text/css' media='all' />
+<link rel='stylesheet' id='download-css'  href='/wp-content/themes/freertos/css/download.css?ver=1579202591' type='text/css' media='all' />
+<link rel='https://api.w.org/' href='/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='/?p=145270' />
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2016%2Ffreertos_FreeRTOS_port_with_openocd_RTOS_option_58de0c4fj.html" />
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2FFreeRTOS_Support_Forum_Archive%2FJanuary_2016%2Ffreertos_FreeRTOS_port_with_openocd_RTOS_option_58de0c4fj.html&#038;format=xml" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="/wp-content/uploads/2019/02/cropped-freertos-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2019/02/cropped-freertos-favicon-270x270.png" />
+  <link rel="stylesheet" type="text/css" href="/wp-content/themes/freertos/css/vendor/google-code-prettify/sons-of-obsidian.css">
+</head>
+<body class="support_forum-template-default single single-support_forum postid-145270">
+<a name="page_top"></a>
+<table>
+<tr>
+<td valign="top">
+<table class="fr-page-top-table" cellpadding="5" cellspacing="0" align="center">
+<!-- BEGIN Header -->
+<tr id="main_top_header" valign="top">
+  <td colspan="3" style="font-family: Arial, Helvetica; height: 100px;">
+    <table class="main_top_header" style="width: 100%;" cellspacing="2" cellpadding="0" border="0">
+      <tr style="padding: 0;">
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="5px" style="table-layout:fixed;">
+            <tr>
+              <td style="line-height: normal;" valign="middle" width="174px" id="logo_column">
+                <div style="float: left;">  <a href="/index.html">    <img id="freertos_logo" src="/media/2023/logo.png" width="164" alt="" border="0" style="padding: 0 0 0 5px;">  </a></div>              </td>
+              <td style="width: 5px; border-top: solid 2px #e6e6e6; border-left: solid 2px #e6e6e6; border-bottom: solid 2px #e6e6e6;">&nbsp;</td>
+              <td valign="middle" style="line-height: normal; width:324px" id="page_heading_largerx">
+                <h3 id="header_heading">Quality RTOS & Embedded Software                                      <br>
+                    <div class="menu-header-container"><small><small><div id="logo_links"><a id="top_header_walker" href="/Documentation/02-Kernel/01-About-the-FreeRTOS-kernel/03-Download-freeRTOS/01-DownloadFreeRTOS" target=""><u>Download FreeRTOS</u></a><font size="3">&nbsp;</font></li>
+</div></small></small></div>                                  </h3>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="height:5px;" bgcolor="#7095d3">
+        <td></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- END Header -->
+<tr valign="top">
+  <!-- BEGIN #td_main_content_column -->
+  <td id="td_main_content_column">
+    <!-- BEGIN #main_content -->
+    <div id="main_content"><div id="navigation">
+      <div id="round_corner_shadow_box_container_id" class="round_corner_shadow_box_container" style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 15px; line-height: normal;" align="center">
+<div class="round_corner_shadow_box_shadow">
+<div class="round_corner_shadow_box_content"><span style="color: #ff0000;"><strong>NOTE</strong></span>:This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </div>
+</div>
+</div>
+<h2>FreeRTOS Support Archive</h2>
+<p>The <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS support forum</a> can be used for active support both from Amazon Web Services and the community. In return for using our software for free, we request you play fair and do your bit to help others! Sign up for an account and receive notifications of new support topics then help where you can.</p>
+<p><img class="alignnone  wp-image-150316" src="/media/2024/forums_notification_instructions.png" alt="" width="265" height="204" srcset="/media/2024/forums_notification_instructions.png 300w, /media/2024/forums_notification_instructions.png 368w" sizes="(max-width: 265px) 100vw, 265px" /></p>
+<p>&nbsp;</p>
+<hr width="75%" />
+<p>
+This is a read only archive of threads posted to the FreeRTOS support forum.  Use these archive pages to search previous posts.  New forum support threads can be started at the <a href="https://forums.freertos.org/" target="_blank" rel="noopener">FreeRTOS forums</a>.  </p>
+<p>&nbsp;</p>
+    <br>
+  <p>
+    <br>
+    <b>
+      [<a href="http://www.freertos.org/" target="_blank">FreeRTOS Home</a>]&nbsp;&nbsp;
+      [<a href="https://forums.freertos.org/" target="_blank">Live FreeRTOS Forum</a>]&nbsp;&nbsp;
+      [<a href="/Why-FreeRTOS/FAQs" target="_blank">FAQ</a>]&nbsp;&nbsp;
+              [<a href="/FreeRTOS_Support_Forum_Archive/freertos_support_forum_archive_index.html/">Archive Top</a>]&nbsp;&nbsp;
+                    [<a href="/FreeRTOS_Support_Forum_Archive/January_2016_freertos_support_forum_archive_index.html/">January 2016 Threads</a>]
+          </b>
+  </p>
+</div>
+  <main class="main-content"><div class="thread-post"><h2 class="thread-post-title">FreeRTOS port with openocd RTOS option</h2><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dumarjo">dumarjo</a> on January 13, 2016</div><div class="thread-post-content">HI,
+We have worked with openOCD team to get the RTOS option of openOCD working with FreeRTOS for cortex-M MCU. We need to apply some modifications to get this work when FPU and/OR MPU is used. 
+The standard cortex-M3 or M4 is working properly with openOCD. 
+The problem is that openOCD cannot known if the port of freeRTOS is using MPU or FPU option. Without this knowledge, openOCD return a standard stack frame starting from the saved stack pointer on the taskTCB. This give false information in the FPU port since freeRTOS push on the stack the FPU register before saving the stack pointer in the TaskTCB. 
+What we did, we recreated the standard stack frame and save the stack pointer in the taskTCB and after that we push LR and if the FPU bit is set/clear/ we push the S16 to S31 register. This way on the FPU port we have the &#8220;standard stack frame&#8221; and openOCD continue to work with the FPU port. With this modification we can have gdb display task with all there calling stack. 
+Here the modification that we have made  to the cortex-M4F port
+~~~~
+portSTACK<em>TYPE *pxPortInitialiseStack( portSTACK</em>TYPE <em>pxTopOfStack, pdTASK_CODE pxCode, void *pvParameters )
+{
+    /</em> Simulate the stack frame as it would be created by a context switch
+    interrupt. */
+<pre><code>/* Offset added to account for the way the MCU uses the stack on entry/exit
+of interrupts, and to ensure alignment. */
+pxTopOfStack--;
+*pxTopOfStack = portINITIAL_XPSR;   /* xPSR */
+pxTopOfStack--;
+*pxTopOfStack = ( portSTACK_TYPE ) pxCode;  /* PC */
+pxTopOfStack--;
+*pxTopOfStack = 0xDEEDBEEF; /* LR */
+/* Save code space by skipping register initialisation. */
+pxTopOfStack -= 5;  /* R12, R3, R2 and R1. */
+*pxTopOfStack = ( portSTACK_TYPE ) pvParameters;    /* R0 */
+pxTopOfStack -= 8;  /* R11, R10, R9, R8, R7, R6, R5 and R4. */
+/* A save method is being used that requires each task to maintain its
+own exec return value. */
+pxTopOfStack--;
+*pxTopOfStack = portINITIAL_EXEC_RETURN;
+pxTopOfStack++;
+return pxTopOfStack;
+</code></pre>
+}
+~~~~
+~~~~
+void vPortSVCHandler( void )
+{
+    __asm volatile (
+                    &#8221;   ldr r3, pxCurrentTCBConst2      n&#8221; /* Restore the context. <em>/
+                    &#8221;   ldr r1, [r3]                    n&#8221; /</em> Use pxCurrentTCBConst to get the pxCurrentTCB address. <em>/
+                    &#8221;   ldr r0, [r1]                    n&#8221; /</em> The first item in pxCurrentTCB is the task top of stack. <em>/
+                    &#8221;   ldr r14 , [r0, #-4]             n&#8221;
+                    &#8221;   ldmia r0!, {r4-r11}             n&#8221; /</em> Pop the registers that are not automatically saved on exception entry and the critical nesting count. <em>/
+                    &#8221;   msr psp, r0                     n&#8221; /</em> Restore the task stack pointer. */
+                    &#8221;   mov r0, #0                      n&#8221;
+                    &#8221;   msr basepri, r0                 n&#8221;
+                    &#8221;   bx r14                          n&#8221;
+                    &#8221;                                   n&#8221;
+                    &#8221;   .align 2                        n&#8221;
+                    &#8220;pxCurrentTCBConst2: .word pxCurrentTCB             n&#8221;
+                );
+}
+~~~~
+~~~~
+void xPortPendSVHandler( void )
+{
+    /* This is a naked function. */
+<pre><code>__asm volatile
+(
+"   mrs r0, psp                         n"
+"                                       n"
+"   ldr r3, pxCurrentTCBConst           n" /* Get the location of the current TCB. */
+"   ldr r2, [r3]                        n"
+"                                       n"
+"   stmdb r0!, {r4-r11}                 n" /* Save the core registers. */
+"                                       n"
+"   str r0, [r2]                        n" /* Save the new top of stack into the first member of the TCB. */
+"   stmdb r0!, {lr}                     n"
+"                                       n"
+"   tst lr, #0x10                       n" /* Is the task using the FPU context?  If so, push high vfp registers. */
+"   it eq                               n"
+"   vstmdbeq r0!, {s16-s31}             n"
+"   stmdb sp!, {r3, lr}                 n"
+"   mov r0, %0                          n"
+"   msr basepri, r0                     n"
+"   bl vTaskSwitchContext               n"
+"   mov r0, #0                          n"
+"   msr basepri, r0                     n"
+"   ldmia sp!, {r3, lr}                 n"
+"                                       n"
+"   ldr r1, [r3]                        n" /* The first item in pxCurrentTCB is the task top of stack. */
+"   ldr r0, [r1]                        n"
+"                                       n"
+"   ldr r14 , [r0, #-4]!                n"
+"   tst r14, #0x10                      n" /* Is the task using the FPU context?  If so, pop the high vfp registers too. */
+"   it eq                               n"
+"   vldmdbeq r0!, {s16-s31}             n"
+"   ldr r0, [r1]                        n"
+"                                       n"
+"   ldmia r0!, {r4-r11}                 n" /* Pop the core registers. */
+"                                       n"
+"   msr psp, r0                         n"
+"   bx r14                              n"
+"                                       n"
+"   .align 2                            n"
+"pxCurrentTCBConst: .word pxCurrentTCB  n"
+::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY)
+);
+</code></pre>
+}
+~~~~
+For the MPU section, we use the MPU with the FPU at the same time, so we take the FPU port and merge it with the MPU port. We did the same modification to the FPU port + we need to move the MPU settings after the pcTaskName in the tskTaskControlBlock. A modification is also needed in the port.c file to store the control register after the pushing the standard register. 
+Here a sample of the modification for the MPU
+~~~~
+StackType<em>t *pxPortInitialiseStack( StackType</em>t <em>pxTopOfStack, TaskFunction_t pxCode, void *pvParameters, BaseType_t xRunPrivileged )
+{
+    /</em> Simulate the stack frame as it would be created by a context switch
+    interrupt. <em>/
+    pxTopOfStack&#8211;; /</em> Offset added to account for the way the MCU uses the stack on entry/exit of interrupts. <em>/
+    *pxTopOfStack = portINITIAL_XPSR;   /</em> xPSR <em>/
+    pxTopOfStack&#8211;;
+    *pxTopOfStack = ( StackType_t ) pxCode; /</em> PC <em>/
+    pxTopOfStack&#8211;;
+    *pxTopOfStack = 0xDEEDBEEF; /</em> LR <em>/
+    pxTopOfStack -= 5;  /</em> R12, R3, R2 and R1. <em>/
+    *pxTopOfStack = ( StackType_t ) pvParameters;   /</em> R0 */
+<pre><code>pxTopOfStack -= 8;  /* R11, R10, R9, R8, R7, R6, R5, R4 */
+pxTopOfStack--; // privileged data
+if( xRunPrivileged == pdTRUE )
+{
+    *pxTopOfStack = portINITIAL_CONTROL_IF_PRIVILEGED;
+}
+else
+{
+    *pxTopOfStack = portINITIAL_CONTROL_IF_UNPRIVILEGED;
+}
+/* A save method is being used that requires each task to maintain its
+own exec return value. */
+pxTopOfStack--;
+*pxTopOfStack = portINITIAL_EXEC_RETURN;
+pxTopOfStack++;
+pxTopOfStack++;
+return pxTopOfStack;
+</code></pre>
+}
+~~~~
+~~~~
+static void prvRestoreContextOfFirstTask( void )
+{
+    __asm volatile
+    (
+        &#8221;   ldr r0, =0xE000ED08             n&#8221; /* Use the NVIC offset register to locate the stack. <em>/
+        &#8221;   ldr r0, [r0]                    n&#8221;
+        &#8221;   ldr r0, [r0]                    n&#8221;
+        &#8221;   msr msp, r0                     n&#8221; /</em> Set the msp back to the start of the stack. */
+<pre><code>    "   ldr r3, pxCurrentTCBConst2      n" /* Restore the context. */
+    "   ldr r1, [r3]                    n" /* Use pxCurrentTCBConst to get the pxCurrentTCB address. */
+    "   ldr r0, [r1]                    n" /* The first item in pxCurrentTCB is the task top of stack. */
+    "   ldr r3 , [r0, #-4]              n" /* restore the privilege mode */
+    "   msr control, r3                 n" /* set the privilege mode depending of what was initialised */
+    "   ldr r14 , [r0, #-8]             n" /* restore the link register mode for FPU operation */
+    "   ldmia r0!, {r4-r11}     n" /* Pop the registers that are not automatically saved on exception entry and the critical nesting count. */
+        /* MPU configuration */
+    "   ldr r3, pxCurrentTCBConst2      n" /* Get the pxCurrentTCP pointer. */
+    "   ldr r1, [r3]                    n" /* The first item in pxCurrentTCB is the task top of stack. */
+    "   add r1, r1, #68                 n" /* Move onto the second item in the TCB... */
+    "   ldr r2, =0xe000ed9c             n" /* Region Base Address register. */
+    "   ldmia r1!, {r4-r7}              n" /* Read 2 sets of MPU registers. */
+    "   stmia r2!, {r4-r7}              n" /* Write 2 sets of MPU registers. */
+        /* END of MPU configuration */
+    "   msr psp, r0                     n" /* Restore the task stack pointer. */
+    "   isb                             n"
+    "   mov r0, #0                      n"
+    "   msr basepri, r0                 n"
+    "   bx r14                          n"
+    "                                   n"
+    "   .align 2                        n"
+    "pxCurrentTCBConst2: .word pxCurrentTCB             n"
+);
+</code></pre>
+}
+~~~~
+~~~~
+void xPortPendSVHandler( void )
+{
+    /* This is a naked function. */
+<pre><code>__asm volatile
+(
+"   mrs r0, psp                         n"
+"   isb                                 n"
+"                                       n"
+"   ldr r3, pxCurrentTCBConst           n" /* Get the location of the current TCB. */
+"   ldr r2, [r3]                        n"
+"   stmdb r0!, {r4-r11}                 n" /* Save the core registers. */
+"   str r0, [r2]                        n" /* Save the new top of stack into the first member of the TCB. */
+"                                       n"
+"   mrs r1, control                     n" /* get the currect execution mode (privilege or user) */
+"   stmdb r0!, {r1}                     n" /* push the privilege mode to the stack frame*/
+"   stmdb r0!, {lr}                     n" /* save the current status of the FPU */
+"   tst lr, #0x10                       n" /* Is the task using the FPU context?  If so, push high vfp registers. */
+"   it eq                               n"
+"   vstmdbeq r0!, {s16-s31}             n"
+"                                       n"
+"   stmdb sp!, {r3}                     n"
+"   mov r0, %0                          n"
+"   msr basepri, r0                     n"
+"   dsb                                 n"
+"   isb                                 n"
+"   bl vTaskSwitchContext               n"
+"   mov r0, #0                          n"
+"   msr basepri, r0                     n"
+"   ldmia sp!, {r3}                     n"
+</code></pre>
+/* MPU configuration <em>/
+    &#8221;   ldr r3, pxCurrentTCBConst       n&#8221; /</em> Get the pxCurrentTCP pointer. <em>/
+    &#8221;   ldr r1, [r3]                    n&#8221; /</em> The first item in pxCurrentTCB is the task top of stack. <em>/
+    &#8221;   add r1, r1, #68                 n&#8221; /</em> Move onto the second item in the TCB&#8230; <em>/
+    &#8221;   ldr r2, =0xe000ed9c             n&#8221; /</em> Region Base Address register. <em>/
+    &#8221;   ldmia r1!, {r4-r7}              n&#8221; /</em> Read 2 sets of MPU registers. <em>/
+    &#8221;   stmia r2!, {r4-r7}              n&#8221; /</em> Write 2 sets of MPU registers. <em>/
+/</em> END of MPU configuration <em>/
+    &#8221;   ldr r1, [r3]                        n&#8221; /</em> The first item in pxCurrentTCB is the task top of stack. */
+    &#8221;   ldr r0, [r1]                        n&#8221;
+    &#8221;                                       n&#8221;
+<pre><code>"   ldr r3 , [r0, #-4]!             n"
+"   msr control, r3                     n"
+"   ldr r14 , [r0, #-4]!                n"
+"   tst r14, #0x10                      n" /* Is the task using the FPU context?  If so, pop the high vfp registers too. */
+"   it eq                               n"
+"   vldmdbeq r0!, {s16-s31}             n"
+"   ldr r0, [r1]                        n" /* restore current stack pointer */
+"                                       n"
+"   ldmia r0!, {r4-r11}                 n" /* Pop the core registers. */
+"                                       n"
+"   msr psp, r0                         n"
+"   isb                                 n"
+"                                       n"
+#ifdef WORKAROUND_PMU_CM001 /* XMC4000 specific errata workaround. */
+    #if WORKAROUND_PMU_CM001 == 1
+"           push { r14 }                n"
+"           pop { pc }                  n"
+    #endif
+#endif
+"                                       n"
+"   bx r14                              n"
+"                                       n"
+"   .align 2                            n"
+"pxCurrentTCBConst: .word pxCurrentTCB  n"
+::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY)
+);
+</code></pre>
+}
+~~~~
+With this modification we can use the multithread display in Eclipse (via GDB). Those modifications are not very intruisive. 
+I&#8217;m sorry for the long post here but I want to have a good reference to this for other people know that this is possible to use with freeRTOS. 
+Regards
+Jonathan
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS port with openocd RTOS option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 13, 2016</div><div class="thread-post-content">Hi Jonathan,
+Sounds like you have been doing some great work, that will be of value to the whole community. We should find a way of highlighting this on the FreeRTOS.org website. 
+Your post will get archived on the FreeRTOS.org site, so if you want to link to the post, then you can link directly to the archived version, where we will have more control over it.  Let me know if you would like me to create the archive now &#8211; the archive will then get updated ever couple of weeks or so.
+From the data types you are using it looks like you have based this on an older version of FreeRTOS &#8211; not too much has changed, but be aware more memory barrier instructions are used now, which you would have to add in if you would also like the code to run on ARM Cortex-M7 parts.
+I will have to step through the code to draw out the stack frames to form an opinion of its impact &#8211; unfortunately I don&#8217;t have time right now, but will do.  From a very quick look, and from your description, it seems you are changing the place at which the exec return value is saved, so all that goes before matches the standard (non FPU) Cortex-M port.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS port with openocd RTOS option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dumarjo">dumarjo</a> on January 13, 2016</div><div class="thread-post-content">Hi,
+Le 2016-01-13 09:40, Real Time Engineers ltd. a écrit :
+>
+<blockquote>
+  Hi Jonathan,
+  Sounds like you have been doing some great work, that will be of value 
+  to the whole community. We should find a way of highlighting this on 
+  the FreeRTOS.org website.
+</blockquote>
+Thanx !
+>
+<blockquote>
+  Your post will get archived on the FreeRTOS.org site, so if you want 
+  to link to the post, then you can link directly to the archived 
+  version, where we will have more control over it. Let me know if you 
+  would like me to create the archive now &#8211; the archive will then get 
+  updated ever couple of weeks or so.
+</blockquote>
+No problem at all. You can publish this.
+>
+<blockquote>
+  From the data types you are using it looks like you have based this on 
+  an older version of FreeRTOS &#8211; not too much has changed, but be aware 
+  more memory barrier instructions are used now, which you would have to 
+  add in if you would also like the code to run on ARM Cortex-M7 parts.
+</blockquote>
+I know. the FPU part is done on the 7.2.0 freeRTOS version. We have made 
+some hack in the task.c file as well.  For the MPU/F port, I will check 
+the memory barrier.
+>
+<blockquote>
+  I will have to step through the code to draw out the stack frames to 
+  form an opinion of its impact &#8211; unfortunately I don&#8217;t have time right 
+  now, but will do. From a very quick look, and from your description, 
+  it seems you are changing the place at which the exec return value is 
+  saved, so all that goes before matches the standard (non FPU) Cortex-M 
+  port.
+</blockquote>
+This is exactly this. We save the standard register and push the control 
+and/or LR after that.
+The only change in the taskTCB needed is the move part of the MPU 
+settings. The offset of the the pcTaskName must identical when the MPU 
+is used.
+Regards
+Jonathan
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS port with openocd RTOS option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/rtel">rtel</a> on January 13, 2016</div><div class="thread-post-content">Currently the MPU port relies on the MPU settings being second in the TCB, so keep that in mind too.
+</div></div><div class="thread-post"><h3 class="thread-post-title">FreeRTOS port with openocd RTOS option</h3><div class="thread-post-author">Posted by <a href="http://sourceforge.net/users/dumarjo">dumarjo</a> on January 13, 2016</div><div class="thread-post-content">Hi,
+Le 2016-01-13 12:23, Real Time Engineers ltd. a écrit :
+>
+<blockquote>
+  Currently the MPU port relies on the MPU settings being second in the 
+  TCB, so keep that in mind too.
+</blockquote>
+I know this. We have changed that in the port too. Probably using a C 
+method that return the current offset of the MPU setting can be useful 
+instead of hardcoding the offset in the port.
+Regards
+Jonathan
+</div></div></main>
+<!-- BEGIN Footer -->
+<div align="center">
+      <div class="menu-footer-container"><footer class="footer-menu"><a href="#page_top" target=""><small>[ Back to the top ]</small></a>&nbsp;&nbsp;<a href="/Why-FreeRTOS" target=""><small>[ About FreeRTOS ]</small></a>&nbsp;&nbsp;<a href="/Other/privacy" target=""><small>[ Privacy ]</small></a>&nbsp;&nbsp;<small>[<a href="javascript:void(0)" onclick="window.location='mailto:info@freertos.org?subject=Website feedback'">Report an error on this page</a><noscript><a href="http://w2.syronex.com/jmr/safemailto/#noscript">Report an error on this page (with anti-spam)</a></noscript>]</small></footer></div>  </div>
+  <div align="center" class="normal_text" style="padding: 0 0 100px;">
+    <font size="1"><div align="center">Copyright (C) Amazon Web Services, Inc. or its affiliates. All rights reserved.</div></font>
+  </div>
+<!-- END Footer -->
+</div>
+<!-- END #main_content -->
+</td>
+<!-- END #td_main_content_column -->
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>
