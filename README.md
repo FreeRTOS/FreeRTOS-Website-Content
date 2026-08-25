@@ -17,27 +17,7 @@
 | `markdown-test`  | working branch of content change |
 
 ## Content Update Workflow
-
-### Make daily changes in `markdown-test` branch
-
-- In `markdown-test` branch
-  - Commit daily changes made in `content-restructure` folder
-
-### Ready to release changes to `mainline` branch
-
-- In `markdown-test` branch
-  - Copy final version of md files/folder from `content-restructure` folder into `content` folder, the path should be same except the root folder name.
-  - Commit changes.
-  - Merge `markdown-test` branch into `mainline`
-  - Wait for the build results in the pipeline, and freeze the content change during this time.
-  - If there is any issue, contact developer to fix the issue and follow the below section to merge fix back.
-
-### Merge fix made in `mainline` back into `markdown-test` branch
-
-- Make fix in `mainline` branch and verify it works.
-- Merge `mainline` branch into `markdown-test` branch.
-- In `markdown-test` branch, copy changes from `content` folder into `content-restructure` folder.
-- Commit changes in `markdown-test` branch.
+For contributing content and creating a Pull Request please refer to the instructions [here](CONTRIBUTING.md).
 
 ## License Summary
 
