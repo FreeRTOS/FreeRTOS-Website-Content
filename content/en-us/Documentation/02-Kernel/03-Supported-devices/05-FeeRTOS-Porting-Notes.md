@@ -19,10 +19,10 @@ relatedLinks:
 
 ### Intro
 
-Every new architecture of computing platform will require new realization of kernel stubs or adaptations of existing ones if an architecture is close to one of already implemented port.
-Look at /FreeRTOS/FreeRTOS-Kernel/portable FreeRTOS source code folder. There are a plenty of templates are provided for most toolchains and architectures. But not all of them are implemented fully and tested.
-Porting the FreeRTOS to newer hardware, the software engineer should deeply know the architecture of new system, it's assemble language and new CPU features.
-Most important for pre-emptive OS implementation is an exception or interruption mechanism. Some notes about porting the OS are collected here.
+Every new architecture of computing platform will require their own kernel stubs - a number of definitions, assemble inserts or small functions to control the code flow and memory.
+Some of them could be written from scratch, some of them could be adapted.
+Look at /FreeRTOS/FreeRTOS-Kernel/portable FreeRTOS source code folder. There are a plenty of templates are provided for most toolchains and architectures. But not all of them are fully and tested or even completed.
+To make FreeRTOS port for newer hardware, the software engineer should deeply know an architecture of new system, it's assemble language and CPU features.
+Most important for pre-emptive OS implementation is exception and/or interruption mechanism. Some notes about porting the OS are collected here.
 
 ### An importance of serialized interrupt calling and interrupt masking sequence
-
