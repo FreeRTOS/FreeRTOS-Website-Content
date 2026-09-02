@@ -116,7 +116,7 @@ directory - NOT absolute paths:
 Now the difficult bit. Once the project is compiling the portable layer stubs require implementation. It is suggested 
 that pxPortInitialiseStack() is the first function to be implemented. To implement pxPortInitialiseStack() you must 
 first decide upon your task context stack frame structure, which is very architecture dependent.
-  
+Some useful notes about the porting of FreeRTOS are provided on [FreeRTOS Porting Notes](/Documentation/02-Kernel/03-Supported-devices/05-feertos-porting-notes) page.
 
 ### Getting Help
 
