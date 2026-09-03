@@ -27,8 +27,7 @@ Most important for pre-emptive OS implementation is exception and/or interruptio
 
 ### An importance of robust interrupt calling and interrupt masking sequence serialization
 
-Hard to notice, hard to debug could be a race condition between context switch interrupt request and interrupt masking in code after. In several places of FreeRTOS sources, particularly in blocking sections there are combinations like these:
-For correct task blocking and resuming, the yielding functions should ensure that the interrupt or exception used for context switching will be not blocked by entering critical section even being placed back-to-back in the code:
+Hard to notice, hard to debug could be the race condition between context switch interrupt request and interrupt masking in code after. In several places of FreeRTOS sources, particularly in blocking sections there are combinations like these, for correct task blocking and resuming, the yielding functions should ensure that the interrupt or exception used for context switching will be not blocked by entering critical section even being placed back-to-back in the code:
 
         {
             ...
