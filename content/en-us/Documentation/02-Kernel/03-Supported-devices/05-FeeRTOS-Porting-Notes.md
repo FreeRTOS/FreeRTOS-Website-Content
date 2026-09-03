@@ -57,3 +57,14 @@ In contrast, an interrupt controller is external block for a CPU even being plac
 In some cases, particularly at higher compiler optimization levels, an instruction which masks an interrupts globally is executed before scheduler interrupt signal reaching internal CPU interrupt line! We have a BUG! The scheduler interrupt is missed. This way the task skips the blocking state and, after critical section interrupt masking, continues to run like it is already unblocked. In critical part the state of the task is switched to running completely and upon critical part exiting and unmasking scheduler interrupt, the erroneously delayed scheduler interrupt takes it's place. But it is too late - the task is already unblocked and blocking state is completely missed.
 
 Conclusion for this note: When porting the FreeRTOS, while implementing or reviewing the YIELD stub, do know which way the scheduler execution is called and how much CPU cycles it could take? Knowing that, ensure the interrupt masking for critical section (typically, global interrupt disable assemble instruction) will not be executed before entering the scheduler interrupt. This sequence should be ensured in any cases for every possible compiler optimizations.
+
+Here is an example of adapting portYIELD code for one of RISC-V microcontroller. The macro before the modification:
+```
+#define portYIELD()   NVIC_SetPendingIRQ(Software_IRQn)
+```
+The macro after the modification:
+```
+#define portYIELD() do{NVIC_SetPendingIRQ(Software_IRQn); \
+                       __asm volatile("fence.i");}while(0)
+```
+In the example above, original code had triggering scheduler interrupt but failed to prevent critical section against too early interrupt blocking. The addition of single assemble instruction was enough to let software interrupt signal to propagate. The tests were done while interrupt masking instruction were placed right after portYIELD macro and the serialization of execution of these functions after the modification was confirmed.
