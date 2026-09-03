@@ -27,7 +27,7 @@ Most important for pre-emptive OS implementation is exception and/or interruptio
 
 ### An importance of robust interrupt calling and interrupt masking sequence serialization
 
-Hard to notice, hard to debug could be the race condition between context switch interrupt request and interrupt masking in code after. In several places of FreeRTOS sources, particularly in blocking sections there are combinations like these, for correct task blocking and resuming, the yielding functions should ensure that the interrupt or exception used for context switching will be not blocked by entering critical section even being placed back-to-back in the code:
+Hard to notice, hard to debug could be the race condition between context switch interrupt request and interrupt masking in code after. In several places of FreeRTOS sources, particularly in blocking sections there are combinations like these:
 
         {
             ...
@@ -38,7 +38,8 @@ Hard to notice, hard to debug could be the race condition between context switch
         }
         taskENTER_CRITICAL();
 
-This arrangement is usually placed at the boundary between task blocking (yielding) and running which starts from entering critical part. Actually, taskYIELD command is the point where the task is blocked. And next instructions after it are executed when the task is switched-in by the scheduler back to run.
+For correct task blocking and resuming, the yielding function should ensure that the interrupt or exception used for context switching will be not blocked by entering critical section even being placed back-to-back in the code.
+Code arrangement above is usually placed at the boundary between task blocking (yielding) and running which starts from entering critical part. Actually, taskYIELD command is the point where the task is blocked. And next instructions after it are executed when the task is switched-in by the scheduler back to run.
 In task yield macro, an interrupt or exception is triggered to switch an execution from task being blocking to the scheduler function. Triggering an interrupt is normal way to execute the scheduler in any case: when an API function like taskYIELD_WITHIN_API() is called or when system tick interval is ended.
 From another side, the entering into critical section should block scheduler interrupt to prevent scheduler interrupt during the time the task control block is updated.
 In short:
