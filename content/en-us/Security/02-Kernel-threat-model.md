@@ -310,3 +310,20 @@ The following threats should be mitigated by the application:
     Mitigation - The application writer must ensure no untrusted code executes
     in the above mentioned callbacks. One option is to disable hooks using
     configuration constants.
+
+9. Memory shared between untrusted unprivileged tasks
+
+    An unprivileged task can only access its own stack and the memory regions the application writer
+    assigns to it. The application writer may assign the same writable memory region to more than one
+    unprivileged task. Any task with write access to a shared region can modify data in that region at
+    any time, including while another task is executing a system call that uses that data. For example,
+    a task can modify a system call parameter, or memory a pointer parameter refers to, after the kernel
+    has validated it, so the kernel acts on a value it did not validate.
+
+    The kernel does not protect memory shared between unprivileged tasks, or system call parameters
+    stored in such memory, from modification by the other tasks that share it.
+
+    Mitigation- The application writer must not give untrusted unprivileged tasks write access to the
+    same memory region. Tasks that share writable memory must be treated as a single trust domain.
+    Use kernel objects such as queues, stream buffers or message buffers to pass data between untrusted
+    tasks, and do not pass memory that another untrusted task can write as a system call parameter.
