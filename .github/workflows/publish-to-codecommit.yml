@@ -1,0 +1,101 @@
+name: Publish to freertos.org
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Publish one change at a time, in merge order.
+concurrency:
+  group: publish-to-codecommit
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+  CODECOMMIT_REPO: ${{ secrets.CODECOMMIT_REPO_NAME }}
+  CODECOMMIT_BRANCH: mainline
+
+jobs:
+  publish:
+    name: Publish to CodeCommit
+    if: github.repository == 'FreeRTOS/FreeRTOS-Website-Content' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Check out GitHub content
+        uses: actions/checkout@v7.0.1
+        with:
+          path: github
+          persist-credentials: false
+
+      - name: Assume the AWS role
+        uses: aws-actions/configure-aws-credentials@v6.3.1
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: publish-to-codecommit
+          role-duration-seconds: 900
+
+      - name: Clone the CodeCommit repository
+        run: |
+          if [ -z "$CODECOMMIT_REPO" ]; then
+            echo "::error::The CODECOMMIT_REPO_NAME repository secret is not set."
+            exit 1
+          fi
+          git config --global credential.helper '!aws codecommit credential-helper $@'
+          git config --global credential.UseHttpPath true
+          git clone --branch "$CODECOMMIT_BRANCH" --single-branch \
+            "https://git-codecommit.${AWS_REGION}.amazonaws.com/v1/repos/${CODECOMMIT_REPO}" codecommit
+
+      - name: Copy the content into the CodeCommit clone
+        run: |
+          # Refuse to publish a checkout that is missing the site content.
+          test -d github/content/en-us
+          test -d github/locales
+
+          # Excluded paths are neither copied nor deleted.
+          rsync --archive --delete \
+            --exclude='/.git/' \
+            --exclude='/.github/' \
+            --exclude='/Config' \
+            github/ codecommit/
+
+      - name: Commit and push
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          cd codecommit
+          git add --all --force
+          if git diff --cached --quiet; then
+            echo "CodeCommit already matches ${SOURCE_SHA}. Nothing to publish."
+            echo "CodeCommit already matches \`${SOURCE_SHA}\`. Nothing to publish." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          git diff --cached --stat | tail -n 25
+
+          # Keep the original author. The commit message comes from a file, so
+          # its text is never interpreted by the shell.
+          {
+            git -C ../github log -1 --format='%s'
+            echo
+            echo "Published from https://github.com/${GITHUB_REPOSITORY}/commit/${SOURCE_SHA}"
+            echo
+            git -C ../github log -1 --format='%b'
+          } > ../commit-message.txt
+          GIT_AUTHOR_NAME="$(git -C ../github log -1 --format='%an')" \
+          GIT_AUTHOR_EMAIL="$(git -C ../github log -1 --format='%ae')" \
+          GIT_COMMITTER_NAME='github-actions[bot]' \
+          GIT_COMMITTER_EMAIL='41898282+github-actions[bot]@users.noreply.github.com' \
+            git commit --file ../commit-message.txt
+
+          git push origin "HEAD:refs/heads/${CODECOMMIT_BRANCH}"
+          echo "Published \`${SOURCE_SHA}\` to CodeCommit \`${CODECOMMIT_REPO}\` (\`${CODECOMMIT_BRANCH}\`) as \`$(git rev-parse --short HEAD)\`." >> "$GITHUB_STEP_SUMMARY"
